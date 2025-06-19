@@ -1,0 +1,205 @@
+/* === Sidebar === */
+#sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100vh;
+    background-color: #1e1e2f;
+    padding-top: 20px;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 1050;
+}
+
+#sidebar h4 {
+    color: #fff;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#sidebar .nav-link {
+    display: flex;
+    align-items: center;
+    color: #bbb;
+    padding: 12px 20px;
+    margin: 5px 10px;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#sidebar .nav-link:hover,
+#sidebar .nav-link.active {
+    background-color: #34344e;
+    color: #fff;
+}
+
+/* === Contenido principal === */
+main {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    /* Considera un padding-left igual al ancho del sidebar para evitar que el contenido quede debajo */
+    padding-left: 250px;
+}
+
+/* === Navbar Superior === */
+.navbar {
+    background-color: #2c2f48 !important;
+    border-radius: 0 0 10px 10px;
+    padding: 10px 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.navbar .dropdown-menu {
+    background-color: #1e1e2f;
+    border: none;
+    border-radius: 8px;
+}
+
+.navbar .dropdown-item {
+    color: #fff;
+    transition: background-color 0.3s ease;
+}
+
+.navbar .dropdown-item:hover {
+    background-color: #34344e;
+}
+
+/* === Imagen de perfil en navbar === */
+.navbar .dropdown-toggle img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border: 2px solid #fff;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+}
+
+/* === Estilo general === */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    margin: 0; /* Para evitar espacios en algunos navegadores */
+}
+
+button, .btn {
+    border-radius: 6px;
+}
+
+.btn-primary {
+    background-color: #4e73df;
+    border-color: #4e73df;
+}
+
+/* === Filtros === */
+#filtroRol,
+#filtroEstado {
+    border-radius: 6px;
+}
+
+/* === Tabla de usuarios === */
+#tablaUsuarios {
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 100%; /* Asegura que ocupe todo el contenedor */
+}
+
+#tablaUsuarios th,
+#tablaUsuarios td {
+    vertical-align: middle;
+    padding: 12px;
+}
+
+#tablaUsuarios caption {
+    caption-side: top;
+    font-weight: 500;
+    padding: 10px 0;
+}
+
+/* === Dropdown de acciones === */
+.dropdown-menu .dropdown-item i {
+    margin-right: 5px;
+}
+
+/* === Responsive === */
+
+/* Ocultar columnas menos importantes en pantallas pequeñas */
+@media (max-width: 768px) {
+    #tablaUsuarios th:nth-child(1),
+    #tablaUsuarios td:nth-child(1),
+    #tablaUsuarios th:nth-child(5),
+    #tablaUsuarios td:nth-child(5),
+    #tablaUsuarios th:nth-child(8),
+    #tablaUsuarios td:nth-child(8) {
+        display: none;
+    }
+
+    .dropdown-menu {
+        font-size: 14px;
+    }
+
+    .container h2 {
+        font-size: 1.4rem;
+    }
+}
+
+/* Reacomodo de filtros en pantallas muy pequeñas */
+@media (max-width: 576px) {
+    .row.mb-4.g-3 > div {
+        margin-bottom: 15px;
+    }
+
+    .dropdown-toggle,
+    .dropdown-menu {
+        width: 100%;
+    }
+}
+
+
+.perfil-hover {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+
+.perfil-imagen-container {
+    overflow: hidden;
+}
+
+
+.perfil-imagen-container:hover .perfil-hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    border: 2px solid #0d6efd;
+}
+
+.btn-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 50%;
+}
+
+.btn-eliminar-foto {
+    position: absolute;
+    top: 1px;
+    right: 2px;
+    z-index: 2;
+    border-radius: 50%;
+    padding: 0.3rem 0.5rem;
+}
+
+.perfil-imagen-container:hover .btn-overlay {
+    opacity: 1;
+}
