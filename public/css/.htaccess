@@ -1,0 +1,79 @@
+# Configuración de cache para archivos CSS
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # Cache CSS por 1 año
+    ExpiresByType text/css "access plus 1 year"
+    
+    # Cache JavaScript por 1 año
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType text/javascript "access plus 1 year"
+    
+    # Cache imágenes por 1 año
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    
+    # Cache fuentes por 1 año
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType application/font-woff "access plus 1 year"
+    ExpiresByType application/font-woff2 "access plus 1 year"
+</IfModule>
+
+# Configuración de headers de cache
+<IfModule mod_headers.c>
+    # Headers para CSS
+    <FilesMatch "\.(css)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+        Header set ETag ""
+        Header set Last-Modified ""
+        Header set Expires "Thu, 31 Dec 2026 23:59:59 GMT"
+    </FilesMatch>
+    
+    # Headers para JavaScript
+    <FilesMatch "\.(js)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+        Header set ETag ""
+        Header set Last-Modified ""
+        Header set Expires "Thu, 31 Dec 2026 23:59:59 GMT"
+    </FilesMatch>
+    
+    # Headers para imágenes
+    <FilesMatch "\.(png|jpg|jpeg|gif|svg|webp)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+        Header set ETag ""
+        Header set Last-Modified ""
+        Header set Expires "Thu, 31 Dec 2026 23:59:59 GMT"
+    </FilesMatch>
+    
+    # Headers para fuentes
+    <FilesMatch "\.(woff|woff2|ttf|eot)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+        Header set ETag ""
+        Header set Last-Modified ""
+        Header set Expires "Thu, 31 Dec 2026 23:59:59 GMT"
+    </FilesMatch>
+</IfModule>
+
+# Compresión GZIP para archivos CSS y JS
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE text/javascript
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xml+rss
+    AddOutputFilterByType DEFLATE application/json
+</IfModule>
+
+# Prevenir acceso directo a archivos .htaccess
+<Files ".htaccess">
+    Order allow,deny
+    Deny from all
+</Files>

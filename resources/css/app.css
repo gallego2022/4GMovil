@@ -1,0 +1,570 @@
+/**
+ * 4GMovil - CSS Principal Optimizado
+ * Estilos críticos, dashboard admin y optimizaciones de rendimiento
+ */
+
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+/* Estilos base tecnológicos */
+@layer base {
+    html {
+        font-family: "Inter", system-ui, sans-serif;
+    }
+
+    body {
+        font-family: "Inter", system-ui, sans-serif;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        color: #e2e8f0;
+    }
+
+    /* Estilos para modo claro */
+    body:not(.dark) {
+        background: #f8fafc;
+        color: #111827;
+    }
+
+    /* Estilos para modo oscuro */
+    body.dark {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        color: #e2e8f0;
+    }
+}
+
+/* Componentes tecnológicos del dashboard */
+@layer components {
+    /* Botones tecnológicos */
+    .btn-tech-primary {
+        @apply inline-flex items-center px-6 py-3 bg-gradient-to-r from-tech-500 to-tech-600 border border-transparent rounded-lg font-semibold text-sm text-white uppercase tracking-wider hover:from-tech-600 hover:to-tech-700 focus:outline-none focus:ring-2 focus:ring-tech-300 focus:ring-offset-2 disabled:opacity-25 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1;
+    }
+
+    .btn-tech-secondary {
+        @apply inline-flex items-center px-6 py-3 bg-gradient-to-r from-cyber-700 to-cyber-800 border border-tech-300 rounded-lg font-semibold text-sm text-tech-100 uppercase tracking-wider hover:from-cyber-600 hover:to-cyber-700 focus:outline-none focus:ring-2 focus:ring-tech-300 focus:ring-offset-2 disabled:opacity-25 transition-all duration-300 shadow-lg hover:shadow-xl;
+    }
+
+    .btn-tech-danger {
+        @apply inline-flex items-center px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 border border-transparent rounded-lg font-semibold text-sm text-white uppercase tracking-wider hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2 disabled:opacity-25 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1;
+    }
+
+    .btn-neon {
+        @apply inline-flex items-center px-6 py-3 bg-transparent border-2 border-neon-cyan text-neon-cyan rounded-lg font-semibold text-sm uppercase tracking-wider hover:bg-neon-cyan hover:text-cyber-dark focus:outline-none focus:ring-2 focus:ring-neon-cyan focus:ring-offset-2 transition-all duration-300 shadow-neon hover:shadow-neon-blue;
+    }
+
+    /* Cards tecnológicas */
+    .card-tech {
+        @apply bg-gradient-to-br from-cyber-800 to-cyber-900 border border-tech-500/20 rounded-xl shadow-2xl backdrop-blur-sm transition-all duration-300 hover:shadow-cyber hover:border-tech-400/40;
+    }
+
+    .card-neon {
+        @apply bg-cyber-dark border-2 border-neon-cyan rounded-xl shadow-neon backdrop-blur-sm transition-all duration-300 hover:shadow-neon-blue hover:border-neon-blue;
+    }
+
+    /* Inputs tecnológicos */
+    .input-tech {
+        @apply w-full px-4 py-3 bg-cyber-800 border border-tech-500/30 rounded-lg text-tech-100 placeholder-tech-400 focus:outline-none focus:ring-2 focus:ring-tech-400 focus:border-tech-400 transition-all duration-300;
+    }
+
+    /* Sidebar tecnológico */
+    .sidebar-tech {
+        @apply bg-gradient-to-b from-cyber-dark to-cyber-900 border-r border-tech-500/20 shadow-2xl;
+    }
+
+    /* Header tecnológico */
+    .header-tech {
+        @apply bg-cyber-800/80 backdrop-blur-md border-b border-tech-500/20 shadow-lg;
+    }
+
+    /* Animaciones tecnológicas */
+    .glow-effect {
+        @apply animate-glow;
+    }
+
+    .fade-in {
+        @apply animate-fade-in;
+    }
+
+    .slide-up {
+        @apply animate-slide-up;
+    }
+
+    /* Textos tecnológicos */
+    .text-tech-title {
+        @apply font-display font-bold text-3xl bg-gradient-to-r from-tech-400 to-neon-cyan bg-clip-text text-transparent;
+    }
+
+    .text-tech-subtitle {
+        @apply font-tech font-medium text-lg text-tech-300;
+    }
+
+    .text-neon {
+        @apply text-neon-cyan font-mono;
+    }
+
+    /* Gradientes tecnológicos */
+    .gradient-cyber {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .gradient-neon {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .gradient-tech {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    /* Estilos críticos para el login */
+    /* Contenedor principal del formulario */
+    .form-container {
+        @apply transition-all duration-500 ease-in-out; 
+        backface-visibility: hidden;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Animación de flip para cambio de formularios */
+    .flipped {
+        transform: rotateY(180deg);
+    }
+
+    /* Contenedor del teléfono */
+    .phone-container {
+        position: relative;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .phone {
+        position: relative;
+        width: 280px;
+        height: 500px;
+        background: #111;
+        border-radius: 30px;
+        border: 10px solid #222;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+        z-index: 10;
+    }
+
+    .phone-screen {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #1a1a2e, #16213e);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .notch {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 150px;
+        height: 25px;
+        background: #222;
+        border-bottom-left-radius: 15px;
+        border-bottom-right-radius: 15px;
+        z-index: 11;
+    }
+
+    /* Iconos de aplicaciones */
+    .app-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 5px;
+        color: white;
+        font-size: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Campos de entrada optimizados - Solo para formularios específicos */
+    .form-input {
+        @apply w-full px-4 py-3 border rounded-lg transition-all duration-300;
+        @apply focus:outline-none focus:ring-2 transition-all duration-300;
+        @apply pr-10; /* Espacio para iconos */
+    }
+
+    /* Estilos para modo claro */
+    .form-input:not(.dark) {
+        @apply bg-white border-gray-300 text-gray-900 placeholder-gray-500;
+        @apply focus:border-blue-500 focus:ring-blue-500/30;
+    }
+
+    /* Estilos para modo oscuro */
+    .form-input.dark {
+        @apply bg-gray-700 border-gray-600 text-white placeholder-gray-400;
+        @apply focus:border-blue-500 focus:ring-blue-500/30;
+    }
+
+    .form-input:focus {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    /* Botones optimizados */
+    .btn-primary {
+        @apply w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white py-3 px-4 rounded-lg font-medium;
+        @apply hover:from-blue-700 hover:to-blue-600 transition-all duration-300;
+        @apply shadow-lg hover:shadow-blue-500/30 flex justify-center items-center;
+        @apply transform hover:scale-[1.02] active:scale-[0.98];
+    }
+
+    .btn-secondary {
+        @apply text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200;
+        @apply hover:underline;
+    }
+
+    /* Mensajes de error optimizados */
+    .error-message {
+        @apply mt-2 p-3 border rounded-lg;
+        @apply animate-fade-in-down;
+        backdrop-filter: blur(10px);
+    }
+
+    /* Estilos para modo claro */
+    .error-message:not(.dark) {
+        @apply bg-red-50 border-red-200 text-red-800;
+    }
+
+    /* Estilos para modo oscuro */
+    .error-message.dark {
+        @apply bg-red-900/20 border-red-500/30 text-red-200;
+    }
+
+    .error-message:hover {
+        @apply bg-red-100 border-red-300;
+    }
+
+    .error-message.dark:hover {
+        @apply bg-red-900/30 border-red-500/50;
+    }
+
+    /* Indicador de fortaleza de contraseña */
+    .password-strength {
+        @apply mt-2 rounded-lg p-3 border transition-all duration-300;
+        @apply animate-fade-in-down;
+    }
+
+    /* Estilos para modo claro */
+    .password-strength:not(.dark) {
+        @apply bg-gray-50 border-gray-200;
+    }
+
+    /* Estilos para modo oscuro */
+    .password-strength.dark {
+        @apply bg-black/20 border-white/10;
+    }
+
+    .strength-meter {
+        @apply w-full h-1 rounded-full overflow-hidden;
+    }
+
+    /* Estilos para modo claro */
+    .strength-meter:not(.dark) {
+        @apply bg-gray-200;
+    }
+
+    /* Estilos para modo oscuro */
+    .strength-meter.dark {
+        @apply bg-gray-700;
+    }
+
+    .strength-meter-fill {
+        @apply h-full transition-all duration-300 ease-out rounded-full;
+    }
+
+    /* Iconos de toggle de contraseña */
+    .password-toggle {
+        @apply absolute right-3 top-1/2 transform -translate-y-1/2;
+        @apply z-10 flex items-center justify-center w-5 h-5;
+        @apply cursor-pointer transition-all duration-200;
+        @apply hover:scale-110 active:scale-95;
+    }
+
+    /* Estilos para modo claro */
+    .password-toggle:not(.dark) {
+        @apply text-gray-500 hover:text-gray-700;
+    }
+
+    /* Estilos para modo oscuro */
+    .password-toggle.dark {
+        @apply text-gray-400 hover:text-gray-300;
+    }
+
+    /* Scrollbar personalizado */
+    .custom-scrollbar {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(59, 130, 246, 0.5) transparent;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(59, 130, 246, 0.5);
+        border-radius: 3px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(59, 130, 246, 0.7);
+    }
+}
+
+/* Utilidades personalizadas del dashboard */
+@layer utilities {
+    .text-shadow-neon {
+        text-shadow:
+            0 0 10px #00ffff,
+            0 0 20px #00ffff,
+            0 0 30px #00ffff;
+    }
+
+    .text-shadow-neon-blue {
+        text-shadow:
+            0 0 10px #0080ff,
+            0 0 20px #0080ff,
+            0 0 30px #0080ff;
+    }
+
+    .backdrop-blur-tech {
+        backdrop-filter: blur(20px);
+    }
+
+    .border-glow {
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    }
+}
+
+/* Animaciones optimizadas */
+@keyframes float {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+@keyframes fade-in-down {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fade-out {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Clases de utilidad para animaciones */
+.animate-fade-in-down {
+    animation: fade-in-down 0.5s ease-out;
+}
+
+.animate-fade-out {
+    animation: fade-out 0.5s ease-in;
+}
+
+.animate-slide-in-down {
+    animation: slideInDown 0.3s ease-out;
+}
+
+/* Optimizaciones de rendimiento */
+* {
+    box-sizing: border-box;
+}
+
+/* Prevenir layout shift */
+img,
+video,
+canvas,
+audio,
+iframe,
+embed,
+object {
+    display: block;
+    max-width: 100%;
+}
+
+/* Optimizar fuentes */
+@font-face {
+    font-family: "Inter";
+    font-display: swap;
+    src: local("Inter"), local("Segoe UI"), local("Roboto"), local("Arial"), system-ui, sans-serif;
+    font-weight: 100 900;
+}
+
+/* Estilos para modo oscuro */
+@media (prefers-color-scheme: dark) {
+    :root {
+        color-scheme: dark;
+    }
+}
+
+/* Optimizaciones para dispositivos móviles */
+@media (max-width: 768px) {
+    .phone-container {
+        display: none;
+    }
+
+    .form-container {
+        @apply max-w-md mx-auto;
+    }
+}
+
+/* Optimizaciones para pantallas pequeñas */
+@media (max-height: 700px) {
+    .form-container {
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+}
+
+/* Estilos para inputs estándar de Tailwind CSS */
+@layer base {
+    /* Inputs estándar en modo claro */
+    input:not([class*="form-input"]):not([class*="input-tech"]),
+    textarea:not([class*="form-input"]):not([class*="input-tech"]),
+    select:not([class*="form-input"]):not([class*="input-tech"]) {
+        @apply bg-white border-gray-300 text-gray-900 placeholder-gray-500;
+        @apply focus:border-blue-500 focus:ring-blue-500/30;
+    }
+
+    /* Inputs estándar en modo oscuro */
+    .dark input:not([class*="form-input"]):not([class*="input-tech"]),
+    .dark textarea:not([class*="form-input"]):not([class*="input-tech"]),
+    .dark select:not([class*="form-input"]):not([class*="input-tech"]) {
+        @apply bg-gray-700 border-gray-600 text-white placeholder-gray-400;
+        @apply focus:border-blue-400 focus:ring-blue-400/30;
+    }
+
+    /* Labels en modo claro */
+    label:not(.dark) {
+        @apply text-gray-700;
+    }
+
+    /* Labels en modo oscuro */
+    .dark label {
+        @apply text-gray-200;
+    }
+
+    /* Placeholders en modo claro */
+    input::placeholder:not(.dark),
+    textarea::placeholder:not(.dark),
+    select::placeholder:not(.dark) {
+        @apply text-gray-500;
+    }
+
+    /* Placeholders en modo oscuro */
+    .dark input::placeholder,
+    .dark textarea::placeholder,
+    .dark select::placeholder {
+        @apply text-gray-400;
+    }
+}
+
+/* Optimizaciones de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Estilos para focus visible */
+.focus-visible:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* Optimizaciones de impresión */
+@media print {
+    .form-container,
+    .phone-container {
+        display: none;
+    }
+}
+
+/* Estilos personalizados para SweetAlert2 */
+.swal2-confirm-custom {
+    background-color: #dc2626 !important;
+    color: white !important;
+    border: none !important;
+    padding: 0.5rem 1rem !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    border-radius: 0.375rem !important;
+    transition: all 0.3s ease !important;
+}
+
+.swal2-confirm-custom:hover {
+    background-color: #b91c1c !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+.swal2-cancel-custom {
+    background-color: #2563eb !important;
+    color: white !important;
+    border: none !important;
+    padding: 0.5rem 1rem !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    border-radius: 0.375rem !important;
+    transition: all 0.3s ease !important;
+}
+
+.swal2-cancel-custom:hover {
+    background-color: #1d4ed8 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Hide scrollbar for overflow containers */
+.hide-scrollbar {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;  /* Safari and Chrome */
+}
