@@ -290,7 +290,7 @@
                     @foreach($categorias as $categoria)
                         <option value="{{ $categoria->categoria_id }}"
                             {{ old('categoria_id', $producto->categoria_id ?? '') == $categoria->categoria_id ? 'selected' : '' }}>
-                            {{ $categoria->nombre_categoria }}
+                            {{ $categoria->nombre }}
                         </option>
                     @endforeach
                 </select>
@@ -1439,3 +1439,4 @@
     });
 </script>
 @endpush
+

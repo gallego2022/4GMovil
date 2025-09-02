@@ -11,17 +11,18 @@ class OtpCode extends Model
     use HasFactory;
 
     protected $table = 'otp_codes';
+    protected $primaryKey = 'otp_id';
 
     protected $fillable = [
         'usuario_id',
         'codigo',
         'tipo',
-        'expires_at',
+        'fecha_expiracion',
         'usado'
     ];
 
     protected $casts = [
-        'expires_at' => 'datetime',
+        'fecha_expiracion' => 'datetime',
         'usado' => 'boolean'
     ];
 
@@ -50,7 +51,7 @@ class OtpCode extends Model
             'usuario_id' => $usuarioId,
             'codigo' => self::generarCodigo(),
             'tipo' => $tipo,
-            'expires_at' => now()->addMinutes($minutosExpiracion),
+            'fecha_expiracion' => now()->addMinutes($minutosExpiracion),
             'usado' => false
         ]);
     }
@@ -62,7 +63,7 @@ class OtpCode extends Model
             ->where('codigo', $codigo)
             ->where('tipo', $tipo)
             ->where('usado', false)
-            ->where('expires_at', '>', now())
+            ->where('fecha_expiracion', '>', now())
             ->first();
 
         if ($otp) {
@@ -79,7 +80,7 @@ class OtpCode extends Model
         return self::where('usuario_id', $usuarioId)
             ->where('tipo', $tipo)
             ->where('usado', false)
-            ->where('expires_at', '>', now())
+            ->where('fecha_expiracion', '>', now())
             ->exists();
     }
 
@@ -89,20 +90,20 @@ class OtpCode extends Model
         return self::where('usuario_id', $usuarioId)
             ->where('tipo', $tipo)
             ->where('usado', false)
-            ->where('expires_at', '>', now())
+            ->where('fecha_expiracion', '>', now())
             ->first();
     }
 
     // Limpiar códigos expirados
     public static function limpiarExpirados(): int
     {
-        return self::where('expires_at', '<', now())->delete();
+        return self::where('fecha_expiracion', '<', now())->delete();
     }
 
     // Verificar si el código está expirado
     public function estaExpirado(): bool
     {
-        return $this->expires_at->isPast();
+        return $this->fecha_expiracion->isPast();
     }
 
     // Verificar si el código está usado
@@ -114,6 +115,6 @@ class OtpCode extends Model
     // Obtener tiempo restante en minutos
     public function tiempoRestante(): int
     {
-        return max(0, now()->diffInMinutes($this->expires_at, false));
+        return max(0, now()->diffInMinutes($this->fecha_expiracion, false));
     }
 }

@@ -618,4 +618,213 @@ class InventarioService
             'total_alertas_variantes' => $variantesStockBajo + $variantesSinStock + $variantesNecesitanReposicion
         ]);
     }
+
+    /**
+     * Obtener datos del dashboard de inventario
+     */
+    public function getDashboardData(): array
+    {
+        return [
+            'alertas' => $this->getAlertasInventarioCompletas(),
+            'productosStockBajo' => $this->getProductosStockBajo(),
+            'productosStockCritico' => $this->getProductosStockCritico(),
+            'valorTotal' => $this->getValorTotalInventario(),
+            'variantesStockBajo' => $this->getVariantesStockBajo(),
+            'variantesSinStock' => $this->getVariantesSinStock(),
+            'reporteVariantes' => $this->getReporteInventarioVariantes()
+        ];
+    }
+
+    /**
+     * Obtener datos de fallback para el dashboard
+     */
+    public function getDashboardDataFallback(): array
+    {
+        return [
+            'alertas' => [
+                'stock_critico' => 0,
+                'stock_bajo' => 0,
+                'sin_stock' => 0,
+                'stock_excesivo' => 0,
+                'necesita_reabastecimiento' => 0,
+                'stock_reservado_alto' => 0,
+                'productos_inactivos' => 0
+            ],
+            'productosStockBajo' => collect([]),
+            'productosStockCritico' => collect([]),
+            'valorTotal' => 0,
+            'variantesStockBajo' => collect([]),
+            'variantesSinStock' => collect([]),
+            'reporteVariantes' => []
+        ];
+    }
+
+    /**
+     * Obtener datos de alertas
+     */
+    public function getAlertasData(): array
+    {
+        return [
+            'productosStockBajo' => $this->getProductosStockBajo(),
+            'productosStockCritico' => $this->getProductosStockCritico(),
+            'productosSinStock' => $this->getProductosSinStock(),
+            'productosStockExcesivo' => $this->getProductosStockExcesivo()
+        ];
+    }
+
+    /**
+     * Obtener datos de movimientos
+     */
+    public function getMovimientosData(array $filtros): array
+    {
+        $fechaInicio = $filtros['fecha_inicio'] ?? now()->subMonth();
+        $fechaFin = $filtros['fecha_fin'] ?? now();
+        $productoId = $filtros['producto_id'] ?? null;
+
+        $producto = null;
+        $resumen = null;
+
+        if ($productoId) {
+            $movimientos = $this->getMovimientosProducto($productoId, $fechaInicio, $fechaFin);
+            $producto = Producto::findOrFail($productoId);
+        } else {
+            $reporte = $this->getReporteMovimientos($fechaInicio, $fechaFin);
+            $movimientos = $reporte['movimientos'];
+            $resumen = $reporte['resumen'];
+        }
+
+        $productos = Producto::activos()->orderBy('nombre_producto')->get();
+
+        return [
+            'movimientos' => $movimientos,
+            'productos' => $productos,
+            'fechaInicio' => $fechaInicio,
+            'fechaFin' => $fechaFin,
+            'productoId' => $productoId,
+            'producto' => $producto,
+            'resumen' => $resumen
+        ];
+    }
+
+    /**
+     * Obtener resumen de inventario para un período
+     */
+    public function getResumenInventario(Carbon $fechaInicio, Carbon $fechaFin): array
+    {
+        try {
+            $movimientos = MovimientoInventario::whereBetween('fecha_movimiento', [$fechaInicio, $fechaFin])->get();
+            
+            return [
+                'total_entradas' => $movimientos->where('tipo_movimiento', 'entrada')->sum('cantidad'),
+                'total_salidas' => $movimientos->where('tipo_movimiento', 'salida')->sum('cantidad'),
+                'total_ajustes' => $movimientos->where('tipo_movimiento', 'ajuste')->sum('cantidad'),
+                'productos_afectados' => $movimientos->unique('producto_id')->count(),
+                'valor_entradas' => $movimientos->where('tipo_movimiento', 'entrada')->sum(function($m) {
+                    $producto = Producto::find($m->producto_id);
+                    return $producto ? $m->cantidad * $producto->precio_final : 0;
+                }),
+                'valor_salidas' => $movimientos->where('tipo_movimiento', 'salida')->sum(function($m) {
+                    $producto = Producto::find($m->producto_id);
+                    return $producto ? $m->cantidad * $producto->precio_final : 0;
+                })
+            ];
+        } catch (\Exception $e) {
+            Log::error('Error al obtener resumen de inventario', ['error' => $e->getMessage()]);
+            return [];
+        }
+    }
+
+
+
+    /**
+     * Obtener valor de inventario por marca
+     */
+    public function getValorInventarioPorMarca(): array
+    {
+        try {
+            $productos = Producto::with('marca')->activos()->get();
+            $valorPorMarca = [];
+            
+            foreach ($productos as $producto) {
+                $marca = $producto->marca->nombre ?? 'Sin Marca';
+                if (!isset($valorPorMarca[$marca])) {
+                    $valorPorMarca[$marca] = 0;
+                }
+                $valorPorMarca[$marca] += $producto->stock * $producto->precio_final;
+            }
+            
+            return $valorPorMarca;
+        } catch (\Exception $e) {
+            Log::error('Error al obtener valor por marca', ['error' => $e->getMessage()]);
+            return [];
+        }
+    }
+
+    /**
+     * Obtener rotación de inventario
+     */
+    public function getRotacionInventario(int $dias = 30): array
+    {
+        try {
+            $fechaInicio = now()->subDays($dias);
+            $movimientos = MovimientoInventario::whereBetween('fecha_movimiento', [$fechaInicio, now()])
+                ->where('tipo_movimiento', 'salida')
+                ->get();
+            
+            $productos = Producto::activos()->get();
+            $rotacion = [];
+            
+            foreach ($productos as $producto) {
+                $ventas = $movimientos->where('producto_id', $producto->producto_id)->sum('cantidad');
+                $stockPromedio = $producto->stock;
+                $rotacion[$producto->producto_id] = [
+                    'producto' => $producto->nombre_producto,
+                    'ventas' => $ventas,
+                    'stock_promedio' => $stockPromedio,
+                    'indice_rotacion' => $stockPromedio > 0 ? $ventas / $stockPromedio : 0
+                ];
+            }
+            
+            return $rotacion;
+        } catch (\Exception $e) {
+            Log::error('Error al obtener rotación de inventario', ['error' => $e->getMessage()]);
+            return [];
+        }
+    }
+
+    /**
+     * Obtener productos con rotación lenta
+     */
+    public function getProductosRotacionLenta(int $dias = 30): Collection
+    {
+        try {
+            $rotacion = $this->getRotacionInventario($dias);
+            $productosLentos = collect($rotacion)->filter(function($item) {
+                return $item['indice_rotacion'] < 0.5; // Menos de 0.5 rotaciones por período
+            });
+            
+            return $productosLentos;
+        } catch (\Exception $e) {
+            Log::error('Error al obtener productos con rotación lenta', ['error' => $e->getMessage()]);
+            return collect([]);
+        }
+    }
+
+    /**
+     * Obtener productos con rotación rápida
+     */
+    public function getProductosRotacionRapida(int $dias = 30): Collection
+    {
+        try {
+            $rotacion = $this->getRotacionInventario($dias);
+            $productosRapidos = collect($rotacion)->filter(function($item) {
+                return $item['indice_rotacion'] > 2.0; // Más de 2 rotaciones por período
+            });
+            
+            return $productosRapidos;
+        } catch (\Exception $e) {
+            Log::error('Error al obtener productos con rotación rápida', ['error' => $e->getMessage()]);
+            return collect([]);
+        }
+    }
 } 

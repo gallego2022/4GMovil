@@ -1,7 +1,6 @@
 @extends('layouts.error')
 
-@section('title', 'Error - {{ $exception->getStatusCode() ?? 'Desconocido' }}')
-
+@section('title', 'Error - {{ $exception->getStatusCode() ?? 'Desconocido' }}') 
 @section('content')
     <!-- Código de error -->
     <div class="error-code">{{ $exception->getStatusCode() ?? '???' }}</div>

@@ -128,19 +128,37 @@ class ProductoPublicoController extends Controller
                 'comentario' => 'required|string|min:10|max:1000',
             ];
 
+            $validationMessages = [
+                // Mensajes para calificación
+                'calificacion.required' => '⚠️ Debes seleccionar una calificación',
+                'calificacion.integer' => '❌ La calificación debe ser un número válido',
+                'calificacion.min' => '⭐ La calificación mínima es 1 estrella',
+                'calificacion.max' => '⭐ La calificación máxima es 5 estrellas',
+                
+                // Mensajes para comentario
+                'comentario.required' => '📝 Debes escribir un comentario',
+                'comentario.string' => '❌ El comentario debe ser un texto válido',
+                'comentario.min' => '📝 El comentario debe tener al menos 10 caracteres',
+                'comentario.max' => '📝 El comentario no puede exceder 1000 caracteres',
+                
+                // Mensajes para nombre de usuario (cuando no está autenticado)
+                'nombre_usuario.required' => '👤 Debes ingresar tu nombre',
+                'nombre_usuario.string' => '❌ El nombre debe ser un texto válido',
+                'nombre_usuario.min' => '👤 El nombre debe tener al menos 2 caracteres',
+                'nombre_usuario.max' => '👤 El nombre no puede exceder 100 caracteres',
+            ];
             // Si no hay usuario autenticado, requerir nombre
             if (!Auth::check()) {
                 $validationRules['nombre_usuario'] = 'required|string|min:2|max:100';
             }
 
-            $request->validate($validationRules);
+            $request->validate($validationRules, $validationMessages);
 
             // Crear la reseña
             $resenaData = [
                 'producto_id' => $productoId,
                 'calificacion' => $request->calificacion,
                 'comentario' => $request->comentario,
-                'fecha_creacion' => now(),
             ];
 
             // Si hay usuario autenticado, usar su ID
@@ -179,7 +197,7 @@ class ProductoPublicoController extends Controller
                     'id' => $resena->resena_id,
                     'calificacion' => $resena->calificacion,
                     'comentario' => $resena->comentario,
-                    'fecha' => $resena->fecha_creacion->diffForHumans(),
+                    'fecha' => $resena->created_at->diffForHumans(),
                     'usuario' => [
                         'nombre' => $resena->usuario->nombre_usuario ?? 'Usuario',
                         'inicial' => strtoupper(substr($resena->usuario->nombre_usuario ?? 'U', 0, 1))
@@ -195,7 +213,9 @@ class ProductoPublicoController extends Controller
             
             return response()->json([
                 'success' => false,
-                'message' => 'Producto no encontrado'
+                'message' => '❌ Producto no encontrado',
+                'error_type' => 'not_found',
+                'suggestion' => 'Verifica que el producto existe y esté disponible'
             ], 404);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -204,10 +224,19 @@ class ProductoPublicoController extends Controller
                 'errors' => $e->errors()
             ]);
             
+            // Obtener el primer error para mostrar un mensaje principal
+            $firstError = collect($e->errors())->first()[0] ?? 'Hay errores en los datos ingresados';
+            
             return response()->json([
                 'success' => false,
-                'message' => 'Datos inválidos',
-                'errors' => $e->errors()
+                'message' => '❌ ' . $firstError,
+                'errors' => $e->errors(),
+                'error_type' => 'validation',
+                'suggestions' => [
+                    'calificacion' => 'Selecciona una calificación de 1 a 5 estrellas',
+                    'comentario' => 'Escribe un comentario de al menos 10 caracteres',
+                    'nombre_usuario' => 'Ingresa tu nombre completo',
+                ]
             ], 422);
 
         } catch (\Exception $e) {
@@ -219,8 +248,40 @@ class ProductoPublicoController extends Controller
             
             return response()->json([
                 'success' => false,
-                'message' => 'Error al crear la reseña'
+                'message' => '❌ Error interno del servidor',
+                'error_type' => 'server_error',
+                'suggestion' => 'Por favor, intenta nuevamente en unos minutos',
+                'debug_info' => config('app.debug') ? $e->getMessage() : null
             ], 500);
         }
+    }
+
+    /**
+     * Formatear mensajes de error para mejor presentación
+     */
+    private function formatErrorMessage($field, $rule, $value = null)
+    {
+        $messages = [
+            'calificacion' => [
+                'required' => '⚠️ Debes seleccionar una calificación',
+                'integer' => '❌ La calificación debe ser un número válido',
+                'min' => '⭐ La calificación mínima es 1 estrella',
+                'max' => '⭐ La calificación máxima es 5 estrellas',
+            ],
+            'comentario' => [
+                'required' => '📝 Debes escribir un comentario',
+                'string' => '❌ El comentario debe ser un texto válido',
+                'min' => '📝 El comentario debe tener al menos 10 caracteres',
+                'max' => '📝 El comentario no puede exceder 1000 caracteres',
+            ],
+            'nombre_usuario' => [
+                'required' => '👤 Debes ingresar tu nombre',
+                'string' => '❌ El nombre debe ser un texto válido',
+                'min' => '👤 El nombre debe tener al menos 2 caracteres',
+                'max' => '👤 El nombre no puede exceder 100 caracteres',
+            ]
+        ];
+
+        return $messages[$field][$rule] ?? "Error en el campo {$field}";
     }
 }

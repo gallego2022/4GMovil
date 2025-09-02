@@ -228,7 +228,7 @@
                         @foreach($reporte['valor_por_categoria'] as $item)
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                {{ $item['categoria']->nombre_categoria ?? 'Sin categoría' }}
+                                {{ $item['categoria']->nombre ?? 'Sin categoría' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                 {{ $item['productos_count'] ?? 0 }}

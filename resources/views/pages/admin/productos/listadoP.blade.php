@@ -193,7 +193,7 @@
                                 @endif
                             </div>
                             <p class="text-sm text-gray-500 dark:text-gray-400">
-                                Categoría: {{ $producto->categoria->nombre_categoria ?? 'Sin categoría' }}
+                                Categoría: {{ $producto->categoria->nombre ?? 'Sin categoría' }}
                             </p>
                             <p class="text-sm text-gray-500 dark:text-gray-400">
                                 Marca: {{ $producto->marca->nombre_marca ?? 'Sin marca' }}
@@ -386,7 +386,7 @@
                                     {{ ucfirst($producto->estado) }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-gray-700 dark:text-gray-300">{{ $producto->categoria->nombre_categoria ?? 'Sin categoría' }}</td>
+                            <td class="px-6 py-4 text-gray-700 dark:text-gray-300">{{ $producto->categoria->nombre ?? 'Sin categoría' }}</td>
                             <td class="px-6 py-4 text-gray-700 dark:text-gray-300">{{ $producto->marca->nombre_marca ?? 'Sin marca' }}</td>
                             <td class="px-6 py-4 text-center">
                                 <div class="flex items-center justify-center gap-3">

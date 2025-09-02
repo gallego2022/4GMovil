@@ -30,7 +30,7 @@ class CleanupExpiredOtps extends Command
         $this->info('🧹 Iniciando limpieza de códigos OTP expirados...');
 
         // Contar códigos expirados
-        $expiredCount = OtpCode::where('expires_at', '<', now())->count();
+        $expiredCount = OtpCode::where('fecha_expiracion', '<', now())->count();
         
         if ($expiredCount === 0) {
             $this->info('✅ No hay códigos OTP expirados para limpiar.');
@@ -43,12 +43,12 @@ class CleanupExpiredOtps extends Command
             $this->warn('🔍 Modo dry-run: No se eliminarán registros.');
             $this->info('Los siguientes códigos serían eliminados:');
             
-            $expiredOtps = OtpCode::where('expires_at', '<', now())
+            $expiredOtps = OtpCode::where('fecha_expiracion', '<', now())
                 ->with('usuario')
                 ->get();
             
             foreach ($expiredOtps as $otp) {
-                $this->line("  - ID: {$otp->id} | Usuario: {$otp->usuario->correo_electronico} | Tipo: {$otp->tipo} | Expiró: {$otp->expires_at}");
+                $this->line("  - ID: {$otp->id} | Usuario: {$otp->usuario->correo_electronico} | Tipo: {$otp->tipo} | Expiró: {$otp->fecha_expiracion}");
             }
             
             return 0;
@@ -62,17 +62,18 @@ class CleanupExpiredOtps extends Command
 
         try {
             // Eliminar códigos expirados
-            $deletedCount = OtpCode::limpiarExpirados();
+            $eliminados = OtpCode::limpiarExpirados();
             
-            $this->info("✅ Se eliminaron {$deletedCount} códigos OTP expirados exitosamente.");
+            $this->info("✅ Se eliminaron {$eliminados} códigos OTP expirados exitosamente.");
             
-            Log::info("Comando otp:cleanup ejecutado - {$deletedCount} códigos OTP expirados eliminados");
+            Log::info("Comando otp:cleanup ejecutado: {$eliminados} códigos eliminados");
             
             return 0;
             
         } catch (\Exception $e) {
-            $this->error("❌ Error al limpiar códigos OTP: " . $e->getMessage());
-            Log::error("Error en comando otp:cleanup: " . $e->getMessage());
+            $this->error("❌ Error al eliminar códigos OTP expirados: {$e->getMessage()}");
+            
+            Log::error("Error en comando otp:cleanup: {$e->getMessage()}");
             
             return 1;
         }

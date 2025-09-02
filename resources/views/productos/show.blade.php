@@ -575,7 +575,7 @@
                             <div class="space-y-3">
                                 <div class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-600">
                                     <span class="font-medium text-gray-700 dark:text-gray-300">Categoría</span>
-                                    <span class="text-gray-600 dark:text-gray-400">{{ $producto->categoria->nombre_categoria ?? 'No especificado' }}</span>
+                                    <span class="text-gray-600 dark:text-gray-400">{{ $producto->categoria->nombre ?? 'No especificado' }}</span>
                                 </div>
                                 <div class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-600">
                                     <span class="font-medium text-gray-700 dark:text-gray-300">Marca</span>
@@ -723,7 +723,7 @@
                                     </div>
                                 </div>
                                 <span class="text-sm text-gray-500 dark:text-gray-400">
-                                    {{ \Carbon\Carbon::parse($resena->fecha_creacion)->diffForHumans() }}
+                                    {{ $resena->created_at->diffForHumans() }}
                                 </span>
                             </div>
                             <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
@@ -2085,3 +2085,4 @@
 
 <!-- Incluir modal de selección de variantes -->
 <x-variant-selection-modal />
+

@@ -107,7 +107,7 @@
                     <!-- Información de la categoría -->
                     <div class="flex-1 min-w-0">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white truncate">
-                            {{ $categoria->nombre_categoria }}
+                            {{ $categoria->nombre }}
                         </h3>
                         <div class="mt-1 flex flex-col space-y-1">
                             <p class="text-sm text-gray-500 dark:text-gray-400">
@@ -228,7 +228,7 @@
                             @forelse($categorias as $categoria)
                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 ease-in-out border-b border-gray-100 dark:border-gray-800">
                                 <td class="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">{{ $categoria->categoria_id }}</td>
-                                <td class="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">{{ $categoria->nombre_categoria }}</td>
+                                <td class="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">{{ $categoria->nombre }}</td>
                                 <td class="px-6 py-4 flex items-center gap-3 justify-center">
                                 <!-- Botón Editar -->
                                 <div class="relative group">

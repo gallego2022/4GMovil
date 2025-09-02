@@ -8,11 +8,11 @@ class Resena extends Model
 {
     protected $table = 'resenas';
     protected $primaryKey = 'resena_id';
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'usuario_id', 'producto_id', 'calificacion',
-        'comentario', 'fecha_creacion'
+        'comentario'
     ];
 
     public function usuario()

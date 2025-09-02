@@ -21,7 +21,7 @@ class CategoriaRepository implements CategoriaRepositoryInterface
     public function create(array $data): Categoria
     {
         return Categoria::create([
-            'nombre_categoria' => $data['nombre_categoria']
+            'nombre' => $data['nombre']
         ]);
     }
 
@@ -33,7 +33,7 @@ class CategoriaRepository implements CategoriaRepositoryInterface
         }
 
         return $categoria->update([
-            'nombre_categoria' => $data['nombre_categoria']
+            'nombre' => $data['nombre']
         ]);
     }
 

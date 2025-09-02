@@ -12,44 +12,44 @@ class EstadosPedidoSeeder extends Seeder
      */
     public function run(): void
     {
-        // Limpiar la tabla primero (usando delete para evitar problemas de clave foránea)
-        DB::table('estados_pedido')->delete();
+        // Verificar si ya existen estados de pedido
+        if (DB::table('estados_pedido')->count() > 0) {
+            $this->command->info('La tabla estados_pedido ya tiene datos. Saltando seeder...');
+            return;
+        }
 
-        // Insertar solo los 3 estados necesarios con IDs específicos
+        // Insertar estados de pedido por defecto
         DB::table('estados_pedido')->insert([
             [
-                'estado_id' => 1,
                 'nombre' => 'Pendiente',
                 'descripcion' => 'Pedido recibido y pendiente de procesamiento',
                 'color' => '#fbbf24',
+                'activo' => true,
                 'orden' => 1,
-                'estado' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'estado_id' => 2,
                 'nombre' => 'Confirmado',
                 'descripcion' => 'Pedido confirmado y en preparación',
                 'color' => '#3b82f6',
+                'activo' => true,
                 'orden' => 2,
-                'estado' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'estado_id' => 3,
                 'nombre' => 'Cancelado',
                 'descripcion' => 'Pedido cancelado por el cliente o sistema',
                 'color' => '#ef4444',
+                'activo' => true,
                 'orden' => 3,
-                'estado' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]
         ]);
 
-        $this->command->info('✅ Estados de pedido simplificados creados exitosamente:');
+        $this->command->info('✅ Estados de pedido creados exitosamente:');
         $this->command->info('   - Pendiente (ID: 1)');
         $this->command->info('   - Confirmado (ID: 2)');
         $this->command->info('   - Cancelado (ID: 3)');

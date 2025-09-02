@@ -23,41 +23,27 @@ class MetodosPagoSeeder extends Seeder
             [
                 'nombre' => 'Stripe',
                 'descripcion' => 'Pago con tarjeta de crédito/débito a través de Stripe',
-                'tipo' => 'stripe',
-                'configuracion' => json_encode([
-                    'public_key' => env('STRIPE_KEY', ''),
-                    'secret_key' => env('STRIPE_SECRET', ''),
-                    'webhook_secret' => env('STRIPE_WEBHOOK_SECRET', ''),
-                    'currency' => 'cop',
-                    'enabled' => true
-                ]),
-                'estado' => true,
+                'icono' => 'credit-card',
+                'activo' => true,
+                'orden' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'nombre' => 'Efectivo',
                 'descripcion' => 'Pago en efectivo al momento de la entrega',
-                'tipo' => 'efectivo',
-                'configuracion' => json_encode([
-                    'enabled' => true,
-                    'cambio_exacto' => false
-                ]),
-                'estado' => true,
+                'icono' => 'money-bill',
+                'activo' => true,
+                'orden' => 2,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'nombre' => 'Transferencia Bancaria',
                 'descripcion' => 'Pago mediante transferencia bancaria',
-                'tipo' => 'transferencia',
-                'configuracion' => json_encode([
-                    'enabled' => true,
-                    'cuenta_bancaria' => env('BANK_ACCOUNT', ''),
-                    'banco' => env('BANK_NAME', ''),
-                    'tipo_cuenta' => 'ahorros'
-                ]),
-                'estado' => true,
+                'icono' => 'university',
+                'activo' => true,
+                'orden' => 3,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]

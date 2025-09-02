@@ -42,9 +42,9 @@
     </div>
 
     <!-- Categorías -->
-    <div x-data="{ open: {{ request()->routeIs('categorias.*') ? 'true' : 'false' }} }">
+    <div x-data="{ open: {{ request()->routeIs('categorias.*') || request()->routeIs('admin.especificaciones.*') ? 'true' : 'false' }} }">
         <button @click="open = !open" 
-                class="sidebar-nav-item w-full text-left {{ request()->routeIs('categorias.*') ? 'active' : '' }}">
+                class="sidebar-nav-item w-full text-left {{ request()->routeIs('categorias.*') || request()->routeIs('admin.especificaciones.*') ? 'active' : '' }}">
             <svg class="mr-3 flex-shrink-0 h-5 w-5" 
                  fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
@@ -64,6 +64,11 @@
             <a href="{{ route('categorias.create') }}" 
                class="sidebar-submenu-item {{ request()->routeIs('categorias.create') ? 'active' : '' }}">
                 <span>Nueva Categoría</span>
+            </a>
+            <a href="{{ route('admin.especificaciones.index') }}" 
+               class="sidebar-submenu-item {{ request()->routeIs('admin.especificaciones.*') ? 'active' : '' }}">
+                
+                <span>Especificaciones</span>
             </a>
         </div>
     </div>
@@ -122,33 +127,6 @@
         </div>
     </div>
 
-    <!-- Métodos de Pago -->
-    <div x-data="{ open: {{ request()->routeIs('metodos-pago.*') ? 'true' : 'false' }} }">
-        <button @click="open = !open" 
-                class="sidebar-nav-item w-full text-left {{ request()->routeIs('metodos-pago.*') ? 'active' : '' }}">
-            <svg class="mr-3 flex-shrink-0 h-5 w-5" 
-                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-            </svg>
-            <span class="flex-1">Métodos de Pago</span>
-            <svg class="ml-auto h-4 w-4 transform transition-transform duration-200" 
-                 :class="{'rotate-90': open}"
-                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-        </button>
-        <div x-show="open" class="sidebar-submenu mt-1">
-            <a href="{{ route('metodos-pago.index') }}" 
-               class="sidebar-submenu-item {{ request()->routeIs('metodos-pago.index') ? 'active' : '' }}">
-                <span>Lista de Métodos</span>
-            </a>
-            <a href="{{ route('metodos-pago.create') }}" 
-               class="sidebar-submenu-item {{ request()->routeIs('metodos-pago.create') ? 'active' : '' }}">
-                <span>Nuevo Método</span>
-            </a>
-        </div>
-    </div>
-
     <!-- Pedidos -->
     <div x-data="{ open: {{ request()->routeIs('admin.pedidos.*') ? 'true' : 'false' }} }">
         <button @click="open = !open" 
@@ -172,5 +150,38 @@
         </div>
     </div>
 
-    
+    <!-- Inventario -->
+    <div x-data="{ open: {{ request()->routeIs('admin.inventario.*') ? 'true' : 'false' }} }">
+        <button @click="open = !open" 
+                class="sidebar-nav-item w-full text-left {{ request()->routeIs('admin.inventario.*') ? 'active' : '' }}">
+            <svg class="mr-3 flex-shrink-0 h-5 w-5" 
+                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+            </svg>
+            <span class="flex-1">Inventario</span>
+            <svg class="ml-auto h-4 w-4 transform transition-transform duration-200" 
+                 :class="{'rotate-90': open}"
+                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+        </button>
+        <div x-show="open" class="sidebar-submenu mt-1">
+            <a href="{{ route('admin.inventario.dashboard') }}" 
+               class="sidebar-submenu-item {{ request()->routeIs('admin.inventario.dashboard') ? 'active' : '' }}">
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ route('admin.inventario.reporte') }}" 
+               class="sidebar-submenu-item {{ request()->routeIs('admin.inventario.reporte') ? 'active' : '' }}">
+                <span>Reporte</span>
+            </a>
+            <a href="{{ route('admin.inventario.movimientos') }}" 
+               class="sidebar-submenu-item {{ request()->routeIs('admin.inventario.movimientos') ? 'active' : '' }}">
+                <span>Movimientos</span>
+            </a>
+            <a href="{{ route('admin.inventario.alertas') }}" 
+               class="sidebar-submenu-item {{ request()->routeIs('admin.inventario.alertas') ? 'active' : '' }}">
+                <span>Alertas</span>
+            </a>
+        </div>
+    </div>
 </nav>

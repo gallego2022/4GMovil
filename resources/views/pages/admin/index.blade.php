@@ -474,7 +474,7 @@
                                 </div>
                             </div>
                             <div class="mt-2 flex items-center justify-between">
-                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ $producto->categoria->nombre_categoria }}</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ $producto->categoria->nombre }}</p>
                                 <a href="{{ route('productos.edit', $producto->producto_id) }}" class="text-sm text-brand-600 hover:text-brand-900 dark:hover:text-brand-400 font-medium">Editar</a>
                             </div>
                         </div>
@@ -532,7 +532,7 @@
                                 </div>
                             </td>
                             <td class="whitespace-nowrap px-3 py-4 text-sm text-content-secondary">
-                                {{ $producto->categoria->nombre_categoria }}
+                                {{ $producto->categoria->nombre }}
                             </td>
                             <td class="whitespace-nowrap px-3 py-4 text-sm text-content-secondary">
                                 ${{ number_format($producto->precio, 0, ',', '.') }}

@@ -16,7 +16,8 @@ class Pago extends Model
         'monto',
         'metodo_id',
         'fecha_pago',
-        'estado'
+        'estado',
+        'referencia'
     ];
 
     protected $dates = ['fecha_pago'];

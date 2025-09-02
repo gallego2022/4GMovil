@@ -147,7 +147,7 @@
             <h3>📦 Detalles del Producto</h3>
             <p><strong>Nombre:</strong> {{ $producto->nombre_producto }}</p>
             <p><strong>Código:</strong> {{ $producto->codigo ?? 'N/A' }}</p>
-            <p><strong>Categoría:</strong> {{ $producto->categoria->nombre_categoria ?? 'N/A' }}</p>
+            <p><strong>Categoría:</strong> {{ $producto->categoria->nombre ?? 'N/A' }}</p>
             <p><strong>Precio:</strong> ${{ number_format($producto->precio, 0, ',', '.') }}</p>
             <p><strong>Fecha de Alerta:</strong> {{ now()->format('d/m/Y H:i') }}</p>
         </div>
@@ -181,3 +181,4 @@
     </div>
 </body>
 </html>
+

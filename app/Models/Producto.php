@@ -61,7 +61,7 @@ class Producto extends Model
 
     public function variantes()
     {
-        return $this->hasMany(VarianteProducto::class, 'producto_id')->orderBy('orden');
+        return $this->hasMany(VarianteProducto::class, 'producto_id');
     }
 
     // Métodos para calcular stock total basado en variantes

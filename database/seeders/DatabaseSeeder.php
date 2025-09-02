@@ -32,6 +32,9 @@ class DatabaseSeeder extends Seeder
         $this->call([
             MetodosPagoSeeder::class,
             EstadosPedidoSeeder::class,
+            EspecificacionesCategoriaSeeder::class,
+            MarcaSeeder::class,
+            ProductoSeeder::class,
         ]);
 
         $this->command->info('✅ Base de datos poblada exitosamente!');

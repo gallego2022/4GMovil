@@ -91,7 +91,7 @@
                                 <button
                                     class="category-btn w-full text-left px-3 sm:px-4 py-2 sm:py-3 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 text-gray-700 dark:text-gray-300 font-medium transition-all duration-200 text-sm sm:text-base"
                                     data-category="{{ $categoria->categoria_id }}">
-                                    <i class="fas fa-box mr-2"></i>{{ $categoria->nombre_categoria }}
+                                    <i class="fas fa-box mr-2"></i>{{ $categoria->nombre }}
                                 </button>
                             @endforeach
                         </div>
@@ -140,7 +140,7 @@
                                 <button
                                     class="brand-btn w-full text-left px-3 sm:px-4 py-2 sm:py-3 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 text-gray-700 dark:text-gray-300 font-medium transition-all duration-200 text-sm sm:text-base"
                                     data-brand="{{ $marca->marca_id }}">
-                                    <i class="fas fa-tag mr-2"></i>{{ $marca->nombre_marca }}
+                                    <i class="fas fa-tag mr-2"></i>{{ $marca->nombre }}
                                 </button>
                             @endforeach
                         </div>

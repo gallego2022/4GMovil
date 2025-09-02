@@ -2,19 +2,19 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ProductoController;
-use App\Http\Controllers\ImagenProductoController;
-use App\Http\Controllers\UsuarioController;
-use App\Http\Controllers\CategoriaController;
-use App\Http\Controllers\MarcaController;
-use App\Http\Controllers\PedidoController;      
-use App\Http\Controllers\DetallePedidoController;
-use App\Http\Controllers\DireccionController;
-use App\Http\Controllers\MetodoPagoController;
-use App\Http\Controllers\PagoController;
+use App\Http\Controllers\Servicios\DashboardController;
+use App\Http\Controllers\Admin\ProductoController;
+use App\Http\Controllers\Admin\UsuarioController;
+use App\Http\Controllers\Admin\CategoriaController;
+use App\Http\Controllers\Admin\MarcaController;
+use App\Http\Controllers\Admin\PedidoController;      
+use App\Http\Controllers\Cliente\DetallePedidoController;
+use App\Http\Controllers\Cliente\DireccionController;
+use App\Http\Controllers\Admin\MetodoPagoController;
+use App\Http\Controllers\Admin\PagoController;
 use App\Http\Controllers\Admin\PedidoAdminController;
-use App\Http\Controllers\InventarioController;
+use App\Http\Controllers\Admin\InventarioController;
+use App\Http\Controllers\Admin\EspecificacionController;
 
 // Solo accesibles por usuarios autenticados y administradores
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -33,13 +33,13 @@ Route::prefix('admin/productos')->name('admin.productos.')->group(function () {
         'destroy' => 'destroy'
     ]);
     Route::get('/listadoP', [ProductoController::class, 'listado'])->name('listadoP');
-    Route::delete('/imagenes/{id}', [ImagenProductoController::class, 'destroy'])->name('imagenes.destroy');
+    Route::delete('/imagenes/{id}', [ProductoController::class, 'destroyImagen'])->name('imagenes.destroy');
 });
 
 // Rutas de productos sin prefijo (para compatibilidad) - MOVIDAS DENTRO DEL MIDDLEWARE
 // Primero las rutas específicas
 Route::get('/productos/listadoP', [ProductoController::class, 'listado'])->name('productos.listadoP');
-Route::delete('/imagenes/{id}', [ImagenProductoController::class, 'destroy'])->name('imagenes.destroy');
+Route::delete('/imagenes/{id}', [ProductoController::class, 'destroyImagen'])->name('imagenes.destroy');
 
 // Después las rutas con parámetros dinámicos
 Route::resource('productos', ProductoController::class);
@@ -51,6 +51,22 @@ Route::resource('productos', ProductoController::class);
     Route::resource('categorias', CategoriaController::class);
 // Marcas
     Route::resource('marcas', MarcaController::class);
+
+    // Especificaciones por Categoría
+    Route::prefix('admin/especificaciones')->name('admin.especificaciones.')->group(function () {
+        Route::get('/', [EspecificacionController::class, 'index'])->name('index');
+        Route::get('/create', [EspecificacionController::class, 'create'])->name('create');
+        Route::post('/', [EspecificacionController::class, 'store'])->name('store');
+        Route::get('/{id}', [EspecificacionController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [EspecificacionController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [EspecificacionController::class, 'update'])->name('update');
+        Route::delete('/{id}', [EspecificacionController::class, 'destroy'])->name('destroy');
+        
+        // Rutas adicionales
+        Route::get('/categoria/{categoriaId}', [EspecificacionController::class, 'getByCategoria'])->name('by-categoria');
+        Route::patch('/{id}/toggle-estado', [EspecificacionController::class, 'toggleEstado'])->name('toggle-estado');
+        Route::post('/reordenar', [EspecificacionController::class, 'reordenar'])->name('reordenar');
+    });
 
 // Recursos generales
 Route::resource('detalles-pedido', DetallePedidoController::class);
