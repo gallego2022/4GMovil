@@ -95,7 +95,7 @@
                     <!-- Información de la categoría -->
                     <div class="flex-1 min-w-0">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white truncate">
-                            {{ $item['categoria']->nombre_categoria ?? 'Sin categoría' }}
+                            {{ $item['categoria']->nombre ?? 'Sin categoría' }}
                         </h3>
                         <div class="mt-1 flex flex-col space-y-1">
                             <p class="text-sm text-gray-500 dark:text-gray-400">
@@ -169,7 +169,7 @@
                                         </div>
                                         <div class="ml-4">
                                             <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                                {{ $item['categoria']->nombre_categoria ?? 'Sin categoría' }}
+                                                {{ $item['categoria']->nombre ?? 'Sin categoría' }}
                                             </div>
                                         </div>
                                     </div>
@@ -229,7 +229,7 @@
                             <div class="flex items-center">
                                 <div class="w-3 h-3 rounded-full mr-2" style="background-color: {{ $index < 10 ? ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4', '#84CC16', '#F97316', '#EC4899', '#6366F1'][$index] : '#6B7280' }}"></div>
                                 <span class="text-sm text-gray-900 dark:text-white truncate">
-                                    {{ $item['categoria']->nombre_categoria ?? 'Sin categoría' }}
+                                    {{ $item['categoria']->nombre ?? 'Sin categoría' }}
                                 </span>
                             </div>
                             <span class="text-sm font-medium text-gray-900 dark:text-white">${{ number_format($item['valor_total'], 0, ',', '.') }}</span>
@@ -251,7 +251,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const data = {
         labels: [
             @foreach($valorPorCategoria as $item)
-                '{{ $item['categoria']->nombre_categoria ?? 'Sin categoría' }}',
+                '{{ $item['categoria']->nombre ?? 'Sin categoría' }}',
             @endforeach
         ],
         datasets: [{

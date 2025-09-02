@@ -147,12 +147,12 @@ class LandingController extends Controller
             // Obtener datos para filtros
             $categorias = Categoria::withCount('productos')
                 ->having('productos_count', '>', 0)
-                ->orderBy('nombre_categoria')
+                ->orderBy('nombre')
                 ->get();
 
             $marcas = Marca::withCount('productos')
                 ->having('productos_count', '>', 0)
-                ->orderBy('nombre_marca')
+                ->orderBy('nombre')
                 ->get();
 
             // Obtener rango de precios para el slider
@@ -285,12 +285,12 @@ class LandingController extends Controller
             // Obtener datos para filtros (solo para peticiones directas)
             $categorias = Categoria::withCount('productos')
                 ->having('productos_count', '>', 0)
-                ->orderBy('nombre_categoria')
+                ->orderBy('nombre')
                 ->get();
 
             $marcas = Marca::withCount('productos')
                 ->having('productos_count', '>', 0)
-                ->orderBy('nombre_marca')
+                ->orderBy('nombre')
                 ->get();
 
             // Obtener rango de precios para el slider

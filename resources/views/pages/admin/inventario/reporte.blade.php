@@ -200,7 +200,7 @@
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                            {{ $producto->categoria->nombre_categoria ?? 'Sin categoría' }}
+                            {{ $producto->categoria->nombre ?? 'Sin categoría' }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
@@ -249,7 +249,7 @@
                     @foreach($reporte['valor_por_categoria'] as $item)
                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                            {{ $item['categoria']->nombre_categoria }}
+                            {{ $item['categoria']->nombre }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                             {{ $item['productos_count'] }}
@@ -313,7 +313,7 @@
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                            {{ $producto->categoria->nombre_categoria ?? 'Sin categoría' }}
+                            {{ $producto->categoria->nombre ?? 'Sin categoría' }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                             {{ $producto->stock }} unidades

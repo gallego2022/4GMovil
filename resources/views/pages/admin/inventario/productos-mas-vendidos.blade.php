@@ -106,7 +106,7 @@
                                 Vendidos: {{ $producto->total_vendido ?? 0 }}
                             </p>
                             <p class="text-sm text-gray-500 dark:text-gray-400">
-                                Categoría: {{ $producto->categoria->nombre_categoria ?? 'Sin categoría' }}
+                                Categoría: {{ $producto->categoria->nombre ?? 'Sin categoría' }}
                             </p>
                         </div>
                     </div>
@@ -179,7 +179,7 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                {{ $producto->categoria->nombre_categoria ?? 'Sin categoría' }}
+                                {{ $producto->categoria->nombre ?? 'Sin categoría' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                 ${{ number_format($producto->precio, 0, ',', '.') }}

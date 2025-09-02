@@ -1,14 +1,12 @@
-@extends('layouts.landing')
-
-@php
+<?php
     use Illuminate\Support\Facades\Storage;
-@endphp
+?>
 
-@section('title', $producto->nombre_producto . ' - 4G Móvil')
-@section('meta_description', $producto->descripcion ?? 'Descubre ' . $producto->nombre_producto . ' en 4G Móvil. Calidad
-    garantizada y los mejores precios en Medellín.')
+<?php $__env->startSection('title', $producto->nombre_producto . ' - 4G Móvil'); ?>
+<?php $__env->startSection('meta_description', $producto->descripcion ?? 'Descubre ' . $producto->nombre_producto . ' en 4G Móvil. Calidad
+    garantizada y los mejores precios en Medellín.'); ?>
 
-    @push('styles')
+    <?php $__env->startPush('styles'); ?>
         <style>
             /* Image Zoom Modal Styles */
             #imageZoomModal {
@@ -83,15 +81,15 @@
                 }
             }
         </style>
-    @endpush
+    <?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
     <!-- Breadcrumb -->
     <div class="container mx-auto px-4 py-3 bg-gray-100 dark:bg-gray-800">
         <nav class="flex" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
                 <li class="inline-flex items-center">
-                    <a href="{{ route('landing') }}"
+                    <a href="<?php echo e(route('landing')); ?>"
                         class="inline-flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">
                         <i class="fas fa-home mr-2"></i>
                         Inicio
@@ -100,7 +98,7 @@
                 <li>
                     <div class="flex items-center">
                         <i class="fas fa-angle-right text-gray-400 mx-2"></i>
-                        <a href="{{ route('productos.lista') }}"
+                        <a href="<?php echo e(route('productos.lista')); ?>"
                             class="ml-1 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 md:ml-2 transition-colors duration-200">
                             Catálogo
                         </a>
@@ -110,7 +108,7 @@
                     <div class="flex items-center">
                         <i class="fas fa-angle-right text-gray-400 mx-2"></i>
                         <span
-                            class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ml-2">{{ $producto->nombre_producto }}</span>
+                            class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ml-2"><?php echo e($producto->nombre_producto); ?></span>
                     </div>
                 </li>
             </ol>
@@ -139,16 +137,16 @@
                         <div class="product-gallery space-y-6">
                             <!-- Main Image -->
                             <div class="relative group">
-                                @if ($producto->imagenes->first())
+                                <?php if($producto->imagenes->first()): ?>
                                     <img id="mainImage"
-                                        src="{{ Storage::url($producto->imagenes->first()->ruta_imagen) }}"
-                                        alt="{{ $producto->nombre_producto }}"
+                                        src="<?php echo e(Storage::url($producto->imagenes->first()->ruta_imagen)); ?>"
+                                        alt="<?php echo e($producto->nombre_producto); ?>"
                                         class="main-image w-full h-64 sm:h-80 md:h-96 lg:h-[28rem] xl:h-[32rem] object-contain bg-gray-50 dark:bg-gray-800 rounded-xl shadow-lg group-hover:scale-105 transition-transform duration-300">
-                                @else
+                                <?php else: ?>
                                     <div id="mainImage" class="w-full h-64 sm:h-80 md:h-96 lg:h-[28rem] xl:h-[32rem] bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-xl shadow-lg flex items-center justify-center">
                                         <i class="fas fa-image text-6xl text-gray-400 dark:text-gray-500"></i>
                                     </div>
-                                @endif
+                                <?php endif; ?>
 
                                 <!-- Navigation Arrows -->
                                 <button
@@ -169,37 +167,37 @@
 
                             <!-- Thumbnail Gallery -->
                             <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 sm:gap-3">
-                                @php
+                                <?php
                                     $imagenes = $producto->imagenes;
                                     $totalImagenes = $imagenes->count();
-                                @endphp
+                                ?>
 
-                                @for ($i = 0; $i < 5; $i++)
-                                    @if ($i < $totalImagenes)
-                                        @php
+                                <?php for($i = 0; $i < 5; $i++): ?>
+                                    <?php if($i < $totalImagenes): ?>
+                                        <?php
                                             $imagen = $imagenes[$i];
                                             $imagenUrl = Storage::url($imagen->ruta_imagen);
                                             $imagenPrincipal = Storage::url($imagen->ruta_imagen);
-                                        @endphp
-                                        <img src="{{ $imagenUrl }}"
-                                            alt="{{ $producto->nombre_producto }} - Vista {{ $i + 1 }}"
-                                            class="thumbnail w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 object-contain bg-gray-100 dark:bg-gray-700 rounded-lg cursor-pointer hover:scale-110 transition-transform duration-200 border-2 {{ $i === 0 ? 'border-blue-500' : 'border-transparent hover:border-blue-500' }}"
-                                            onclick="changeMainImage(this, '{{ $imagenPrincipal }}')">
-                                    @else
+                                        ?>
+                                        <img src="<?php echo e($imagenUrl); ?>"
+                                            alt="<?php echo e($producto->nombre_producto); ?> - Vista <?php echo e($i + 1); ?>"
+                                            class="thumbnail w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 object-contain bg-gray-100 dark:bg-gray-700 rounded-lg cursor-pointer hover:scale-110 transition-transform duration-200 border-2 <?php echo e($i === 0 ? 'border-blue-500' : 'border-transparent hover:border-blue-500'); ?>"
+                                            onclick="changeMainImage(this, '<?php echo e($imagenPrincipal); ?>')">
+                                    <?php else: ?>
                                         <div class="thumbnail w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-lg cursor-pointer hover:scale-110 transition-transform duration-200 border-2 border-transparent hover:border-blue-500 flex items-center justify-center">
                                             <i class="fas fa-image text-gray-400 dark:text-gray-500 text-sm"></i>
                                         </div>
-                                    @endif
-                                @endfor
+                                    <?php endif; ?>
+                                <?php endfor; ?>
                             </div>
 
                             <!-- Pagination Dots -->
                             <div class="flex justify-center space-x-2">
-                                @for ($i = 1; $i <= 5; $i++)
+                                <?php for($i = 1; $i <= 5; $i++): ?>
                                     <div
-                                        class="w-2 h-2 rounded-full {{ $i === 1 ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600' }} cursor-pointer hover:bg-blue-500 transition-colors duration-200">
+                                        class="w-2 h-2 rounded-full <?php echo e($i === 1 ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600'); ?> cursor-pointer hover:bg-blue-500 transition-colors duration-200">
                                     </div>
-                                @endfor
+                                <?php endfor; ?>
                             </div>
                         </div>
 
@@ -222,10 +220,12 @@
                             <!-- Product Title -->
                             <div>
                                 <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white leading-tight mb-2">
-                                    {{ $producto->nombre_producto }}
+                                    <?php echo e($producto->nombre_producto); ?>
+
                                 </h1>
                                 <p class="text-gray-600 dark:text-gray-400">
-                                    <strong>SKU:</strong> {{ $producto->sku ?? 'N/A' }}
+                                    <strong>SKU:</strong> <?php echo e($producto->sku ?? 'N/A'); ?>
+
                                 </p>
                             </div>
 
@@ -233,17 +233,19 @@
                             <div class="space-y-3">
                                 <div class="flex items-baseline space-x-3">
                                     <span class="text-4xl font-bold text-blue-600 dark:text-blue-400">
-                                        ${{ number_format($producto->precio ?? 0, 0, ',', '.') }}
+                                        $<?php echo e(number_format($producto->precio ?? 0, 0, ',', '.')); ?>
+
                                     </span>
-                                    @if (isset($producto->precio_anterior) && $producto->precio_anterior > $producto->precio)
+                                    <?php if(isset($producto->precio_anterior) && $producto->precio_anterior > $producto->precio): ?>
                                         <span class="text-xl text-gray-500 line-through">
-                                            ${{ number_format($producto->precio_anterior, 0, ',', '.') }}
+                                            $<?php echo e(number_format($producto->precio_anterior, 0, ',', '.')); ?>
+
                                         </span>
                                         <span
                                             class="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-2 py-1 rounded-full text-sm font-medium">
-                                            -{{ round((($producto->precio_anterior - $producto->precio) / $producto->precio_anterior) * 100) }}%
+                                            -<?php echo e(round((($producto->precio_anterior - $producto->precio) / $producto->precio_anterior) * 100)); ?>%
                                         </span>
-                                    @endif
+                                    <?php endif; ?>
                                 </div>
                             </div>
 
@@ -252,22 +254,23 @@
                                 class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
                                 <div class="flex items-center space-x-3">
                                     <div class="w-6 h-6 rounded-full border-2 border-blue-500" id="selectedColorPreview"
-                                        style="background-color: {{ $producto->variantes->first() ? $producto->variantes->first()->codigo_color ?? '#000000' : '#000000' }};">
+                                        style="background-color: <?php echo e($producto->variantes->first() ? $producto->variantes->first()->codigo_color ?? '#000000' : '#000000'); ?>;">
                                     </div>
                                     <div class="flex-1">
                                         <p class="text-sm font-medium text-blue-900 dark:text-blue-100">
                                             Color seleccionado: <span
-                                                id="selectedColorText">{{ $producto->variantes->first() ? $producto->variantes->first()->nombre : 'No disponible' }}</span>
+                                                id="selectedColorText"><?php echo e($producto->variantes->first() ? $producto->variantes->first()->nombre : 'No disponible'); ?></span>
                                         </p>
                                         <p class="text-xs text-blue-700 dark:text-blue-300" id="selectedColorStock">
                                             Stock disponible:
-                                            {{ $producto->variantes->first() ? $producto->variantes->first()->stock : 0 }}
+                                            <?php echo e($producto->variantes->first() ? $producto->variantes->first()->stock : 0); ?>
+
                                             unidades
                                         </p>
                                         <p class="text-xs text-blue-600 dark:text-blue-400" id="selectedColorPrice"
-                                            style="display: {{ $producto->variantes->first() && $producto->variantes->first()->precio_adicional > 0 ? 'block' : 'none' }};">
+                                            style="display: <?php echo e($producto->variantes->first() && $producto->variantes->first()->precio_adicional > 0 ? 'block' : 'none'); ?>;">
                                             Precio adicional: <span
-                                                id="precioAdicional">${{ number_format($producto->variantes->first() ? $producto->variantes->first()->precio_adicional : 0, 0, ',', '.') }}</span>
+                                                id="precioAdicional">$<?php echo e(number_format($producto->variantes->first() ? $producto->variantes->first()->precio_adicional : 0, 0, ',', '.')); ?></span>
                                         </p>
                                     </div>
                                 </div>
@@ -278,98 +281,101 @@
                                 <div class="flex items-center justify-between">
                                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Color</h3>
                                     <span class="text-sm text-gray-500 dark:text-gray-400"
-                                        id="selectedColorName">{{ $producto->variantes->first() ? $producto->variantes->first()->nombre : 'No disponible' }}</span>
+                                        id="selectedColorName"><?php echo e($producto->variantes->first() ? $producto->variantes->first()->nombre : 'No disponible'); ?></span>
                                 </div>
                                 <div class="flex flex-wrap gap-3">
-                                    @if ($producto->variantes->count() > 0)
-                                        @foreach ($producto->variantes as $index => $variante)
+                                    <?php if($producto->variantes->count() > 0): ?>
+                                        <?php $__currentLoopData = $producto->variantes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $variante): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div class="relative">
                                                 <button
-                                                    class="color-variant w-12 h-12 rounded-full border-2 transition-all duration-200 {{ $index === 0 ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-300 dark:border-gray-600' }} {{ !$variante->disponible ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110 hover:shadow-lg' }}"
-                                                    style="background-color: {{ $variante->codigo_color ?? '#CCCCCC' }};"
-                                                    data-color="{{ $variante->nombre }}"
-                                                    data-available="{{ $variante->disponible ? 'true' : 'false' }}"
-                                                    data-stock="{{ $variante->stock }}"
-                                                    data-precio-adicional="{{ $variante->precio_adicional }}"
-                                                    data-descripcion="{{ $variante->descripcion }}"
-                                                    data-codigo-color="{{ $variante->codigo_color }}"
-                                                    {{ !$variante->disponible ? 'disabled' : '' }}
-                                                    title="{{ $variante->nombre }} - Stock: {{ $variante->stock }} {{ !$variante->disponible ? '(No disponible)' : '' }}">
-                                                    @if (!$variante->disponible)
+                                                    class="color-variant w-12 h-12 rounded-full border-2 transition-all duration-200 <?php echo e($index === 0 ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-300 dark:border-gray-600'); ?> <?php echo e(!$variante->disponible ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110 hover:shadow-lg'); ?>"
+                                                    style="background-color: <?php echo e($variante->codigo_color ?? '#CCCCCC'); ?>;"
+                                                    data-color="<?php echo e($variante->nombre); ?>"
+                                                    data-available="<?php echo e($variante->disponible ? 'true' : 'false'); ?>"
+                                                    data-stock="<?php echo e($variante->stock); ?>"
+                                                    data-precio-adicional="<?php echo e($variante->precio_adicional); ?>"
+                                                    data-descripcion="<?php echo e($variante->descripcion); ?>"
+                                                    data-codigo-color="<?php echo e($variante->codigo_color); ?>"
+                                                    <?php echo e(!$variante->disponible ? 'disabled' : ''); ?>
+
+                                                    title="<?php echo e($variante->nombre); ?> - Stock: <?php echo e($variante->stock); ?> <?php echo e(!$variante->disponible ? '(No disponible)' : ''); ?>">
+                                                    <?php if(!$variante->disponible): ?>
                                                         <div class="w-full h-full flex items-center justify-center">
                                                             <i class="fas fa-times text-gray-400 text-xs"></i>
                                                         </div>
-                                                    @endif
+                                                    <?php endif; ?>
                                                 </button>
 
                                                 <!-- Stock indicator -->
-                                                @if ($variante->stock <= 5 && $variante->stock > 0)
+                                                <?php if($variante->stock <= 5 && $variante->stock > 0): ?>
                                                     <div
                                                         class="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
-                                                        {{ $variante->stock }}
+                                                        <?php echo e($variante->stock); ?>
+
                                                     </div>
-                                                @elseif($variante->stock == 0)
+                                                <?php elseif($variante->stock == 0): ?>
                                                     <div
                                                         class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                                                         <i class="fas fa-times text-xs"></i>
                                                     </div>
-                                                @endif
+                                                <?php endif; ?>
                                             </div>
-                                        @endforeach
-                                    @else
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    <?php else: ?>
                                         <!-- Fallback: Mostrar mensaje si no hay variantes -->
                                         <div class="text-center w-full py-4">
                                             <p class="text-gray-500 dark:text-gray-400 text-sm">
                                                 No hay variantes de color disponibles para este producto
                                             </p>
                                         </div>
-                                    @endif
+                                    <?php endif; ?>
                                 </div>
                             </div>
 
                             <!-- Color Description -->
                             <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
                                 <p class="text-sm text-gray-600 dark:text-gray-400" id="colorDescription">
-                                    {{ $producto->variantes->first() ? $producto->variantes->first()->descripcion ?? 'Color elegante y versátil que combina con cualquier estilo.' : 'No hay descripción disponible.' }}
+                                    <?php echo e($producto->variantes->first() ? $producto->variantes->first()->descripcion ?? 'Color elegante y versátil que combina con cualquier estilo.' : 'No hay descripción disponible.'); ?>
+
                                 </p>
                             </div>
 
                             <!-- Action Buttons -->
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                @php
+                                <?php
                                     $tieneVariantes = $producto->variantes && $producto->variantes->count() > 0;
                                     $stockDisponible = $producto->stock_disponible;
-                                @endphp
+                                ?>
 
-                                @if ($stockDisponible > 0)
-                                    @if ($tieneVariantes)
+                                <?php if($stockDisponible > 0): ?>
+                                    <?php if($tieneVariantes): ?>
                                         <!-- Si tiene variantes, mostrar botón que abra modal de selección -->
                                         <button type="button"
                                             class="select-variant w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-4 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg group"
-                                            data-producto-id="{{ $producto->producto_id }}" 
-                                            data-producto-nombre="{{ $producto->nombre_producto }}" 
-                                            data-producto-precio="{{ $producto->precio }}">
+                                            data-producto-id="<?php echo e($producto->producto_id); ?>" 
+                                            data-producto-nombre="<?php echo e($producto->nombre_producto); ?>" 
+                                            data-producto-precio="<?php echo e($producto->precio); ?>">
                                             <i class="fas fa-palette mr-2 group-hover:scale-110 transition-transform duration-200"></i>
                                             Seleccionar Variante
                                         </button>
-                                    @else
+                                    <?php else: ?>
                                         <!-- Si no tiene variantes, agregar directamente al carrito -->
                                         <button type="button"
                                             class="add-to-cart w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-4 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg group"
-                                            data-id="{{ $producto->producto_id }}" 
-                                            data-name="{{ $producto->nombre_producto }}" 
-                                            data-price="{{ $producto->precio }}">
+                                            data-id="<?php echo e($producto->producto_id); ?>" 
+                                            data-name="<?php echo e($producto->nombre_producto); ?>" 
+                                            data-price="<?php echo e($producto->precio); ?>">
                                             <i class="fas fa-shopping-cart mr-2 group-hover:scale-110 transition-transform duration-200"></i>
                                             Agregar al Carrito
                                         </button>
-                                    @endif
-                                @else
+                                    <?php endif; ?>
+                                <?php else: ?>
                                     <button type="button"
                                         class="w-full bg-gray-400 text-white py-4 px-6 rounded-xl cursor-not-allowed font-semibold" disabled>
                                         <i class="fas fa-times mr-2"></i>
                                         Sin stock
                                     </button>
-                                @endif
+                                <?php endif; ?>
                             </div>
 
                             <!-- Quick Actions -->
@@ -377,7 +383,7 @@
                                 <a href="#reseñas"
                                     class="inline-flex items-center px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-lg hover:bg-yellow-200 dark:hover:bg-yellow-900/50 transition-colors duration-200">
                                     <i class="fas fa-star mr-2"></i>
-                                    Ver Reseñas ({{ $producto->resenas->count() }})
+                                    Ver Reseñas (<?php echo e($producto->resenas->count()); ?>)
                                 </a>
                                 <button onclick="openReviewModal()"
                                     class="inline-flex items-center px-4 py-2 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-lg hover:bg-orange-200 dark:hover:bg-orange-900/50 transition-colors duration-200">
@@ -439,18 +445,19 @@
                         Características del Producto
                     </h2>
                     <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed">
-                        Conoce todos los detalles técnicos y especificaciones de {{ $producto->nombre_producto }}
+                        Conoce todos los detalles técnicos y especificaciones de <?php echo e($producto->nombre_producto); ?>
+
                     </p>
                 </div>
 
                 <div
                     class="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-600 p-8">
                     
-                    @if($producto->especificaciones && $producto->especificaciones->count() > 0)
+                    <?php if($producto->especificaciones && $producto->especificaciones->count() > 0): ?>
                         <!-- Dynamic Specifications Grid -->
                         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            @foreach($producto->especificaciones as $especProducto)
-                                @php
+                            <?php $__currentLoopData = $producto->especificaciones; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $especProducto): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <?php
                                     $espec = $especProducto->especificacionCategoria;
                                     $valor = $especProducto->valor;
                                     $iconClass = '';
@@ -490,15 +497,16 @@
                                             $iconClass = 'fas fa-info-circle';
                                             $bgClass = 'from-gray-50 to-gray-100 dark:from-gray-900/20 dark:to-gray-800/20';
                                     }
-                                @endphp
+                                ?>
                                 
-                                <div class="bg-gradient-to-r {{ $bgClass }} rounded-xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-lg transition-all duration-300">
+                                <div class="bg-gradient-to-r <?php echo e($bgClass); ?> rounded-xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-lg transition-all duration-300">
                                     <div class="flex items-center mb-3">
                                         <div class="w-10 h-10 bg-white dark:bg-gray-800 rounded-lg flex items-center justify-center mr-3 shadow-sm">
-                                            <i class="{{ $iconClass }} text-gray-600 dark:text-gray-400"></i>
+                                            <i class="<?php echo e($iconClass); ?> text-gray-600 dark:text-gray-400"></i>
                                         </div>
                                         <h3 class="font-semibold text-gray-900 dark:text-white text-lg">
-                                            {{ $espec->etiqueta }}
+                                            <?php echo e($espec->etiqueta); ?>
+
                                         </h3>
                                     </div>
                                     
@@ -506,30 +514,33 @@
                                         <div class="flex items-center justify-between">
                                             <span class="text-sm text-gray-600 dark:text-gray-400">Valor:</span>
                                             <span class="font-medium text-gray-900 dark:text-white">
-                                                @if($espec->tipo_campo === 'checkbox')
-                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ $valor == '1' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' }}">
-                                                        <i class="fas {{ $valor == '1' ? 'fa-check' : 'fa-times' }} mr-1"></i>
-                                                        {{ $valor == '1' ? 'Sí' : 'No' }}
+                                                <?php if($espec->tipo_campo === 'checkbox'): ?>
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium <?php echo e($valor == '1' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'); ?>">
+                                                        <i class="fas <?php echo e($valor == '1' ? 'fa-check' : 'fa-times'); ?> mr-1"></i>
+                                                        <?php echo e($valor == '1' ? 'Sí' : 'No'); ?>
+
                                                     </span>
-                                                @else
-                                                    {{ $valor }}
-                                                    @if($espec->unidad)
-                                                        <span class="text-sm text-gray-500 dark:text-gray-400 ml-1">{{ $espec->unidad }}</span>
-                                                    @endif
-                                                @endif
+                                                <?php else: ?>
+                                                    <?php echo e($valor); ?>
+
+                                                    <?php if($espec->unidad): ?>
+                                                        <span class="text-sm text-gray-500 dark:text-gray-400 ml-1"><?php echo e($espec->unidad); ?></span>
+                                                    <?php endif; ?>
+                                                <?php endif; ?>
                                             </span>
                                         </div>
                                         
-                                        @if($espec->descripcion)
+                                        <?php if($espec->descripcion): ?>
                                             <div class="mt-3 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
                                                 <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-                                                    {{ $espec->descripcion }}
+                                                    <?php echo e($espec->descripcion); ?>
+
                                                 </p>
                                             </div>
-                                        @endif
+                                        <?php endif; ?>
                                     </div>
                                 </div>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
                         
                         <!-- Specifications Summary -->
@@ -540,15 +551,15 @@
                                     <h3 class="font-semibold text-gray-900 dark:text-white">Resumen de Especificaciones</h3>
                                 </div>
                                 <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full text-sm font-medium">
-                                    {{ $producto->especificaciones->count() }} características
+                                    <?php echo e($producto->especificaciones->count()); ?> características
                                 </span>
                             </div>
                             <p class="text-gray-600 dark:text-gray-400 mt-2">
-                                Este producto cuenta con {{ $producto->especificaciones->count() }} especificaciones técnicas detalladas que garantizan su calidad y rendimiento.
+                                Este producto cuenta con <?php echo e($producto->especificaciones->count()); ?> especificaciones técnicas detalladas que garantizan su calidad y rendimiento.
                             </p>
                         </div>
                         
-                    @else
+                    <?php else: ?>
                         <!-- No Specifications Available -->
                         <div class="text-center py-12">
                             <div class="w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -562,7 +573,7 @@
                                 Contacta con nuestro equipo para obtener más información.
                             </p>
                         </div>
-                    @endif
+                    <?php endif; ?>
 
                     <!-- Product Information -->
                     <div class="mt-8 grid md:grid-cols-2 gap-6">
@@ -575,22 +586,22 @@
                             <div class="space-y-3">
                                 <div class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-600">
                                     <span class="font-medium text-gray-700 dark:text-gray-300">Categoría</span>
-                                    <span class="text-gray-600 dark:text-gray-400">{{ $producto->categoria->nombre ?? 'No especificado' }}</span>
+                                    <span class="text-gray-600 dark:text-gray-400"><?php echo e($producto->categoria->nombre ?? 'No especificado'); ?></span>
                                 </div>
                                 <div class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-600">
                                     <span class="font-medium text-gray-700 dark:text-gray-300">Marca</span>
-                                    <span class="text-gray-600 dark:text-gray-400">{{ $producto->marca->nombre_marca ?? 'No especificado' }}</span>
+                                    <span class="text-gray-600 dark:text-gray-400"><?php echo e($producto->marca->nombre_marca ?? 'No especificado'); ?></span>
                                 </div>
                                 <div class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-600">
                                     <span class="font-medium text-gray-700 dark:text-gray-300">Estado</span>
-                                    <span class="text-gray-600 dark:text-gray-400 capitalize">{{ $producto->estado ?? 'No especificado' }}</span>
+                                    <span class="text-gray-600 dark:text-gray-400 capitalize"><?php echo e($producto->estado ?? 'No especificado'); ?></span>
                                 </div>
-                                @if($producto->sku)
+                                <?php if($producto->sku): ?>
                                 <div class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-600">
                                     <span class="font-medium text-gray-700 dark:text-gray-300">SKU</span>
-                                    <span class="text-gray-600 dark:text-gray-400 font-mono">{{ $producto->sku }}</span>
+                                    <span class="text-gray-600 dark:text-gray-400 font-mono"><?php echo e($producto->sku); ?></span>
                                 </div>
-                                @endif
+                                <?php endif; ?>
                             </div>
                         </div>
 
@@ -601,27 +612,27 @@
                                 Información Física
                             </h3>
                             <div class="space-y-3">
-                                @if($producto->peso)
+                                <?php if($producto->peso): ?>
                                 <div class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-600">
                                     <span class="font-medium text-gray-700 dark:text-gray-300">Peso</span>
-                                    <span class="text-gray-600 dark:text-gray-400">{{ $producto->peso }} kg</span>
+                                    <span class="text-gray-600 dark:text-gray-400"><?php echo e($producto->peso); ?> kg</span>
                                 </div>
-                                @endif
-                                @if($producto->dimensiones)
+                                <?php endif; ?>
+                                <?php if($producto->dimensiones): ?>
                                 <div class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-600">
                                     <span class="font-medium text-gray-700 dark:text-gray-300">Dimensiones</span>
-                                    <span class="text-gray-600 dark:text-gray-400">{{ $producto->dimensiones }}</span>
+                                    <span class="text-gray-600 dark:text-gray-400"><?php echo e($producto->dimensiones); ?></span>
                                 </div>
-                                @endif
-                                @if($producto->codigo_barras)
+                                <?php endif; ?>
+                                <?php if($producto->codigo_barras): ?>
                                 <div class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-600">
                                     <span class="font-medium text-gray-700 dark:text-gray-300">Código de Barras</span>
-                                    <span class="text-gray-600 dark:text-gray-400 font-mono">{{ $producto->codigo_barras }}</span>
+                                    <span class="text-gray-600 dark:text-gray-400 font-mono"><?php echo e($producto->codigo_barras); ?></span>
                                 </div>
-                                @endif
+                                <?php endif; ?>
                                 <div class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-600">
                                     <span class="font-medium text-gray-700 dark:text-gray-300">Stock Disponible</span>
-                                    <span class="text-gray-600 dark:text-gray-400">{{ $producto->stock }} unidades</span>
+                                    <span class="text-gray-600 dark:text-gray-400"><?php echo e($producto->stock); ?> unidades</span>
                                 </div>
                             </div>
                         </div>
@@ -644,7 +655,8 @@
                         Lo que dicen nuestros clientes
                     </h2>
                     <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed">
-                        Descubre las experiencias de otros usuarios con {{ $producto->nombre_producto }}
+                        Descubre las experiencias de otros usuarios con <?php echo e($producto->nombre_producto); ?>
+
                     </p>
                 </div>
 
@@ -655,38 +667,39 @@
                         <!-- Overall Rating -->
                         <div class="text-center">
                             <div class="text-5xl font-bold text-yellow-600 dark:text-yellow-400 mb-2">
-                                {{ number_format($producto->resenas->avg('calificacion') ?? 0, 1) }}
+                                <?php echo e(number_format($producto->resenas->avg('calificacion') ?? 0, 1)); ?>
+
                             </div>
                             <div class="flex justify-center mb-2">
-                                @for ($i = 1; $i <= 5; $i++)
+                                <?php for($i = 1; $i <= 5; $i++): ?>
                                     <i
-                                        class="fas fa-star {{ $i <= ($producto->resenas->avg('calificacion') ?? 0) ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600' }}"></i>
-                                @endfor
+                                        class="fas fa-star <?php echo e($i <= ($producto->resenas->avg('calificacion') ?? 0) ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600'); ?>"></i>
+                                <?php endfor; ?>
                             </div>
                             <p class="text-gray-600 dark:text-gray-400">
-                                Basado en {{ $producto->resenas->count() }} reseñas
+                                Basado en <?php echo e($producto->resenas->count()); ?> reseñas
                             </p>
                         </div>
 
                         <!-- Rating Breakdown -->
                         <div class="space-y-2">
-                            @for ($rating = 5; $rating >= 1; $rating--)
-                                @php
+                            <?php for($rating = 5; $rating >= 1; $rating--): ?>
+                                <?php
                                     $count = $producto->resenas->where('calificacion', $rating)->count();
                                     $percentage =
                                         $producto->resenas->count() > 0
                                             ? ($count / $producto->resenas->count()) * 100
                                             : 0;
-                                @endphp
+                                ?>
                                 <div class="flex items-center space-x-3">
-                                    <span class="text-sm text-gray-600 dark:text-gray-400 w-8">{{ $rating }}★</span>
+                                    <span class="text-sm text-gray-600 dark:text-gray-400 w-8"><?php echo e($rating); ?>★</span>
                                     <div class="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                                        <div class="bg-yellow-400 h-2 rounded-full" style="width: {{ $percentage }}%">
+                                        <div class="bg-yellow-400 h-2 rounded-full" style="width: <?php echo e($percentage); ?>%">
                                         </div>
                                     </div>
-                                    <span class="text-sm text-gray-600 dark:text-gray-400 w-12">{{ $count }}</span>
+                                    <span class="text-sm text-gray-600 dark:text-gray-400 w-12"><?php echo e($count); ?></span>
                                 </div>
-                            @endfor
+                            <?php endfor; ?>
                         </div>
 
                         <!-- Write Review Button -->
@@ -701,36 +714,40 @@
 
                 <!-- Reviews List -->
                 <div class="space-y-6">
-                    @forelse ($producto->resenas->take(5) as $resena)
+                    <?php $__empty_1 = true; $__currentLoopData = $producto->resenas->take(5); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $resena): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                         <div
                             class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-600 p-6">
                             <div class="flex items-start justify-between mb-4">
                                 <div class="flex items-center space-x-3">
                                     <div
                                         class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
-                                        {{ strtoupper(substr($resena->usuario->nombre ?? 'U', 0, 1)) }}
+                                        <?php echo e(strtoupper(substr($resena->usuario->nombre ?? 'U', 0, 1))); ?>
+
                                     </div>
                                     <div>
                                         <h4 class="font-semibold text-gray-900 dark:text-white">
-                                            {{ $resena->usuario->nombre ?? 'Usuario' }}
+                                            <?php echo e($resena->usuario->nombre ?? 'Usuario'); ?>
+
                                         </h4>
                                         <div class="flex items-center space-x-1">
-                                            @for ($i = 1; $i <= 5; $i++)
+                                            <?php for($i = 1; $i <= 5; $i++): ?>
                                                 <i
-                                                    class="fas fa-star {{ $i <= $resena->calificacion ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600' }} text-sm"></i>
-                                            @endfor
+                                                    class="fas fa-star <?php echo e($i <= $resena->calificacion ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600'); ?> text-sm"></i>
+                                            <?php endfor; ?>
                                         </div>
                                     </div>
                                 </div>
                                 <span class="text-sm text-gray-500 dark:text-gray-400">
-                                    {{ $resena->created_at->diffForHumans() }}
+                                    <?php echo e($resena->created_at->diffForHumans()); ?>
+
                                 </span>
                             </div>
                             <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
-                                {{ $resena->comentario }}
+                                <?php echo e($resena->comentario); ?>
+
                             </p>
                         </div>
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <div class="text-center pprey-12">
                             <i class="fas fa-comments text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
                             <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
@@ -744,18 +761,18 @@
                                 <i class="fas fa-edit mr-2"></i>Escribir Primera Reseña
                             </button>
                         </div>
-                    @endforelse
+                    <?php endif; ?>
                 </div>
 
-                @if ($producto->resenas->count() > 5)
+                <?php if($producto->resenas->count() > 5): ?>
                     <div class="text-center mt-8">
                         <button
                             class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold transition-colors duration-200">
-                            Ver todas las {{ $producto->resenas->count() }} reseñas
+                            Ver todas las <?php echo e($producto->resenas->count()); ?> reseñas
                             <i class="fas fa-chevron-down ml-2"></i>
                         </button>
                     </div>
-                @endif
+                <?php endif; ?>
             </div>
         </div>
     </section>
@@ -854,7 +871,7 @@
                 </div>
 
                 <form id="reviewForm" class="space-y-6">
-                    @guest
+                    <?php if(auth()->guard()->guest()): ?>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Tu Nombre
@@ -863,20 +880,20 @@
                             class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                             placeholder="Ingresa tu nombre para la reseña" required>
                     </div>
-                    @endguest
+                    <?php endif; ?>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Calificación
                         </label>
                         <div class="flex items-center space-x-2">
-                            @for ($i = 1; $i <= 5; $i++)
+                            <?php for($i = 1; $i <= 5; $i++): ?>
                                 <button type="button"
                                     class="star-rating text-2xl text-gray-300 dark:text-gray-600 hover:text-yellow-400 transition-colors duration-200"
-                                    data-rating="{{ $i }}">
+                                    data-rating="<?php echo e($i); ?>">
                                     <i class="fas fa-star"></i>
                                 </button>
-                            @endfor
+                            <?php endfor; ?>
                         </div>
                     </div>
 
@@ -921,86 +938,90 @@
             </div>
 
                          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                 @forelse ($productosRelacionados as $productoRelacionado)
+                 <?php $__empty_1 = true; $__currentLoopData = $productosRelacionados; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $productoRelacionado): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                      <div
                          class="group bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden">
                          <div class="relative overflow-hidden">
-                                                           @if ($productoRelacionado->imagenes->first())
-                                  <img src="{{ Storage::url($productoRelacionado->imagenes->first()->ruta_imagen) }}"
-                                      alt="{{ $productoRelacionado->nombre_producto }}"
+                                                           <?php if($productoRelacionado->imagenes->first()): ?>
+                                  <img src="<?php echo e(Storage::url($productoRelacionado->imagenes->first()->ruta_imagen)); ?>"
+                                      alt="<?php echo e($productoRelacionado->nombre_producto); ?>"
                                       class="w-full h-32 sm:h-36 md:h-40 lg:h-44 xl:h-48 object-contain bg-gray-50 dark:bg-gray-800 group-hover:scale-110 transition-transform duration-300">
-                              @else
+                              <?php else: ?>
                                   <div class="w-full h-32 sm:h-36 md:h-40 lg:h-44 xl:h-48 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                                       <i class="fas fa-mobile-alt text-2xl sm:text-3xl md:text-4xl text-gray-400 dark:text-gray-500"></i>
                                   </div>
-                              @endif
+                              <?php endif; ?>
                              
-                             @if (isset($productoRelacionado->precio_anterior) && $productoRelacionado->precio_anterior > $productoRelacionado->precio)
+                             <?php if(isset($productoRelacionado->precio_anterior) && $productoRelacionado->precio_anterior > $productoRelacionado->precio): ?>
                                  <div
                                      class="absolute top-4 right-4 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-medium">
-                                     -{{ round((($productoRelacionado->precio_anterior - $productoRelacionado->precio) / $productoRelacionado->precio_anterior) * 100) }}%
+                                     -<?php echo e(round((($productoRelacionado->precio_anterior - $productoRelacionado->precio) / $productoRelacionado->precio_anterior) * 100)); ?>%
                                  </div>
-                             @endif
+                             <?php endif; ?>
                              
-                             @if ($productoRelacionado->stock <= 5 && $productoRelacionado->stock > 0)
+                             <?php if($productoRelacionado->stock <= 5 && $productoRelacionado->stock > 0): ?>
                                  <div
                                      class="absolute top-4 left-4 bg-orange-500 text-white px-2 py-1 rounded-full text-xs font-medium">
-                                     Solo {{ $productoRelacionado->stock }}
+                                     Solo <?php echo e($productoRelacionado->stock); ?>
+
                                  </div>
-                             @elseif($productoRelacionado->stock == 0)
+                             <?php elseif($productoRelacionado->stock == 0): ?>
                                  <div
                                      class="absolute top-4 left-4 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-medium">
                                      Agotado
                                  </div>
-                             @endif
+                             <?php endif; ?>
                          </div>
                          <div class="p-6">
                              <div class="flex items-center space-x-2 mb-2">
-                                 @if ($productoRelacionado->categoria)
+                                 <?php if($productoRelacionado->categoria): ?>
                                      <span class="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-2 py-1 rounded-full">
-                                         {{ $productoRelacionado->categoria->nombre }}
+                                         <?php echo e($productoRelacionado->categoria->nombre); ?>
+
                                      </span>
-                                 @endif
-                                 @if ($productoRelacionado->marca)
+                                 <?php endif; ?>
+                                 <?php if($productoRelacionado->marca): ?>
                                      <span class="text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 px-2 py-1 rounded-full">
-                                         {{ $productoRelacionado->marca->nombre }}
+                                         <?php echo e($productoRelacionado->marca->nombre); ?>
+
                                      </span>
-                                 @endif
+                                 <?php endif; ?>
                              </div>
                              
                              <h3
                                  class="font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300 line-clamp-2">
-                                 {{ $productoRelacionado->nombre_producto }}
+                                 <?php echo e($productoRelacionado->nombre_producto); ?>
+
                              </h3>
                              
                              <!-- Rating -->
-                             @if ($productoRelacionado->resenas->count() > 0)
+                             <?php if($productoRelacionado->resenas->count() > 0): ?>
                                  <div class="flex items-center mb-3">
                                      <div class="flex text-yellow-400 text-sm">
-                                         @for ($i = 1; $i <= 5; $i++)
-                                             <i class="fas fa-star {{ $i <= $productoRelacionado->resenas->avg('calificacion') ? '' : 'text-gray-300 dark:text-gray-600' }}"></i>
-                                         @endfor
+                                         <?php for($i = 1; $i <= 5; $i++): ?>
+                                             <i class="fas fa-star <?php echo e($i <= $productoRelacionado->resenas->avg('calificacion') ? '' : 'text-gray-300 dark:text-gray-600'); ?>"></i>
+                                         <?php endfor; ?>
                                      </div>
-                                     <span class="text-gray-500 text-sm ml-2">({{ $productoRelacionado->resenas->count() }})</span>
+                                     <span class="text-gray-500 text-sm ml-2">(<?php echo e($productoRelacionado->resenas->count()); ?>)</span>
                                  </div>
-                             @endif
+                             <?php endif; ?>
                              
                              <div class="flex items-center space-x-2 mb-3">
                                  <span
-                                     class="text-lg font-bold text-blue-600 dark:text-blue-400">${{ number_format($productoRelacionado->precio ?? 0, 0, ',', '.') }}</span>
-                                 @if (isset($productoRelacionado->precio_anterior) && $productoRelacionado->precio_anterior > $productoRelacionado->precio)
+                                     class="text-lg font-bold text-blue-600 dark:text-blue-400">$<?php echo e(number_format($productoRelacionado->precio ?? 0, 0, ',', '.')); ?></span>
+                                 <?php if(isset($productoRelacionado->precio_anterior) && $productoRelacionado->precio_anterior > $productoRelacionado->precio): ?>
                                      <span
-                                         class="text-sm text-gray-500 line-through">${{ number_format($productoRelacionado->precio_anterior, 0, ',', '.') }}</span>
-                                 @endif
+                                         class="text-sm text-gray-500 line-through">$<?php echo e(number_format($productoRelacionado->precio_anterior, 0, ',', '.')); ?></span>
+                                 <?php endif; ?>
                              </div>
                              
-                             <a href="{{ route('productos.show', $productoRelacionado->producto_id) }}"
+                             <a href="<?php echo e(route('productos.show', $productoRelacionado->producto_id)); ?>"
                                  class="block w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-2 px-4 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 text-center">
                                  Ver Producto
                              </a>
                          </div>
                      </div>
-                 @empty
+                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                      <div class="col-span-full text-center py-12">
                          <i class="fas fa-box-open text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
                          <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
@@ -1009,12 +1030,12 @@
                          <p class="text-gray-600 dark:text-gray-400 mb-6">
                              No encontramos productos similares en este momento
                          </p>
-                         <a href="{{ route('productos.lista') }}"
+                         <a href="<?php echo e(route('productos.lista')); ?>"
                              class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold transition-all duration-300 transform hover:scale-105">
                              <i class="fas fa-th-large mr-2"></i>Ver Todos los Productos
                          </a>
                      </div>
-                 @endforelse
+                 <?php endif; ?>
             </div>
         </div>
     </section>
@@ -1027,12 +1048,12 @@
                 No dudes en contactarnos para más información o para realizar tu compra
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="https://wa.me/573025970220?text=Hola%20equipo%20de%204GMovil,%20me%20interesa%20el%20producto%20{{ urlencode($producto->nombre_producto) }}.%20¿Podrían%20darme%20más%20información?"
+                <a href="https://wa.me/573025970220?text=Hola%20equipo%20de%204GMovil,%20me%20interesa%20el%20producto%20<?php echo e(urlencode($producto->nombre_producto)); ?>.%20¿Podrían%20darme%20más%20información?"
                     target="_blank"
                     class="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg">
                     <i class="fab fa-whatsapp mr-2"></i>Consultar por WhatsApp
                 </a>
-                <a href="{{ route('productos.lista') }}"
+                <a href="<?php echo e(route('productos.lista')); ?>"
                     class="border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-blue-600 transition-all duration-300 transform hover:scale-105">
                     <i class="fas fa-th-large mr-2"></i>Ver Más Productos
                 </a>
@@ -1040,9 +1061,9 @@
         </div>
     </section>
 
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             console.log('=== DOM CONTENT LOADED - INITIALIZING ===');
@@ -1222,62 +1243,62 @@
                 thumbnailGallery.innerHTML = '';
 
                 // Restore original thumbnails
-                @php
+                <?php
                     $imagenes = $producto->imagenes;
                     $totalImagenes = $imagenes->count();
-                @endphp
+                ?>
 
-                @for ($i = 0; $i < 5; $i++)
-                    @if ($i < $totalImagenes)
-                        @php
+                <?php for($i = 0; $i < 5; $i++): ?>
+                    <?php if($i < $totalImagenes): ?>
+                        <?php
                             $imagen = $imagenes[$i];
                             $imagenUrl = asset(Storage::url($imagen->ruta_imagen));
                             $imagenPrincipal = asset(Storage::url($imagen->ruta_imagen));
-                        @endphp
-                        const thumbnail{{ $i }} = document.createElement('img');
-                        thumbnail{{ $i }}.src = '{{ $imagenUrl }}';
-                        thumbnail{{ $i }}.alt =
-                            '{{ $producto->nombre_producto }} - Vista {{ $i + 1 }}';
-                        thumbnail{{ $i }}.className =
-                            'thumbnail w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 object-contain bg-gray-100 dark:bg-gray-700 rounded-lg cursor-pointer hover:scale-110 transition-transform duration-200 border-2 {{ $i === 0 ? 'border-blue-500' : 'border-transparent hover:border-blue-500' }}';
-                        thumbnail{{ $i }}.onclick = function() {
-                            changeMainImage(this, '{{ $imagenPrincipal }}');
+                        ?>
+                        const thumbnail<?php echo e($i); ?> = document.createElement('img');
+                        thumbnail<?php echo e($i); ?>.src = '<?php echo e($imagenUrl); ?>';
+                        thumbnail<?php echo e($i); ?>.alt =
+                            '<?php echo e($producto->nombre_producto); ?> - Vista <?php echo e($i + 1); ?>';
+                        thumbnail<?php echo e($i); ?>.className =
+                            'thumbnail w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 object-contain bg-gray-100 dark:bg-gray-700 rounded-lg cursor-pointer hover:scale-110 transition-transform duration-200 border-2 <?php echo e($i === 0 ? 'border-blue-500' : 'border-transparent hover:border-blue-500'); ?>';
+                        thumbnail<?php echo e($i); ?>.onclick = function() {
+                            changeMainImage(this, '<?php echo e($imagenPrincipal); ?>');
                         };
-                        thumbnailGallery.appendChild(thumbnail{{ $i }});
-                    @else
-                        const thumbnail{{ $i }} = document.createElement('div');
-                        thumbnail{{ $i }}.className =
+                        thumbnailGallery.appendChild(thumbnail<?php echo e($i); ?>);
+                    <?php else: ?>
+                        const thumbnail<?php echo e($i); ?> = document.createElement('div');
+                        thumbnail<?php echo e($i); ?>.className =
                             'thumbnail w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-lg cursor-pointer hover:scale-110 transition-transform duration-200 border-2 border-transparent hover:border-blue-500 flex items-center justify-center';
-                        thumbnail{{ $i }}.innerHTML = '<i class="fas fa-image text-gray-400 dark:text-gray-500 text-sm"></i>';
-                        thumbnail{{ $i }}.onclick = function() {
+                        thumbnail<?php echo e($i); ?>.innerHTML = '<i class="fas fa-image text-gray-400 dark:text-gray-500 text-sm"></i>';
+                        thumbnail<?php echo e($i); ?>.onclick = function() {
                             // No action for placeholder thumbnails
                         };
-                        thumbnailGallery.appendChild(thumbnail{{ $i }});
-                    @endif
-                @endfor
+                        thumbnailGallery.appendChild(thumbnail<?php echo e($i); ?>);
+                    <?php endif; ?>
+                <?php endfor; ?>
 
                 // Restore main image
-                @if ($producto->imagenes->first())
-                    mainImage.src = '{{ asset(Storage::url($producto->imagenes->first()->ruta_imagen)) }}';
-                @else
+                <?php if($producto->imagenes->first()): ?>
+                    mainImage.src = '<?php echo e(asset(Storage::url($producto->imagenes->first()->ruta_imagen))); ?>';
+                <?php else: ?>
                     // If no images, show a placeholder div instead of an image
                     mainImage.style.display = 'none';
                     const placeholderDiv = document.createElement('div');
                     placeholderDiv.className = 'w-full h-64 sm:h-80 md:h-96 lg:h-[28rem] xl:h-[32rem] bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-xl shadow-lg flex items-center justify-center';
                     placeholderDiv.innerHTML = '<i class="fas fa-image text-6xl text-gray-400 dark:text-gray-500"></i>';
                     mainImage.parentNode.appendChild(placeholderDiv);
-                @endif
+                <?php endif; ?>
 
                 // Update zoom images array
                 window.zoomImages = [
-                    @foreach ($producto->imagenes as $imagen)
-                        '{{ asset(Storage::url($imagen->ruta_imagen)) }}',
-                    @endforeach
+                    <?php $__currentLoopData = $producto->imagenes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $imagen): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        '<?php echo e(asset(Storage::url($imagen->ruta_imagen))); ?>',
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 ];
                 window.currentZoomIndex = 0;
 
                 // Update pagination dots
-                updatePaginationDots({{ $totalImagenes }});
+                updatePaginationDots(<?php echo e($totalImagenes); ?>);
             }
 
             // Smooth scroll for anchor links
@@ -1396,23 +1417,23 @@
                 console.log('Initial colorData:', colorData);
 
                 // Load images for each variant from the database
-                @foreach ($producto->variantes as $variante)
-                    console.log('Loading images for variant: {{ $variante->nombre }}');
-                    if (colorData['{{ $variante->nombre }}']) {
-                        colorData['{{ $variante->nombre }}'].imagenes = [
-                            @foreach ($variante->imagenes as $imagen)
-                                '{{ asset(Storage::url($imagen->ruta_imagen)) }}',
-                            @endforeach
+                <?php $__currentLoopData = $producto->variantes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $variante): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    console.log('Loading images for variant: <?php echo e($variante->nombre); ?>');
+                    if (colorData['<?php echo e($variante->nombre); ?>']) {
+                        colorData['<?php echo e($variante->nombre); ?>'].imagenes = [
+                            <?php $__currentLoopData = $variante->imagenes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $imagen): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                '<?php echo e(asset(Storage::url($imagen->ruta_imagen))); ?>',
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         ];
-                        console.log('Images loaded for {{ $variante->nombre }}:', colorData['{{ $variante->nombre }}'].imagenes);
-                        console.log('Image URLs for {{ $variante->nombre }}:');
-                        @foreach ($variante->imagenes as $imagen)
-                            console.log('  - {{ asset(Storage::url($imagen->ruta_imagen)) }}');
-                        @endforeach
+                        console.log('Images loaded for <?php echo e($variante->nombre); ?>:', colorData['<?php echo e($variante->nombre); ?>'].imagenes);
+                        console.log('Image URLs for <?php echo e($variante->nombre); ?>:');
+                        <?php $__currentLoopData = $variante->imagenes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $imagen): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            console.log('  - <?php echo e(asset(Storage::url($imagen->ruta_imagen))); ?>');
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     } else {
-                        console.log('No colorData found for variant: {{ $variante->nombre }}');
+                        console.log('No colorData found for variant: <?php echo e($variante->nombre); ?>');
                     }
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
                 console.log('Final colorData with images:', colorData);
 
@@ -1501,7 +1522,7 @@
                         const priceElement = document.querySelector(
                         '.text-4xl.font-bold.text-blue-600');
                         if (priceElement) {
-                            const basePrice = parseFloat('{{ $producto->precio ?? 0 }}');
+                            const basePrice = parseFloat('<?php echo e($producto->precio ?? 0); ?>');
                             const totalPrice = basePrice + colorInfo.precioAdicional;
                             priceElement.textContent = `$${totalPrice.toLocaleString('es-CO')}`;
                         }
@@ -1628,7 +1649,7 @@
             }
 
             // Validar nombre de usuario para usuarios no autenticados
-            @guest
+            <?php if(auth()->guard()->guest()): ?>
             const nombreUsuario = this.querySelector('input[name="nombre_usuario"]').value.trim();
             if (!nombreUsuario) {
                 if (typeof Swal !== 'undefined') {
@@ -1644,28 +1665,28 @@
                 }
                 return;
             }
-            @endguest
+            <?php endif; ?>
 
             // Enviar la reseña al backend
             console.log('Preparando datos para enviar...');
             const formData = new FormData();
             formData.append('calificacion', selectedRating);
             formData.append('comentario', comentario);
-            formData.append('_token', '{{ csrf_token() }}');
+            formData.append('_token', '<?php echo e(csrf_token()); ?>');
             
-            @guest
+            <?php if(auth()->guard()->guest()): ?>
             formData.append('nombre_usuario', nombreUsuario);
-            @endguest
+            <?php endif; ?>
 
-            const url = '{{ route("productos.resenas.store", $producto->producto_id) }}';
+            const url = '<?php echo e(route("productos.resenas.store", $producto->producto_id)); ?>';
             console.log('URL de envío:', url);
             console.log('Datos a enviar:', {
                 calificacion: selectedRating,
                 comentario: comentario,
-                _token: '{{ csrf_token() }}'
-                @guest
+                _token: '<?php echo e(csrf_token()); ?>'
+                <?php if(auth()->guard()->guest()): ?>
                 , nombre_usuario: nombreUsuario
-                @endguest
+                <?php endif; ?>
             });
 
             fetch(url, {
@@ -2058,31 +2079,53 @@
             
             // Verificar datos del producto
             const producto = {
-                id: {{ $producto->producto_id }},
-                nombre: '{{ $producto->nombre_producto }}',
-                precio: {{ $producto->precio }},
-                variantes: {{ $producto->variantes->count() }},
-                stock: {{ $producto->stock_disponible }}
+                id: <?php echo e($producto->producto_id); ?>,
+                nombre: '<?php echo e($producto->nombre_producto); ?>',
+                precio: <?php echo e($producto->precio); ?>,
+                variantes: <?php echo e($producto->variantes->count()); ?>,
+                stock: <?php echo e($producto->stock_disponible); ?>
+
             };
             
             console.log('Datos del producto:', producto);
             
             // Verificar si tiene variantes
-            const tieneVariantes = {{ $producto->variantes && $producto->variantes->count() > 0 ? 'true' : 'false' }};
+            const tieneVariantes = <?php echo e($producto->variantes && $producto->variantes->count() > 0 ? 'true' : 'false'); ?>;
             console.log('¿Tiene variantes?', tieneVariantes);
             
             if (tieneVariantes) {
                 console.log('Variantes disponibles:');
-                @foreach($producto->variantes as $variante)
-                    console.log('- {{ $variante->nombre }}: Stock {{ $variante->stock_disponible }}, Precio adicional ${{ $variante->precio_adicional }}');
-                @endforeach
+                <?php $__currentLoopData = $producto->variantes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $variante): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    console.log('- <?php echo e($variante->nombre); ?>: Stock <?php echo e($variante->stock_disponible); ?>, Precio adicional $<?php echo e($variante->precio_adicional); ?>');
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             }
         });
         
         console.log('=== SCRIPT INITIALIZATION COMPLETE ===');
     </script>
-@endpush
+<?php $__env->stopPush(); ?>
 
 <!-- Incluir modal de selección de variantes -->
-<x-variant-selection-modal />
+<?php if (isset($component)) { $__componentOriginal8d1b791df9c87636b07542bf53e5ba25 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal8d1b791df9c87636b07542bf53e5ba25 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.variant-selection-modal','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('variant-selection-modal'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal8d1b791df9c87636b07542bf53e5ba25)): ?>
+<?php $attributes = $__attributesOriginal8d1b791df9c87636b07542bf53e5ba25; ?>
+<?php unset($__attributesOriginal8d1b791df9c87636b07542bf53e5ba25); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal8d1b791df9c87636b07542bf53e5ba25)): ?>
+<?php $component = $__componentOriginal8d1b791df9c87636b07542bf53e5ba25; ?>
+<?php unset($__componentOriginal8d1b791df9c87636b07542bf53e5ba25); ?>
+<?php endif; ?>
 
+
+<?php echo $__env->make('layouts.landing', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\osman\OneDrive\Documentos\GitHub\4GMovil\resources\views/productos/show.blade.php ENDPATH**/ ?>

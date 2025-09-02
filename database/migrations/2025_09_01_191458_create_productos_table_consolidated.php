@@ -33,6 +33,7 @@ return new class extends Migration
             
             // ===== ESTADO DEL PRODUCTO =====
             $table->enum('estado', ['nuevo', 'usado'])->default('nuevo');
+            $table->boolean('activo')->default(true);
             
             // ===== SISTEMA DE STOCK RESERVADO =====
             $table->integer('stock_reservado')->default(0);
@@ -54,6 +55,7 @@ return new class extends Migration
             $table->index('categoria_id');
             $table->index('marca_id');
             $table->index('precio');
+            $table->index('activo');
             
             // ===== DOCUMENTACIÓN =====
             $table->comment('Tabla consolidada de productos - Sistema de e-commerce 4GMovil');

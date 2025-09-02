@@ -28,10 +28,10 @@ class CategoriaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombre_categoria' => 'required|string|max:255|unique:categorias,nombre_categoria',
+            'nombre' => 'required|string|max:255|unique:categorias,nombre',
         ]);
 
-        $result = $this->categoriaService->createCategoria($request->only('nombre_categoria'));
+        $result = $this->categoriaService->createCategoria($request->only('nombre'));
 
         return redirect()
             ->route('categorias.index')
@@ -52,10 +52,10 @@ class CategoriaController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'nombre_categoria' => 'required|string|max:255|unique:categorias,nombre_categoria,' . $id . ',categoria_id',
+            'nombre' => 'required|string|max:255|unique:categorias,nombre,' . $id . ',categoria_id',
         ]);
 
-        $result = $this->categoriaService->updateCategoria($id, $request->only('nombre_categoria'));
+        $result = $this->categoriaService->updateCategoria($id, $request->only('nombre'));
 
         return redirect()
             ->route('categorias.index')

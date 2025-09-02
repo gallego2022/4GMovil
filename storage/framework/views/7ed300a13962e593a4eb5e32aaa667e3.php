@@ -1,26 +1,24 @@
-@extends('layouts.app-new')
+<?php $__env->startSection('title', 'Listado de Productos - 4GMovil'); ?>
 
-@section('title', 'Listado de Productos - 4GMovil')
-
-@push('datatables-css')
+<?php $__env->startPush('datatables-css'); ?>
 <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
 <link href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css" rel="stylesheet">
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('jquery-script')
+<?php $__env->startPush('jquery-script'); ?>
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('datatables-script')
+<?php $__env->startPush('datatables-script'); ?>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@php
+<?php
     function getEstadoClasses($estado) {
         $estado = strtolower(trim($estado));
         
@@ -48,9 +46,9 @@
                 ];
         }
     }
-@endphp
+?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="space-y-6">
          <!-- Vista móvil (cards) -->
      <div class="grid grid-cols-1 gap-4 sm:hidden" id="mobileCards">
@@ -64,7 +62,7 @@
              <!-- Botones de acción móvil -->
              <div class="flex flex-wrap items-center gap-2 mb-4">
                  <!-- Botón Crear Producto -->
-            <a href="{{ route('productos.create') }}" 
+            <a href="<?php echo e(route('productos.create')); ?>" 
                class="inline-flex items-center rounded-lg bg-gradient-to-r from-slate-600 to-gray-700 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:from-slate-700 hover:to-gray-800 transform hover:scale-105 transition-all duration-300 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600 hover:shadow-xl min-w-[180px] justify-center">
                 <svg class="-ml-0.5 mr-1.5 h-5 w-5 transition-transform duration-200 group-hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -122,33 +120,36 @@
             </div>
         </div>
 
-        @forelse($productos as $producto)
+        <?php $__empty_1 = true; $__currentLoopData = $productos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $producto): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
         <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden producto-card">
             <div class="p-4">
                 <div class="flex items-start space-x-4">
                     <!-- Imagen del producto -->
                     <div class="flex-shrink-0">
-                        @if($producto->imagenes->isNotEmpty())
-                        <img src="{{ asset('storage/' . $producto->imagenes[0]->ruta_imagen) }}" 
+                        <?php if($producto->imagenes->isNotEmpty()): ?>
+                        <img src="<?php echo e(asset('storage/' . $producto->imagenes[0]->ruta_imagen)); ?>" 
                              class="h-24 w-24 rounded-lg object-cover shadow-sm" 
-                             alt="{{ $producto->nombre_producto }}">
-                        @else
-                        <img src="{{ asset('img/Logo_2.png') }}" 
+                             alt="<?php echo e($producto->nombre_producto); ?>">
+                        <?php else: ?>
+                        <img src="<?php echo e(asset('img/Logo_2.png')); ?>" 
                              class="h-24 w-24 rounded-lg object-cover shadow-sm" 
                              alt="Sin imagen">
-                        @endif
+                        <?php endif; ?>
                     </div>
                     <!-- Información del producto -->
                     <div class="flex-1 min-w-0">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white truncate">
-                            {{ $producto->nombre_producto }}
+                            <?php echo e($producto->nombre_producto); ?>
+
                         </h3>
                         <div class="mt-1 flex flex-col space-y-1">
                             <p class="text-sm text-gray-500 dark:text-gray-400">
-                                ID: {{ $producto->producto_id }}
+                                ID: <?php echo e($producto->producto_id); ?>
+
                             </p>
                             <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                ${{ number_format($producto->precio, 2) }}
+                                $<?php echo e(number_format($producto->precio, 2)); ?>
+
                             </p>
                             
                             <!-- Información de Stock Mejorada -->
@@ -156,63 +157,66 @@
                                 <!-- Stock Total -->
                                 <div class="flex items-center justify-between">
                                     <span class="text-xs text-gray-500 dark:text-gray-400">Stock Total:</span>
-                                    <span class="text-xs font-medium text-gray-900 dark:text-gray-100">{{ $producto->stock }}</span>
+                                    <span class="text-xs font-medium text-gray-900 dark:text-gray-100"><?php echo e($producto->stock); ?></span>
                                 </div>
                                 
                                 <!-- Stock Disponible -->
                                 <div class="flex items-center justify-between">
                                     <span class="text-xs text-gray-500 dark:text-gray-400">Disponible:</span>
-                                    <span class="text-xs font-medium {{ $producto->stock_disponible > 10 ? 'text-green-600 dark:text-green-400' : ($producto->stock_disponible > 5 ? 'text-yellow-600 dark:text-yellow-400' : ($producto->stock_disponible > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-gray-400')) }}">
-                                        {{ $producto->stock_disponible }}
+                                    <span class="text-xs font-medium <?php echo e($producto->stock_disponible > 10 ? 'text-green-600 dark:text-green-400' : ($producto->stock_disponible > 5 ? 'text-yellow-600 dark:text-yellow-400' : ($producto->stock_disponible > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'))); ?>">
+                                        <?php echo e($producto->stock_disponible); ?>
+
                                     </span>
                                 </div>
                                 
                                 <!-- Stock Reservado (solo si hay) -->
-                                @if($producto->stock_reservado > 0)
+                                <?php if($producto->stock_reservado > 0): ?>
                                 <div class="flex items-center justify-between">
                                     <span class="text-xs text-gray-500 dark:text-gray-400">Reservado:</span>
-                                    <span class="text-xs font-medium text-blue-600 dark:text-blue-400">{{ $producto->stock_reservado }}</span>
+                                    <span class="text-xs font-medium text-blue-600 dark:text-blue-400"><?php echo e($producto->stock_reservado); ?></span>
                                 </div>
-                                @endif
+                                <?php endif; ?>
                                 
                                 <!-- Indicador de estado -->
-                                @if($producto->stock_disponible <= 0)
+                                <?php if($producto->stock_disponible <= 0): ?>
                                     <div class="flex items-center space-x-1 mt-1">
                                         <svg class="w-3 h-3 text-red-500" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
                                         </svg>
                                         <span class="text-xs text-red-600 dark:text-red-400">Sin stock disponible</span>
                                     </div>
-                                @elseif($producto->stock_reservado > $producto->stock * 0.5)
+                                <?php elseif($producto->stock_reservado > $producto->stock * 0.5): ?>
                                     <div class="flex items-center space-x-1 mt-1">
                                         <svg class="w-3 h-3 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
                                         </svg>
                                         <span class="text-xs text-yellow-600 dark:text-yellow-400">Alto stock reservado</span>
                                     </div>
-                                @endif
+                                <?php endif; ?>
                             </div>
                             <p class="text-sm text-gray-500 dark:text-gray-400">
-                                Categoría: {{ $producto->categoria->nombre ?? 'Sin categoría' }}
+                                Categoría: <?php echo e($producto->categoria->nombre ?? 'Sin categoría'); ?>
+
                             </p>
                             <p class="text-sm text-gray-500 dark:text-gray-400">
-                                Marca: {{ $producto->marca->nombre_marca ?? 'Sin marca' }}
+                                Marca: <?php echo e($producto->marca->nombre_marca ?? 'Sin marca'); ?>
+
                             </p>
                         </div>
                     </div>
                 </div>
                 <!-- Botones de acción -->
                 <div class="mt-4 flex justify-end space-x-2">
-                    <a href="{{ route('productos.edit', $producto) }}" 
+                    <a href="<?php echo e(route('productos.edit', $producto)); ?>" 
                        class="inline-flex items-center rounded-md bg-white dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600">
                         <svg class="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400 dark:text-gray-300" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z"/>
                         </svg>
                         Editar
                     </a>
-                    <form action="{{ route('productos.destroy', $producto) }}" method="POST" class="form-eliminar inline">
-                        @csrf
-                        @method('DELETE')
+                    <form action="<?php echo e(route('productos.destroy', $producto)); ?>" method="POST" class="form-eliminar inline">
+                        <?php echo csrf_field(); ?>
+                        <?php echo method_field('DELETE'); ?>
                         <button type="submit" 
                                 class="inline-flex items-center rounded-md bg-red-50 dark:bg-red-950 px-3 py-2 text-sm font-semibold text-red-700 dark:text-red-300 shadow-sm ring-1 ring-inset ring-red-600/20 dark:ring-red-900/20 hover:bg-red-100 dark:hover:bg-red-900">
                             <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -224,11 +228,11 @@
                 </div>
             </div>
         </div>
-        @empty
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
         <div class="text-center py-4 text-sm text-gray-500 dark:text-gray-400">
             No hay productos registrados en el sistema
         </div>
-        @endforelse
+        <?php endif; ?>
     </div>
 
     <!-- Vista escritorio (tabla) -->
@@ -243,7 +247,7 @@
                      </div>
 
                        <!-- Botón Crear Producto -->
-                    <a href="{{ route('productos.create') }}" 
+                    <a href="<?php echo e(route('productos.create')); ?>" 
                     class="group inline-flex items-center rounded-xl bg-gradient-to-r from-slate-600 to-gray-700 px-8 py-4 text-base font-semibold text-white shadow-lg hover:from-slate-700 hover:to-gray-800 transform hover:scale-105 transition-all duration-300 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600 hover:shadow-xl min-w-[180px] justify-center">
                      <svg class="-ml-0.5 mr-3 h-6 w-6 transition-transform duration-300 group-hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -316,83 +320,87 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 text-sm">
-                            @forelse($productos as $producto)
+                            <?php $__empty_1 = true; $__currentLoopData = $productos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $producto): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 ease-in-out border-b border-gray-100 dark:border-gray-800">
-                            <td class="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">{{ $producto->producto_id }}</td>
+                            <td class="px-6 py-4 font-medium text-gray-900 dark:text-gray-100"><?php echo e($producto->producto_id); ?></td>
                             <td class="px-6 py-4">
-                                @if($producto->imagenes->isNotEmpty())
-                                <img src="{{ asset('storage/' . $producto->imagenes[0]->ruta_imagen) }}" 
+                                <?php if($producto->imagenes->isNotEmpty()): ?>
+                                <img src="<?php echo e(asset('storage/' . $producto->imagenes[0]->ruta_imagen)); ?>" 
                                      class="h-14 w-14 rounded-lg object-cover shadow-md border border-gray-200 dark:border-gray-700" 
-                                     alt="{{ $producto->nombre_producto }}">
-                                @else
-                                <img src="{{ asset('img/Logo_2.png') }}" 
+                                     alt="<?php echo e($producto->nombre_producto); ?>">
+                                <?php else: ?>
+                                <img src="<?php echo e(asset('img/Logo_2.png')); ?>" 
                                      class="h-14 w-14 rounded-lg object-cover shadow-md border border-gray-200 dark:border-gray-700" 
                                      alt="Sin imagen">
-                                @endif
+                                <?php endif; ?>
                             </td>
-                            <td class="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">{{ $producto->nombre_producto }}</td>
-                            <td class="px-6 py-4 font-semibold text-gray-900 dark:text-gray-100">${{ number_format($producto->precio, 0, ',', '.') }}</td>
+                            <td class="px-6 py-4 font-medium text-gray-900 dark:text-gray-100"><?php echo e($producto->nombre_producto); ?></td>
+                            <td class="px-6 py-4 font-semibold text-gray-900 dark:text-gray-100">$<?php echo e(number_format($producto->precio, 0, ',', '.')); ?></td>
                             <td class="px-6 py-4">
                                 <div class="flex flex-col space-y-1">
                                     <!-- Stock Total -->
                                     <div class="flex items-center space-x-2">
                                         <span class="text-xs text-gray-500 dark:text-gray-400">Total:</span>
                                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
-                                            {{ $producto->stock }}
+                                            <?php echo e($producto->stock); ?>
+
                                         </span>
                                     </div>
                                     
                                     <!-- Stock Disponible -->
                                     <div class="flex items-center space-x-2">
                                         <span class="text-xs text-gray-500 dark:text-gray-400">Disponible:</span>
-                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ $producto->stock_disponible > 10 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : ($producto->stock_disponible > 5 ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' : ($producto->stock_disponible > 0 ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300')) }}">
-                                            {{ $producto->stock_disponible }}
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium <?php echo e($producto->stock_disponible > 10 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : ($producto->stock_disponible > 5 ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' : ($producto->stock_disponible > 0 ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'))); ?>">
+                                            <?php echo e($producto->stock_disponible); ?>
+
                                         </span>
                                     </div>
                                     
                                     <!-- Stock Reservado (solo si hay) -->
-                                    @if($producto->stock_reservado > 0)
+                                    <?php if($producto->stock_reservado > 0): ?>
                                     <div class="flex items-center space-x-2">
                                         <span class="text-xs text-gray-500 dark:text-gray-400">Reservado:</span>
                                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
-                                            {{ $producto->stock_reservado }}
+                                            <?php echo e($producto->stock_reservado); ?>
+
                                         </span>
                                     </div>
-                                    @endif
+                                    <?php endif; ?>
                                     
                                     <!-- Indicador de estado -->
-                                    @if($producto->stock_disponible <= 0)
+                                    <?php if($producto->stock_disponible <= 0): ?>
                                         <div class="flex items-center space-x-1">
                                             <svg class="w-3 h-3 text-red-500" fill="currentColor" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
                                             </svg>
                                             <span class="text-xs text-red-600 dark:text-red-400">Sin stock disponible</span>
                                         </div>
-                                    @elseif($producto->stock_reservado > $producto->stock * 0.5)
+                                    <?php elseif($producto->stock_reservado > $producto->stock * 0.5): ?>
                                         <div class="flex items-center space-x-1">
                                             <svg class="w-3 h-3 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
                                             </svg>
                                             <span class="text-xs text-yellow-600 dark:text-yellow-400">Alto stock reservado</span>
                                         </div>
-                                    @endif
+                                    <?php endif; ?>
                                 </div>
                             </td>
                             <td class="px-6 py-4">
-                                @php
+                                <?php
                                     $estadoClasses = getEstadoClasses($producto->estado);
-                                @endphp
-                                <span class="inline-flex items-center rounded-full {{ $estadoClasses['bg'] }} px-3 py-1 text-sm font-medium {{ $estadoClasses['text'] }} ring-1 ring-inset {{ $estadoClasses['ring'] }}">
-                                    {{ ucfirst($producto->estado) }}
+                                ?>
+                                <span class="inline-flex items-center rounded-full <?php echo e($estadoClasses['bg']); ?> px-3 py-1 text-sm font-medium <?php echo e($estadoClasses['text']); ?> ring-1 ring-inset <?php echo e($estadoClasses['ring']); ?>">
+                                    <?php echo e(ucfirst($producto->estado)); ?>
+
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-gray-700 dark:text-gray-300">{{ $producto->categoria->nombre ?? 'Sin categoría' }}</td>
-                            <td class="px-6 py-4 text-gray-700 dark:text-gray-300">{{ $producto->marca->nombre_marca ?? 'Sin marca' }}</td>
+                            <td class="px-6 py-4 text-gray-700 dark:text-gray-300"><?php echo e($producto->categoria->nombre ?? 'Sin categoría'); ?></td>
+                            <td class="px-6 py-4 text-gray-700 dark:text-gray-300"><?php echo e($producto->marca->nombre_marca ?? 'Sin marca'); ?></td>
                             <td class="px-6 py-4 text-center">
                                 <div class="flex items-center justify-center gap-3">
                                     <!-- Botón Editar -->
                                     <div class="relative group">
-                                        <a href="{{ route('productos.edit', $producto) }}" 
+                                        <a href="<?php echo e(route('productos.edit', $producto)); ?>" 
                                            class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/50 dark:hover:bg-blue-900 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-all duration-200 ease-in-out transform hover:scale-110">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
                                                 stroke="currentColor">
@@ -408,9 +416,9 @@
 
                                     <!-- Botón Eliminar -->
                                     <div class="relative group">
-                                        <form action="{{ route('productos.destroy', $producto) }}" method="POST" class="form-eliminar inline">
-                                            @csrf
-                                            @method('DELETE')
+                                        <form action="<?php echo e(route('productos.destroy', $producto)); ?>" method="POST" class="form-eliminar inline">
+                                            <?php echo csrf_field(); ?>
+                                            <?php echo method_field('DELETE'); ?>
                                             <button type="submit" 
                                                 class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-red-50 hover:bg-red-100 dark:bg-red-900/50 dark:hover:bg-red-900 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-all duration-200 ease-in-out transform hover:scale-110">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
@@ -428,13 +436,13 @@
                                 </div>
                             </td>
                             </tr>
-                            @empty
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                             <tr>
                             <td colspan="9" class="px-4 py-2 text-center text-gray-500 dark:text-gray-400">
                                     No hay productos registrados en el sistema
                                 </td>
                             </tr>
-                            @endforelse
+                            <?php endif; ?>
                         </tbody>
                     </table>
             </div>
@@ -442,19 +450,19 @@
     </div>
 </div>
 
-@if(session('success'))
+<?php if(session('success')): ?>
 <script>
     Swal.fire({
         icon: 'success',
         title: '¡Éxito!',
-        text: "{{ session('success') }}",
+        text: "<?php echo e(session('success')); ?>",
         timer: 2500,
         showConfirmButton: false
     });
 </script>
-@endif
+<?php endif; ?>
 
-@if(session('eliminado') == 'ok')
+<?php if(session('eliminado') == 'ok'): ?>
 <script>
     Swal.fire({
         title: 'Eliminado',
@@ -464,9 +472,9 @@
         showConfirmButton: false
     });
 </script>
-@endif
+<?php endif; ?>
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
     /* Ocultar completamente los botones por defecto de DataTables */
     .dt-buttons {
@@ -639,13 +647,13 @@
          transform: translateY(-1px) !important;
      }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
     $(document).ready(function() {
         // Verificar si hay datos antes de inicializar DataTables
-        var hasData = {{ $productos->count() > 0 ? 'true' : 'false' }};
+        var hasData = <?php echo e($productos->count() > 0 ? 'true' : 'false'); ?>;
         
         if (hasData) {
             // Inicializar DataTable solo si hay datos
@@ -944,6 +952,8 @@
         });
     });
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app-new', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\osman\OneDrive\Documentos\GitHub\4GMovil\resources\views/pages/admin/productos/listadoP.blade.php ENDPATH**/ ?>
