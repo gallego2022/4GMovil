@@ -229,9 +229,10 @@ class CheckoutController extends Controller
                     // Crear el pago en la base de datos
                     $pago = Pago::create([
                         'pedido_id' => $pedido->pedido_id,
-                        'metodo_pago_id' => $request->metodo_pago_id,
+                        'metodo_id' => $request->metodo_pago_id,
                         'monto' => $total,
                         'estado' => 'pendiente',
+                        'fecha_pago' => now(),
                         'referencia' => 'STRIPE-' . time()
                     ]);
 
@@ -294,9 +295,10 @@ class CheckoutController extends Controller
                     // Crear el pago
                     Pago::create([
                         'pedido_id' => $pedido->pedido_id,
-                        'metodo_pago_id' => $request->metodo_pago_id,
+                        'metodo_id' => $request->metodo_pago_id,
                         'monto' => $total,
                         'estado' => 'pendiente',
+                        'fecha_pago' => now(),
                         'referencia' => 'EFECTIVO-' . time()
                     ]);
 
@@ -385,7 +387,7 @@ class CheckoutController extends Controller
 
             Log::info('Pedido encontrado y verificado', [
                 'pedido_id' => $pedido->pedido_id,
-                'usuario_id' => $pedido->usuario_id
+                'usuario_id' => $pedido->pedido_id
             ]);
 
             return view('checkout.success', compact('pedido'));
@@ -405,6 +407,57 @@ class CheckoutController extends Controller
             ]);
             return redirect()->route('landing')
                 ->with('mensaje', 'Hubo un error al mostrar el detalle de tu pedido')
+                ->with('tipo', 'error');
+        }
+    }
+
+    /**
+     * Manejar la cancelación del checkout
+     */
+    public function cancel($pedido_id)
+    {
+        try {
+            Log::info('Iniciando checkout.cancel', ['pedido_id' => $pedido_id]);
+
+            // Buscar el pedido y verificar que pertenezca al usuario autenticado
+            $pedido = Pedido::where('usuario_id', Auth::id())
+                ->where('pedido_id', $pedido_id)
+                ->firstOrFail();
+
+            // Si hay un pago pendiente, cancelarlo
+            if ($pedido->pago && $pedido->pago->estado === 'pendiente') {
+                $pedido->pago->update(['estado' => 'cancelado']);
+            }
+
+            // Cancelar las reservas de stock
+            $this->reservaStockService->cancelarReservasPedido($pedido->pedido_id, Auth::id(), 'Cancelación de checkout');
+
+            // Cambiar el estado del pedido a cancelado
+            $pedido->update(['estado_id' => 5]); // Asumiendo que 5 es el estado "cancelado"
+
+            Log::info('Checkout cancelado exitosamente', [
+                'pedido_id' => $pedido->pedido_id,
+                'usuario_id' => Auth::id()
+            ]);
+
+            return view('checkout.cancel', compact('pedido'));
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            Log::warning('Intento de cancelar pedido no existente o no autorizado', [
+                'pedido_id' => $pedido_id,
+                'user_id' => Auth::id()
+            ]);
+            return redirect()->route('landing')
+                ->with('mensaje', 'El pedido solicitado no existe o no tienes permiso para cancelarlo')
+                ->with('tipo', 'error');
+        } catch (\Exception $e) {
+            Log::error('Error en checkout.cancel: ' . $e->getMessage(), [
+                'exception' => $e,
+                'pedido_id' => $pedido_id,
+                'user_id' => Auth::id()
+            ]);
+            return redirect()->route('landing')
+                ->with('mensaje', 'Hubo un error al cancelar el pedido. Por favor, contacta al soporte.')
                 ->with('tipo', 'error');
         }
     }
