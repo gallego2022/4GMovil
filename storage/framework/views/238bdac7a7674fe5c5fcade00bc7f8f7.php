@@ -1,0 +1,81 @@
+<?php $__env->startSection('title', 'Error - <?php echo e($exception->getStatusCode() ?? 'Desconocido'); ?>'); ?>
+
+<?php $__env->startSection('content'); ?>
+    <!-- Código de error -->
+    <div class="error-code"><?php echo e($exception->getStatusCode() ?? '???'); ?></div>
+    
+    <!-- Icono -->
+    <div class="error-icon">
+        <i class="fas fa-exclamation-triangle"></i>
+    </div>
+    
+    <!-- Título -->
+    <h1 class="error-title">¡Algo salió mal!</h1>
+    
+    <!-- Descripción -->
+    <p class="error-description">
+        <?php echo e($exception->getMessage() ?? 'Ha ocurrido un error inesperado. Por favor, intenta nuevamente.'); ?>
+
+    </p>
+    
+    <!-- Botones de acción -->
+    <div class="error-actions">
+        <a href="<?php echo e(route('landing')); ?>" class="error-btn error-btn-primary">
+            <i class="fas fa-home"></i>
+            Ir al Inicio
+        </a>
+        <button onclick="window.history.back()" class="error-btn error-btn-secondary">
+            <i class="fas fa-arrow-left"></i>
+            Volver Atrás
+        </button>
+    </div>
+    
+    <!-- Información de contacto -->
+    <div class="error-info">
+        <h4>¿Necesitas ayuda?</h4>
+        <p>
+            Si el problema persiste, contacta con nuestro equipo de soporte.
+        </p>
+        <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem; align-items: center;">
+            <div style="color: rgba(255, 255, 255, 0.9); display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-envelope"></i> 
+                <span>soporte@4gmovil.com</span>
+            </div>
+            <div style="color: rgba(255, 255, 255, 0.9); display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-phone"></i> 
+                <span>+57 300 123 4567</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Información técnica (solo en desarrollo) -->
+    <?php if(app()->environment('local') && isset($exception)): ?>
+        <div class="error-info" style="text-align: left; font-family: monospace; font-size: 0.8rem;">
+            <h4>Información Técnica</h4>
+            <div style="background: rgba(0, 0, 0, 0.3); padding: 1rem; border-radius: 8px; margin-top: 0.5rem;">
+                <p><strong>Archivo:</strong> <?php echo e($exception->getFile() ?? 'N/A'); ?></p>
+                <p><strong>Línea:</strong> <?php echo e($exception->getLine() ?? 'N/A'); ?></p>
+                <p><strong>Código:</strong> <?php echo e($exception->getCode() ?? 'N/A'); ?></p>
+            </div>
+        </div>
+    <?php endif; ?>
+    
+    <!-- Servicios de ayuda -->
+    <div class="error-services">
+        <div class="error-service-card">
+            <div class="error-service-icon">
+                <i class="fas fa-life-ring" style="color: #ef4444;"></i>
+            </div>
+            <h3 class="error-service-title">Soporte</h3>
+            <p class="error-service-description">Nuestro equipo está disponible para ayudarte</p>
+        </div>
+        <div class="error-service-card">
+            <div class="error-service-icon">
+                <i class="fas fa-bug" style="color: #f59e0b;"></i>
+            </div>
+            <h3 class="error-service-title">Reportar</h3>
+            <p class="error-service-description">Ayúdanos a mejorar reportando este error</p>
+        </div>
+    </div>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.error', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\osman\OneDrive\Documentos\GitHub\4GMovil\resources\views\errors\generico.blade.php ENDPATH**/ ?>

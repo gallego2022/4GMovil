@@ -87,6 +87,7 @@ return [
     */
 
     'table' => env('SESSION_TABLE', 'sessions'),
+    'model' => App\Models\Session::class,
 
     /*
     |--------------------------------------------------------------------------

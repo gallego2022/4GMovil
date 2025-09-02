@@ -69,14 +69,14 @@ return new class extends Migration
         // ===== TABLA DE SESSIONS (Laravel por defecto) =====
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
-            $table->unsignedBigInteger('usuario_id')->nullable()->index();  // Cambiado de user_id a usuario_id
+            $table->unsignedBigInteger('user_id')->nullable()->index();  // Laravel espera user_id
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->longText('payload');
             $table->integer('last_activity')->index();
             
-            // Clave foránea a la tabla usuarios
-            $table->foreign('usuario_id')
+            // Clave foránea a la tabla usuarios (usando user_id para compatibilidad con Laravel)
+            $table->foreign('user_id')
                   ->references('usuario_id')
                   ->on('usuarios')
                   ->onDelete('cascade');

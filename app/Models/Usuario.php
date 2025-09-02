@@ -68,6 +68,17 @@ class Usuario extends Authenticatable implements MustVerifyEmail, CanResetPasswo
         return $this->contrasena;
     }
 
+    // Configuración para sesiones - Laravel espera 'id' como identificador
+    public function getAuthIdentifierName()
+    {
+        return 'usuario_id';
+    }
+
+    public function getAuthIdentifier()
+    {
+        return $this->usuario_id;
+    }
+
     // Verificar si el usuario puede hacer login manual (tiene contraseña)
     public function canLoginManually()
     {
