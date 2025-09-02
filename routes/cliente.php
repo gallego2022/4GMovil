@@ -1,10 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ResenaController;
-use App\Http\Controllers\EstadoPedidoController;
-use App\Http\Controllers\PedidoController;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Admin\ProductoController;
+use App\Http\Controllers\Cliente\EstadoPedidoController;
+use App\Http\Controllers\Admin\PedidoController;
 
 Route::middleware(['auth', 'email.verified'])->group(function () {
     // Rutas de logout para clientes
@@ -24,8 +24,15 @@ Route::middleware(['auth', 'email.verified'])->group(function () {
         Route::get('/{pedido}', [PedidoController::class, 'detalle'])->name('detalle');
     });
 
-    // Rutas de resenas para clientes
-    Route::resource('resenas', ResenaController::class);
+    // Rutas de resenas para clientes (consolidadas en ProductoController)
+    Route::prefix('productos/{productoId}/resenas')->name('productos.resenas.')->group(function () {
+        Route::get('/', [ProductoController::class, 'resenasIndex'])->name('index');
+        Route::get('/create', [ProductoController::class, 'resenasCreate'])->name('create');
+        Route::post('/', [ProductoController::class, 'resenasStore'])->name('store');
+        Route::get('/{resenaId}/edit', [ProductoController::class, 'resenasEdit'])->name('edit');
+        Route::put('/{resenaId}', [ProductoController::class, 'resenasUpdate'])->name('update');
+        Route::delete('/{resenaId}', [ProductoController::class, 'resenasDestroy'])->name('destroy');
+    });
     // Rutas de estados de pedido para clientes
     Route::resource('estados-pedido', EstadoPedidoController::class);
 });

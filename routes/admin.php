@@ -2,19 +2,18 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ProductoController;
-use App\Http\Controllers\ImagenProductoController;
-use App\Http\Controllers\UsuarioController;
-use App\Http\Controllers\CategoriaController;
-use App\Http\Controllers\MarcaController;
-use App\Http\Controllers\PedidoController;      
-use App\Http\Controllers\DetallePedidoController;
-use App\Http\Controllers\DireccionController;
-use App\Http\Controllers\MetodoPagoController;
-use App\Http\Controllers\PagoController;
+use App\Http\Controllers\Servicios\DashboardController;
+use App\Http\Controllers\Admin\ProductoController;
+use App\Http\Controllers\Admin\UsuarioController;
+use App\Http\Controllers\Admin\CategoriaController;
+use App\Http\Controllers\Admin\MarcaController;
+use App\Http\Controllers\Admin\PedidoController;      
+use App\Http\Controllers\Cliente\DetallePedidoController;
+use App\Http\Controllers\Cliente\DireccionController;
+use App\Http\Controllers\Admin\MetodoPagoController;
+use App\Http\Controllers\Admin\PagoController;
 use App\Http\Controllers\Admin\PedidoAdminController;
-use App\Http\Controllers\InventarioController;
+use App\Http\Controllers\Admin\InventarioController;
 use App\Http\Controllers\Admin\EspecificacionController;
 
 // Solo accesibles por usuarios autenticados y administradores
@@ -34,13 +33,13 @@ Route::prefix('admin/productos')->name('admin.productos.')->group(function () {
         'destroy' => 'destroy'
     ]);
     Route::get('/listadoP', [ProductoController::class, 'listado'])->name('listadoP');
-    Route::delete('/imagenes/{id}', [ImagenProductoController::class, 'destroy'])->name('imagenes.destroy');
+    Route::delete('/imagenes/{id}', [ProductoController::class, 'destroyImagen'])->name('imagenes.destroy');
 });
 
 // Rutas de productos sin prefijo (para compatibilidad) - MOVIDAS DENTRO DEL MIDDLEWARE
 // Primero las rutas específicas
 Route::get('/productos/listadoP', [ProductoController::class, 'listado'])->name('productos.listadoP');
-Route::delete('/imagenes/{id}', [ImagenProductoController::class, 'destroy'])->name('imagenes.destroy');
+Route::delete('/imagenes/{id}', [ProductoController::class, 'destroyImagen'])->name('imagenes.destroy');
 
 // Después las rutas con parámetros dinámicos
 Route::resource('productos', ProductoController::class);

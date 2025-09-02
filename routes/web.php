@@ -2,28 +2,24 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\Auth\ForgotPasswordController;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Carbon;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CheckoutController;
-use App\Http\Controllers\DireccionController;
-use App\Http\Controllers\Auth\GoogleController;
-use App\Http\Controllers\StripeController;
-use App\Http\Controllers\PedidoController;
-use App\Http\Controllers\ProductoController;
-use App\Http\Controllers\ContactoController;
-use App\Http\Controllers\ServicioTecnicoController;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Cliente\CheckoutController;
+use App\Http\Controllers\Cliente\DireccionController;
+use App\Http\Controllers\Servicios\StripeController;
+use App\Http\Controllers\Admin\PedidoController;
+use App\Http\Controllers\Admin\ProductoController;
+use App\Http\Controllers\Publico\ContactoController;
 
 
 // Test de errores
-Route::get('/test-errors', [App\Http\Controllers\TestErrorController::class, 'testErrors'])
+Route::get('/test-errors', [App\Http\Controllers\Servicios\TestErrorController::class, 'testErrors'])
     ->name('test.errors');
 
 // Google
-Route::get('/auth/redirect/google', [GoogleController::class, 'redirectToGoogle'])->name('google.redirect');
-Route::get('/auth/callback/google', [GoogleController::class, 'handleGoogleCallback'])->name('google.callback');
+Route::get('/auth/redirect/google', [AuthController::class, 'redirectToGoogle'])->name('google.redirect');
+Route::get('/auth/callback/google', [AuthController::class, 'handleGoogleCallback'])->name('google.callback');
 
 // Rutas de autenticación
 Route::middleware(['auth'])->group(function () {
@@ -33,30 +29,30 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Verificación OTP
-Route::get('/otp/verify', [App\Http\Controllers\OtpController::class, 'showVerificationForm'])->name('otp.verify.form');
-Route::get('/otp/verify/register', [App\Http\Controllers\OtpController::class, 'showRegisterVerificationForm'])->name('otp.verify.register');
-Route::post('/otp/send', [App\Http\Controllers\OtpController::class, 'sendOtp'])->name('otp.send');
-Route::post('/otp/verify', [App\Http\Controllers\OtpController::class, 'verifyOtp'])->name('otp.verify');
+Route::get('/otp/verify', [App\Http\Controllers\Publico\OtpController::class, 'showVerificationForm'])->name('otp.verify.form');
+Route::get('/otp/verify/register', [App\Http\Controllers\Publico\OtpController::class, 'showRegisterVerificationForm'])->name('otp.verify.register');
+Route::post('/otp/send', [App\Http\Controllers\Publico\OtpController::class, 'sendOtp'])->name('otp.send');
+Route::post('/otp/verify', [App\Http\Controllers\Publico\OtpController::class, 'verifyOtp'])->name('otp.verify');
 
 // OTP para restablecimiento de contraseña
-Route::post('/otp/password-reset/send', [App\Http\Controllers\OtpController::class, 'sendPasswordResetOtp'])->name('otp.password.reset.send');
-Route::post('/otp/password-reset/verify', [App\Http\Controllers\OtpController::class, 'verifyPasswordResetOtp'])->name('otp.password.reset.verify');
+Route::post('/otp/password-reset/send', [App\Http\Controllers\Publico\OtpController::class, 'sendPasswordResetOtp'])->name('otp.password.reset.send');
+Route::post('/otp/password-reset/verify', [App\Http\Controllers\Publico\OtpController::class, 'verifyPasswordResetOtp'])->name('otp.password.reset.verify');
 
 // Limpiar códigos OTP expirados (mantenimiento)
-Route::post('/otp/cleanup', [App\Http\Controllers\OtpController::class, 'limpiarExpirados'])->name('otp.cleanup');
+Route::post('/otp/cleanup', [App\Http\Controllers\Publico\OtpController::class, 'limpiarExpirados'])->name('otp.cleanup');
 
 // Sistema de verificación OTP implementado - rutas legacy eliminadas
 
 // Recuperación de contraseña con OTP
-Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
-Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
-Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
-Route::get('password/reset/otp', [ResetPasswordController::class, 'showResetForm'])->name('password.reset.otp');
-Route::post('password/reset/otp', [ResetPasswordController::class, 'showResetForm'])->name('password.reset.otp.post');
-Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+Route::get('password/reset', [AuthController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('password/email', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('password/reset/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
+Route::get('password/reset/otp', [AuthController::class, 'showResetForm'])->name('password.reset.otp');
+Route::post('password/reset/otp', [AuthController::class, 'showResetForm'])->name('password.reset.otp.post');
+Route::post('password/reset', [AuthController::class, 'reset'])->name('password.update');
 
 // Establecer contraseña para usuarios de Google
-Route::post('/google/set-password', [App\Http\Controllers\Auth\GooglePasswordController::class, 'setPassword'])
+Route::post('/google/set-password', [AuthController::class, 'setPassword'])
     ->name('google.set-password')
     ->middleware('auth');
 
@@ -82,23 +78,23 @@ Route::middleware(['auth'])->group(function () {
 
 // Rutas del carrito
 Route::middleware(['auth'])->group(function () {
-    Route::post('/carrito/agregar', [App\Http\Controllers\CarritoController::class, 'agregar'])->name('carrito.agregar');
-    Route::post('/carrito/actualizar', [App\Http\Controllers\CarritoController::class, 'actualizar'])->name('carrito.actualizar');
-    Route::post('/carrito/eliminar', [App\Http\Controllers\CarritoController::class, 'eliminar'])->name('carrito.eliminar');
-    Route::post('/carrito/limpiar', [App\Http\Controllers\CarritoController::class, 'limpiar'])->name('carrito.limpiar');
-    Route::get('/carrito/obtener', [App\Http\Controllers\CarritoController::class, 'obtener'])->name('carrito.obtener');
-    Route::get('/carrito/verificar-stock', [App\Http\Controllers\CarritoController::class, 'verificarStock'])->name('carrito.verificar-stock');
+    Route::post('/carrito/agregar', [App\Http\Controllers\Cliente\CarritoController::class, 'agregar'])->name('carrito.agregar');
+    Route::post('/carrito/actualizar', [App\Http\Controllers\Cliente\CarritoController::class, 'actualizar'])->name('carrito.actualizar');
+    Route::post('/carrito/eliminar', [App\Http\Controllers\Cliente\CarritoController::class, 'eliminar'])->name('carrito.eliminar');
+    Route::post('/carrito/limpiar', [App\Http\Controllers\Cliente\CarritoController::class, 'limpiar'])->name('carrito.limpiar');
+    Route::get('/carrito/obtener', [App\Http\Controllers\Cliente\CarritoController::class, 'obtener'])->name('carrito.obtener');
+    Route::get('/carrito/verificar-stock', [App\Http\Controllers\Cliente\CarritoController::class, 'verificarStock'])->name('carrito.verificar-stock');
 });
 
 // Rutas de productos con variantes
-Route::get('/productos-variantes', [App\Http\Controllers\ProductoVariantesController::class, 'index'])->name('productos.variantes');
-Route::get('/productos-variantes/{producto}', [App\Http\Controllers\ProductoVariantesController::class, 'show'])->name('productos.variantes.show');
-Route::get('/productos-variantes/{producto}/stock', [App\Http\Controllers\ProductoVariantesController::class, 'obtenerStock'])->name('productos.variantes.stock');
-Route::get('/productos-variantes/{producto}/variantes', [App\Http\Controllers\ProductoVariantesController::class, 'obtenerVariantes'])->name('productos.variantes.lista');
-Route::get('/productos-variantes/buscar', [App\Http\Controllers\ProductoVariantesController::class, 'buscar'])->name('productos.variantes.buscar');
-Route::get('/productos-variantes/categoria/{categoria}', [App\Http\Controllers\ProductoVariantesController::class, 'porCategoria'])->name('productos.variantes.categoria');
-Route::get('/productos-variantes/stock-bajo', [App\Http\Controllers\ProductoVariantesController::class, 'stockBajo'])->name('productos.variantes.stock-bajo');
-Route::get('/productos-variantes/sin-stock', [App\Http\Controllers\ProductoVariantesController::class, 'sinStock'])->name('productos.variantes.sin-stock');
+Route::get('/productos-variantes', [ProductoController::class, 'conVariantes'])->name('productos.variantes');
+Route::get('/productos-variantes/{producto}', [ProductoController::class, 'detalleConVariantes'])->name('productos.variantes.show');
+Route::get('/productos-variantes/{producto}/stock', [ProductoController::class, 'obtenerStock'])->name('productos.variantes.stock');
+Route::get('/productos-variantes/{producto}/variantes', [ProductoController::class, 'obtenerVariantes'])->name('productos.variantes.lista');
+Route::get('/productos-variantes/buscar', [ProductoController::class, 'buscarConVariantes'])->name('productos.variantes.buscar');
+Route::get('/productos-variantes/categoria/{categoria}', [ProductoController::class, 'porCategoriaConVariantes'])->name('productos.variantes.categoria');
+Route::get('/productos-variantes/stock-bajo', [ProductoController::class, 'stockBajo'])->name('productos.variantes.stock-bajo');
+Route::get('/productos-variantes/sin-stock', [ProductoController::class, 'sinStock'])->name('productos.variantes.sin-stock');
 
 // Rutas que requieren email verificado
 Route::middleware(['auth', 'email.verified'])->group(function () {
@@ -117,7 +113,7 @@ require __DIR__.'/publico.php';
 
 // Ruta para el formulario de contacto
 Route::post('/contacto/enviar', [ContactoController::class, 'enviarFormulario'])->name('contacto.enviar');
-Route::post('/servicio-tecnico/enviar', [ServicioTecnicoController::class, 'enviarFormulario'])->name('servicio-tecnico.enviar');
+Route::post('/servicio-tecnico/enviar', [ContactoController::class, 'enviarServicioTecnico'])->name('servicio-tecnico.enviar');
 
 // Ruta API para obtener especificaciones por categoría
 Route::get('/api/especificaciones/{categoriaId}', function ($categoriaId) {

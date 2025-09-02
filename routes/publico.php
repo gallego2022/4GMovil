@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\LandingController;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Publico\LandingController;
 use App\Http\Controllers\Publico\ProductoPublicoController;
 
 // Rutas públicas (accesibles para todos)
