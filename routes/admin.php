@@ -15,6 +15,7 @@ use App\Http\Controllers\MetodoPagoController;
 use App\Http\Controllers\PagoController;
 use App\Http\Controllers\Admin\PedidoAdminController;
 use App\Http\Controllers\InventarioController;
+use App\Http\Controllers\Admin\EspecificacionController;
 
 // Solo accesibles por usuarios autenticados y administradores
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -51,6 +52,22 @@ Route::resource('productos', ProductoController::class);
     Route::resource('categorias', CategoriaController::class);
 // Marcas
     Route::resource('marcas', MarcaController::class);
+
+    // Especificaciones por Categoría
+    Route::prefix('admin/especificaciones')->name('admin.especificaciones.')->group(function () {
+        Route::get('/', [EspecificacionController::class, 'index'])->name('index');
+        Route::get('/create', [EspecificacionController::class, 'create'])->name('create');
+        Route::post('/', [EspecificacionController::class, 'store'])->name('store');
+        Route::get('/{id}', [EspecificacionController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [EspecificacionController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [EspecificacionController::class, 'update'])->name('update');
+        Route::delete('/{id}', [EspecificacionController::class, 'destroy'])->name('destroy');
+        
+        // Rutas adicionales
+        Route::get('/categoria/{categoriaId}', [EspecificacionController::class, 'getByCategoria'])->name('by-categoria');
+        Route::patch('/{id}/toggle-estado', [EspecificacionController::class, 'toggleEstado'])->name('toggle-estado');
+        Route::post('/reordenar', [EspecificacionController::class, 'reordenar'])->name('reordenar');
+    });
 
 // Recursos generales
 Route::resource('detalles-pedido', DetallePedidoController::class);

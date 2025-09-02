@@ -57,7 +57,7 @@ class ServicioTecnicoController extends Controller
             ];
 
             // Enviar email al administrador
-            Mail::to('osmandavidgallego@gmail.com')->send(new ServicioTecnicoFormulario($datosFormulario));
+            Mail::to('4gmoviltest@gmail.com')->send(new ServicioTecnicoFormulario($datosFormulario));
 
             // Enviar email de confirmación al usuario (si proporciona email)
             if ($request->email && filter_var($request->email, FILTER_VALIDATE_EMAIL)) {

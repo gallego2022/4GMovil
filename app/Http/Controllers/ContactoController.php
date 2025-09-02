@@ -58,7 +58,7 @@ class ContactoController extends Controller
             ];
 
             // Enviar email al administrador
-            Mail::to('osmandavidgallego@gmail.com')->send(new ContactoFormulario($datosFormulario));
+            Mail::to('4gmoviltest@gmail.com')->send(new ContactoFormulario($datosFormulario));
 
             // Enviar email de confirmación al usuario
             Mail::to($request->email)->send(new ContactoConfirmacion($datosFormulario));
