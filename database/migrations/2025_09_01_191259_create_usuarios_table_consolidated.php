@@ -15,6 +15,7 @@ return new class extends Migration
      * - Tabla usuarios (compatible con Laravel)
      * - Tabla password_reset_tokens (Laravel por defecto)
      * - Tabla sessions (Laravel por defecto)
+     * - Tabla otp_codes (códigos de verificación)
      * - Todos los campos necesarios para OAuth y Stripe
      */
     public function up(): void
@@ -81,6 +82,29 @@ return new class extends Migration
                   ->on('usuarios')
                   ->onDelete('cascade');
         });
+
+        // ===== TABLA DE CÓDIGOS OTP =====
+        Schema::create('otp_codes', function (Blueprint $table) {
+            $table->id('otp_id');
+            $table->unsignedBigInteger('usuario_id');
+            $table->string('codigo', 10);
+            $table->string('tipo', 50); // 'verificacion', 'reset_password', 'login', etc.
+            $table->timestamp('fecha_expiracion');
+            $table->boolean('usado')->default(false);
+            $table->timestamps();
+            
+            // Índices
+            $table->index(['usuario_id', 'tipo']);
+            $table->index(['codigo', 'tipo']);
+            $table->index('fecha_expiracion');
+            $table->index('usado');
+            
+            // Clave foránea
+            $table->foreign('usuario_id')
+                  ->references('usuario_id')
+                  ->on('usuarios')
+                  ->onDelete('cascade');
+        });
     }
 
     /**
@@ -88,6 +112,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('otp_codes');
         Schema::dropIfExists('sessions');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('usuarios');

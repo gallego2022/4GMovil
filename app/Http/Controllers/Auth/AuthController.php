@@ -187,6 +187,7 @@ class AuthController extends WebController
             $result = $this->authService->getPerfil();
             
             if ($result['success']) {
+                $usuario = $result['usuario'];
                 return view($result['view'], compact('usuario'));
             }
 

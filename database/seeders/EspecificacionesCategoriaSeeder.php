@@ -33,7 +33,7 @@ class EspecificacionesCategoriaSeeder extends Seeder
             DB::table('categorias')->insertOrIgnore([
                 'nombre' => $categoria['nombre'],
                 'descripcion' => 'Categoría de ' . $categoria['nombre'],
-                'activo' => true,
+                'estado' => true,
                 'orden' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -200,7 +200,7 @@ class EspecificacionesCategoriaSeeder extends Seeder
                 'unidad' => $espec['unidad'] ?? null,
                 'requerido' => $espec['requerido'],
                 'orden' => $espec['orden'],
-                'activo' => true,
+                'estado' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

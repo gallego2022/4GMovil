@@ -188,14 +188,24 @@
                                 <?php else: ?>
                                     <?php $__currentLoopData = $usuario->direcciones->take(2); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $direccion): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <div class="border-b border-gray-200 pb-3 last:border-b-0 last:pb-0">
-                                            <div class="flex items-center mb-1">
+                                            <div class="flex items-center justify-between mb-2">
                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo e($direccion->tipo_direccion === 'casa' ? 'bg-green-100 text-green-800' : ($direccion->tipo_direccion === 'apartamento' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800')); ?>">
                                                     <?php echo e(ucfirst($direccion->tipo_direccion)); ?>
 
                                                 </span>
+                                                <?php if($direccion->predeterminada): ?>
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                                        </svg>
+                                                        Principal
+                                                    </span>
+                                                <?php endif; ?>
                                             </div>
-                                            <p class="text-gray-900"><?php echo e($direccion->direccion); ?></p>
-                                            <p class="text-gray-600 text-sm"><?php echo e($direccion->ciudad); ?>, <?php echo e($direccion->departamento); ?></p>
+                                            <p class="text-gray-900 font-medium"><?php echo e($direccion->nombre_destinatario); ?></p>
+                                            <p class="text-gray-900"><?php echo e($direccion->direccion_completa); ?></p>
+                                            <p class="text-gray-600 text-sm"><?php echo e($direccion->ciudad); ?>, <?php echo e($direccion->provincia); ?></p>
+                                            <p class="text-gray-500 text-xs"><?php echo e($direccion->codigo_postal); ?></p>
                                         </div>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 <?php endif; ?>

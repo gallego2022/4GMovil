@@ -8,6 +8,7 @@ use App\Models\VarianteProducto;
 use App\Models\Direccion;
 use App\Models\MetodoPago;
 use App\Services\ReservaStockService;
+use App\Services\PedidoNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -101,19 +102,23 @@ class CheckoutService extends BaseService
             // Crear pago
             $pago = $this->createPayment($pedido, $checkoutData);
             
-            // Limpiar carrito y reserva
-            Session::forget('cart');
+            // Enviar correo de confirmación para métodos de pago no-Stripe
+            $this->enviarCorreoConfirmacionSiEsNecesario($pedido, $checkoutData['metodo_pago_id']);
+            
+            // Solo limpiar el carrito si todo fue exitoso
+            // El carrito se limpiará después de confirmar que no hay errores
+            // Session::forget('cart');
             // $this->reservaStockService->confirmarReserva($reservaId);
             
             $this->logOperation('checkout_procesado_exitosamente', [
-                'pedido_id' => $pedido->id,
+                'pedido_id' => $pedido->pedido_id,
                 'user_id' => Auth::id()
             ]);
 
             return [
                 'success' => true,
-                'pedido_id' => $pedido->id,
-                'pago_id' => $pago->id,
+                'pedido_id' => $pedido->pedido_id,
+                'pago_id' => $pago->pago_id,
                 'message' => 'Pedido procesado exitosamente'
             ];
 
@@ -152,7 +157,14 @@ class CheckoutService extends BaseService
     private function validateProductsAvailability(array $cart): void
     {
         foreach ($cart as $item) {
-            $producto = Producto::find($item['id']);
+            // Manejar tanto 'id' como 'producto_id' para compatibilidad
+            $productoId = $item['producto_id'] ?? $item['id'] ?? null;
+            
+            if (!$productoId) {
+                throw new Exception('ID de producto no encontrado en item del carrito');
+            }
+            
+            $producto = Producto::find($productoId);
             if (!$producto) {
                 throw new Exception('Uno o más productos ya no están disponibles');
             }
@@ -189,8 +201,8 @@ class CheckoutService extends BaseService
     private function validateCheckoutData(Request $request): array
     {
         $rules = [
-            'direccion_id' => 'required|exists:direcciones,id',
-            'metodo_pago_id' => 'required|exists:metodos_pago,id',
+            'direccion_id' => 'required|exists:direcciones,direccion_id',
+            'metodo_pago_id' => 'required|exists:metodos_pago,metodo_id',
             'notas' => 'nullable|string|max:500'
         ];
 
@@ -216,13 +228,23 @@ class CheckoutService extends BaseService
     private function validateStockAvailability(array $cart): void
     {
         foreach ($cart as $item) {
-            $producto = Producto::find($item['id']);
+            // Manejar tanto 'id' como 'producto_id' para compatibilidad
+            $productoId = $item['producto_id'] ?? $item['id'] ?? null;
+            
+            if (!$productoId) {
+                throw new Exception('ID de producto no encontrado en item del carrito');
+            }
+            
+            $producto = Producto::find($productoId);
+            
+            // Manejar tanto 'cantidad' como 'quantity' para compatibilidad
+            $cantidad = $item['cantidad'] ?? $item['quantity'] ?? 1;
             
             if (isset($item['variante_id'])) {
                 $variante = VarianteProducto::find($item['variante_id']);
-                $this->validateStock($variante->stock, $item['cantidad'], $producto->nombre_producto);
+                $this->validateStock($variante->stock, $cantidad, $producto->nombre_producto);
             } else {
-                $this->validateStock($producto->stock, $item['cantidad'], $producto->nombre_producto);
+                $this->validateStock($producto->stock, $cantidad, $producto->nombre_producto);
             }
         }
     }
@@ -235,10 +257,10 @@ class CheckoutService extends BaseService
         $pedido = \App\Models\Pedido::create([
             'usuario_id' => Auth::id(),
             'direccion_id' => $checkoutData['direccion_id'],
-            'metodo_pago_id' => $checkoutData['metodo_pago_id'],
-            'notas' => $checkoutData['notas'] ?? null,
-            'estado' => 'pendiente',
-            'total' => $this->calculateTotal($cart)
+            'estado_id' => 1, // Estado pendiente
+            'fecha_pedido' => now(),
+            'total' => $this->calculateTotal($cart),
+            'notas' => $checkoutData['notas'] ?? null
         ]);
 
         return $pedido;
@@ -250,7 +272,14 @@ class CheckoutService extends BaseService
     private function createOrderDetails($pedido, array $cart): void
     {
         foreach ($cart as $item) {
-            $producto = Producto::find($item['id']);
+            // Manejar tanto 'id' como 'producto_id' para compatibilidad
+            $productoId = $item['producto_id'] ?? $item['id'] ?? null;
+            
+            if (!$productoId) {
+                throw new Exception('ID de producto no encontrado en item del carrito');
+            }
+            
+            $producto = Producto::find($productoId);
             $precio = $producto->precio;
             
             if (isset($item['variante_id'])) {
@@ -258,13 +287,16 @@ class CheckoutService extends BaseService
                 $precio += $variante->precio_adicional ?? 0;
             }
 
+            // Manejar tanto 'cantidad' como 'quantity' para compatibilidad
+            $cantidad = $item['cantidad'] ?? $item['quantity'] ?? 1;
+            
             \App\Models\DetallePedido::create([
-                'pedido_id' => $pedido->id,
-                'producto_id' => $producto->id,
+                'pedido_id' => $pedido->pedido_id,
+                'producto_id' => $producto->producto_id,
                 'variante_id' => $item['variante_id'] ?? null,
-                'cantidad' => $item['cantidad'],
+                'cantidad' => $cantidad,
                 'precio_unitario' => $precio,
-                'subtotal' => $precio * $item['cantidad']
+                'subtotal' => $precio * $cantidad
             ]);
         }
     }
@@ -275,10 +307,11 @@ class CheckoutService extends BaseService
     private function createPayment($pedido, array $checkoutData)
     {
         return \App\Models\Pago::create([
-            'pedido_id' => $pedido->id,
-            'metodo_pago_id' => $checkoutData['metodo_pago_id'],
+            'pedido_id' => $pedido->pedido_id,
+            'metodo_id' => $checkoutData['metodo_pago_id'],
             'monto' => $pedido->total,
-            'estado' => 'pendiente'
+            'estado' => 'pendiente',
+            'fecha_pago' => now()
         ]);
     }
 
@@ -290,7 +323,14 @@ class CheckoutService extends BaseService
         $total = 0;
         
         foreach ($cart as $item) {
-            $producto = Producto::find($item['id']);
+            // Manejar tanto 'id' como 'producto_id' para compatibilidad
+            $productoId = $item['producto_id'] ?? $item['id'] ?? null;
+            
+            if (!$productoId) {
+                throw new Exception('ID de producto no encontrado en item del carrito');
+            }
+            
+            $producto = Producto::find($productoId);
             $precio = $producto->precio;
             
             if (isset($item['variante_id'])) {
@@ -298,7 +338,9 @@ class CheckoutService extends BaseService
                 $precio += $variante->precio_adicional ?? 0;
             }
             
-            $total += $precio * $item['cantidad'];
+            // Manejar tanto 'cantidad' como 'quantity' para compatibilidad
+            $cantidad = $item['cantidad'] ?? $item['quantity'] ?? 1;
+            $total += $precio * $cantidad;
         }
         
         return $total;
@@ -313,7 +355,14 @@ class CheckoutService extends BaseService
         $total = 0;
         
         foreach ($cart as $item) {
-            $producto = Producto::find($item['id']);
+            // Manejar tanto 'id' como 'producto_id' para compatibilidad
+            $productoId = $item['producto_id'] ?? $item['id'] ?? null;
+            
+            if (!$productoId) {
+                throw new Exception('ID de producto no encontrado en item del carrito');
+            }
+            
+            $producto = Producto::find($productoId);
             $precio = $producto->precio;
             $nombre = $producto->nombre_producto;
             
@@ -323,13 +372,15 @@ class CheckoutService extends BaseService
                 $nombre .= ' - ' . $variante->nombre;
             }
             
-            $subtotal = $precio * $item['cantidad'];
+            // Manejar tanto 'cantidad' como 'quantity' para compatibilidad
+            $cantidad = $item['cantidad'] ?? $item['quantity'] ?? 1;
+            $subtotal = $precio * $cantidad;
             $total += $subtotal;
             
             $items[] = [
                 'producto' => $producto,
                 'variante' => $variante ?? null,
-                'cantidad' => $item['cantidad'],
+                'cantidad' => $cantidad,
                 'precio_unitario' => $precio,
                 'subtotal' => $subtotal
             ];
@@ -340,5 +391,72 @@ class CheckoutService extends BaseService
             'total' => $total,
             'total_items' => count($items)
         ];
+    }
+
+    /**
+     * Verifica el stock disponible para el carrito
+     */
+    public function verificarStock(array $cart): array
+    {
+        return $this->reservaStockService->verificarStockCarrito($cart);
+    }
+
+    /**
+     * Enviar correo de confirmación si es necesario
+     * Solo se envía para métodos de pago que no requieren confirmación posterior
+     */
+    private function enviarCorreoConfirmacionSiEsNecesario($pedido, int $metodoPagoId): void
+    {
+        try {
+            // Obtener información del método de pago
+            $metodoPago = MetodoPago::find($metodoPagoId);
+            
+            if (!$metodoPago) {
+                Log::warning('Método de pago no encontrado', [
+                    'metodo_pago_id' => $metodoPagoId,
+                    'pedido_id' => $pedido->pedido_id
+                ]);
+                return;
+            }
+
+            // Verificar si es un método que requiere confirmación manual
+            $requiereConfirmacionManual = $this->metodoRequiereConfirmacionManual($metodoPago);
+            
+            if (!$requiereConfirmacionManual) {
+                // Para métodos como efectivo o transferencia, enviar correo inmediatamente
+                // ya que el pedido se confirma automáticamente
+                $notificationService = new PedidoNotificationService();
+                $notificationService->confirmarPedidoMetodoNoStripe($pedido, $metodoPago->nombre);
+                
+                Log::info('Correo de confirmación enviado para método no-Stripe', [
+                    'pedido_id' => $pedido->pedido_id,
+                    'metodo_pago' => $metodoPago->nombre
+                ]);
+            } else {
+                Log::info('Método de pago requiere confirmación manual, no se envía correo', [
+                    'pedido_id' => $pedido->pedido_id,
+                    'metodo_pago' => $metodoPago->nombre
+                ]);
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Error al enviar correo de confirmación en checkout', [
+                'pedido_id' => $pedido->pedido_id,
+                'metodo_pago_id' => $metodoPagoId,
+                'error' => $e->getMessage()
+            ]);
+            // No lanzar excepción para no afectar el flujo del checkout
+        }
+    }
+
+    /**
+     * Determinar si un método de pago requiere confirmación manual
+     */
+    private function metodoRequiereConfirmacionManual(MetodoPago $metodoPago): bool
+    {
+        // Métodos que requieren confirmación manual (efectivo, transferencia)
+        $metodosManuales = ['Efectivo', 'Transferencia Bancaria'];
+        
+        return in_array($metodoPago->nombre, $metodosManuales);
     }
 }

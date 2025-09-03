@@ -47,7 +47,7 @@ erDiagram
         string nombre
         text descripcion
         string imagen_url
-        boolean activo
+        boolean estado
         integer orden
         timestamp created_at
         timestamp updated_at
@@ -58,7 +58,8 @@ erDiagram
         string nombre
         text descripcion
         string logo_url
-        boolean activo
+        boolean estado
+        integer orden
         timestamp created_at
         timestamp updated_at
     }
@@ -108,10 +109,12 @@ erDiagram
     imagenes_productos {
         bigint imagen_id PK
         bigint producto_id FK
-        string url_imagen
+        string ruta_imagen
         string alt_text
+        string titulo
         integer orden
         boolean principal
+        boolean activo
         timestamp created_at
         timestamp updated_at
     }
@@ -126,7 +129,7 @@ erDiagram
         string unidad
         boolean requerido
         integer orden
-        boolean activo
+        boolean estado
         timestamp created_at
         timestamp updated_at
     }
@@ -197,6 +200,7 @@ erDiagram
         text referencias
         boolean predeterminada
         boolean activo
+        string tipo_direccion
         timestamp created_at
         timestamp updated_at
     }
@@ -206,7 +210,7 @@ erDiagram
         string nombre
         string descripcion
         string color
-        boolean activo
+        boolean estado
         integer orden
         timestamp created_at
         timestamp updated_at
@@ -217,7 +221,8 @@ erDiagram
         string nombre
         text descripcion
         string icono
-        boolean activo
+        string configuracion
+        boolean estado
         integer orden
         timestamp created_at
         timestamp updated_at
@@ -250,11 +255,12 @@ erDiagram
     pagos {
         bigint pago_id PK
         bigint pedido_id FK
-        decimal monto
         bigint metodo_id FK
-        datetime fecha_pago
+        string referencia_externa
+        decimal monto
         string estado
-        string referencia
+        text detalles
+        timestamp fecha_pago
         timestamp created_at
         timestamp updated_at
     }
@@ -412,6 +418,6 @@ pedidos → pagos → metodos_pago
 
 ---
 
-**Estado**: ✅ **DIAGRAMA COMPLETO Y FUNCIONAL**  
-**Fecha**: 2025-09-01  
+**Estado**: ✅ **DIAGRAMA ACTUALIZADO Y SINCRONIZADO**  
+**Fecha**: 2025-09-03  
 **Base de Datos**: **4GMovil Consolidada** 🎯

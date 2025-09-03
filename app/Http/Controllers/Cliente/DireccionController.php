@@ -43,26 +43,37 @@ class DireccionController extends Controller
     {
         try {
             $request->validate([
-                'departamento' => 'required|string|max:100',
-                'ciudad' => 'required|string|max:100',
-                'barrio' => 'required|string|max:100',
-                'direccion' => 'required|string|max:255',
-                'codigo_postal' => 'required|string|max:10',
+                'nombre_destinatario' => 'required|string|max:100',
                 'telefono' => 'required|string|max:20',
-                'instrucciones' => 'nullable|string|max:255',
-                'tipo_direccion' => 'required|in:casa,apartamento,oficina',
+                'calle' => 'required|string|max:255',
+                'numero' => 'required|string|max:20',
+                'piso' => 'nullable|string|max:20',
+                'departamento' => 'nullable|string|max:100',
+                'codigo_postal' => 'required|string|max:10',
+                'ciudad' => 'required|string|max:100',
+                'provincia' => 'required|string|max:100',
+                'pais' => 'nullable|string|max:100',
+                'referencias' => 'nullable|string|max:500',
+                'predeterminada' => 'boolean',
+                'tipo_direccion' => 'nullable|string|in:casa,apartamento,trabajo,otro'
             ]);
 
             $direccion = new Direccion();
             $direccion->usuario_id = Auth::id();
-            $direccion->tipo_direccion = $request->tipo_direccion;
-            $direccion->departamento = $request->departamento;
-            $direccion->ciudad = $request->ciudad;
-            $direccion->barrio = $request->barrio;
-            $direccion->direccion = $request->direccion;
-            $direccion->codigo_postal = $request->codigo_postal;
+            $direccion->nombre_destinatario = $request->nombre_destinatario;
             $direccion->telefono = $request->telefono;
-            $direccion->instrucciones = $request->instrucciones;
+            $direccion->calle = $request->calle;
+            $direccion->numero = $request->numero;
+            $direccion->piso = $request->piso;
+            $direccion->departamento = $request->departamento;
+            $direccion->codigo_postal = $request->codigo_postal;
+            $direccion->ciudad = $request->ciudad;
+            $direccion->provincia = $request->provincia;
+            $direccion->pais = $request->pais ?? 'Argentina';
+            $direccion->referencias = $request->referencias;
+            $direccion->predeterminada = $request->predeterminada ?? false;
+            $direccion->tipo_direccion = $request->tipo_direccion ?? 'casa';
+            $direccion->activo = true;
             $direccion->save();
 
             // Obtener la URL de redirección guardada
@@ -139,14 +150,19 @@ class DireccionController extends Controller
             }
 
             $request->validate([
-                'departamento' => 'required|string|max:100',
-                'ciudad' => 'required|string|max:100',
-                'barrio' => 'required|string|max:100',
-                'direccion' => 'required|string|max:255',
-                'codigo_postal' => 'required|string|max:10',
+                'nombre_destinatario' => 'required|string|max:100',
                 'telefono' => 'required|string|max:20',
-                'instrucciones' => 'nullable|string|max:255',
-                'tipo_direccion' => 'required|in:casa,apartamento,oficina',
+                'calle' => 'required|string|max:255',
+                'numero' => 'required|string|max:20',
+                'piso' => 'nullable|string|max:20',
+                'departamento' => 'nullable|string|max:100',
+                'codigo_postal' => 'required|string|max:10',
+                'ciudad' => 'required|string|max:100',
+                'provincia' => 'required|string|max:100',
+                'pais' => 'nullable|string|max:100',
+                'referencias' => 'nullable|string|max:500',
+                'predeterminada' => 'boolean',
+                'tipo_direccion' => 'nullable|string|in:casa,apartamento,trabajo,otro'
             ]);
 
             $direccion->update($request->all());

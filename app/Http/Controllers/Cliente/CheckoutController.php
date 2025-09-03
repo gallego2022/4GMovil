@@ -34,6 +34,11 @@ class CheckoutController extends WebController
             ]);
 
         } catch (Exception $e) {
+            // Si el error es "carrito vacío", redirigir al landing con mensaje específico
+            if (str_contains($e->getMessage(), 'carrito está vacío')) {
+                return $this->redirectError('landing', 'Tu carrito está vacío. Agrega productos antes de proceder al checkout.');
+            }
+            
             return $this->handleException($e, 'landing');
         }
     }
@@ -46,9 +51,12 @@ class CheckoutController extends WebController
         try {
             $result = $this->checkoutService->processCheckout($request);
             
-            return $this->redirectSuccess('pedidos.show', 
+            // NO limpiar el carrito aquí - se limpiará en la página de éxito
+            // Session::forget('cart');
+            
+            return $this->redirectSuccess('checkout.success', 
                 'Pedido procesado exitosamente', 
-                ['id' => $result['pedido_id']]
+                ['pedido' => $result['pedido_id']]
             );
 
         } catch (ValidationException $e) {
@@ -89,15 +97,38 @@ class CheckoutController extends WebController
             
             $result = $this->checkoutService->processCheckout($request);
             
-            return $this->redirectSuccess('pedidos.show', 
+            // NO limpiar el carrito aquí - se limpiará en la página de éxito
+            // Session::forget('cart');
+            
+            return $this->redirectSuccess('checkout.success', 
                 'Pedido confirmado exitosamente', 
-                ['id' => $result['pedido_id']]
+                ['pedido' => $result['pedido_id']]
             );
 
         } catch (ValidationException $e) {
             return $this->handleValidationException($e, 'checkout.index');
         } catch (Exception $e) {
             return $this->handleException($e, 'checkout.index');
+        }
+    }
+
+    /**
+     * Página de éxito del checkout
+     */
+    public function success($pedidoId)
+    {
+        try {
+            // Limpiar el carrito después de confirmar que el usuario llegó a la página de éxito
+            Session::forget('cart');
+            
+            $pedido = \App\Models\Pedido::findOrFail($pedidoId);
+            
+            return view('checkout.success', [
+                'pedido' => $pedido
+            ]);
+            
+        } catch (Exception $e) {
+            return $this->handleException($e, 'landing');
         }
     }
 
@@ -113,6 +144,45 @@ class CheckoutController extends WebController
             
         } catch (Exception $e) {
             return $this->handleException($e, 'landing');
+        }
+    }
+
+    /**
+     * Verifica el stock disponible para el carrito
+     */
+    public function verificarStock(Request $request)
+    {
+        try {
+            $cartInput = $request->input('cart');
+            
+            // Manejar tanto strings JSON como arrays directamente
+            if (is_string($cartInput)) {
+                $cart = json_decode($cartInput, true) ?? [];
+            } elseif (is_array($cartInput)) {
+                $cart = $cartInput;
+            } else {
+                $cart = [];
+            }
+            
+            if (empty($cart)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El carrito está vacío'
+                ]);
+            }
+
+            $resultado = $this->checkoutService->verificarStock($cart);
+            
+            return response()->json([
+                'success' => true,
+                'data' => $resultado
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al verificar stock: ' . $e->getMessage()
+            ], 500);
         }
     }
 }

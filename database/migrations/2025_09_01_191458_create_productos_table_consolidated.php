@@ -16,7 +16,7 @@ return new class extends Migration
      * - Campos básicos (nombre, descripción, precio, stock)
      * - Estado del producto (nuevo/usado)
      * - Sistema de stock reservado
-     * - Imagen del producto
+     * - Tabla de imágenes de productos
      * 
      * NOTA: Las claves foráneas se agregan en una migración separada
      * para evitar problemas de dependencias
@@ -60,6 +60,27 @@ return new class extends Migration
             // ===== DOCUMENTACIÓN =====
             $table->comment('Tabla consolidada de productos - Sistema de e-commerce 4GMovil');
         });
+
+        // ===== TABLA DE IMÁGENES DE PRODUCTOS =====
+        Schema::create('imagenes_productos', function (Blueprint $table) {
+            $table->id('imagen_id');
+            $table->unsignedBigInteger('producto_id');
+            $table->string('ruta_imagen');
+            $table->string('alt_text')->nullable();
+            $table->string('titulo')->nullable();
+            $table->integer('orden')->default(0);
+            $table->boolean('principal')->default(false);
+            $table->boolean('activo')->default(true);
+            $table->timestamps();
+            
+            // Índices
+            $table->index(['producto_id', 'activo']);
+            $table->index(['producto_id', 'principal']);
+            $table->index('orden');
+            
+            // Comentario
+            $table->comment('Tabla de imágenes de productos - Sistema de e-commerce 4GMovil');
+        });
     }
 
     /**
@@ -67,6 +88,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('imagenes_productos');
         Schema::dropIfExists('productos');
     }
 };

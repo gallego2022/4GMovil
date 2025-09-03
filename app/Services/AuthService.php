@@ -191,7 +191,9 @@ class AuthService
     public function getPerfil(): array
     {
         try {
-            $usuario = Auth::user();
+            $usuario = Auth::user()->load(['direcciones' => function($query) {
+                $query->where('activo', true)->orderBy('predeterminada', 'desc');
+            }]);
             
             return [
                 'success' => true,

@@ -5,8 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Pedido;
 use App\Models\EstadoPedido;
-use App\Mail\ConfirmacionPedido;
-use App\Mail\PedidoCancelado;
+use App\Services\PedidoNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -141,12 +140,8 @@ class PedidoAdminController extends Controller
     private function enviarCorreoConfirmacion(Pedido $pedido): void
     {
         try {
-            // Generar URL del pedido
-            $pedidoUrl = route('pedidos.show', $pedido->pedido_id);
-            
-            // Enviar correo de confirmación
-            Mail::to($pedido->usuario->correo_electronico)
-                ->send(new ConfirmacionPedido($pedido->usuario, $pedido, $pedidoUrl));
+            $notificationService = new PedidoNotificationService();
+            $notificationService->enviarCorreoConfirmacion($pedido);
             
             Log::info('Correo de confirmación enviado', [
                 'pedido_id' => $pedido->pedido_id,
@@ -168,12 +163,13 @@ class PedidoAdminController extends Controller
     private function enviarCorreoCancelacion(Pedido $pedido): void
     {
         try {
-            // Generar URL del pedido
+            // Por ahora, para cancelaciones usamos el mailable existente
+            // En el futuro se puede crear un método específico en PedidoNotificationService
             $pedidoUrl = route('pedidos.show', $pedido->pedido_id);
             
-            // Enviar correo de cancelación
+            // Enviar correo de cancelación usando el mailable existente
             Mail::to($pedido->usuario->correo_electronico)
-                ->send(new PedidoCancelado($pedido->usuario, $pedido, $pedidoUrl));
+                ->send(new \App\Mail\PedidoCancelado($pedido->usuario, $pedido, $pedidoUrl));
             
             Log::info('Correo de cancelación enviado', [
                 'pedido_id' => $pedido->pedido_id,

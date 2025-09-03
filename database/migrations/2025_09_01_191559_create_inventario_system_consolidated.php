@@ -24,6 +24,34 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // ===== TABLA DE CATEGORÍAS =====
+        Schema::create('categorias', function (Blueprint $table) {
+            $table->id('categoria_id');
+            $table->string('nombre');
+            $table->text('descripcion')->nullable();
+            $table->string('imagen_url')->nullable();
+            $table->boolean('estado')->default(true);
+            $table->integer('orden')->default(0);
+            $table->timestamps();
+            
+            $table->index('estado');
+            $table->index('orden');
+        });
+        
+        // ===== TABLA DE MARCAS =====
+        Schema::create('marcas', function (Blueprint $table) {
+            $table->id('marca_id');
+            $table->string('nombre');
+            $table->text('descripcion')->nullable();
+            $table->string('logo_url')->nullable();
+            $table->boolean('estado')->default(true);
+            $table->integer('orden')->default(0);
+            $table->timestamps();
+            
+            $table->index('estado');
+            $table->index('orden');
+        });
+        
         // ===== TABLA DE VARIANTES DE PRODUCTOS =====
         Schema::create('variantes_producto', function (Blueprint $table) {
             $table->id('variante_id');
@@ -131,11 +159,11 @@ return new class extends Migration
             $table->string('unidad')->nullable();
             $table->boolean('requerido')->default(false);
             $table->integer('orden')->default(0);
-            $table->boolean('activo')->default(true);
+            $table->boolean('estado')->default(true);
             $table->timestamps();
             
             // Índices (las claves foráneas se agregan después)
-            $table->index(['categoria_id', 'activo']);
+            $table->index(['categoria_id', 'estado']);
             $table->index('orden');
         });
         
@@ -165,5 +193,7 @@ return new class extends Migration
         Schema::dropIfExists('movimientos_inventario');
         Schema::dropIfExists('imagenes_variantes');
         Schema::dropIfExists('variantes_producto');
+        Schema::dropIfExists('marcas');
+        Schema::dropIfExists('categorias');
     }
 };

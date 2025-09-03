@@ -33,64 +33,32 @@
                 @csrf
                 @method('PUT')
 
-                <!-- Tipo de dirección -->
+                <!-- Nombre del Destinatario -->
                 <div>
-                    <label for="tipo_direccion" class="block text-sm font-medium text-gray-700 mb-1">
-                        Tipo de Dirección *
+                    <label for="nombre_destinatario" class="block text-sm font-medium text-gray-700 mb-1">
+                        Nombre del Destinatario *
                     </label>
-                    <select name="tipo_direccion" 
-                            id="tipo_direccion" 
-                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
-                            required>
-                        <option value="casa" {{ old('tipo_direccion', $direccion->tipo_direccion) === 'casa' ? 'selected' : '' }}>Casa</option>
-                        <option value="apartamento" {{ old('tipo_direccion', $direccion->tipo_direccion) === 'apartamento' ? 'selected' : '' }}>Apartamento</option>
-                        <option value="oficina" {{ old('tipo_direccion', $direccion->tipo_direccion) === 'oficina' ? 'selected' : '' }}>Oficina</option>
-                    </select>
+                    <input type="text" 
+                           id="nombre_destinatario" 
+                           name="nombre_destinatario" 
+                           value="{{ old('nombre_destinatario', $direccion->nombre_destinatario) }}"
+                           class="mt-1 block w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900"
+                           required>
+                    <p class="mt-1 text-sm text-gray-500">Nombre completo de quien recibirá el pedido</p>
                 </div>
 
-                <!-- Departamento -->
+                <!-- Provincia -->
                 <div>
-                    <label for="departamento" class="block text-sm font-medium text-gray-700 mb-1">
-                        Departamento *
+                    <label for="provincia" class="block text-sm font-medium text-gray-700 mb-1">
+                        Provincia *
                     </label>
-                    <select name="departamento" 
-                            id="departamento" 
-                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
-                            required>
-                        <option value="">Selecciona un departamento</option>
-                        <option value="Amazonas" {{ old('departamento', $direccion->departamento) === 'Amazonas' ? 'selected' : '' }}>Amazonas</option>
-                        <option value="Antioquia" {{ old('departamento', $direccion->departamento) === 'Antioquia' ? 'selected' : '' }}>Antioquia</option>
-                        <option value="Arauca" {{ old('departamento', $direccion->departamento) === 'Arauca' ? 'selected' : '' }}>Arauca</option>
-                        <option value="Atlántico" {{ old('departamento', $direccion->departamento) === 'Atlántico' ? 'selected' : '' }}>Atlántico</option>
-                        <option value="Bolívar" {{ old('departamento', $direccion->departamento) === 'Bolívar' ? 'selected' : '' }}>Bolívar</option>
-                        <option value="Boyacá" {{ old('departamento', $direccion->departamento) === 'Boyacá' ? 'selected' : '' }}>Boyacá</option>
-                        <option value="Caldas" {{ old('departamento', $direccion->departamento) === 'Caldas' ? 'selected' : '' }}>Caldas</option>
-                        <option value="Caquetá" {{ old('departamento', $direccion->departamento) === 'Caquetá' ? 'selected' : '' }}>Caquetá</option>
-                        <option value="Casanare" {{ old('departamento', $direccion->departamento) === 'Casanare' ? 'selected' : '' }}>Casanare</option>
-                        <option value="Cauca" {{ old('departamento', $direccion->departamento) === 'Cauca' ? 'selected' : '' }}>Cauca</option>
-                        <option value="Cesar" {{ old('departamento', $direccion->departamento) === 'Cesar' ? 'selected' : '' }}>Cesar</option>
-                        <option value="Chocó" {{ old('departamento', $direccion->departamento) === 'Chocó' ? 'selected' : '' }}>Chocó</option>
-                        <option value="Córdoba" {{ old('departamento', $direccion->departamento) === 'Córdoba' ? 'selected' : '' }}>Córdoba</option>
-                        <option value="Cundinamarca" {{ old('departamento', $direccion->departamento) === 'Cundinamarca' ? 'selected' : '' }}>Cundinamarca</option>
-                        <option value="Guainía" {{ old('departamento', $direccion->departamento) === 'Guainía' ? 'selected' : '' }}>Guainía</option>
-                        <option value="Guaviare" {{ old('departamento', $direccion->departamento) === 'Guaviare' ? 'selected' : '' }}>Guaviare</option>
-                        <option value="Huila" {{ old('departamento', $direccion->departamento) === 'Huila' ? 'selected' : '' }}>Huila</option>
-                        <option value="La Guajira" {{ old('departamento', $direccion->departamento) === 'La Guajira' ? 'selected' : '' }}>La Guajira</option>
-                        <option value="Magdalena" {{ old('departamento', $direccion->departamento) === 'Magdalena' ? 'selected' : '' }}>Magdalena</option>
-                        <option value="Meta" {{ old('departamento', $direccion->departamento) === 'Meta' ? 'selected' : '' }}>Meta</option>
-                        <option value="Nariño" {{ old('departamento', $direccion->departamento) === 'Nariño' ? 'selected' : '' }}>Nariño</option>
-                        <option value="Norte de Santander" {{ old('departamento', $direccion->departamento) === 'Norte de Santander' ? 'selected' : '' }}>Norte de Santander</option>
-                        <option value="Putumayo" {{ old('departamento', $direccion->departamento) === 'Putumayo' ? 'selected' : '' }}>Putumayo</option>
-                        <option value="Quindío" {{ old('departamento', $direccion->departamento) === 'Quindío' ? 'selected' : '' }}>Quindío</option>
-                        <option value="Risaralda" {{ old('departamento', $direccion->departamento) === 'Risaralda' ? 'selected' : '' }}>Risaralda</option>
-                        <option value="San Andrés y Providencia" {{ old('departamento', $direccion->departamento) === 'San Andrés y Providencia' ? 'selected' : '' }}>San Andrés y Providencia</option>
-                        <option value="Santander" {{ old('departamento', $direccion->departamento) === 'Santander' ? 'selected' : '' }}>Santander</option>
-                        <option value="Sucre" {{ old('departamento', $direccion->departamento) === 'Sucre' ? 'selected' : '' }}>Sucre</option>
-                        <option value="Tolima" {{ old('departamento', $direccion->departamento) === 'Tolima' ? 'selected' : '' }}>Tolima</option>
-                        <option value="Valle del Cauca" {{ old('departamento', $direccion->departamento) === 'Valle del Cauca' ? 'selected' : '' }}>Valle del Cauca</option>
-                        <option value="Vaupés" {{ old('departamento', $direccion->departamento) === 'Vaupés' ? 'selected' : '' }}>Vaupés</option>
-                        <option value="Vichada" {{ old('departamento', $direccion->departamento) === 'Vichada' ? 'selected' : '' }}>Vichada</option>
-                    </select>
+                    <input type="text" 
+                           id="provincia" 
+                           name="provincia" 
+                           value="{{ old('provincia', $direccion->provincia) }}"
+                           class="mt-1 block w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900"
+                           required>
+                    <p class="mt-1 text-sm text-gray-500">Nombre de la provincia</p>
                 </div>
 
                 <!-- Ciudad -->
@@ -106,56 +74,62 @@
                            required>
                 </div>
 
-                <!-- Barrio -->
+                <!-- Departamento -->
                 <div>
-                    <label for="barrio" class="block text-sm font-medium text-gray-700 mb-1">
-                        Barrio *
+                    <label for="departamento" class="block text-sm font-medium text-gray-700 mb-1">
+                        Departamento
                     </label>
                     <input type="text" 
-                           id="barrio" 
-                           name="barrio" 
-                           value="{{ old('barrio', $direccion->barrio) }}"
+                           id="departamento" 
+                           name="departamento" 
+                           value="{{ old('departamento', $direccion->departamento) }}"
                            class="mt-1 block w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900"
-                           required>
+                           placeholder="Ej: A, B, 1, 2, etc. (Opcional)">
+                    <p class="mt-1 text-sm text-gray-500">Departamento o unidad (opcional)</p>
                 </div>
 
-                <!-- Dirección -->
+                <!-- Calle -->
                 <div>
-                    <label for="direccion" class="block text-sm font-medium text-gray-700 mb-1">
-                        Dirección Completa *
+                    <label for="calle" class="block text-sm font-medium text-gray-700 mb-1">
+                        Calle *
                     </label>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-2">
-                        <select name="tipo_via" id="tipo_via" class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200">
-                            <option value="Calle">Calle</option>
-                            <option value="Carrera">Carrera</option>
-                            <option value="Avenida">Avenida</option>
-                            <option value="Diagonal">Diagonal</option>
-                            <option value="Transversal">Transversal</option>
-                        </select>
-                        <input type="text" 
-                               name="numero_via" 
-                               id="numero_via" 
-                               class="px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900"
-                               placeholder="123"
-                               required>
-                        <span class="flex items-center justify-center">#</span>
-                        <input type="text" 
-                               name="numero_casa" 
-                               id="numero_casa" 
-                               class="px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900"
-                               placeholder="45-67"
-                               required>
-                    </div>
                     <input type="text" 
-                           id="complemento" 
-                           name="complemento" 
-                           placeholder="Apto, Interior, etc. (opcional)"
-                           class="mt-2 block w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900">
-                    <input type="hidden" 
-                           id="direccion" 
-                           name="direccion" 
-                           value="{{ old('direccion', $direccion->direccion) }}"
+                           id="calle" 
+                           name="calle" 
+                           value="{{ old('calle', $direccion->calle) }}"
+                           class="mt-1 block w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900"
                            required>
+                    <p class="mt-1 text-sm text-gray-500">Nombre de la calle, avenida o vía</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Número -->
+                    <div>
+                        <label for="numero" class="block text-sm font-medium text-gray-700 mb-1">
+                            Número *
+                        </label>
+                        <input type="text" 
+                               id="numero" 
+                               name="numero" 
+                               value="{{ old('numero', $direccion->numero) }}"
+                               class="mt-1 block w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900"
+                               required>
+                        <p class="mt-1 text-sm text-gray-500">Número de la casa o edificio</p>
+                    </div>
+
+                    <!-- Piso -->
+                    <div>
+                        <label for="piso" class="block text-sm font-medium text-gray-700 mb-1">
+                            Piso
+                        </label>
+                        <input type="text" 
+                               id="piso" 
+                               name="piso" 
+                               value="{{ old('piso', $direccion->piso) }}"
+                               class="mt-1 block w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900"
+                               placeholder="Ej: 5, 3er piso, etc. (Opcional)">
+                        <p class="mt-1 text-sm text-gray-500">Piso o nivel (opcional)</p>
+                    </div>
                 </div>
 
                 <!-- Código Postal -->
@@ -188,16 +162,60 @@
                     <p class="mt-1 text-sm text-gray-500">Formato: 10 dígitos numéricos</p>
                 </div>
 
-                <!-- Instrucciones -->
+                <!-- Tipo de Dirección -->
                 <div>
-                    <label for="instrucciones" class="block text-sm font-medium text-gray-700 mb-1">
-                        Instrucciones de entrega
+                    <label for="tipo_direccion" class="block text-sm font-medium text-gray-700 mb-1">
+                        Tipo de Dirección
                     </label>
-                    <textarea id="instrucciones" 
-                              name="instrucciones" 
+                    <select name="tipo_direccion" 
+                            id="tipo_direccion" 
+                            class="mt-1 block w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900">
+                        <option value="casa" {{ old('tipo_direccion', $direccion->tipo_direccion) === 'casa' ? 'selected' : '' }}>Casa</option>
+                        <option value="apartamento" {{ old('tipo_direccion', $direccion->tipo_direccion) === 'apartamento' ? 'selected' : '' }}>Apartamento</option>
+                        <option value="trabajo" {{ old('tipo_direccion', $direccion->tipo_direccion) === 'trabajo' ? 'selected' : '' }}>Trabajo</option>
+                        <option value="otro" {{ old('tipo_direccion', $direccion->tipo_direccion) === 'otro' ? 'selected' : '' }}>Otro</option>
+                    </select>
+                    <p class="mt-1 text-sm text-gray-500">Selecciona el tipo de dirección para mejor organización</p>
+                </div>
+
+                <!-- Referencias -->
+                <div>
+                    <label for="referencias" class="block text-sm font-medium text-gray-700 mb-1">
+                        Referencias
+                    </label>
+                    <textarea id="referencias" 
+                              name="referencias" 
                               rows="3"
                               class="mt-1 block w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900"
-                              placeholder="Instrucciones adicionales para la entrega (opcional)">{{ old('instrucciones', $direccion->instrucciones) }}</textarea>
+                              placeholder="Instrucciones adicionales para la entrega (opcional)">{{ old('referencias', $direccion->referencias) }}</textarea>
+                    <p class="mt-1 text-sm text-gray-500">Información adicional para encontrar la dirección</p>
+                </div>
+
+                <!-- País -->
+                <div>
+                    <label for="pais" class="block text-sm font-medium text-gray-700 mb-1">
+                        País
+                    </label>
+                    <input type="text" 
+                           id="pais" 
+                           name="pais" 
+                           value="{{ old('pais', $direccion->pais ?? 'Argentina') }}"
+                           class="mt-1 block w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900"
+                           placeholder="Ej: Argentina">
+                    <p class="mt-1 text-sm text-gray-500">País de la dirección</p>
+                </div>
+
+                <!-- Dirección Predeterminada -->
+                <div>
+                    <label class="flex items-center">
+                        <input type="checkbox" 
+                               name="predeterminada" 
+                               value="1" 
+                               {{ old('predeterminada', $direccion->predeterminada) ? 'checked' : '' }}
+                               class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200">
+                        <span class="ml-2 text-sm text-gray-700">Marcar como dirección predeterminada</span>
+                    </label>
+                    <p class="mt-1 text-sm text-gray-500">Esta será tu dirección principal para futuras compras</p>
                 </div>
 
                 <!-- Botones -->
@@ -218,45 +236,11 @@
 
 <script>
     const form = document.getElementById('direccionForm');
-    const tipoVia = document.getElementById('tipo_via');
-    const numeroVia = document.getElementById('numero_via');
-    const numeroCasa = document.getElementById('numero_casa');
-    const complemento = document.getElementById('complemento');
-    const direccionCompleta = document.getElementById('direccion');
     const codigoPostal = document.getElementById('codigo_postal');
     const telefono = document.getElementById('telefono');
 
-    // Función para actualizar la dirección completa
-    function actualizarDireccionCompleta() {
-        let direccion = `${tipoVia.value} ${numeroVia.value} # ${numeroCasa.value}`;
-        if (complemento.value) {
-            direccion += ` ${complemento.value}`;
-        }
-        direccionCompleta.value = direccion;
-    }
-
-    // Eventos para actualizar la dirección completa
-    [tipoVia, numeroVia, numeroCasa, complemento].forEach(element => {
-        element.addEventListener('input', actualizarDireccionCompleta);
-    });
-
-    // Validación de código postal
-    codigoPostal.addEventListener('input', function(e) {
-        this.value = this.value.replace(/\D/g, '').substr(0, 6);
-    });
-
-    // Validación de teléfono
-    telefono.addEventListener('input', function(e) {
-        this.value = this.value.replace(/\D/g, '').substr(0, 10);
-    });
-
     // Validación del formulario antes de enviar
     form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Actualizar la dirección completa antes de enviar
-        actualizarDireccionCompleta();
-
         // Validar campos requeridos
         const required = form.querySelectorAll('[required]');
         let valid = true;
@@ -270,36 +254,26 @@
             }
         });
 
-        // Validar formato de teléfono
-        if (telefono.value.length !== 10) {
-            telefono.classList.add('border-red-500');
-            valid = false;
-        }
-
-        // Validar formato de código postal
-        if (codigoPostal.value.length !== 6) {
-            codigoPostal.classList.add('border-red-500');
-            valid = false;
-        }
-
         if (valid) {
-            this.submit();
+            // El formulario se envía automáticamente
+            return true;
+        } else {
+            e.preventDefault();
+            Swal.fire({
+                title: '¡Error!',
+                text: 'Por favor, completa todos los campos requeridos correctamente',
+                icon: 'error',
+                confirmButtonText: 'Entendido'
+            });
+            return false;
         }
     });
 
-    // Inicializar los campos de dirección con la dirección existente
-    window.addEventListener('load', function() {
-        const direccionActual = direccionCompleta.value;
-        if (direccionActual) {
-            // Intentar extraer los componentes de la dirección
-            const match = direccionActual.match(/^(Calle|Carrera|Avenida|Diagonal|Transversal)\s+(\d+)\s+#\s+(\d+(?:-\d+)?)\s*(.*)$/);
-            if (match) {
-                tipoVia.value = match[1];
-                numeroVia.value = match[2];
-                numeroCasa.value = match[3];
-                complemento.value = match[4] || '';
-            }
-        }
+    // Limpiar errores de validación al escribir
+    form.querySelectorAll('input, textarea').forEach(field => {
+        field.addEventListener('input', function() {
+            this.classList.remove('border-red-500');
+        });
     });
 </script>
 @endsection 

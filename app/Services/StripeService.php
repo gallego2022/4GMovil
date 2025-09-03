@@ -6,8 +6,10 @@ use App\Models\Pedido;
 use App\Models\Pago;
 use App\Models\WebhookEvent;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use App\Services\PedidoNotificationService;
 use Stripe\Stripe;
 use Stripe\PaymentIntent;
 use Stripe\Webhook;
@@ -34,7 +36,7 @@ class StripeService
             $pedido = Pedido::with(['usuario', 'detalles.producto'])->findOrFail($request->pedido_id);
 
             // Verificar que el pedido pertenece al usuario autenticado
-            if ($pedido->usuario_id !== auth()->id()) {
+            if ($pedido->usuario_id !== Auth::id()) {
                 return [
                     'success' => false,
                     'message' => 'No tienes permisos para procesar este pedido'
@@ -119,7 +121,7 @@ class StripeService
             }
 
             // Verificar que el pedido pertenece al usuario autenticado
-            if ($pedido->usuario_id !== auth()->id()) {
+            if ($pedido->usuario_id !== Auth::id()) {
                 return [
                     'success' => false,
                     'message' => 'No tienes permisos para procesar este pedido'
@@ -273,12 +275,32 @@ class StripeService
             // Generar webhook local
             $this->generateLocalWebhook($pedido, $paymentIntent);
 
+            // Enviar correo de confirmación del pedido
+            $this->enviarCorreoConfirmacion($pedido);
+
             Log::info('Pago procesado exitosamente', [
                 'pedido_id' => $pedido->pedido_id,
                 'pago_id' => $pago->pago_id,
                 'payment_intent_id' => $paymentIntent->id
             ]);
         });
+    }
+
+    /**
+     * Enviar correo de confirmación del pedido
+     */
+    private function enviarCorreoConfirmacion(Pedido $pedido): void
+    {
+        try {
+            $notificationService = new PedidoNotificationService();
+            $notificationService->enviarCorreoConfirmacion($pedido);
+        } catch (\Exception $e) {
+            Log::error('Error enviando correo de confirmación', [
+                'pedido_id' => $pedido->pedido_id,
+                'error' => $e->getMessage()
+            ]);
+            // No lanzar excepción para no afectar el flujo del pago
+        }
     }
 
     /**

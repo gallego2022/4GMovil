@@ -32,71 +32,33 @@
             <form action="{{ route('direcciones.store') }}" method="POST" class="space-y-6" id="direccionForm">
                 @csrf
 
-                <!-- Tipo de Dirección -->
+                <!-- Nombre del Destinatario -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Tipo de Dirección *
+                    <label for="nombre_destinatario" class="block text-sm font-medium text-gray-700 mb-1">
+                        Nombre del Destinatario *
                     </label>
-                    <div class="flex space-x-4">
-                        <label class="inline-flex items-center">
-                            <input type="radio" name="tipo_direccion" value="casa" class="form-radio text-blue-600" checked>
-                            <span class="ml-2">Casa</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="radio" name="tipo_direccion" value="apartamento" class="form-radio text-blue-600">
-                            <span class="ml-2">Apartamento</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="radio" name="tipo_direccion" value="oficina" class="form-radio text-blue-600">
-                            <span class="ml-2">Oficina</span>
-                        </label>
-                    </div>
+                    <input type="text" 
+                           name="nombre_destinatario" 
+                           id="nombre_destinatario" 
+                           class="w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900"
+                           required
+                           placeholder="Ej: Juan Pérez">
+                    <p class="mt-1 text-sm text-gray-500">Nombre completo de quien recibirá el pedido</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Departamento -->
+                    <!-- Provincia -->
                     <div>
-                        <label for="departamento" class="block text-sm font-medium text-gray-700 mb-1">
-                            Departamento *
+                        <label for="provincia" class="block text-sm font-medium text-gray-700 mb-1">
+                            Provincia *
                         </label>
-                        <select name="departamento" 
-                                id="departamento" 
-                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
-                                required>
-                            <option value="">Seleccione un departamento</option>
-                            <option value="Amazonas">Amazonas</option>
-                            <option value="Antioquia">Antioquia</option>
-                            <option value="Arauca">Arauca</option>
-                            <option value="Atlántico">Atlántico</option>
-                            <option value="Bolívar">Bolívar</option>
-                            <option value="Boyacá">Boyacá</option>
-                            <option value="Caldas">Caldas</option>
-                            <option value="Caquetá">Caquetá</option>
-                            <option value="Casanare">Casanare</option>
-                            <option value="Cauca">Cauca</option>
-                            <option value="Cesar">Cesar</option>
-                            <option value="Chocó">Chocó</option>
-                            <option value="Córdoba">Córdoba</option>
-                            <option value="Cundinamarca">Cundinamarca</option>
-                            <option value="Guainía">Guainía</option>
-                            <option value="Guaviare">Guaviare</option>
-                            <option value="Huila">Huila</option>
-                            <option value="La Guajira">La Guajira</option>
-                            <option value="Magdalena">Magdalena</option>
-                            <option value="Meta">Meta</option>
-                            <option value="Nariño">Nariño</option>
-                            <option value="Norte de Santander">Norte de Santander</option>
-                            <option value="Putumayo">Putumayo</option>
-                            <option value="Quindío">Quindío</option>
-                            <option value="Risaralda">Risaralda</option>
-                            <option value="San Andrés y Providencia">San Andrés y Providencia</option>
-                            <option value="Santander">Santander</option>
-                            <option value="Sucre">Sucre</option>
-                            <option value="Tolima">Tolima</option>
-                            <option value="Valle del Cauca">Valle del Cauca</option>
-                            <option value="Vaupés">Vaupés</option>
-                            <option value="Vichada">Vichada</option>
-                        </select>
+                        <input type="text" 
+                               name="provincia" 
+                               id="provincia" 
+                               class="w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900"
+                               required
+                               placeholder="Ej: Buenos Aires">
+                        <p class="mt-1 text-sm text-gray-500">Escribe el nombre de tu provincia</p>
                     </div>
 
                     <!-- Ciudad -->
@@ -109,23 +71,23 @@
                                id="ciudad" 
                                class="w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900"
                                required
-                               placeholder="Ej: Bogotá">
+                               placeholder="Ej: Buenos Aires">
                         <p class="mt-1 text-sm text-gray-500">Escribe el nombre de tu ciudad</p>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Barrio -->
+                    <!-- Departamento -->
                     <div>
-                        <label for="barrio" class="block text-sm font-medium text-gray-700 mb-1">
-                            Barrio *
+                        <label for="departamento" class="block text-sm font-medium text-gray-700 mb-1">
+                            Departamento
                         </label>
                         <input type="text" 
-                               name="barrio" 
-                               id="barrio" 
+                               name="departamento" 
+                               id="departamento" 
                                class="w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900"
-                               required
-                               placeholder="Ej: San José">
+                               placeholder="Ej: A, B, 1, 2, etc. (Opcional)">
+                        <p class="mt-1 text-sm text-gray-500">Departamento o unidad (opcional)</p>
                     </div>
 
                     <!-- Código Postal -->
@@ -138,52 +100,53 @@
                                id="codigo_postal" 
                                class="w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900"
                                required
-                               pattern="[0-9]{6}"
-                               maxlength="6"
-                               placeholder="Ej: 110111">
-                        <p class="mt-1 text-sm text-gray-500">
-                            <a href="http://visor.codigopostal.gov.co/472/visor/" 
-                               target="_blank" 
-                               class="text-blue-600 hover:text-blue-800">
-                                Buscar mi código postal
-                            </a>
-                        </p>
+                               maxlength="10"
+                               placeholder="Ej: 1001">
+                        <p class="mt-1 text-sm text-gray-500">Código postal de tu zona</p>
                     </div>
                 </div>
 
                 <!-- Dirección -->
                 <div>
-                    <label for="direccion" class="block text-sm font-medium text-gray-700 mb-1">
-                        Dirección Completa *
+                    <label for="calle" class="block text-sm font-medium text-gray-700 mb-1">
+                        Calle *
                     </label>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-2">
-                        <select name="tipo_via" id="tipo_via" class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200">
-                            <option value="Calle">Calle</option>
-                            <option value="Carrera">Carrera</option>
-                            <option value="Avenida">Avenida</option>
-                            <option value="Diagonal">Diagonal</option>
-                            <option value="Transversal">Transversal</option>
-                        </select>
-                        <input type="text" 
-                               name="numero_via" 
-                               id="numero_via" 
-                               class="px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900"
-                               placeholder="123"
-                               required>
-                        <span class="flex items-center justify-center">#</span>
-                        <input type="text" 
-                               name="numero_casa" 
-                               id="numero_casa" 
-                               class="px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900"
-                               placeholder="45-67"
-                               required>
-                    </div>
                     <input type="text" 
-                           name="complemento" 
-                           id="complemento" 
-                           class="mt-2 w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900"
-                           placeholder="Apartamento, Interior, Bloque, etc. (Opcional)">
-                    <input type="hidden" name="direccion" id="direccion_completa">
+                           name="calle" 
+                           id="calle" 
+                           class="w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900"
+                           required
+                           placeholder="Ej: Av. Corrientes, Calle Florida, etc.">
+                    <p class="mt-1 text-sm text-gray-500">Nombre de la calle, avenida o vía</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Número -->
+                    <div>
+                        <label for="numero" class="block text-sm font-medium text-gray-700 mb-1">
+                            Número *
+                        </label>
+                        <input type="text" 
+                               name="numero" 
+                               id="numero" 
+                               class="w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900"
+                               required
+                               placeholder="Ej: 1234">
+                        <p class="mt-1 text-sm text-gray-500">Número de la casa o edificio</p>
+                    </div>
+
+                    <!-- Piso -->
+                    <div>
+                        <label for="piso" class="block text-sm font-medium text-gray-700 mb-1">
+                            Piso
+                        </label>
+                        <input type="text" 
+                               name="piso" 
+                               id="piso" 
+                               class="w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900"
+                               placeholder="Ej: 5, 3er piso, etc. (Opcional)">
+                        <p class="mt-1 text-sm text-gray-500">Piso o nivel (opcional)</p>
+                    </div>
                 </div>
 
                 <!-- Teléfono -->
@@ -191,33 +154,69 @@
                     <label for="telefono" class="block text-sm font-medium text-gray-700 mb-1">
                         Teléfono de Contacto *
                     </label>
-                    <div class="flex">
-                        <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
-                            +57
-                        </span>
-                        <input type="tel" 
-                               name="telefono" 
-                               id="telefono" 
-                               class="flex-1 px-4 py-3 rounded-none rounded-r-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900"
-                               required
-                               pattern="[0-9]{10}"
-                               maxlength="10"
-                               placeholder="3001234567">
-                    </div>
-                    <p class="mt-1 text-sm text-gray-500">Ingresa un número de celular válido</p>
+                    <input type="tel" 
+                           name="telefono" 
+                           id="telefono" 
+                           class="w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900"
+                           required
+                           maxlength="20"
+                           placeholder="Ej: +54 11 1234-5678">
+                    <p class="mt-1 text-sm text-gray-500">Teléfono donde contactarte para la entrega</p>
                 </div>
 
-                <!-- Instrucciones de entrega -->
+                <!-- Tipo de Dirección -->
                 <div>
-                    <label for="instrucciones" class="block text-sm font-medium text-gray-700 mb-1">
-                        Instrucciones de Entrega
+                    <label for="tipo_direccion" class="block text-sm font-medium text-gray-700 mb-1">
+                        Tipo de Dirección
                     </label>
-                    <textarea name="instrucciones" 
-                              id="instrucciones" 
+                    <select name="tipo_direccion" 
+                            id="tipo_direccion" 
+                            class="w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900">
+                        <option value="casa">Casa</option>
+                        <option value="apartamento">Apartamento</option>
+                        <option value="trabajo">Trabajo</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                    <p class="mt-1 text-sm text-gray-500">Selecciona el tipo de dirección para mejor organización</p>
+                </div>
+
+                <!-- Referencias -->
+                <div>
+                    <label for="referencias" class="block text-sm font-medium text-gray-700 mb-1">
+                        Referencias
+                    </label>
+                    <textarea name="referencias" 
+                              id="referencias" 
                               rows="3" 
                               class="w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900"
                               placeholder="Edificio azul, piso 3, timbre 302. Referencias adicionales para encontrar la dirección."></textarea>
                     <p class="mt-1 text-sm text-gray-500">Agrega cualquier información adicional que ayude a encontrar la dirección</p>
+                </div>
+
+                <!-- País -->
+                <div>
+                    <label for="pais" class="block text-sm font-medium text-gray-700 mb-1">
+                        País
+                    </label>
+                    <input type="text" 
+                           name="pais" 
+                           id="pais" 
+                           class="w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900"
+                           value="Argentina"
+                           placeholder="Ej: Argentina">
+                    <p class="mt-1 text-sm text-gray-500">País de la dirección (por defecto: Argentina)</p>
+                </div>
+
+                <!-- Dirección Predeterminada -->
+                <div>
+                    <label class="flex items-center">
+                        <input type="checkbox" 
+                               name="predeterminada" 
+                               value="1" 
+                               class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200">
+                        <span class="ml-2 text-sm text-gray-700">Marcar como dirección predeterminada</span>
+                    </label>
+                    <p class="mt-1 text-sm text-gray-500">Esta será tu dirección principal para futuras compras</p>
                 </div>
 
                 <!-- Botones -->
@@ -246,45 +245,11 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('direccionForm');
-    const tipoVia = document.getElementById('tipo_via');
-    const numeroVia = document.getElementById('numero_via');
-    const numeroCasa = document.getElementById('numero_casa');
-    const complemento = document.getElementById('complemento');
-    const direccionCompleta = document.getElementById('direccion_completa');
     const codigoPostal = document.getElementById('codigo_postal');
     const telefono = document.getElementById('telefono');
 
-    // Función para actualizar la dirección completa
-    function actualizarDireccionCompleta() {
-        let direccion = `${tipoVia.value} ${numeroVia.value} # ${numeroCasa.value}`;
-        if (complemento.value) {
-            direccion += ` ${complemento.value}`;
-        }
-        direccionCompleta.value = direccion;
-    }
-
-    // Eventos para actualizar la dirección completa
-    [tipoVia, numeroVia, numeroCasa, complemento].forEach(element => {
-        element.addEventListener('input', actualizarDireccionCompleta);
-    });
-
-    // Validación de código postal
-    codigoPostal.addEventListener('input', function(e) {
-        this.value = this.value.replace(/\D/g, '').substr(0, 6);
-    });
-
-    // Validación de teléfono
-    telefono.addEventListener('input', function(e) {
-        this.value = this.value.replace(/\D/g, '').substr(0, 10);
-    });
-
     // Validación del formulario antes de enviar
     form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Actualizar la dirección completa antes de enviar
-        actualizarDireccionCompleta();
-
         // Validar campos requeridos
         const required = form.querySelectorAll('[required]');
         let valid = true;
@@ -298,28 +263,26 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Validar formato de teléfono
-        if (telefono.value.length !== 10) {
-            telefono.classList.add('border-red-500');
-            valid = false;
-        }
-
-        // Validar formato de código postal
-        if (codigoPostal.value.length !== 6) {
-            codigoPostal.classList.add('border-red-500');
-            valid = false;
-        }
-
         if (valid) {
-            this.submit();
+            // El formulario se envía automáticamente
+            return true;
         } else {
+            e.preventDefault();
             Swal.fire({
                 title: '¡Error!',
                 text: 'Por favor, completa todos los campos requeridos correctamente',
                 icon: 'error',
                 confirmButtonText: 'Entendido'
             });
+            return false;
         }
+    });
+
+    // Limpiar errores de validación al escribir
+    form.querySelectorAll('input, textarea').forEach(field => {
+        field.addEventListener('input', function() {
+            this.classList.remove('border-red-500');
+        });
     });
 });
 </script>

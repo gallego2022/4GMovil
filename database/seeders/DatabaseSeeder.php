@@ -15,10 +15,10 @@ class DatabaseSeeder extends Seeder
     {
         // Crear usuario administrador por defecto
         Usuario::firstOrCreate(
-            ['correo_electronico' => 'admin@4gmovil.com'],
+            ['correo_electronico' => '4gmoviltest@gmail.com'],
             [
                 'nombre_usuario' => 'Administrador',
-                'correo_electronico' => 'admin@4gmovil.com',
+                'correo_electronico' => '4gmoviltest@gmail.com',
                 'contrasena' => Hash::make('Admin123!'),
                 'telefono' => '3000000000',
                 'estado' => true,
@@ -38,6 +38,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->command->info('✅ Base de datos poblada exitosamente!');
-        $this->command->info('👤 Usuario admin creado: admin@4gmovil.com / Admin123!');
+        $this->command->info('👤 Usuario admin creado: 4gmoviltest@gmail.com / Admin123!');
     }
 }

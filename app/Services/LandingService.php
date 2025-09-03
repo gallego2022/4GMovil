@@ -17,7 +17,7 @@ class LandingService
     {
         try {
             // Productos destacados (nuevos, con stock, activos)
-            $productosDestacados = Producto::with(['categoria', 'marca', 'imagenes', 'resenas.usuario'])
+            $productosDestacados = Producto::with(['categoria', 'marca', 'resenas.usuario', 'imagenes'])
                 ->where('estado', 'nuevo')
                 ->where('stock', '>', 0)
                 ->orderBy('created_at', 'desc')
@@ -39,7 +39,7 @@ class LandingService
                 ->get();
 
             // Productos populares
-            $productosPopulares = Producto::with(['categoria', 'marca', 'imagenes', 'resenas.usuario'])
+            $productosPopulares = Producto::with(['categoria', 'marca', 'resenas.usuario', 'imagenes'])
                 ->where('estado', 'nuevo')
                 ->where('stock', '>', 0)
                 ->orderBy('created_at', 'desc')
@@ -77,7 +77,7 @@ class LandingService
     public function getCatalogData(Request $request): array
     {
         try {
-            $query = Producto::with(['categoria', 'marca', 'imagenes', 'resenas.usuario', 'variantes']);
+            $query = Producto::with(['categoria', 'marca', 'resenas.usuario', 'variantes', 'imagenes']);
 
             // Aplicar filtros
             $this->applyCatalogFilters($query, $request);

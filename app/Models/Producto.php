@@ -46,7 +46,15 @@ class Producto extends Model
 
     public function imagenes()
     {
-        return $this->hasMany(ImagenProducto::class, 'producto_id');
+        return $this->hasMany(ImagenProducto::class, 'producto_id')->activas()->ordenadas();
+    }
+
+    /**
+     * Obtener la imagen principal del producto
+     */
+    public function imagenPrincipal()
+    {
+        return $this->hasOne(ImagenProducto::class, 'producto_id')->principal();
     }
 
     public function detallesPedido()

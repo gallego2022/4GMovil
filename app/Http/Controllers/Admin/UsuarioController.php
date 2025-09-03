@@ -65,7 +65,7 @@ class UsuarioController extends Controller
             return redirect()->route('usuarios.index')->with('error', 'Usuario no encontrado.');
         }
 
-        return view('pages.admin.usuarios.show', $data);
+        return view('pages.admin.usuarios.show', compact('data'));
     }
 
     public function edit($id)
@@ -76,7 +76,7 @@ class UsuarioController extends Controller
             return redirect()->route('usuarios.index')->with('error', 'Usuario no encontrado.');
         }
 
-        return view('pages.admin.usuarios.edit', $data);
+        return view('pages.admin.usuarios.edit', compact('data'));
     }
 
     public function update(Request $request, $id)

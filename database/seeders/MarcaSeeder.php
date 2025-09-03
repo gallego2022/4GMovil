@@ -22,27 +22,27 @@ class MarcaSeeder extends Seeder
             [
                 'nombre' => 'Samsung',
                 'descripcion' => 'Empresa tecnológica surcoreana líder en smartphones',
-                'activo' => true
+                'estado' => true
             ],
             [
                 'nombre' => 'Apple',
                 'descripcion' => 'Empresa tecnológica estadounidense líder en innovación',
-                'activo' => true
+                'estado' => true
             ],
             [
                 'nombre' => 'Xiaomi',
                 'descripcion' => 'Empresa tecnológica china especializada en smartphones',
-                'activo' => true
+                'estado' => true
             ],
             [
                 'nombre' => 'Huawei',
                 'descripcion' => 'Empresa tecnológica china líder en telecomunicaciones',
-                'activo' => true
+                'estado' => true
             ],
             [
                 'nombre' => 'Sony',
                 'descripcion' => 'Empresa japonesa líder en audio y entretenimiento',
-                'activo' => true
+                'estado' => true
             ]
         ];
 

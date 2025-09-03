@@ -1,170 +1,195 @@
 @extends('layouts.landing')
 
+@section('title', 'Pedido Confirmado')
+
 @section('content')
-<div class="container mx-auto px-4 py-8">
-    <div class="max-w-3xl mx-auto">
-        @if(session('mensaje'))
-            <div class="mb-4 rounded-md p-4 {{ session('tipo', 'success') === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800' }}">
-                <div class="flex">
-                    <div class="flex-shrink-0">
-                        @if(session('tipo', 'success') === 'success')
-                            <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
-                        @else
-                            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                            </svg>
-                        @endif
-                    </div>
-                    <div class="ml-3">
-                        <p class="text-sm font-medium">{{ session('mensaje') }}</p>
-                    </div>
+<div class="min-h-screen bg-gray-50 py-12">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header de éxito -->
+        <div class="text-center mb-8">
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+                <svg class="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">¡Pedido Confirmado!</h1>
+            <p class="text-lg text-gray-600">Tu pedido ha sido procesado exitosamente</p>
+        </div>
+
+        <!-- Información del pedido -->
+        <div class="bg-white shadow rounded-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Detalles del Pedido</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Número de Pedido</p>
+                    <p class="text-lg font-semibold text-gray-900">#{{ $pedido->pedido_id }}</p>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Fecha del Pedido</p>
+                    <p class="text-lg font-semibold text-gray-900">{{ \Carbon\Carbon::parse($pedido->fecha_pedido)->format('d/m/Y H:i') }}</p>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Total</p>
+                    <p class="text-lg font-semibold text-green-600">${{ number_format($pedido->total, 0, ',', '.') }}</p>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Estado</p>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                        Pendiente
+                    </span>
                 </div>
             </div>
-        @endif
 
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <!-- Encabezado -->
-            <div class="text-center mb-8">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
-                    <i class="fas fa-check-circle text-3xl text-green-500"></i>
-                </div>
-                <h1 class="text-2xl font-bold text-gray-900 mb-2">¡Gracias por tu compra!</h1>
-                <p class="text-gray-600">Tu pedido #{{ $pedido->pedido_id }} ha sido confirmado</p>
-                <p class="text-gray-600">Estado: {{ $pedido->estado->nombre ?? 'Pendiente' }}</p>
+            @if($pedido->notas)
+            <div class="border-t pt-4">
+                <p class="text-sm font-medium text-gray-500 mb-2">Notas del Pedido</p>
+                <p class="text-gray-900">{{ $pedido->notas }}</p>
             </div>
+            @endif
+        </div>
 
-            <!-- Detalles del pedido -->
-            <div class="border-t border-b py-4 mb-6">
-                <h2 class="text-lg font-semibold mb-4">Detalles del pedido</h2>
-                
-                <!-- Productos -->
-                <div class="space-y-4 mb-6">
-                    @foreach($pedido->detalles as $detalle)
-                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                            <div class="flex-grow">
-                                <p class="font-medium text-lg mb-2">{{ $detalle->producto->nombre_producto }}</p>
-                                <div class="grid grid-cols-2 gap-4 text-sm">
-                                    <div>
-                                        <p class="text-gray-600">Cantidad:</p>
-                                        <p class="font-medium">{{ $detalle->cantidad }}</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-gray-600">Precio unitario:</p>
-                                        <p class="font-medium">${{ number_format($detalle->precio_unitario, 0, ',', '.') }}</p>
-                                    </div>
-                                    <div class="col-span-2">
-                                        <p class="text-gray-600">Subtotal:</p>
-                                        <p class="font-medium text-primary">${{ number_format($detalle->cantidad * $detalle->precio_unitario, 0, ',', '.') }}</p>
-                                    </div>
+        <!-- Productos del pedido -->
+        <div class="bg-white shadow rounded-lg p-6 mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Productos del Pedido</h3>
+            
+            @php
+                $detalles = \App\Models\DetallePedido::where('pedido_id', $pedido->pedido_id)->get();
+            @endphp
+            
+            @if($detalles->count() > 0)
+                <div class="space-y-4">
+                    @foreach($detalles as $detalle)
+                        @php
+                            $producto = \App\Models\Producto::find($detalle->producto_id);
+                            $variante = $detalle->variante_id ? \App\Models\VarianteProducto::find($detalle->variante_id) : null;
+                        @endphp
+                        
+                        <div class="flex items-center justify-between py-3 border-b border-gray-200 last:border-b-0">
+                            <div class="flex items-center space-x-4">
+                                <div class="flex-shrink-0">
+                                    @if($producto->imagen_principal)
+                                        <img src="{{ asset('storage/' . $producto->imagen_principal) }}" 
+                                             alt="{{ $producto->nombre_producto }}" 
+                                             class="h-16 w-16 rounded-lg object-cover">
+                                    @else
+                                        <div class="h-16 w-16 rounded-lg bg-gray-200 flex items-center justify-center">
+                                            <svg class="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </div>
+                                    @endif
                                 </div>
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-900">{{ $producto->nombre_producto }}</h4>
+                                    @if($variante)
+                                        <p class="text-sm text-gray-500">{{ $variante->nombre }}</p>
+                                    @endif
+                                    <p class="text-sm text-gray-500">Cantidad: {{ $detalle->cantidad }}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-gray-900">${{ number_format($detalle->subtotal, 0, ',', '.') }}</p>
+                                <p class="text-xs text-gray-500">${{ number_format($detalle->precio_unitario, 0, ',', '.') }} c/u</p>
                             </div>
                         </div>
                     @endforeach
                 </div>
+            @else
+                <p class="text-gray-500 text-center py-4">No se encontraron detalles del pedido</p>
+            @endif
+        </div>
 
-                <!-- Resumen de costos -->
-                <div class="border-t pt-4">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-gray-600">Subtotal</span>
-                        <span class="font-medium">${{ number_format($pedido->detalles->sum(function($detalle) { return $detalle->cantidad * $detalle->precio_unitario; }), 0, ',', '.') }}</span>
-                    </div>
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-gray-600">Envío</span>
-                        <span class="font-medium">Gratis</span>
-                    </div>
-                    <div class="flex justify-between items-center text-lg font-bold">
-                        <span>Total</span>
-                        <span class="text-primary">${{ number_format($pedido->detalles->sum(function($detalle) { return $detalle->cantidad * $detalle->precio_unitario; }), 0, ',', '.') }}</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Información de envío -->
-            <div class="mb-6">
-                <h2 class="text-lg font-semibold mb-4">Información de envío</h2>
-                <div class="bg-gray-50 rounded p-4">
-                    <div class="flex items-center mb-2">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $pedido->direccion->tipo_direccion === 'casa' ? 'bg-green-100 text-green-800' : ($pedido->direccion->tipo_direccion === 'apartamento' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800') }}">
-                            {{ ucfirst($pedido->direccion->tipo_direccion) }}
-                        </span>
-                    </div>
-                    <p class="text-gray-600">{{ $pedido->direccion->direccion }}</p>
-                    <p class="text-gray-600">{{ $pedido->direccion->barrio }}</p>
-                    <p class="text-gray-600">{{ $pedido->direccion->ciudad }}, {{ $pedido->direccion->departamento }}</p>
-                    <p class="text-gray-600">Código Postal: {{ $pedido->direccion->codigo_postal }}</p>
-                    <p class="text-gray-600">Teléfono: {{ $pedido->direccion->telefono }}</p>
-                    @if($pedido->direccion->instrucciones)
-                        <p class="text-gray-600 mt-2">
-                            <span class="font-medium">Instrucciones:</span><br>
-                            {{ $pedido->direccion->instrucciones }}
+        <!-- Información de envío -->
+        @if($pedido->direccion)
+            <div class="bg-white shadow rounded-lg p-6 mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Dirección de Envío</h3>
+                
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <p class="font-medium text-gray-900">{{ $pedido->direccion->nombre_destinatario }}</p>
+                    <p class="text-gray-600">
+                        {{ $pedido->direccion->calle }} {{ $pedido->direccion->numero }}
+                        @if($pedido->direccion->piso)
+                            , Piso {{ $pedido->direccion->piso }}
+                        @endif
+                        @if($pedido->direccion->departamento)
+                            , Depto {{ $pedido->direccion->departamento }}
+                        @endif
+                    </p>
+                    <p class="text-gray-600">
+                        {{ $pedido->direccion->ciudad }}, {{ $pedido->direccion->provincia }}
+                        @if($pedido->direccion->codigo_postal)
+                            , CP: {{ $pedido->direccion->codigo_postal }}
+                        @endif
+                    </p>
+                    <p class="text-gray-600">{{ $pedido->direccion->pais }}</p>
+                    @if($pedido->direccion->referencias)
+                        <p class="text-gray-500 text-sm mt-2">
+                            <strong>Referencias:</strong> {{ $pedido->direccion->referencias }}
                         </p>
                     @endif
                 </div>
             </div>
+        @endif
 
-            <!-- Información de pago -->
-            <div class="mb-6">
-                <h2 class="text-lg font-semibold mb-4">Información de pago</h2>
-                <div class="bg-gray-50 rounded p-4">
-                    <p class="font-medium">Método de pago: {{ \App\Helpers\PaymentHelper::getPaymentMethodName($pedido) }}</p>
-                    <p class="text-gray-600">Estado: {{ ucfirst(\App\Helpers\PaymentHelper::getPaymentStatus($pedido)) }}</p>
-                    <p class="text-gray-600">Fecha: {{ \App\Helpers\PaymentHelper::getPaymentDate($pedido) instanceof \DateTime ? \App\Helpers\PaymentHelper::getPaymentDate($pedido)->format('d/m/Y H:i') : date('d/m/Y H:i', strtotime(\App\Helpers\PaymentHelper::getPaymentDate($pedido))) }}</p>
-                </div>
-            </div>
+        <!-- Acciones -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{{ route('pedidos.show', $pedido->pedido_id) }}" 
+               class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                Ver Detalle del Pedido
+            </a>
+            
+            <a href="{{ route('landing') }}" 
+               class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                Volver al Inicio
+            </a>
+        </div>
 
-            <!-- Botones de acción -->
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="{{ route('landing') }}" 
-                    class="inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-primary hover:bg-blue-700 transition-colors">
-                    <i class="fas fa-home mr-2"></i>
-                    Volver al inicio
-                </a>
-                <button onclick="window.print()" 
-                    class="inline-flex justify-center items-center px-6 py-3 border border-gray-300 rounded-md shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">
-                    <i class="fas fa-print mr-2"></i>
-                    Imprimir pedido
-                </button>
-            </div>
+        <!-- Información adicional -->
+        <div class="mt-8 text-center">
+            <p class="text-sm text-gray-500">
+                Recibirás un email de confirmación con los detalles de tu pedido.
+                <br>
+                Si tienes alguna pregunta, no dudes en contactarnos.
+            </p>
         </div>
     </div>
 </div>
 
-@push('styles')
-<style>
-@media print {
-    .container {
-        max-width: 100% !important;
-    }
-    .shadow-md {
-        box-shadow: none !important;
-    }
-    .bg-primary, .hover\:bg-blue-700 {
-        background-color: #000 !important;
-    }
-    .text-primary {
-        color: #000 !important;
-    }
-    button, a {
-        display: none !important;
-    }
-}
-</style>
-@endpush
-
-@push('scripts')
+<!-- Script para limpiar el carrito del localStorage -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Limpiar el carrito del localStorage
-        localStorage.removeItem('cart');
-        
-        // Actualizar el contador del carrito en el header
-        const cartCount = document.getElementById('cart-count');
-        if (cartCount) {
-            cartCount.textContent = '0';
-        }
-    });
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🛒 Limpiando carrito del localStorage...');
+    
+    // Limpiar el carrito del localStorage
+    localStorage.removeItem('cart');
+    
+    // También limpiar cualquier variable global del carrito si existe
+    if (typeof window.cart !== 'undefined') {
+        window.cart = [];
+    }
+    
+    console.log('✅ Carrito limpiado del localStorage');
+    
+    // Actualizar el contador del carrito en la interfaz si existe
+    const cartCount = document.getElementById('cart-count');
+    const cartCountMobile = document.getElementById('cart-count-mobile');
+    
+    if (cartCount) {
+        cartCount.textContent = '0';
+    }
+    
+    if (cartCountMobile) {
+        cartCountMobile.textContent = '0';
+    }
+    
+    console.log('✅ Contadores del carrito actualizados');
+});
 </script>
-@endpush
 @endsection 

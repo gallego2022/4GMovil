@@ -253,4 +253,36 @@ class CarritoController extends WebController
             ], 400);
         }
     }
+
+    /**
+     * Verifica el stock disponible para el carrito
+     */
+    public function verificarStock()
+    {
+        try {
+            $cart = session('cart', []);
+            
+            if (empty($cart)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El carrito está vacío'
+                ]);
+            }
+
+            // Usar el ReservaStockService directamente
+            $reservaStockService = app(\App\Services\ReservaStockService::class);
+            $resultado = $reservaStockService->verificarStockCarrito($cart);
+            
+            return response()->json([
+                'success' => true,
+                'data' => $resultado
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al verificar stock: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }
