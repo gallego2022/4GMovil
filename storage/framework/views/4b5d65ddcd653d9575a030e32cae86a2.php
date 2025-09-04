@@ -8,25 +8,25 @@
 
     <?php $__env->startPush('styles'); ?>
         <style>
-            /* ===== NUEVO ESTILO CORPORATIVO 4G MÓVIL ===== */
+            /* ===== ESTILO NEUTRO Y PROFESIONAL ===== */
             
             /* Variables CSS personalizadas */
             :root {
-                --4g-primary: #2563eb;
-                --4g-primary-dark: #1d4ed8;
-                --4g-primary-light: #3b82f6;
-                --4g-secondary: #1e40af;
-                --4g-accent: #f59e0b;
-                --4g-success: #10b981;
-                --4g-warning: #f59e0b;
-                --4g-danger: #ef4444;
-                --4g-gray-light: #f8fafc;
-                --4g-gray-dark: #1e293b;
-                --4g-text-primary: #1e293b;
-                --4g-text-secondary: #64748b;
-                --4g-border: #e2e8f0;
-                --4g-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.1);
-                --4g-shadow-hover: 0 20px 25px -5px rgba(37, 99, 235, 0.15);
+                --neutral-primary: #374151;
+                --neutral-primary-dark: #1f2937;
+                --neutral-primary-light: #6b7280;
+                --neutral-secondary: #4b5563;
+                --neutral-accent: #8b5cf6;
+                --neutral-success: #059669;
+                --neutral-warning: #d97706;
+                --neutral-danger: #dc2626;
+                --neutral-gray-light: #f9fafb;
+                --neutral-gray-dark: #111827;
+                --neutral-text-primary: #111827;
+                --neutral-text-secondary: #6b7280;
+                --neutral-border: #d1d5db;
+                --neutral-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                --neutral-shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
             }
 
             /* Modo oscuro */
@@ -38,249 +38,183 @@
                 --4g-border: #475569;
             }
 
-            /* Product Gallery Styles - Modern Corporate Design */
+            /* ===== GALERÍA DE PRODUCTOS - ESTILOS COMPLETAMENTE NUEVOS ===== */
+            
+            /* Contenedor principal de la galería */
             .product-gallery-container {
-                display: flex !important;
-                flex-direction: column !important;
-                align-items: center !important;
-                width: 100% !important;
-                gap: 2rem !important;
-                max-width: 100% !important;
-                overflow: hidden !important;
-                position: relative !important;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 2rem;
             }
 
-            /* Main Image Container - Modern Corporate Design */
+            /* Contenedor de la imagen principal */
             .main-image-wrapper {
-                position: relative !important;
-                width: 100% !important;
-                aspect-ratio: 4/3 !important;
-                overflow: hidden !important;
-                border-radius: 1.5rem !important;
-                min-height: 350px !important;
-                background: linear-gradient(135deg, var(--4g-gray-light), #ffffff) !important;
-                box-shadow: var(--4g-shadow) !important;
-                border: 2px solid var(--4g-border) !important;
-                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                position: relative;
+                width: 100%;
+                height: 300px;
+                border-radius: 1rem;
+                background: #f9fafb;
+                border: 1px solid #d1d5db;
+                overflow: hidden;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             }
 
-            .main-image-wrapper:hover {
-                transform: translateY(-5px) !important;
-                box-shadow: var(--4g-shadow-hover) !important;
-                border-color: var(--4g-primary) !important;
-            }
-
-            .main-image-wrapper img {
-                width: 100% !important;
-                height: 100% !important;
-                object-fit: cover !important;
-                object-position: center !important;
-                border-radius: 1rem !important;
-                transition: all 0.3s ease-in-out !important;
-                display: block !important;
-            }
-
-            /* Dark mode support for main image */
             .dark .main-image-wrapper {
-                background: #1f2937 !important;
+                background: #1f2937;
+                border-color: #475569;
             }
 
-            /* Thumbnail Gallery - Horizontal Layout */
+            /* Imagen principal */
+            .main-image-wrapper img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center;
+                display: block;
+            }
+
+            /* Contenedor de thumbnails */
             .thumbnail-gallery-wrapper {
-                padding: 1.25rem 0 !important;
-                width: 100% !important;
-                max-width: 100% !important;
-                overflow: hidden !important;
+                width: 100%;
+                padding: 1rem 0;
             }
 
+            /* Grid de thumbnails */
             .thumbnail-grid {
-                display: flex !important;
-                flex-direction: row !important;
-                flex-wrap: nowrap !important;
-                gap: 1rem !important;
-                overflow-x: auto !important;
-                padding: 0.5rem 0 !important;
-                scrollbar-width: thin !important;
-                scrollbar-color: #cbd5e1 #f1f5f9 !important;
-                justify-content: flex-start !important;
-                align-items: center !important;
-                scroll-behavior: smooth !important;
-                -webkit-overflow-scrolling: touch !important;
+                display: flex;
+                flex-direction: row;
+                flex-wrap: nowrap;
+                gap: 1rem;
+                overflow-x: auto;
+                padding: 0.5rem 0;
+                align-items: center;
+                min-height: 5rem;
             }
 
+            /* Scrollbar personalizado */
             .thumbnail-grid::-webkit-scrollbar {
-                height: 4px !important;
+                height: 4px;
             }
 
             .thumbnail-grid::-webkit-scrollbar-track {
-                background: #f1f5f9 !important;
-                border-radius: 2px !important;
+                background: #f1f5f9;
+                border-radius: 2px;
             }
 
             .thumbnail-grid::-webkit-scrollbar-thumb {
-                background: #cbd5e1 !important;
-                border-radius: 2px !important;
+                background: #cbd5e1;
+                border-radius: 2px;
             }
 
             .thumbnail-grid::-webkit-scrollbar-thumb:hover {
-                background: #94a3b8 !important;
+                background: #94a3b8;
             }
 
-            /* Thumbnail Items - Modern Corporate Design */
+            /* Items de thumbnail */
             .thumbnail-item {
-                flex-shrink: 0 !important;
-                flex-grow: 0 !important;
-                object-fit: cover !important;
-                border-radius: 1rem !important;
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-                border: 3px solid transparent !important;
-                cursor: pointer !important;
-                background: linear-gradient(135deg, var(--4g-gray-light), #ffffff) !important;
-                scroll-snap-align: start !important;
-                position: relative !important;
-                overflow: hidden !important;
+                width: 5rem;
+                height: 5rem;
+                flex-shrink: 0;
+                border-radius: 0.75rem;
+                border: 2px solid transparent;
+                cursor: pointer;
+                background: #f9fafb;
+                overflow: hidden;
+                transition: all 0.3s ease;
             }
 
-            .thumbnail-item::before {
-                content: '' !important;
-                position: absolute !important;
-                top: 0 !important;
-                left: 0 !important;
-                right: 0 !important;
-                bottom: 0 !important;
-                background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), transparent) !important;
-                opacity: 0 !important;
-                transition: opacity 0.3s ease !important;
-            }
-
-            /* Dark mode support for thumbnails */
             .dark .thumbnail-item {
-                background: #374151 !important;
+                background: #374151;
             }
 
             .thumbnail-item:hover {
-                transform: scale(1.1) !important;
-                border-color: var(--4g-primary) !important;
-                box-shadow: 0 8px 25px rgba(37, 99, 235, 0.25) !important;
-            }
-
-            .thumbnail-item:hover::before {
-                opacity: 1 !important;
+                transform: scale(1.05);
+                border-color: #374151;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             }
 
             .thumbnail-item.border-blue-500 {
-                border-color: var(--4g-primary) !important;
-                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3) !important;
-                transform: scale(1.05) !important;
+                border-color: #3b82f6;
+                box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
             }
 
-            .thumbnail-item.border-blue-500::before {
-                opacity: 1 !important;
-            }
-
-            /* Ensure thumbnails are always horizontal */
-            .thumbnail-grid {
-                flex-direction: row !important;
-                flex-wrap: nowrap !important;
-                overflow-x: auto !important;
-                scroll-snap-type: x mandatory !important;
-            }
-
-            /* Ensure thumbnail images display correctly */
+            /* Imágenes dentro de thumbnails */
             .thumbnail-item img {
-                width: 100% !important;
-                height: 100% !important;
-                object-fit: cover !important;
-                border-radius: 0.75rem !important;
-                display: block !important;
-                max-width: none !important;
-                max-height: none !important;
-                min-width: 0 !important;
-                min-height: 0 !important;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
             }
 
-            /* Override any global img styles that might interfere */
-            .thumbnail-grid .thumbnail-item {
-                max-width: none !important;
-                min-width: 0 !important;
-                box-sizing: border-box !important;
+            /* Puntos de paginación */
+            .pagination-dots {
+                display: flex;
+                justify-content: center;
+                gap: 0.5rem;
+                margin-top: 1rem;
             }
 
-            /* Force thumbnail sizing - override any conflicting styles */
-            .product-gallery-container .thumbnail-item {
-                width: 5rem !important;
-                height: 5rem !important;
-                max-width: none !important;
-                max-height: none !important;
-                min-width: 0 !important;
-                min-height: 0 !important;
+            .pagination-dots > div {
+                width: 0.5rem;
+                height: 0.5rem;
+                border-radius: 50%;
+                cursor: pointer;
+                transition: all 0.3s ease;
             }
 
-            /* Responsive thumbnail sizing with higher specificity */
+            .pagination-dots > div.bg-blue-600 {
+                background-color: #3b82f6;
+                transform: scale(1.1);
+            }
+
+            .pagination-dots > div.bg-gray-300 {
+                background-color: #d1d5db;
+            }
+
+            .pagination-dots > div.bg-gray-600 {
+                background-color: #6b7280;
+            }
+
+            .pagination-dots > div:hover {
+                transform: scale(1.05);
+            }
+
+            /* Responsive */
             @media (max-width: 640px) {
-                .product-gallery-container .thumbnail-item {
-                    width: 4rem !important;
-                    height: 4rem !important;
+                .main-image-wrapper {
+                    height: 250px;
+                }
+                
+                .thumbnail-item {
+                    width: 4rem;
+                    height: 4rem;
                 }
             }
 
             @media (min-width: 641px) and (max-width: 768px) {
-                .product-gallery-container .thumbnail-item {
-                    width: 4.5rem !important;
-                    height: 4.5rem !important;
+                .main-image-wrapper {
+                    height: 280px;
                 }
             }
 
             @media (min-width: 769px) and (max-width: 1024px) {
-                .product-gallery-container .thumbnail-item {
-                    width: 5rem !important;
-                    height: 5rem !important;
+                .main-image-wrapper {
+                    height: 320px;
                 }
             }
 
             @media (min-width: 1025px) {
-                .product-gallery-container .thumbnail-item {
-                    width: 5.5rem !important;
-                    height: 5.5rem !important;
+                .main-image-wrapper {
+                    height: 350px;
                 }
             }
 
-            /* Pagination Dots - Modern Corporate Design */
-            .pagination-dots {
-                display: flex !important;
-                justify-content: center !important;
-                gap: 0.75rem !important;
-                width: 100% !important;
-                margin-top: 1rem !important;
-            }
-
-            .pagination-dots > div {
-                width: 0.75rem !important;
-                height: 0.75rem !important;
-                border-radius: 50% !important;
-                cursor: pointer !important;
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-                position: relative !important;
-                overflow: hidden !important;
-            }
-
-            .pagination-dots > div::before {
-                content: '' !important;
-                position: absolute !important;
-                top: 50% !important;
-                left: 50% !important;
-                width: 0% !important;
-                height: 0% !important;
-                background: var(--4g-primary) !important;
-                border-radius: 50% !important;
-                transform: translate(-50%, -50%) !important;
-                transition: all 0.3s ease !important;
-            }
-
             .pagination-dots > div.bg-blue-600 {
-                background-color: var(--4g-primary) !important;
-                transform: scale(1.2) !important;
-                box-shadow: 0 0 10px rgba(37, 99, 235, 0.5) !important;
+                background-color: var(--neutral-primary) !important;
+                transform: scale(1.1) !important;
+                box-shadow: 0 0 8px rgba(139, 92, 246, 0.3) !important;
             }
 
             .pagination-dots > div.bg-blue-600::before {
@@ -289,47 +223,49 @@
             }
 
             .pagination-dots > div.bg-gray-300 {
-                background-color: var(--4g-border) !important;
+                background-color: var(--neutral-border) !important;
             }
 
             .pagination-dots > div.bg-gray-600 {
-                background-color: var(--4g-text-secondary) !important;
+                background-color: var(--neutral-text-secondary) !important;
             }
 
             .pagination-dots > div:hover {
-                transform: scale(1.1) !important;
-                background-color: var(--4g-primary-light) !important;
+                transform: scale(1.05) !important;
+                background-color: var(--neutral-primary-light) !important;
             }
 
-            /* Responsive Design - Modern Corporate Design */
+            /* Responsive Design - Estilo Neutro */
             @media (max-width: 640px) {
                 .main-image-wrapper {
-                    aspect-ratio: 1/1 !important;
-                    min-height: 280px !important;
-                    border-radius: 1rem !important;
+                    height: 250px !important;
+                    border-radius: 0.75rem !important;
                 }
                 
                 .thumbnail-item {
-                    width: 4.5rem !important;
-                    height: 4.5rem !important;
-                    border-radius: 0.75rem !important;
+                    width: 4rem !important;
+                    height: 4rem !important;
+                    border-radius: 0.5rem !important;
+                    min-width: 4rem !important;
+                    min-height: 4rem !important;
+                    max-width: 4rem !important;
+                    max-height: 4rem !important;
                 }
 
                 .thumbnail-grid {
-                    gap: 1rem !important;
+                    gap: 0.75rem !important;
                     padding: 0.5rem 0 !important;
                 }
 
                 .pagination-dots > div {
-                    width: 0.5rem !important;
-                    height: 0.5rem !important;
+                    width: 0.375rem !important;
+                    height: 0.375rem !important;
                 }
             }
 
             @media (min-width: 641px) and (max-width: 768px) {
                 .main-image-wrapper {
-                    aspect-ratio: 5/4 !important;
-                    min-height: 320px !important;
+                    height: 280px !important;
                 }
 
                 .thumbnail-grid {
@@ -344,8 +280,7 @@
 
             @media (min-width: 769px) and (max-width: 1024px) {
                 .main-image-wrapper {
-                    aspect-ratio: 4/3 !important;
-                    min-height: 380px !important;
+                    height: 320px !important;
                 }
 
                 .thumbnail-item {
@@ -356,8 +291,7 @@
 
             @media (min-width: 1025px) {
                 .main-image-wrapper {
-                    aspect-ratio: 3/2 !important;
-                    min-height: 420px !important;
+                    height: 350px !important;
                 }
 
                 .thumbnail-item {
@@ -366,209 +300,103 @@
                 }
             }
 
-            /* Ensure horizontal scrolling works on all devices */
+            /* ===== ESTILOS ADICIONALES PARA LA GALERÍA ===== */
+            
+            /* Touch-friendly interactions for mobile */
             @media (max-width: 768px) {
                 .thumbnail-grid {
-                    -webkit-overflow-scrolling: touch !important;
-                    scrollbar-width: none !important;
+                    -webkit-overflow-scrolling: touch;
+                    scrollbar-width: none;
                 }
                 
                 .thumbnail-grid::-webkit-scrollbar {
-                    display: none !important;
+                    display: none;
                 }
-            }
-
-            /* Touch-friendly interactions for mobile */
-            @media (max-width: 768px) {
+                
                 .thumbnail-item {
-                    touch-action: manipulation !important;
+                    touch-action: manipulation;
                 }
                 
                 .main-image-wrapper {
-                    touch-action: pan-x pan-y !important;
+                    touch-action: pan-x pan-y;
                 }
             }
 
             /* Focus states for accessibility */
             .thumbnail-item:focus {
-                outline: 2px solid #3b82f6 !important;
-                outline-offset: 2px !important;
-            }
-
-            /* Image Zoom Modal Styles - Modern Corporate Design */
-            #imageZoomModal {
-                backdrop-filter: blur(12px);
-                background: rgba(15, 23, 42, 0.95) !important;
-            }
-
-            #zoomImage {
-                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-                cursor: grab !important;
-                border-radius: 1rem !important;
-                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
-            }
-
-            #zoomImage:active {
-                cursor: grabbing !important;
-            }
-
-            /* Smooth transitions for modal buttons */
-            #imageZoomModal button {
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-                background: rgba(255, 255, 255, 0.1) !important;
-                backdrop-filter: blur(10px) !important;
-                border: 1px solid rgba(255, 255, 255, 0.2) !important;
-            }
-
-            #imageZoomModal button:hover {
-                transform: scale(1.15) !important;
-                background: rgba(255, 255, 255, 0.2) !important;
-                border-color: var(--4g-primary) !important;
-                box-shadow: 0 0 20px rgba(37, 99, 235, 0.5) !important;
-            }
-
-            /* Loading animation for images - Modern Corporate Design */
-            .image-loading {
-                position: relative !important;
-            }
-
-            .image-loading::before {
-                content: '' !important;
-                position: absolute !important;
-                top: 50% !important;
-                left: 50% !important;
-                width: 50px !important;
-                height: 50px !important;
-                margin: -25px 0 0 -25px !important;
-                border: 4px solid rgba(37, 99, 235, 0.1) !important;
-                border-top: 4px solid var(--4g-primary) !important;
-                border-radius: 50% !important;
-                animation: spin 1s linear infinite !important;
-                box-shadow: 0 0 20px rgba(37, 99, 235, 0.3) !important;
-            }
-
-            .image-loading::after {
-                content: '' !important;
-                position: absolute !important;
-                top: 50% !important;
-                left: 50% !important;
-                width: 30px !important;
-                height: 30px !important;
-                margin: -15px 0 0 -15px !important;
-                border: 3px solid transparent !important;
-                border-top: 3px solid var(--4g-accent) !important;
-                border-radius: 50% !important;
-                animation: spin 0.8s linear infinite reverse !important;
-            }
-
-            @keyframes spin {
-                0% {
-                    transform: rotate(0deg) !important;
-                }
-                100% {
-                    transform: rotate(360deg) !important;
-                }
-            }
-
-            /* Pulse animation for loading states */
-            @keyframes pulse-4g {
-                0%, 100% {
-                    opacity: 1 !important;
-                    transform: scale(1) !important;
-                }
-                50% {
-                    opacity: 0.7 !important;
-                    transform: scale(1.05) !important;
-                }
-            }
-
-            .pulse-4g {
-                animation: pulse-4g 2s ease-in-out infinite !important;
-            }
-
-            /* Responsive zoom controls - Modern Corporate Design */
-            @media (max-width: 768px) {
-                #imageZoomModal .absolute.top-4.left-4 {
-                    top: 1rem !important;
-                    left: 1rem !important;
-                }
-
-                #imageZoomModal .absolute.top-4.right-4 {
-                    top: 1rem !important;
-                    right: 1rem !important;
-                }
-
-                #imageZoomModal .absolute.left-4 {
-                    left: 1rem !important;
-                }
-
-                #imageZoomModal .absolute.right-4 {
-                    right: 1rem !important;
-                }
-
-                #imageZoomModal button {
-                    padding: 0.75rem !important;
-                    font-size: 0.875rem !important;
-                }
-
-                #zoomImage {
-                    border-radius: 0.75rem !important;
-                }
-            }
-
-            /* Enhanced touch interactions for mobile */
-            @media (max-width: 768px) {
-                .thumbnail-item {
-                    touch-action: manipulation !important;
-                }
-                
-                .main-image-wrapper {
-                    touch-action: pan-x pan-y !important;
-                }
-
-                .pagination-dots > div {
-                    touch-action: manipulation !important;
-                }
-            }
-
-            /* Focus states for accessibility */
-            .thumbnail-item:focus {
-                outline: 3px solid var(--4g-primary) !important;
-                outline-offset: 3px !important;
-                transform: scale(1.05) !important;
+                outline: 2px solid #3b82f6;
+                outline-offset: 2px;
             }
 
             .pagination-dots > div:focus {
-                outline: 2px solid var(--4g-primary) !important;
-                outline-offset: 2px !important;
+                outline: 2px solid #3b82f6;
+                outline-offset: 2px;
             }
 
-            /* Smooth scrolling enhancements */
-            .thumbnail-grid {
-                scroll-behavior: smooth !important;
-                -webkit-overflow-scrolling: touch !important;
-                scrollbar-width: thin !important;
-                scrollbar-color: var(--4g-primary) var(--4g-border) !important;
+            /* ===== ESTILOS DEL MODAL DE ZOOM ===== */
+            
+            #imageZoomModal {
+                backdrop-filter: blur(12px);
+                background: rgba(15, 23, 42, 0.95);
             }
 
-            .thumbnail-grid::-webkit-scrollbar {
-                height: 6px !important;
+            #zoomImage {
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                cursor: grab;
+                border-radius: 1rem;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             }
 
-            .thumbnail-grid::-webkit-scrollbar-track {
-                background: var(--4g-border) !important;
-                border-radius: 3px !important;
+            #zoomImage:active {
+                cursor: grabbing;
             }
 
-            .thumbnail-grid::-webkit-scrollbar-thumb {
-                background: var(--4g-primary) !important;
-                border-radius: 3px !important;
-                transition: background 0.3s ease !important;
+            /* Botones del modal */
+            #imageZoomModal button {
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                background: rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.2);
             }
 
-            .thumbnail-grid::-webkit-scrollbar-thumb:hover {
-                background: var(--4g-primary-dark) !important;
+            #imageZoomModal button:hover {
+                transform: scale(1.15);
+                background: rgba(255, 255, 255, 0.2);
+                border-color: #3b82f6;
+                box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
             }
+
+            /* Responsive para el modal */
+            @media (max-width: 768px) {
+                #imageZoomModal .absolute.top-4.left-4 {
+                    top: 1rem;
+                    left: 1rem;
+                }
+
+                #imageZoomModal .absolute.top-4.right-4 {
+                    top: 1rem;
+                    right: 1rem;
+                }
+
+                #imageZoomModal .absolute.left-4 {
+                    left: 1rem;
+                }
+
+                #imageZoomModal .absolute.right-4 {
+                    right: 1rem;
+                }
+
+                #imageZoomModal button {
+                    padding: 0.75rem;
+                    font-size: 0.875rem;
+                }
+
+                #zoomImage {
+                    border-radius: 0.75rem;
+                }
+            }
+
+
         </style>
     <?php $__env->stopPush(); ?>
 
@@ -604,61 +432,17 @@
         </nav>
     </div>
 
-    <!-- Hero Section - Modern Corporate Design -->
-    <section class="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white overflow-hidden py-16">
-        <!-- Elementos decorativos corporativos -->
-        <div class="absolute top-0 left-0 w-80 h-80 bg-white opacity-10 rounded-full -translate-x-40 -translate-y-40 animate-pulse"></div>
-        <div class="absolute top-0 right-0 w-96 h-96 bg-white opacity-5 rounded-full translate-x-48 -translate-y-48 animate-pulse" style="animation-delay: 1s;"></div>
-        <div class="absolute bottom-0 left-1/2 w-72 h-72 bg-white opacity-10 rounded-full -translate-x-36 translate-y-36 animate-pulse" style="animation-delay: 2s;"></div>
-        
-        <!-- Patrón de fondo corporativo -->
-        <div class="absolute inset-0 opacity-5">
-            <div class="absolute inset-0" style="background-image: radial-gradient(circle at 25% 25%, white 2px, transparent 2px), radial-gradient(circle at 75% 75%, white 2px, transparent 2px); background-size: 50px 50px;"></div>
-        </div>
-        
-        <!-- Contenido del hero -->
-        <div class="relative z-10 container mx-auto px-4 text-center">
-            <div class="max-w-4xl mx-auto">
-                <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-                    <span class="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
-                        <?php echo e($producto->nombre_producto); ?>
-
-                    </span>
-                </h1>
-                <p class="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
-                    Descubre la excelencia en tecnología móvil con nuestro producto premium
-                </p>
-                
-                <!-- Indicadores de calidad -->
-                <div class="flex flex-wrap justify-center gap-6 mb-8">
-                    <div class="flex items-center space-x-2 bg-white bg-opacity-10 backdrop-blur-sm px-4 py-2 rounded-full">
-                        <i class="fas fa-shield-alt text-blue-200"></i>
-                        <span class="text-sm font-medium">Garantía Oficial</span>
-                    </div>
-                    <div class="flex items-center space-x-2 bg-white bg-opacity-10 backdrop-blur-sm px-4 py-2 rounded-full">
-                        <i class="fas fa-truck text-blue-200"></i>
-                        <span class="text-sm font-medium">Envío Gratis</span>
-                    </div>
-                    <div class="flex items-center space-x-2 bg-white bg-opacity-10 backdrop-blur-sm px-4 py-2 rounded-full">
-                        <i class="fas fa-headset text-blue-200"></i>
-                        <span class="text-sm font-medium">Soporte 24/7</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Product Details Section - Modern Corporate Design -->
-    <section id="producto" class="py-20 bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900/20">
+    <!-- Product Details Section - Estilo Neutro -->
+    <section id="producto" class="py-20 bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-800">
         <div class="container mx-auto px-4">
-            <div class="max-w-7xl mx-auto">
+            <div class="max-w-3xl mx-auto">
                 <!-- Product Card -->
                 <div
-                    class="bg-gradient-to-br from-white via-gray-50 to-blue-50 dark:from-gray-800 dark:via-gray-700 dark:to-blue-900/20 rounded-3xl shadow-2xl border-2 border-blue-100 dark:border-blue-800/30 overflow-hidden transition-all duration-500 hover:shadow-3xl hover:scale-[1.02] relative">
+                    class="bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-gray-800 dark:via-gray-700 dark:to-gray-700 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-600 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] relative">
                     
-                    <!-- Elemento decorativo superior -->
-                    <div class="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-blue-400 to-indigo-500 opacity-10 rounded-full -translate-x-16 -translate-y-16"></div>
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-purple-400 to-pink-500 opacity-10 rounded-full translate-x-12 -translate-y-12"></div>
+                    <!-- Elemento decorativo superior sutil -->
+                    <div class="absolute top-0 left-0 w-24 h-24 bg-gradient-to-br from-gray-400 to-gray-500 opacity-5 rounded-full -translate-x-12 -translate-y-12"></div>
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-gray-400 to-gray-500 opacity-5 rounded-full translate-x-10 -translate-y-10"></div>
                     <div class="grid lg:grid-cols-2 gap-12 p-8">
 
                         <!-- Left Section - Product Images -->
@@ -711,7 +495,7 @@
                                             <img src="<?php echo e($imagenUrl); ?>"
                                                 alt="<?php echo e($producto->nombre_producto); ?> - Vista <?php echo e($i + 1); ?>"
                                                 class="thumbnail-item <?php echo e($i === 0 ? 'border-blue-500' : ''); ?>"
-                                                onclick="changeMainImage(this, '<?php echo e($imagenPrincipal); ?>')">
+                                                data-image-url="<?php echo e($imagenPrincipal); ?>">
                                         <?php else: ?>
                                             <div class="thumbnail-item flex items-center justify-center">
                                                 <i class="fas fa-image text-gray-400 dark:text-gray-500 text-sm"></i>
@@ -733,36 +517,36 @@
                         </div>
 
                         <!-- Right Section - Product Details -->
-                        <div class="space-y-6">
+                        <div class="space-y-4">
 
-                            <!-- Action Icons - Modern Corporate Design -->
+                            <!-- Action Icons - Estilo Neutro -->
                             <div class="flex items-center space-x-4">
                                 <button
-                                    class="p-4 rounded-2xl bg-gradient-to-r from-red-50 via-pink-50 to-red-100 dark:from-red-900/20 dark:via-pink-900/20 dark:to-red-800/30 hover:from-red-100 hover:via-pink-100 hover:to-red-200 dark:hover:from-red-800/30 dark:hover:via-pink-800/30 dark:hover:to-red-700/40 transition-all duration-300 group shadow-lg hover:shadow-xl border border-red-200 dark:border-red-700/30">
+                                    class="p-3 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200 group shadow-sm hover:shadow-md border border-gray-200 dark:border-gray-600">
                                     <i
-                                        class="fas fa-heart text-red-500 group-hover:scale-110 transition-transform duration-200 group-hover:text-red-600"></i>
+                                        class="fas fa-heart text-gray-600 dark:text-gray-400 group-hover:text-red-500 transition-colors duration-200"></i>
                                 </button>
                                 <button
-                                    class="p-4 rounded-2xl bg-gradient-to-r from-blue-50 via-indigo-50 to-blue-100 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-blue-800/30 hover:from-blue-100 hover:via-indigo-100 hover:to-blue-200 dark:hover:from-blue-800/30 dark:hover:via-indigo-800/30 dark:hover:to-blue-700/40 transition-all duration-300 group shadow-lg hover:shadow-xl border border-blue-200 dark:border-blue-700/30">
+                                    class="p-3 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200 group shadow-sm hover:shadow-md border border-gray-200 dark:border-gray-600">
                                     <i
-                                        class="fas fa-share-alt text-blue-500 group-hover:scale-110 transition-transform duration-200 group-hover:text-blue-600"></i>
+                                        class="fas fa-share-alt text-gray-600 dark:text-gray-400 group-hover:text-gray-800 dark:group-hover:text-gray-200 transition-colors duration-200"></i>
                                 </button>           
                             </div>
-                            <!-- Product Title - Modern Corporate Design -->
+                            <!-- Product Title - Estilo Neutro -->
                             <div class="relative">
-                                <div class="absolute -left-4 top-0 w-1 h-full bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full"></div>
+                                <div class="absolute -left-3 top-0 w-0.5 h-full bg-gray-400 rounded-full"></div>
                                 <div class="pl-6">
-                                    <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-700 dark:from-white dark:via-blue-200 dark:to-indigo-300 bg-clip-text text-transparent leading-tight mb-3">
+                                    <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight mb-3">
                                         <?php echo e($producto->nombre_producto); ?>
 
                                     </h1>
                                     <div class="flex items-center space-x-4">
-                                        <span class="inline-flex items-center px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-medium rounded-full border border-blue-200 dark:border-blue-700/30">
+                                        <span class="inline-flex items-center px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-full border border-gray-200 dark:border-gray-600">
                                             <i class="fas fa-barcode mr-2"></i>
                                             SKU: <?php echo e($producto->sku ?? 'N/A'); ?>
 
                                         </span>
-                                        <span class="inline-flex items-center px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-sm font-medium rounded-full border border-green-200 dark:border-green-700/30">
+                                        <span class="inline-flex items-center px-3 py-1 bg-green-100 dark:bg-green-700 text-green-700 dark:text-green-300 text-sm font-medium rounded-full border border-green-200 dark:border-green-600">
                                             <i class="fas fa-check-circle mr-2"></i>
                                             Disponible
                                         </span>
@@ -770,16 +554,16 @@
                                 </div>
                             </div>
 
-                            <!-- Pricing - Modern Corporate Design -->
+                            <!-- Pricing - Estilo Neutro -->
                             <div class="space-y-4">
-                                <div class="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-purple-900/20 rounded-2xl p-6 border border-blue-200 dark:border-blue-700/30">
+                                <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-600">
                                     <div class="flex items-baseline space-x-4">
                                         <div class="relative">
-                                            <span class="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                                            <span class="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white">
                                                 $<?php echo e(number_format($producto->precio ?? 0, 0, ',', '.')); ?>
 
                                             </span>
-                                            <div class="absolute -top-2 -right-2 w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
+                                            <div class="absolute -top-2 -right-2 w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                                         </div>
                                         <?php if(isset($producto->precio_anterior) && $producto->precio_anterior > $producto->precio): ?>
                                             <div class="flex flex-col items-start space-y-2">
@@ -788,7 +572,7 @@
 
                                                 </span>
                                                 <span
-                                                    class="bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                                                    class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
                                                     -<?php echo e(round((($producto->precio_anterior - $producto->precio) / $producto->precio_anterior) * 100)); ?>% OFF
                                                 </span>
                                             </div>
@@ -796,14 +580,14 @@
                                     </div>
                                     
                                     <!-- Información adicional de precio -->
-                                    <div class="mt-4 pt-4 border-t border-blue-200 dark:border-blue-700/30">
+                                    <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
                                         <div class="flex items-center justify-between text-sm">
                                             <span class="text-gray-600 dark:text-gray-400">Envío:</span>
                                             <span class="text-green-600 dark:text-green-400 font-semibold">GRATIS</span>
                                         </div>
                                         <div class="flex items-center justify-between text-sm">
                                             <span class="text-gray-600 dark:text-gray-400">Garantía:</span>
-                                            <span class="text-blue-600 dark:text-blue-400 font-semibold">1 Año</span>
+                                            <span class="text-gray-700 dark:text-gray-300 font-semibold">1 Año</span>
                                         </div>
                                     </div>
                                 </div>
@@ -952,13 +736,13 @@
                                     <?php if($tieneVariantes): ?>
                                         <!-- Si tiene variantes, mostrar botón que abra modal de selección -->
                                         <button type="button"
-                                            class="select-variant w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-white py-5 px-8 rounded-2xl font-bold text-lg transition-all duration-500 transform hover:scale-105 hover:shadow-2xl shadow-xl group relative overflow-hidden"
+                                            class="select-variant w-full bg-gray-800 hover:bg-gray-900 text-white py-4 px-8 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl shadow-lg group relative overflow-hidden"
                                             data-producto-id="<?php echo e($producto->producto_id); ?>" 
                                             data-producto-nombre="<?php echo e($producto->nombre_producto); ?>" 
                                             data-producto-precio="<?php echo e($producto->precio); ?>">
                                             
-                                            <!-- Efecto de brillo -->
-                                            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                                            <!-- Efecto de brillo sutil -->
+                                            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                                             
                                             <div class="relative z-10 flex items-center justify-center">
                                                 <i class="fas fa-palette mr-3 text-xl group-hover:scale-110 transition-transform duration-300"></i>
@@ -969,13 +753,13 @@
                                     <?php else: ?>
                                         <!-- Si no tiene variantes, agregar directamente al carrito -->
                                         <button type="button"
-                                            class="add-to-cart w-full bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 hover:from-green-700 hover:via-emerald-700 hover:to-teal-700 text-white py-5 px-8 rounded-2xl font-bold text-lg transition-all duration-500 transform hover:scale-105 hover:shadow-2xl shadow-xl group relative overflow-hidden"
+                                            class="add-to-cart w-full bg-green-600 hover:bg-green-700 text-white py-4 px-8 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl shadow-lg group relative overflow-hidden"
                                             data-id="<?php echo e($producto->producto_id); ?>" 
                                             data-name="<?php echo e($producto->nombre_producto); ?>" 
                                             data-price="<?php echo e($producto->precio); ?>">
                                             
-                                            <!-- Efecto de brillo -->
-                                            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                                            <!-- Efecto de brillo sutil -->
+                                            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                                             
                                             <div class="relative z-10 flex items-center justify-center">
                                                 <i class="fas fa-shopping-cart mr-3 text-xl group-hover:scale-110 transition-transform duration-300"></i>
@@ -1011,28 +795,28 @@
                         </div>
                     </div>
                     
-                    <!-- Additional Info - Full Width - Modern Corporate Design -->
+                    <!-- Additional Info - Full Width - Estilo Neutro -->
                     <div class="px-8 pb-8">
                         <div
-                            class="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-purple-900/20 rounded-2xl p-8 w-full border-2 border-blue-200 dark:border-blue-700/30 shadow-xl relative overflow-hidden">
+                            class="bg-gray-50 dark:bg-gray-800 rounded-xl p-8 w-full border border-gray-200 dark:border-gray-600 shadow-lg relative overflow-hidden">
                             
-                            <!-- Elementos decorativos -->
-                            <div class="absolute top-0 left-0 w-24 h-24 bg-gradient-to-br from-blue-400 to-indigo-500 opacity-10 rounded-full -translate-x-12 -translate-y-12"></div>
-                            <div class="absolute bottom-0 right-0 w-20 h-20 bg-gradient-to-br from-purple-400 to-pink-500 opacity-10 translate-x-10 translate-y-10"></div>
+                            <!-- Elementos decorativos sutiles -->
+                            <div class="absolute top-0 left-0 w-20 h-20 bg-gray-400 opacity-5 rounded-full -translate-x-10 -translate-y-10"></div>
+                            <div class="absolute bottom-0 right-0 w-16 h-16 bg-gray-400 opacity-5 translate-x-8 translate-y-8"></div>
                             
                             <div class="relative z-10">
                                 <h3 class="font-bold text-2xl text-gray-900 dark:text-white mb-6 flex items-center">
-                                    <div class="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mr-4">
+                                    <div class="w-10 h-10 bg-gray-600 rounded-xl flex items-center justify-center mr-4">
                                         <i class="fas fa-shield-halved text-white text-lg"></i>
                                     </div>
-                                    <span class="bg-gradient-to-r from-gray-900 to-blue-800 dark:from-white dark:to-blue-200 bg-clip-text text-transparent">
+                                    <span class="text-gray-900 dark:text-white">
                                         Información Adicional
                                     </span>
                                 </h3>
                                 <div class="grid md:grid-cols-3 gap-8">
-                                    <div class="flex items-center space-x-4 p-4 bg-white dark:bg-gray-800 rounded-xl border border-blue-200 dark:border-blue-700/30 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                                    <div class="flex items-center space-x-4 p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-600 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105">
                                         <div
-                                            class="bg-gradient-to-r from-green-500 to-emerald-600 w-12 h-12 rounded-xl flex items-center justify-center shadow-lg">
+                                            class="bg-green-600 w-12 h-12 rounded-xl flex items-center justify-center shadow-md">
                                             <i class="fas fa-check text-white text-lg"></i>
                                         </div>
                                         <div>
@@ -1040,9 +824,9 @@
                                             <p class="text-sm text-gray-500 dark:text-gray-400">1 año completo</p>
                                         </div>
                                     </div>
-                                    <div class="flex items-center space-x-4 p-4 bg-white dark:bg-gray-800 rounded-xl border border-blue-200 dark:border-blue-700/30 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                                    <div class="flex items-center space-x-4 p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-600 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105">
                                         <div
-                                            class="bg-gradient-to-r from-blue-500 to-indigo-600 w-12 h-12 rounded-xl flex items-center justify-center shadow-lg">
+                                            class="bg-gray-600 w-12 h-12 rounded-xl flex items-center justify-center shadow-md">
                                             <i class="fas fa-undo text-white text-lg"></i>
                                         </div>
                                         <div>
@@ -1050,9 +834,9 @@
                                             <p class="text-sm text-gray-500 dark:text-gray-400">30 días sin preguntas</p>
                                         </div>
                                     </div>
-                                    <div class="flex items-center space-x-4 p-4 bg-white dark:bg-gray-800 rounded-xl border border-blue-200 dark:border-blue-700/30 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                                    <div class="flex items-center space-x-4 p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-600 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105">
                                         <div
-                                            class="bg-gradient-to-r from-purple-500 to-pink-600 w-12 h-12 rounded-xl flex items-center justify-center shadow-lg">
+                                            class="bg-gray-600 w-12 h-12 rounded-xl flex items-center justify-center shadow-md">
                                             <i class="fas fa-headset text-white text-lg"></i>
                                         </div>
                                         <div>
@@ -1677,26 +1461,7 @@
         </div>
     </section>
 
-    <!-- CTA Section -->
-    <section class="py-20 bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 text-white">
-        <div class="container mx-auto px-4 text-center">
-            <h2 class="text-3xl md:text-4xl font-bold mb-6">¿Te gustó este producto?</h2>
-            <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-                No dudes en contactarnos para más información o para realizar tu compra
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="https://wa.me/573025970220?text=Hola%20equipo%20de%204GMovil,%20me%20interesa%20el%20producto%20<?php echo e(urlencode($producto->nombre_producto)); ?>.%20¿Podrían%20darme%20más%20información?"
-                    target="_blank"
-                    class="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg">
-                    <i class="fab fa-whatsapp mr-2"></i>Consultar por WhatsApp
-                </a>
-                <a href="<?php echo e(route('productos.lista')); ?>"
-                    class="border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-blue-600 transition-all duration-300 transform hover:scale-105">
-                    <i class="fas fa-th-large mr-2"></i>Ver Más Productos
-                </a>
-            </div>
-        </div>
-    </section>
+   
 
 <?php $__env->stopSection(); ?>
 
@@ -1711,28 +1476,23 @@
             let zoomImages = [];
             let currentZoomIndex = 0;
 
-            // Gallery functionality
+            // ===== FUNCIONALIDAD DE LA GALERÍA =====
+            
             const mainImage = document.getElementById('mainImage');
 
             function changeMainImage(thumbnail, newSrc) {
-                console.log('changeMainImage called with:', { thumbnail, newSrc });
-                
-                // Update main image
+                // Actualizar imagen principal
                 mainImage.src = newSrc;
                 mainImage.alt = thumbnail.alt;
-                
-                console.log('Main image src updated to:', newSrc);
 
-                // Update active thumbnail
+                // Actualizar thumbnail activo
                 const allThumbnails = document.querySelectorAll('.thumbnail-item');
                 allThumbnails.forEach(thumb => {
                     thumb.classList.remove('border-blue-500');
-                    thumb.classList.add('border-transparent');
                 });
-                thumbnail.classList.remove('border-transparent');
                 thumbnail.classList.add('border-blue-500');
 
-                // Update active dot
+                // Actualizar punto activo
                 const index = Array.from(allThumbnails).indexOf(thumbnail);
                 const allDots = document.querySelectorAll('.pagination-dots > div');
                 allDots.forEach((dot, i) => {
@@ -1746,32 +1506,26 @@
                 });
             }
 
-            // Add click handlers to thumbnails (will be added dynamically)
+            // Agregar event listeners a thumbnails
             function addThumbnailClickHandlers() {
                 const allThumbnails = document.querySelectorAll('.thumbnail-item');
-                allThumbnails.forEach((thumbnail, index) => {
+                allThumbnails.forEach((thumbnail) => {
                     thumbnail.addEventListener('click', function() {
-                        // Get the onclick attribute which contains the full-size image URL
-                        const onclickAttr = this.getAttribute('onclick');
-                        const match = onclickAttr.match(/changeMainImage\(this,\s*'([^']+)'\)/);
-                        const fullSizeUrl = match ? match[1] : this.src;
-                        changeMainImage(this, fullSizeUrl);
+                        const imageUrl = this.dataset.imageUrl || this.src;
+                        changeMainImage(this, imageUrl);
                     });
                 });
             }
 
-            // Add click handlers to dots (will be added dynamically)
+            // Agregar event listeners a puntos de paginación
             function addDotClickHandlers() {
                 const allDots = document.querySelectorAll('.pagination-dots > div');
                 allDots.forEach((dot, index) => {
                     dot.addEventListener('click', function() {
                         const allThumbnails = document.querySelectorAll('.thumbnail-item');
                         if (allThumbnails[index]) {
-                            // Get the onclick attribute which contains the full-size image URL
-                            const onclickAttr = allThumbnails[index].getAttribute('onclick');
-                            const match = onclickAttr.match(/changeMainImage\(this,\s*'([^']+)'\)/);
-                            const fullSizeUrl = match ? match[1] : allThumbnails[index].src;
-                            changeMainImage(allThumbnails[index], fullSizeUrl);
+                            const imageUrl = allThumbnails[index].dataset.imageUrl || allThumbnails[index].src;
+                            changeMainImage(allThumbnails[index], imageUrl);
                         }
                     });
                 });
@@ -1805,6 +1559,12 @@
                     thumbnail.alt = `Vista ${index + 1}`;
                     thumbnail.className = `thumbnail-item ${index === 0 ? 'border-blue-500' : ''}`;
                     
+                    // Force thumbnail dimensions
+                    thumbnail.style.width = '5rem';
+                    thumbnail.style.height = '5rem';
+                    thumbnail.style.objectFit = 'cover';
+                    thumbnail.style.borderRadius = '0.75rem';
+                    
                     // Add error handling for image loading
                     thumbnail.onerror = function() {
                         console.error('Error loading thumbnail image:', imagenUrl);
@@ -1827,13 +1587,19 @@
                 if (imagenes.length > 0) {
                     console.log('Updating main image to:', imagenes[0]);
                     
+                    // Ensure main image maintains fixed dimensions
+                    mainImage.style.width = '100%';
+                    mainImage.style.height = '100%';
+                    mainImage.style.objectFit = 'cover';
+                    mainImage.style.objectPosition = 'center';
+                    
                     // Add error handling for main image
                     mainImage.onerror = function() {
                         console.error('Error loading main image:', imagenes[0]);
                         // Show placeholder if image fails to load
                         this.style.display = 'none';
                         const placeholderDiv = document.createElement('div');
-                        placeholderDiv.className = 'w-full h-64 sm:h-80 md:h-96 lg:h-[28rem] xl:h-[32rem] bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-xl shadow-lg flex items-center justify-center';
+                        placeholderDiv.className = 'w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-xl shadow-lg flex items-center justify-center';
                         placeholderDiv.innerHTML = '<i class="fas fa-image text-6xl text-gray-400 dark:text-gray-500"></i>';
                         this.parentNode.appendChild(placeholderDiv);
                     };
@@ -1871,7 +1637,8 @@
                     dot.onclick = function() {
                         const thumbnails = document.querySelectorAll('.thumbnail-item');
                         if (thumbnails[i - 1]) {
-                            changeMainImage(thumbnails[i - 1], thumbnails[i - 1].src);
+                            const imageUrl = thumbnails[i - 1].dataset.imageUrl || thumbnails[i - 1].src;
+                            changeMainImage(thumbnails[i - 1], imageUrl);
                         }
                     };
                     paginationContainer.appendChild(dot);
@@ -1898,14 +1665,20 @@
                     <?php if($i < $totalImagenes): ?>
                         <?php
                             $imagen = $imagenes[$i];
-                                                    $imagenUrl = $imagen->url_completa;
-                        $imagenPrincipal = $imagen->url_completa;
+                            $imagenUrl = $imagen->url_completa;
+                            $imagenPrincipal = $imagen->url_completa;
                         ?>
                         const thumbnail<?php echo e($i); ?> = document.createElement('img');
                         thumbnail<?php echo e($i); ?>.src = '<?php echo e($imagenUrl); ?>';
                         thumbnail<?php echo e($i); ?>.alt =
                             '<?php echo e($producto->nombre_producto); ?> - Vista <?php echo e($i + 1); ?>';
                         thumbnail<?php echo e($i); ?>.className = 'thumbnail-item <?php echo e($i === 0 ? 'border-blue-500' : ''); ?>';
+                        
+                        // Force thumbnail dimensions
+                        thumbnail<?php echo e($i); ?>.style.width = '5rem';
+                        thumbnail<?php echo e($i); ?>.style.height = '5rem';
+                        thumbnail<?php echo e($i); ?>.style.objectFit = 'cover';
+                        thumbnail<?php echo e($i); ?>.style.borderRadius = '0.75rem';
                         
                         thumbnail<?php echo e($i); ?>.onclick = function() {
                             changeMainImage(this, '<?php echo e($imagenPrincipal); ?>');
@@ -1914,6 +1687,8 @@
                     <?php else: ?>
                         const thumbnail<?php echo e($i); ?> = document.createElement('div');
                         thumbnail<?php echo e($i); ?>.className = 'thumbnail-item flex items-center justify-center';
+                        thumbnail<?php echo e($i); ?>.style.width = '5rem';
+                        thumbnail<?php echo e($i); ?>.style.height = '5rem';
                         
                         thumbnail<?php echo e($i); ?>.innerHTML = '<i class="fas fa-image text-gray-400 dark:text-gray-500 text-sm"></i>';
                         thumbnail<?php echo e($i); ?>.onclick = function() {
@@ -1925,14 +1700,19 @@
 
                 // Restore main image
                 <?php if($producto->imagenes->first()): ?>
+                    // Ensure main image maintains fixed dimensions
+                    mainImage.style.width = '100%';
+                    mainImage.style.height = '100%';
+                    mainImage.style.objectFit = 'cover';
+                    mainImage.style.objectPosition = 'center';
                     mainImage.src = '<?php echo e($producto->imagenes->first()->url_completa); ?>';
                 <?php else: ?>
                     // If no images, show a placeholder div instead of an image
                     mainImage.style.display = 'none';
                     const placeholderDiv = document.createElement('div');
-                    placeholderDiv.className = 'w-full h-64 sm:h-80 md:h-96 lg:h-[28rem] xl:h-[32rem] bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-xl shadow-lg flex items-center justify-center';
+                    placeholderDiv.className = 'w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-xl shadow-lg flex items-center justify-center';
                     placeholderDiv.innerHTML = '<i class="fas fa-image text-6xl text-gray-400 dark:text-gray-500"></i>';
-                    mainImage.parentNode.appendChild(placeholderDiv);
+                    this.parentNode.appendChild(placeholderDiv);
                 <?php endif; ?>
 
                 // Update zoom images array
