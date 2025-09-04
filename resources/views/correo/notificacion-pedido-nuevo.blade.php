@@ -143,7 +143,13 @@
             
             <div class="info-row">
                 <span class="label">Fecha de Confirmación:</span>
-                <span class="value">{{ $pedido->fecha_pedido->format('d/m/Y H:i') }}</span>
+                <span class="value">
+                    @if($pedido->fecha_pedido instanceof \Carbon\Carbon)
+                        {{ $pedido->fecha_pedido->format('d/m/Y H:i') }}
+                    @else
+                        {{ \Carbon\Carbon::parse($pedido->fecha_pedido)->format('d/m/Y H:i') }}
+                    @endif
+                </span>
             </div>
             
             <div class="info-row">

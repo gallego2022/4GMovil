@@ -16,27 +16,33 @@ use Carbon\Carbon;
 class InventarioService
 {
     /**
-     * Obtener productos con stock bajo
+     * Obtener productos con stock bajo (60% del stock inicial)
      */
     public function getProductosStockBajo(): Collection
     {
         return Producto::with(['categoria', 'marca'])
-            ->stockBajo()
-            ->activos()
-            ->orderBy('stock')
-            ->get();
+            ->whereHas('variantes', function($query) {
+                $query->where('stock', '>', 0);
+            })
+            ->get()
+            ->filter(function($producto) {
+                return $producto->stock_bajo;
+            });
     }
 
     /**
-     * Obtener productos con stock crítico
+     * Obtener productos con stock crítico (20% del stock inicial)
      */
     public function getProductosStockCritico(): Collection
     {
         return Producto::with(['categoria', 'marca'])
-            ->stockCritico()
-            ->activos()
-            ->orderBy('stock')
-            ->get();
+            ->whereHas('variantes', function($query) {
+                $query->where('stock', '>', 0);
+            })
+            ->get()
+            ->filter(function($producto) {
+                return $producto->stock_critico;
+            });
     }
 
     /**
@@ -45,9 +51,13 @@ class InventarioService
     public function getProductosSinStock(): Collection
     {
         return Producto::with(['categoria', 'marca'])
-            ->sinStock()
-            ->activos()
-            ->get();
+            ->whereHas('variantes', function($query) {
+                $query->where('stock', 0);
+            })
+            ->get()
+            ->filter(function($producto) {
+                return $producto->sin_stock;
+            });
     }
 
     /**
@@ -229,16 +239,22 @@ class InventarioService
     }
 
     /**
-     * Obtener alertas de inventario (método original para compatibilidad)
+     * Obtener alertas de inventario con la nueva lógica
      */
     public function getAlertasInventario(): array
     {
+        $productosStockBajo = $this->getProductosStockBajo();
+        $productosStockCritico = $this->getProductosStockCritico();
+        $productosSinStock = $this->getProductosSinStock();
+
         return [
-            'stock_critico' => $this->getProductosStockCritico()->count(),
-            'stock_bajo' => $this->getProductosStockBajo()->count(),
-            'sin_stock' => $this->getProductosSinStock()->count(),
-            'stock_excesivo' => $this->getProductosStockExcesivo()->count(),
-            'productos_inactivos' => Producto::where('activo', false)->count()
+            'productos_stock_bajo' => $productosStockBajo->count(),
+            'productos_stock_critico' => $productosStockCritico->count(),
+            'productos_sin_stock' => $productosSinStock->count(),
+            'total_alertas' => $productosStockBajo->count() + $productosStockCritico->count() + $productosSinStock->count(),
+            'productos_stock_bajo_lista' => $productosStockBajo,
+            'productos_stock_critico_lista' => $productosStockCritico,
+            'productos_sin_stock_lista' => $productosSinStock
         ];
     }
 
@@ -631,8 +647,42 @@ class InventarioService
             'valorTotal' => $this->getValorTotalInventario(),
             'variantesStockBajo' => $this->getVariantesStockBajo(),
             'variantesSinStock' => $this->getVariantesSinStock(),
-            'reporteVariantes' => $this->getReporteInventarioVariantes()
+            'reporteVariantes' => $this->getReporteInventarioVariantes(),
+            'productosConVariantes' => $this->getProductosConVariantes(),
+            'stockTotalVariantes' => $this->getStockTotalVariantes(),
+            'valorTotalVariantes' => $this->getValorTotalVariantes()
         ];
+    }
+
+    /**
+     * Obtener productos que tienen variantes
+     */
+    public function getProductosConVariantes(): Collection
+    {
+        return Producto::with(['variantes', 'categoria', 'marca'])
+            ->whereHas('variantes')
+            ->activos()
+            ->get();
+    }
+
+    /**
+     * Obtener stock total de todas las variantes
+     */
+    public function getStockTotalVariantes(): int
+    {
+        return VarianteProducto::where('disponible', true)->sum('stock');
+    }
+
+    /**
+     * Obtener valor total de todas las variantes
+     */
+    public function getValorTotalVariantes(): float
+    {
+        return VarianteProducto::where('disponible', true)
+            ->get()
+            ->sum(function($variante) {
+                return $variante->stock * $variante->precio_final;
+            });
     }
 
     /**

@@ -1,0 +1,273 @@
+/* Animaciones ultra-suaves y minimalistas para pantalla de carga de 4GMovil */
+
+@keyframes fadeInScale {
+    0% {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes slideInFromTop {
+    0% {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes logoFadeIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes progressGlow {
+    0%, 100% {
+        opacity: 0.8;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+@keyframes subtleFade {
+    0%, 100% {
+        opacity: 0.7;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Aplicar animaciones ultra-suaves a elementos específicos */
+#pageLoadingScreen {
+    animation: fadeInScale 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#pageLoadingScreen .mb-12 {
+    animation: logoFadeIn 2s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both;
+}
+
+#pageLoadingScreen h1 {
+    animation: slideInFromTop 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.6s both;
+}
+
+#pageLoadingScreen h3 {
+    animation: slideInFromTop 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.9s both;
+}
+
+#pageLoadingScreen p {
+    animation: slideInFromTop 1.2s cubic-bezier(0.4, 0, 0.2, 1) 1.2s both;
+}
+
+/* Efecto ultra-sutil en la barra de progreso */
+#loadingProgressBar {
+    animation: progressGlow 3s ease-in-out infinite;
+}
+
+/* Transiciones ultra-suaves para navegación */
+#navigationLoadingScreen {
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Efecto de entrada ultra-suave para la pantalla de navegación */
+#navigationLoadingScreen.flex {
+    animation: fadeInScale 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Responsive design para móviles */
+@media (max-width: 768px) {
+    #pageLoadingScreen .w-32 {
+        width: 6rem;
+        height: 6rem;
+    }
+    
+    #pageLoadingScreen .w-80 {
+        width: 20rem;
+    }
+    
+    #pageLoadingScreen h1 {
+        font-size: 2rem;
+    }
+    
+    #pageLoadingScreen h3 {
+        font-size: 1.125rem;
+    }
+}
+
+/* Efectos ultra-sutiles para el logo */
+#pageLoadingScreen .mb-12 {
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#pageLoadingScreen .mb-12:hover {
+    transform: scale(1.01);
+}
+
+/* Transiciones ultra-suaves para todos los elementos */
+#pageLoadingScreen * {
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Efecto de hover ultra-sutil en la barra de progreso */
+#loadingProgressBar {
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#loadingProgressBar:hover {
+    transform: scaleY(1.05);
+}
+
+/* Animación del porcentaje ultra-suave */
+#loadingProgressText {
+    animation: slideInFromTop 1s cubic-bezier(0.4, 0, 0.2, 1) 1.5s both;
+    transition: opacity 0.4s ease-in-out;
+}
+
+/* Efectos de sombra ultra-sutiles */
+#pageLoadingScreen .shadow-sm {
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* Modo oscuro optimizado */
+.dark #pageLoadingScreen .shadow-sm {
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Efecto de entrada ultra-suave para el contenedor */
+#pageLoadingScreen > div {
+    animation: fadeInScale 1.8s cubic-bezier(0.4, 0, 0.2, 1) 0.1s both;
+}
+
+/* Optimizaciones para rendimiento */
+#pageLoadingScreen * {
+    will-change: transform, opacity;
+}
+
+/* Transiciones de color ultra-suaves */
+#pageLoadingScreen * {
+    transition: color 0.6s ease, background-color 0.6s ease, border-color 0.6s ease;
+}
+
+/* Efecto de focus ultra-sutil en elementos interactivos */
+#pageLoadingScreen .animate-pulse:focus {
+    outline: 1px solid rgba(59, 130, 246, 0.3);
+    outline-offset: 1px;
+}
+
+/* Animación de salida ultra-suave */
+#pageLoadingScreen.hidden {
+    animation: fadeInScale 1.2s cubic-bezier(0.4, 0, 0.2, 1) reverse;
+}
+
+/* Efecto de profundidad ultra-sutil */
+#pageLoadingScreen .bg-gray-50 {
+    background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+}
+
+.dark #pageLoadingScreen .bg-gray-800 {
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+}
+
+/* Bordes ultra-sutiles */
+#pageLoadingScreen .border {
+    border-color: rgba(209, 213, 219, 0.3);
+}
+
+.dark #pageLoadingScreen .border {
+    border-color: rgba(75, 85, 99, 0.3);
+}
+
+/* Efecto de hover ultra-sutil en el contenedor del logo */
+#pageLoadingScreen .mb-12:hover .bg-gray-50 {
+    background: linear-gradient(135deg, #f5f5f5 0%, #eeeeee 100%);
+}
+
+.dark #pageLoadingScreen .mb-12:hover .bg-gray-800 {
+    background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+}
+
+/* Transiciones ultra-suaves para la barra de progreso */
+#loadingProgressBar {
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s ease;
+}
+
+/* Efecto de fade para los mensajes */
+#loadingMessage {
+    transition: opacity 0.4s ease-in-out;
+}
+
+/* Animación ultra-suave para el spinner de navegación */
+#navigationLoadingScreen .animate-spin {
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Efectos de transparencia ultra-sutiles */
+#navigationLoadingScreen .bg-white\/90 {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.dark #navigationLoadingScreen .bg-gray-800\/90 {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+/* Transiciones ultra-suaves para elementos de navegación */
+#navigationLoadingScreen * {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Efecto de entrada ultra-suave para elementos individuales */
+#navigationLoadingScreen .mb-3 {
+    animation: fadeInScale 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.1s both;
+}
+
+#navigationLoadingScreen h3 {
+    animation: fadeInScale 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+}
+
+#navigationLoadingScreen p {
+    animation: fadeInScale 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both;
+}
+
+/* Efectos de hover ultra-sutiles */
+#pageLoadingScreen *:hover {
+    transform: translateY(-1px);
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animación ultra-suave para el porcentaje */
+#loadingProgressText {
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Efecto de profundidad ultra-sutil en hover */
+#pageLoadingScreen .mb-12:hover {
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.05));
+}
+
+.dark #pageLoadingScreen .mb-12:hover {
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}

@@ -14,6 +14,8 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css" rel="stylesheet">
+    <!-- CSS de animaciones de carga -->
+    <link rel="stylesheet" href="{{ asset('css/loading-animations.css') }}">
     <style>
         [x-cloak] {
             display: none !important;
@@ -380,6 +382,7 @@
 </head>
 
 <body class="bg-white dark:bg-gray-900 transition-colors duration-300">
+    @include('components.loading-screen')
     <!-- Scroll Progress Indicator -->
     <div class="scroll-indicator" id="scrollIndicator"></div>
     <!-- Navigation -->
@@ -394,17 +397,17 @@
 
             <!-- Desktop Menu -->
             <div class="hidden md:flex items-center space-x-6">
-                <a href="{{ route('landing') }}"
+                <a href="{{ route('landing') }} " data-loading-message="Cargando inicio..."
                     class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300">Inicio</a>
 
-                <a href="{{ route('productos.lista') }}"
+                <a href="{{ route('productos.lista') }}" data-loading-message="Cargando productos..."
                     class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300">Productos</a>
 
-                <a href="{{ route('servicios') }}"
+                <a href="{{ route('servicios') }}" data-loading-message="Cargando servicio tecnico..."
                     class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300">Servicio Tecnico</a>
-                <a href="{{ route('nosotros') }}"
+                <a href="{{ route('nosotros') }}" data-loading-message="Cargando nosotros..."
                     class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300">Nosotros</a>
-                <a href="{{ route('contactanos') }}"
+                <a href="{{ route('contactanos') }}" data-loading-message="Cargando contacto..."
                     class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300">Contacto</a>
             </div>
 
@@ -426,7 +429,7 @@
                     </svg>
                 </button>
 
-                <a href="#"
+                <a href="#" data-no-loading
                     class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300"><i
                         class="fas fa-search"></i></a>
                 @auth
@@ -444,11 +447,11 @@
                             x-transition:leave-start="opacity-100 transform scale-100"
                             x-transition:leave-end="opacity-0 transform scale-95"
                             class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg py-1 z-50 transition-colors duration-300">
-                            <a href="{{ route('perfil') }}"
+                            <a href="{{ route('perfil') }}" data-loading-message="Cargando perfil..."
                                 class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-150 ease-in-out">
                                 <i class="fas fa-user-circle mr-2"></i> Ver Perfil
                             </a>
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="block">
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="block" data-loading-message="Cerrando sesión...">
                                 @csrf
                                 <button type="button"
                                     class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-150 ease-in-out">
@@ -458,12 +461,12 @@
                         </div>
                     </div>
                 @else
-                    <a href="{{ route('login') }}"
+                    <a href="{{ route('login') }}" data-loading-message="Cargando login..."
                         class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300">
                         <i class="fas fa-user"></i>
                     </a>
                 @endauth
-                <a href="#" id="cart-btn"
+                <a href="#" id="cart-btn" data-no-loading
                     class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 relative transition-colors duration-300">
                     <i class="fas fa-shopping-cart"></i>
                     <span id="cart-count"
@@ -488,7 +491,7 @@
                 </button>
 
                 <!-- Carrito móvil -->
-                <a href="#" id="cart-btn-mobile"
+                <a href="#" id="cart-btn-mobile" data-no-loading
                     class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 relative transition-colors duration-300">
                     <i class="fas fa-shopping-cart"></i>
                     <span id="cart-count-mobile"
@@ -521,7 +524,7 @@
             <div class="px-4 py-6 space-y-4">
                 <!-- Enlaces principales -->
                 <div class="space-y-3">
-                    <a href="{{ route('landing') }}"
+                    <a href="{{ route('landing') }}" data-loading-message="Cargando inicio..."
                         class="block text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300 py-2">
                         <i class="fas fa-home mr-3"></i>Inicio
                     </a>
@@ -541,26 +544,26 @@
                              x-transition:leave-start="opacity-100 transform translate-y-0"
                              x-transition:leave-end="opacity-0 transform -translate-y-2"
                              class="ml-6 mt-2 space-y-2">
-                            <a href="{{ route('productos.lista') }}"
+                            <a href="{{ route('productos.lista') }}" data-loading-message="Cargando productos..."
                                 class="block text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 py-1">
                                 <i class="fas fa-mobile mr-2"></i>Celulares
                             </a>
-                            <a href="{{ route('productos.lista') }}"
+                            <a href="{{ route('productos.lista') }}" data-loading-message="Cargando productos..."
                                 class="block text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 py-1">
                                 <i class="fas fa-headphones mr-2"></i>Accesorios
                             </a>
                         </div>
                     </div>
 
-                    <a href="{{ route('servicios') }}"
+                    <a href="{{ route('servicios') }}" data-loading-message="Cargando servicio tecnico..."
                         class="block text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300 py-2">
                         <i class="fas fa-cogs mr-3"></i>Servicio Tecnico
                     </a>
-                    <a href="{{ route('nosotros') }}"
+                    <a href="{{ route('nosotros') }}" data-loading-message="Cargando nosotros..."
                         class="block text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300 py-2">
                         <i class="fas fa-users mr-3"></i>Nosotros
                     </a>
-                    <a href="{{ route('contactanos') }}"
+                <a href="{{ route('contactanos') }}" data-loading-message="Cargando contacto..."
                         class="block text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300 py-2">
                         <i class="fas fa-envelope mr-3"></i>Contacto
                     </a>
@@ -571,16 +574,16 @@
 
                 <!-- Acciones móviles -->
                 <div class="space-y-3">
-                    <a href="#"
+                    <a href="#" data-no-loading
                         class="block text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 py-2">
                         <i class="fas fa-search mr-3"></i>Buscar
                     </a>
                     @auth
-                        <a href="{{ route('perfil') }}"
+                            <a href="{{ route('perfil') }}" data-loading-message="Cargando perfil..."
                             class="block text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 py-2">
                             <i class="fas fa-user mr-3"></i>Mi Perfil
                         </a>
-                        <form id="logout-form-mobile" action="{{ route('logout') }}" method="POST" class="block">
+                        <form id="logout-form-mobile" action="{{ route('logout') }}" method="POST" class="block" data-loading-message="Cerrando sesión...">
                             @csrf
                             <button type="button"
                                 class="w-full text-left text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 py-2">
@@ -1672,6 +1675,19 @@
             let currentProductName = null;
             let currentProductPrice = null;
             
+            // Función para formatear precios de manera consistente
+            function formatearPrecio(precio) {
+                if (typeof precio !== 'number' || isNaN(precio)) {
+                    return '$0';
+                }
+                
+                // Redondear y convertir a entero
+                const precioEntero = Math.round(precio);
+                
+                // Formatear con separadores de miles
+                return `$${precioEntero.toLocaleString('es-CO')}`;
+            }
+            
             // Función para abrir el modal
             function openModal() {
                 modal.classList.remove('hidden');
@@ -1758,9 +1774,13 @@
                 clone.querySelector('.variant-name').textContent = variante.nombre;
                 clone.querySelector('.variant-description').textContent = variante.descripcion || '';
                 
-                // Configurar precio
-                const precioTotal = currentProductPrice + variante.precio_adicional;
-                clone.querySelector('.variant-price').textContent = `$${precioTotal.toLocaleString('es-CO')}`;
+                // Configurar precio con validación
+                const precioBase = parseFloat(currentProductPrice) || 0;
+                const precioAdicional = parseFloat(variante.precio_adicional) || 0;
+                const precioTotal = precioBase + precioAdicional;
+                
+                // Usar función de formateo consistente
+                clone.querySelector('.variant-price').textContent = formatearPrecio(precioTotal);
                 
                 // Configurar stock
                 const stockElement = clone.querySelector('.variant-stock');
@@ -1820,7 +1840,7 @@
                     
                     // Actualizar información del modal
                     document.getElementById('productName').textContent = currentProductName;
-                    document.getElementById('productPrice').textContent = `Precio base: $${currentProductPrice.toLocaleString('es-CO')}`;
+                    document.getElementById('productPrice').textContent = `Precio base: ${formatearPrecio(currentProductPrice)}`;
                     
                     // Abrir modal y cargar variantes
                     openModal();
@@ -1841,7 +1861,7 @@
                     
                     // Actualizar información del modal
                     document.getElementById('productName').textContent = currentProductName;
-                    document.getElementById('productPrice').textContent = `Precio base: $${currentProductPrice.toLocaleString('es-CO')}`;
+                    document.getElementById('productPrice').textContent = `Precio base: ${formatearPrecio(currentProductPrice)}`;
                     
                     // Abrir modal y cargar variantes
                     openModal();

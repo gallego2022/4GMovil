@@ -60,6 +60,7 @@ return new class extends Migration
             $table->text('descripcion')->nullable();
             $table->decimal('precio_adicional', 10, 2)->default(0);
             $table->integer('stock')->default(0);
+            $table->string('codigo_color')->nullable();
             $table->integer('stock_reservado')->default(0);
             $table->boolean('disponible')->default(true);
             $table->string('sku')->nullable()->unique();

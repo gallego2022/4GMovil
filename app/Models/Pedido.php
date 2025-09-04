@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Pedido extends Model
 {
@@ -13,6 +14,8 @@ class Pedido extends Model
         'usuario_id', 'direccion_id', 'fecha_pedido',
         'estado_id', 'total'
     ];
+
+    protected $dates = ['fecha_pedido'];
 
     public $timestamps = false;
 

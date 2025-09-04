@@ -16,6 +16,7 @@ class Producto extends Model
         'precio',
         'estado',
         'stock',
+        'stock_inicial',
         'stock_reservado',
         'stock_disponible',
         'stock_minimo',
@@ -75,14 +76,14 @@ class Producto extends Model
     // Métodos para calcular stock total basado en variantes
     public function getStockTotalVariantesAttribute(): int
     {
-        return $this->variantes()->sum('stock_disponible');
+        return $this->variantes()->sum('stock');
     }
 
     public function getStockDisponibleVariantesAttribute(): int
     {
         return $this->variantes()
             ->where('disponible', true)
-            ->sum('stock_disponible');
+            ->sum('stock');
     }
 
     public function tieneStockSuficienteVariantes(int $cantidad): bool
@@ -94,7 +95,7 @@ class Producto extends Model
     {
         return $this->variantes()
             ->where('disponible', true)
-            ->whereRaw('stock_disponible <= stock_minimo')
+            ->where('stock', '<=', 10) // Usar valor fijo por ahora
             ->exists();
     }
 
@@ -102,7 +103,7 @@ class Producto extends Model
     {
         return $this->variantes()
             ->where('disponible', true)
-            ->whereRaw('stock_disponible <= stock_minimo')
+            ->where('stock', '<=', 10) // Usar valor fijo por ahora
             ->get();
     }
 
@@ -112,22 +113,35 @@ class Producto extends Model
      */
     public function sincronizarStockConVariantes(): void
     {
-        $stockTotal = $this->getStockTotalVariantesAttribute();
-        $stockDisponible = $this->getStockDisponibleVariantesAttribute();
-        
-        // Actualizar el stock total del producto
-        $this->update([
-            'stock' => $stockTotal,
-            'stock_disponible' => $stockDisponible,
-            'ultima_actualizacion_stock' => now()
-        ]);
-        
-        Log::info('Stock del producto sincronizado con variantes', [
-            'producto_id' => $this->producto_id,
-            'nombre' => $this->nombre_producto,
-            'stock_total' => $stockTotal,
-            'stock_disponible' => $stockDisponible
-        ]);
+        try {
+            // Obtener stock total de variantes usando query directo para evitar bucles
+            $stockTotal = $this->variantes()->sum('stock');
+            $stockDisponible = $this->variantes()
+                ->where('disponible', true)
+                ->sum('stock');
+            
+            // Actualizar solo si hay cambios para evitar bucles infinitos
+            if ($this->stock != $stockTotal || $this->stock_disponible != $stockDisponible) {
+                // Usar updateQuietly para evitar eventos que puedan causar bucles
+                $this->updateQuietly([
+                    'stock' => $stockTotal,
+                    'stock_disponible' => $stockDisponible,
+                    'ultima_actualizacion_stock' => now()
+                ]);
+                
+                Log::info('Stock del producto sincronizado con variantes', [
+                    'producto_id' => $this->producto_id,
+                    'nombre' => $this->nombre_producto,
+                    'stock_total' => $stockTotal,
+                    'stock_disponible' => $stockDisponible
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error('Error al sincronizar stock del producto', [
+                'producto_id' => $this->producto_id,
+                'error' => $e->getMessage()
+            ]);
+        }
     }
 
     /**
@@ -212,6 +226,14 @@ class Producto extends Model
             
             // Eliminar movimientos de inventario
             $producto->movimientosInventario()->delete();
+        });
+
+        // Evento después de crear una variante
+        static::updated(function ($producto) {
+            // Si el producto tiene variantes, sincronizar el stock
+            if ($producto->tieneVariantes()) {
+                $producto->sincronizarStockConVariantes();
+            }
         });
     }
 
@@ -410,40 +432,113 @@ class Producto extends Model
         return true;
     }
 
-    // Métodos para configurar los umbrales de alerta
-    public static function getUmbralStockBajo(): float
+    /**
+     * Obtener el stock inicial del producto (campo stock_inicial)
+     */
+    public function getStockInicialAttribute(): int
     {
-        return config('inventario.alertas.stock_bajo', 0.6);
+        return $this->attributes['stock_inicial'] ?? 0;
     }
 
-    public static function getUmbralStockCritico(): float
+    /**
+     * Calcular el umbral de stock bajo basado en el stock inicial (60%)
+     */
+    public function getUmbralStockBajoAttribute(): int
     {
-        return config('inventario.alertas.stock_critico', 0.2);
+        $stockInicial = $this->stock_inicial;
+        
+        if ($stockInicial <= 0) {
+            // Si no hay stock inicial, usar el stock mínimo como fallback
+            return $this->stock_minimo ?? 5;
+        }
+        
+        // 60% del stock inicial
+        return (int) ceil(($stockInicial * 60) / 100);
     }
 
-    // Métodos actualizados para usar los umbrales configurables
+    /**
+     * Calcular el umbral de stock crítico basado en el stock inicial (20%)
+     */
+    public function getUmbralStockCriticoAttribute(): int
+    {
+        $stockInicial = $this->stock_inicial;
+        
+        if ($stockInicial <= 0) {
+            // Si no hay stock inicial, usar el stock mínimo como fallback
+            return max(1, (int) ceil(($this->stock_minimo ?? 5) * 0.2));
+        }
+        
+        // 20% del stock inicial
+        return (int) ceil(($stockInicial * 20) / 100);
+    }
+
+    /**
+     * Verificar si el producto tiene stock bajo (60% del stock inicial)
+     */
     public function getStockBajoAttribute(): bool
     {
-        return $this->stock <= ($this->stock_minimo * self::getUmbralStockBajo()) && $this->stock > 0;
+        $umbral = $this->umbral_stock_bajo;
+        return $this->stock_disponible > $umbral && $this->stock_disponible <= ($umbral * 1.5);
     }
 
+    /**
+     * Verificar si el producto tiene stock crítico (20% del stock inicial)
+     */
     public function getStockCriticoAttribute(): bool
     {
-        return $this->stock <= ($this->stock_minimo * self::getUmbralStockCritico()) && $this->stock > 0;
+        $umbral = $this->umbral_stock_critico;
+        return $this->stock_disponible <= $umbral;
     }
 
-    public function getStockExcesivoAttribute(): bool
+    /**
+     * Verificar si el producto está sin stock
+     */
+    public function getSinStockAttribute(): bool
     {
-        return $this->stock > $this->stock_maximo;
+        return $this->stock_disponible <= 0;
     }
 
+    /**
+     * Obtener el estado de stock del producto con la nueva lógica
+     */
     public function getEstadoStockAttribute(): string
     {
-        if ($this->stock <= 0) return 'sin_stock';
-        if ($this->stockCritico) return 'critico';
-        if ($this->stockBajo) return 'bajo';
-        if ($this->stockExcesivo) return 'excesivo';
+        if ($this->sin_stock) {
+            return 'sin_stock';
+        }
+        
+        if ($this->stock_critico) {
+            return 'critico';
+        }
+        
+        if ($this->stock_bajo) {
+            return 'bajo';
+        }
+        
         return 'normal';
+    }
+
+    /**
+     * Obtener información detallada del estado del stock
+     */
+    public function getInfoEstadoStockAttribute(): array
+    {
+        $stockInicial = $this->stock_inicial;
+        $stockActual = $this->stock_disponible;
+        $umbralBajo = $this->umbral_stock_bajo;
+        $umbralCritico = $this->umbral_stock_critico;
+        
+        return [
+            'stock_inicial' => $stockInicial,
+            'stock_actual' => $stockActual,
+            'stock_porcentaje' => $stockInicial > 0 ? round(($stockActual / $stockInicial) * 100, 2) : 0,
+            'umbral_bajo' => $umbralBajo,
+            'umbral_critico' => $umbralCritico,
+            'estado' => $this->estado_stock,
+            'necesita_reposicion' => $this->stock_critico || $this->stock_bajo,
+            'porcentaje_stock_bajo' => 60.00,
+            'porcentaje_stock_critico' => 20.00
+        ];
     }
 
     public function getClaseColorStockAttribute(): string

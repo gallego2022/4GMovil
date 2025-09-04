@@ -76,10 +76,8 @@ class AdminNotificationService
     {
         try {
             // Buscar usuarios con rol de administrador
-            // Puedes ajustar esta lógica según tu sistema de roles
+            // Solo usar campos que existen en la tabla
             return Usuario::where('rol', 'admin')
-                         ->orWhere('es_admin', true)
-                         ->orWhere('tipo_usuario', 'admin')
                          ->where('estado', 1) // Solo usuarios activos
                          ->get();
         } catch (\Exception $e) {

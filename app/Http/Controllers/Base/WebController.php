@@ -113,12 +113,12 @@ abstract class WebController extends BaseController
     /**
      * Maneja excepciones de validación para web
      */
-    protected function handleValidationException(ValidationException $e, string $redirectRoute = null): \Illuminate\Http\RedirectResponse
+    protected function handleValidationException(ValidationException $e, string $redirectRoute = null, array $parameters = []): \Illuminate\Http\RedirectResponse
     {
         $message = 'Por favor, corrige los errores en el formulario';
         
         if ($redirectRoute) {
-            return $this->redirectWithInput($redirectRoute, $message);
+            return $this->redirectWithInput($redirectRoute, $message, $parameters);
         }
         
         return $this->backWithInput($message);
@@ -127,12 +127,12 @@ abstract class WebController extends BaseController
     /**
      * Maneja excepciones generales para web
      */
-    protected function handleException(\Exception $e, string $redirectRoute = null): \Illuminate\Http\RedirectResponse
+    protected function handleException(\Exception $e, string $redirectRoute = null, array $parameters = []): \Illuminate\Http\RedirectResponse
     {
         $message = config('app.debug') ? $e->getMessage() : 'Ha ocurrido un error inesperado';
         
         if ($redirectRoute) {
-            return $this->redirectError($redirectRoute, $message);
+            return $this->redirectError($redirectRoute, $message, $parameters);
         }
         
         return $this->backError($message);

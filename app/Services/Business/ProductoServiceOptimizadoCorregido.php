@@ -8,6 +8,7 @@ use App\Models\Categoria;
 use App\Models\Marca;
 use App\Models\VarianteProducto;
 use App\Models\ImagenProducto;
+use App\Models\EspecificacionCategoria;
 use App\Services\FileService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -87,7 +88,7 @@ class ProductoServiceOptimizadoCorregido extends BaseService
      */
     public function createProduct(Request $request): array
     {
-        $this->logOperation('creando_producto', ['user_id' => auth()->id()]);
+        $this->logOperation('creando_producto', ['user_id' => auth()->id() ?? 0]);
 
         return $this->executeInTransaction(function () use ($request) {
             // Validar datos del producto
@@ -113,7 +114,7 @@ class ProductoServiceOptimizadoCorregido extends BaseService
 
             $this->logOperation('producto_creado_exitosamente', [
                 'producto_id' => $producto->producto_id,
-                'user_id' => auth()->id()
+                'user_id' => auth()->id() ?? 0
             ]);
 
             return $this->formatSuccessResponse($producto, 'Producto creado exitosamente');
@@ -128,7 +129,7 @@ class ProductoServiceOptimizadoCorregido extends BaseService
     {
         $this->logOperation('actualizando_producto', [
             'producto_id' => $productoId,
-            'user_id' => auth()->id()
+            'user_id' => auth()->id() ?? 0
         ]);
 
         return $this->executeInTransaction(function () use ($productoId, $request) {
@@ -143,7 +144,8 @@ class ProductoServiceOptimizadoCorregido extends BaseService
             
             // Actualizar variantes si se proporcionan
             if ($request->has('variantes')) {
-                $this->updateVariantes($producto, $request->input('variantes'), $request->file('variantes'));
+                $variantesFiles = $request->file('variantes') ?? [];
+                $this->updateVariantes($producto, $request->input('variantes'), $variantesFiles);
             }
             
             // Actualizar especificaciones
@@ -158,7 +160,7 @@ class ProductoServiceOptimizadoCorregido extends BaseService
 
             $this->logOperation('producto_actualizado_exitosamente', [
                 'producto_id' => $producto->producto_id,
-                'user_id' => auth()->id()
+                'user_id' => auth()->id() ?? 0
             ]);
 
             return $this->formatSuccessResponse($producto, 'Producto actualizado exitosamente');
@@ -173,7 +175,7 @@ class ProductoServiceOptimizadoCorregido extends BaseService
     {
         $this->logOperation('eliminando_producto', [
             'producto_id' => $productoId,
-            'user_id' => auth()->id()
+            'user_id' => auth()->id() ?? 0
         ]);
 
         return $this->executeInTransaction(function () use ($productoId) {
@@ -190,7 +192,7 @@ class ProductoServiceOptimizadoCorregido extends BaseService
 
             $this->logOperation('producto_eliminado_exitosamente', [
                 'producto_id' => $productoId,
-                'user_id' => auth()->id()
+                'user_id' => auth()->id() ?? 0
             ]);
 
             return $this->formatSuccessResponse(null, 'Producto eliminado exitosamente');
@@ -232,7 +234,7 @@ class ProductoServiceOptimizadoCorregido extends BaseService
             'nombre_producto' => 'required|string|max:255',
             'descripcion' => 'nullable|string',
             'precio' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
+            'stock_inicial' => 'required|integer|min:0',
             'estado' => 'required|in:nuevo,usado',
             'categoria_id' => 'required|exists:categorias,categoria_id',
             'marca_id' => 'required|exists:marcas,marca_id',
@@ -250,8 +252,8 @@ class ProductoServiceOptimizadoCorregido extends BaseService
             'nombre_producto.required' => 'El nombre del producto es obligatorio',
             'precio.required' => 'El precio es obligatorio',
             'precio.numeric' => 'El precio debe ser un número',
-            'stock.required' => 'El stock es obligatorio',
-            'stock.integer' => 'El stock debe ser un número entero',
+            'stock_inicial.required' => 'El stock inicial es obligatorio para calcular alertas',
+            'stock_inicial.integer' => 'El stock inicial debe ser un número entero',
             'categoria_id.required' => 'Debe seleccionar una categoría',
             'marca_id.required' => 'Debe seleccionar una marca',
         ];
@@ -274,7 +276,7 @@ class ProductoServiceOptimizadoCorregido extends BaseService
             'nombre_producto' => 'sometimes|required|string|max:255',
             'descripcion' => 'nullable|string',
             'precio' => 'sometimes|required|numeric|min:0',
-            'stock' => 'sometimes|required|integer|min:0',
+            'stock_inicial' => 'sometimes|required|integer|min:0',
             'estado' => 'sometimes|required|in:nuevo,usado',
             'categoria_id' => 'sometimes|required|exists:categorias,categoria_id',
             'marca_id' => 'sometimes|required|exists:marcas,marca_id',
@@ -298,7 +300,8 @@ class ProductoServiceOptimizadoCorregido extends BaseService
             'nombre_producto' => $data['nombre_producto'],
             'descripcion' => $data['descripcion'] ?? null,
             'precio' => $data['precio'],
-            'stock' => $data['stock'],
+            'stock' => 0, // Se calcula automáticamente desde variantes
+            'stock_inicial' => $data['stock_inicial'], // Stock inicial para calcular alertas
             'estado' => $data['estado'],
             'categoria_id' => $data['categoria_id'],
             'marca_id' => $data['marca_id'],
@@ -331,14 +334,16 @@ class ProductoServiceOptimizadoCorregido extends BaseService
      */
     private function processVarianteImages(VarianteProducto $variante, array $imagenes): void
     {
-        foreach ($imagenes as $imagen) {
+        foreach ($imagenes as $index => $imagen) {
             if ($imagen && $imagen->isValid()) {
                 // Usar método simple de Storage por ahora
                 $path = $imagen->store('variantes', 'public');
                 
                 $variante->imagenes()->create([
-                    'url' => $path,
-                    'tipo' => 'variante'
+                    'url_imagen' => $path,
+                    'alt_text' => $variante->nombre . ' - Imagen ' . ($index + 1),
+                    'orden' => $index + 1,
+                    'principal' => $index === 0 // La primera imagen es la principal
                 ]);
             }
         }
@@ -349,11 +354,29 @@ class ProductoServiceOptimizadoCorregido extends BaseService
      */
     private function processEspecificaciones(Producto $producto, array $especificaciones): void
     {
-        foreach ($especificaciones as $especificacion) {
-            if (!empty($especificacion)) {
-                $producto->especificaciones()->create([
-                    'valor' => $especificacion
-                ]);
+        foreach ($especificaciones as $nombreCampo => $valor) {
+            // Validar que el valor no sea null o vacío
+            if ($valor === null || $valor === '') {
+                continue;
+            }
+
+            // Buscar la especificación de categoría
+            $especificacionCategoria = EspecificacionCategoria::where('nombre_campo', $nombreCampo)
+                ->where('categoria_id', $producto->categoria_id)
+                ->where('estado', true)
+                ->first();
+
+            if ($especificacionCategoria) {
+                // Crear o actualizar la especificación del producto
+                $producto->especificaciones()->updateOrCreate(
+                    [
+                        'producto_id' => $producto->producto_id,
+                        'especificacion_id' => $especificacionCategoria->especificacion_id
+                    ],
+                    [
+                        'valor' => (string) $valor // Convertir a string para asegurar que no sea null
+                    ]
+                );
             }
         }
     }
@@ -363,14 +386,18 @@ class ProductoServiceOptimizadoCorregido extends BaseService
      */
     private function processProductImages(Producto $producto, array $imagenes): void
     {
-        foreach ($imagenes as $imagen) {
+        foreach ($imagenes as $index => $imagen) {
             if ($imagen && $imagen->isValid()) {
                 // Usar método simple de Storage por ahora
                 $path = $imagen->store('productos', 'public');
                 
                 $producto->imagenes()->create([
-                    'url' => $path,
-                    'tipo' => 'producto'
+                    'ruta_imagen' => $path,
+                    'alt_text' => $producto->nombre_producto . ' - Imagen ' . ($index + 1),
+                    'titulo' => $producto->nombre_producto . ' - Imagen ' . ($index + 1),
+                    'orden' => $index + 1,
+                    'principal' => $index === 0, // La primera imagen es la principal
+                    'activo' => true
                 ]);
             }
         }
@@ -381,11 +408,49 @@ class ProductoServiceOptimizadoCorregido extends BaseService
      */
     private function updateVariantes(Producto $producto, array $variantesData, array $variantesFiles = []): void
     {
-        // Eliminar variantes existentes
-        $producto->variantes()->delete();
+        // Obtener variantes existentes
+        $variantesExistentes = $producto->variantes()->get()->keyBy('variante_id');
         
-        // Crear nuevas variantes
-        $this->processVariantes($producto, $variantesData, $variantesFiles);
+        foreach ($variantesData as $index => $varianteData) {
+            if (isset($varianteData['variante_id']) && $variantesExistentes->has($varianteData['variante_id'])) {
+                // Actualizar variante existente
+                $variante = $variantesExistentes->get($varianteData['variante_id']);
+                $variante->update([
+                    'nombre' => $varianteData['nombre'],
+                    'codigo_color' => $varianteData['codigo_color'] ?? null,
+                    'stock' => $varianteData['stock'],
+                    'precio_adicional' => $varianteData['precio_adicional'] ?? 0,
+                    'descripcion' => $varianteData['descripcion'] ?? null,
+                ]);
+                
+                // Marcar como procesada
+                $variantesExistentes->forget($varianteData['variante_id']);
+            } else {
+                // Crear nueva variante
+                $variante = $producto->variantes()->create([
+                    'nombre' => $varianteData['nombre'],
+                    'codigo_color' => $varianteData['codigo_color'] ?? null,
+                    'stock' => $varianteData['stock'],
+                    'precio_adicional' => $varianteData['precio_adicional'] ?? 0,
+                    'descripcion' => $varianteData['descripcion'] ?? null,
+                ]);
+            }
+            
+            // Procesar imágenes de la variante si se proporcionan
+            if (isset($variantesFiles[$index]['imagenes'])) {
+                $this->processVarianteImages($variante, $variantesFiles[$index]['imagenes']);
+            }
+        }
+        
+        // Eliminar solo las variantes que ya no están en los datos
+        if ($variantesExistentes->isNotEmpty()) {
+            $variantesExistentes->each(function ($variante) {
+                // Solo eliminar si no tiene pedidos asociados
+                if ($variante->detallesPedido()->count() == 0) {
+                    $variante->delete();
+                }
+            });
+        }
     }
 
     /**
@@ -418,7 +483,19 @@ class ProductoServiceOptimizadoCorregido extends BaseService
     private function deleteProductImages(Producto $producto): void
     {
         foreach ($producto->imagenes as $imagen) {
-            Storage::delete($imagen->url);
+            // Verificar que la ruta de la imagen no sea null o esté vacía
+            if (!empty($imagen->ruta_imagen)) {
+                try {
+                    Storage::delete($imagen->ruta_imagen);
+                } catch (Exception $e) {
+                    // Log del error pero continuar con la eliminación del registro
+                    \Illuminate\Support\Facades\Log::warning('Error eliminando archivo de imagen', [
+                        'imagen_id' => $imagen->imagen_id,
+                        'ruta' => $imagen->ruta_imagen,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
             $imagen->delete();
         }
     }
@@ -898,8 +975,20 @@ class ProductoServiceOptimizadoCorregido extends BaseService
             $producto = Producto::findOrFail($productoId);
             $imagen = $producto->imagenes()->findOrFail($imagenId);
 
-            // Eliminar archivo físico
-            Storage::disk('public')->delete($imagen->url);
+            // Verificar que la ruta de la imagen no sea null o esté vacía
+            if (!empty($imagen->ruta_imagen)) {
+                try {
+                    // Eliminar archivo físico
+                    Storage::disk('public')->delete($imagen->ruta_imagen);
+                } catch (Exception $e) {
+                    // Log del error pero continuar con la eliminación del registro
+                    \Illuminate\Support\Facades\Log::warning('Error eliminando archivo de imagen', [
+                        'imagen_id' => $imagenId,
+                        'ruta' => $imagen->ruta_imagen,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
             
             // Eliminar registro de la base de datos
             $imagen->delete();

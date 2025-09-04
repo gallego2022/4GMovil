@@ -27,6 +27,7 @@
     <!-- Custom Styles -->
     @stack('styles')
 
+    
     <style>
         [x-cloak] {
             display: none !important;

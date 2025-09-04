@@ -33,16 +33,37 @@ Route::prefix('admin/productos')->name('admin.productos.')->group(function () {
         'destroy' => 'destroy'
     ]);
     Route::get('/listadoP', [ProductoController::class, 'listado'])->name('listadoP');
-    Route::delete('/imagenes/{id}', [ProductoController::class, 'destroyImagen'])->name('imagenes.destroy');
+    Route::delete('/{producto}/imagenes/{imagen}', [ProductoController::class, 'destroyImagen'])->name('imagenes.destroy');
 });
 
 // Rutas de productos sin prefijo (para compatibilidad) - MOVIDAS DENTRO DEL MIDDLEWARE
 // Primero las rutas específicas
 Route::get('/productos/listadoP', [ProductoController::class, 'listado'])->name('productos.listadoP');
-Route::delete('/imagenes/{id}', [ProductoController::class, 'destroyImagen'])->name('imagenes.destroy');
+Route::delete('/productos/{producto}/imagenes/{imagen}', [ProductoController::class, 'destroyImagen'])->name('imagenes.destroy');
 
 // Después las rutas con parámetros dinámicos
 Route::resource('productos', ProductoController::class);
+
+// Rutas de variantes de productos
+Route::prefix('productos/{producto}/variantes')->name('productos.variantes.')->group(function () {
+    Route::get('/', [ProductoController::class, 'variantesIndex'])->name('index');
+    Route::get('/create', [ProductoController::class, 'variantesCreate'])->name('create');
+    Route::post('/', [ProductoController::class, 'variantesStore'])->name('store');
+    Route::get('/{variante}/edit', [ProductoController::class, 'variantesEdit'])->name('edit');
+    Route::put('/{variante}', [ProductoController::class, 'variantesUpdate'])->name('update');
+    Route::delete('/{variante}', [ProductoController::class, 'variantesDestroy'])->name('destroy');
+});
+
+// Rutas de reseñas de productos
+Route::prefix('productos/{producto}/resenas')->name('productos.resenas.')->group(function () {
+    Route::get('/', [ProductoController::class, 'resenasIndex'])->name('index');
+    Route::get('/create', [ProductoController::class, 'resenasCreate'])->name('create');
+    Route::post('/', [ProductoController::class, 'resenasStore'])->name('store');
+    Route::get('/{resena}/edit', [ProductoController::class, 'resenasEdit'])->name('edit');
+    Route::put('/{resena}', [ProductoController::class, 'resenasUpdate'])->name('update');
+    Route::delete('/{resena}', [ProductoController::class, 'resenasDestroy'])->name('destroy');
+});
+
     Route::resource('usuarios', UsuarioController::class);
     Route::get('/usuarios/{usuario}/asignar-rol', [UsuarioController::class, 'asignarRol'])->name('usuarios.asignarRol');
     Route::post('/usuarios/{usuario}/asignar-rol', [UsuarioController::class, 'updateRol'])->name('usuarios.updateRol');
@@ -98,13 +119,5 @@ Route::prefix('admin/inventario')->name('admin.inventario.')->group(function () 
     Route::post('/registrar-entrada', [InventarioController::class, 'registrarEntrada'])->name('registrar-entrada');
     Route::post('/registrar-salida', [InventarioController::class, 'registrarSalida'])->name('registrar-salida');
     Route::post('/ajustar-stock', [InventarioController::class, 'ajustarStock'])->name('ajustar-stock');
-    
-    // Rutas para variantes de inventario
-    Route::get('/variantes', [InventarioController::class, 'dashboardVariantes'])->name('variantes.dashboard');
-    Route::get('/variantes/reporte', [InventarioController::class, 'reporteVariantes'])->name('variantes.reporte');
-    Route::get('/variantes/movimientos', [InventarioController::class, 'movimientosVariantes'])->name('variantes.movimientos');
-    Route::post('/variantes/registrar-entrada', [InventarioController::class, 'registrarEntradaVariante'])->name('variantes.registrar-entrada');
-    Route::post('/variantes/registrar-salida', [InventarioController::class, 'registrarSalidaVariante'])->name('variantes.registrar-salida');
-    Route::post('/variantes/ajustar-stock', [InventarioController::class, 'ajustarStockVariante'])->name('variantes.ajustar-stock');
 });
 });

@@ -1,5 +1,3 @@
-
-
 @if ($errors->any())
     <div class="rounded-md bg-red-50 dark:bg-red-900/50 p-4 mb-6">
         <div class="flex">
@@ -188,57 +186,87 @@
         </h3>
         
                  <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
-             <!-- Stock Actual -->
+             <!-- Stock Inicial (para calcular alertas) -->
+             <div>
+                 <label for="stock_inicial" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                     Stock Inicial <span class="text-red-500">*</span>
+                 </label>
+                 <input type="number" 
+                        name="stock_inicial" 
+                        id="stock_inicial"
+                        min="0"
+                        placeholder="0"
+                        class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200 @error('stock_inicial') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
+                        required 
+                        value="{{ old('stock_inicial', $producto->stock_inicial ?? '') }}">
+                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Stock inicial para calcular alertas (60% = bajo, 20% = crítico)</p>
+                 @error('stock_inicial')
+                     <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                 @enderror
+             </div>
+
+             <!-- Stock Padre (calculado desde variantes) -->
              <div>
                  <label for="stock" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                     Stock Actual <span class="text-red-500">*</span>
+                     Stock Total <span class="text-red-500">*</span>
                  </label>
                  <input type="number" 
                         name="stock" 
                         id="stock"
                         min="0"
                         placeholder="0"
-                        class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200 @error('stock') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
-                        required 
-                        value="{{ old('stock', $producto->stock ?? '') }}">
+                        disabled
+                        class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400 sm:text-sm cursor-not-allowed transition-colors duration-200 @error('stock') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
+                        value="{{ old('stock', $producto->stock ?? 0) }}">
+                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Se calcula automáticamente desde las variantes de color</p>
                  @error('stock')
                      <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                  @enderror
              </div>
 
-             <!-- Stock Mínimo -->
+             <!-- Stock Mínimo (Umbral Crítico) -->
              <div>
                  <label for="stock_minimo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                     Stock Mínimo (Valor por defecto: 5)
+                     Umbral Crítico (20% del Stock Inicial)
                  </label>
                  <input type="number" 
                         name="stock_minimo" 
                         id="stock_minimo"
                         min="0"
-                        placeholder="5"
+                        placeholder="0"
                         disabled
-                        class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400 sm:text-sm cursor-not-allowed transition-colors duration-200 @error('stock_minimo') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
-                        value="{{ old('stock_minimo', $producto->stock_minimo ?? 5) }}">
-                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Se establece automáticamente en 5 unidades</p>
+                        class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 sm:text-sm cursor-not-allowed transition-colors duration-200 @error('stock_minimo') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
+                        value="{{ old('stock_minimo', $producto->stock_minimo ?? 0) }}">
+                 <p class="mt-1 text-xs text-blue-600 dark:text-blue-400">
+                     <span class="font-medium">Se calcula automáticamente:</span> 20% del stock inicial
+                     @if(isset($producto) && $producto->stock > 0)
+                         <br><span class="text-gray-500">Ejemplo: Stock inicial {{ $producto->stock }} → Umbral crítico {{ ceil($producto->stock * 0.2) }}</span>
+                     @endif
+                 </p>
                  @error('stock_minimo')
                      <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                  @enderror
              </div>
 
-             <!-- Stock Máximo -->
+             <!-- Stock Máximo (Umbral Bajo) -->
              <div>
                  <label for="stock_maximo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                     Stock Máximo (Valor por defecto: 100)
+                     Umbral Bajo (60% del Stock Inicial)
                  </label>
                  <input type="number" 
                         name="stock_maximo" 
                         id="stock_maximo"
                         min="0"
-                        placeholder="100"
+                        placeholder="0"
                         disabled
-                        class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400 sm:text-sm cursor-not-allowed transition-colors duration-200 @error('stock_maximo') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
-                        value="{{ old('stock_maximo', $producto->stock_maximo ?? 100) }}">
-                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Se establece automáticamente en 100 unidades</p>
+                        class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 sm:text-sm cursor-not-allowed transition-colors duration-200 @error('stock_maximo') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
+                        value="{{ old('stock_maximo', $producto->stock_maximo ?? 0) }}">
+                 <p class="mt-1 text-xs text-yellow-600 dark:text-yellow-400">
+                     <span class="font-medium">Se calcula automáticamente:</span> 60% del stock inicial
+                     @if(isset($producto) && $producto->stock > 0)
+                         <br><span class="text-gray-500">Ejemplo: Stock inicial {{ $producto->stock }} → Umbral bajo {{ ceil($producto->stock * 0.6) }}</span>
+                     @endif
+                 </p>
                  @error('stock_maximo')
                      <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                  @enderror
@@ -312,7 +340,7 @@
                     @foreach($marcas as $marca)
                         <option value="{{ $marca->marca_id }}"
                             {{ old('marca_id', $producto->marca_id ?? '') == $marca->marca_id ? 'selected' : '' }}>
-                            {{ $marca->nombre_marca }}
+                            {{ $marca->nombre }}
                         </option>
                     @endforeach
                 </select>
@@ -593,10 +621,14 @@
         const requerido = espec.requerido ? '<span class="text-red-500">*</span>' : '';
         const unidad = espec.unidad ? ` (${espec.unidad})` : '';
         
+        // Debug: mostrar qué tipo de campo se está procesando
+        console.log(`Creando campo: ${espec.nombre_campo}, Tipo: ${espec.tipo_campo}, Etiqueta: ${espec.etiqueta}`);
+        
         let campo = '';
         
         switch (espec.tipo_campo) {
             case 'text':
+            case 'texto':
                 campo = `
                     <input type="text" 
                            name="especificaciones[${espec.nombre_campo}]" 
@@ -609,6 +641,7 @@
                 break;
                 
             case 'number':
+            case 'numero':
                 campo = `
                     <input type="number" 
                            name="especificaciones[${espec.nombre_campo}]" 
@@ -620,7 +653,7 @@
                 `;
                 break;
                 
-                         case 'select':
+            case 'select':
                  // Para campos select, necesitamos obtener las opciones de la base de datos
                  // o usar opciones predefinidas si están disponibles
                  let opciones = [];
@@ -649,11 +682,14 @@
                          case 'resolucion':
                              opciones = ['HD (1280x720)', 'Full HD (1920x1080)', '2K (2560x1440)', '4K (3840x2160)', 'Retina'];
                              break;
-                         case 'procesador':
-                             opciones = ['Intel Core i3', 'Intel Core i5', 'Intel Core i7', 'Intel Core i9', 'AMD Ryzen 3', 'AMD Ryzen 5', 'AMD Ryzen 7', 'AMD Ryzen 9', 'Apple M1', 'Apple M2', 'Apple M3'];
-                             break;
-                         default:
-                             opciones = ['Opción 1', 'Opción 2', 'Opción 3'];
+                                                 case 'procesador':
+                            opciones = ['Intel Core i3', 'Intel Core i5', 'Intel Core i7', 'Intel Core i9', 'AMD Ryzen 3', 'AMD Ryzen 5', 'AMD Ryzen 7', 'AMD Ryzen 9', 'Apple M1', 'Apple M2', 'Apple M3'];
+                            break;
+                        case 'sistema_operativo':
+                            opciones = ['Android', 'iOS', 'Windows', 'macOS', 'Linux'];
+                            break;
+                        default:
+                            opciones = ['Opción 1', 'Opción 2', 'Opción 3'];
                      }
                  }
                  
@@ -726,6 +762,20 @@
                     <div class="space-y-2">
                         ${radioHtml}
                     </div>
+                `;
+                break;
+                
+            default:
+                // Campo por defecto si el tipo no es reconocido
+                console.warn(`Tipo de campo no reconocido: ${espec.tipo_campo} para ${espec.nombre_campo}`);
+                campo = `
+                    <input type="text" 
+                           name="especificaciones[${espec.nombre_campo}]" 
+                           id="espec_${espec.nombre_campo}"
+                           value="${valorActual}"
+                           class="block w-full px-3 py-2 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm text-gray-900 dark:bg-gray-600 dark:text-gray-100 transition-colors duration-200"
+                           placeholder="Ingresa ${espec.etiqueta.toLowerCase()}"
+                           ${espec.requerido ? 'required' : ''}>
                 `;
                 break;
         }
@@ -1435,6 +1485,180 @@
         if (!isValid) {
             e.preventDefault();
             alert('Por favor completa todos los campos requeridos.');
+        }
+    });
+
+    // JavaScript para cálculos dinámicos
+    document.addEventListener('DOMContentLoaded', function() {
+        const stockInicialInput = document.getElementById('stock_inicial');
+        const stockMinimoInput = document.getElementById('stock_minimo');
+        const stockMaximoInput = document.getElementById('stock_maximo');
+        
+        // Función para calcular y mostrar los umbrales
+        function calcularUmbrales() {
+            const stockInicial = parseInt(stockInicialInput.value) || 0;
+            
+            if (stockInicial > 0) {
+                // Calcular umbrales
+                const umbralBajo = Math.ceil((stockInicial * 60) / 100);
+                const umbralCritico = Math.ceil((stockInicial * 20) / 100);
+                
+                // Actualizar campos
+                stockMinimoInput.value = umbralCritico;
+                stockMaximoInput.value = umbralBajo;
+                
+                // Actualizar ejemplos en los labels
+                actualizarEjemplos(stockInicial, umbralBajo, umbralCritico);
+                
+                // Mostrar campos con colores apropiados
+                stockMinimoInput.style.backgroundColor = '#dbeafe'; // bg-blue-50
+                stockMaximoInput.style.backgroundColor = '#fef3c7'; // bg-yellow-50
+                
+                // Mostrar información de que se actualizarán al guardar
+                mostrarInfoActualizacion();
+            } else {
+                // Si no hay stock inicial, mostrar 0
+                stockMinimoInput.value = 0;
+                stockMaximoInput.value = 0;
+                
+                // Ocultar ejemplos
+                ocultarEjemplos();
+                
+                // Campos en gris
+                stockMinimoInput.style.backgroundColor = '#f3f4f6'; // bg-gray-100
+                stockMaximoInput.style.backgroundColor = '#f3f4f6'; // bg-gray-100
+                
+                // Ocultar información de actualización
+                ocultarInfoActualizacion();
+            }
+        }
+        
+        // Función para actualizar los ejemplos en tiempo real
+        function actualizarEjemplos(stockInicial, umbralBajo, umbralCritico) {
+            const ejemploMinimo = stockMinimoInput.parentNode.querySelector('.text-xs');
+            const ejemploMaximo = stockMaximoInput.parentNode.querySelector('.text-xs');
+            
+            if (ejemploMinimo && ejemploMaximo) {
+                ejemploMinimo.innerHTML = `
+                    <span class="font-medium">Se calcula automáticamente:</span> 20% del stock inicial
+                    <br><span class="text-gray-500">Ejemplo: Stock inicial ${stockInicial} → Umbral crítico ${umbralCritico}</span>
+                    <br><span class="text-blue-600 font-medium">Se actualizará al guardar el producto</span>
+                `;
+                
+                ejemploMaximo.innerHTML = `
+                    <span class="font-medium">Se calcula automáticamente:</span> 60% del stock inicial
+                    <br><span class="text-gray-500">Ejemplo: Stock inicial ${stockInicial} → Umbral bajo ${umbralBajo}</span>
+                    <br><span class="text-yellow-600 font-medium">Se actualizará al guardar el producto</span>
+                `;
+            }
+        }
+        
+        // Función para ocultar ejemplos
+        function ocultarEjemplos() {
+            const ejemploMinimo = stockMinimoInput.parentNode.querySelector('.text-xs');
+            const ejemploMaximo = stockMaximoInput.parentNode.querySelector('.text-xs');
+            
+            if (ejemploMinimo && ejemploMaximo) {
+                ejemploMinimo.innerHTML = `
+                    <span class="font-medium">Se calcula automáticamente:</span> 20% del stock inicial
+                `;
+                
+                ejemploMaximo.innerHTML = `
+                    <span class="font-medium">Se calcula automáticamente:</span> 60% del stock inicial
+                `;
+            }
+        }
+        
+        // Función para mostrar información de actualización
+        function mostrarInfoActualizacion() {
+            let infoContainer = document.getElementById('info-actualizacion-umbrales');
+            if (!infoContainer) {
+                infoContainer = document.createElement('div');
+                infoContainer.id = 'info-actualizacion-umbrales';
+                infoContainer.className = 'col-span-full p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 mb-4';
+                infoContainer.innerHTML = `
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-blue-600 dark:text-blue-400 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-sm text-blue-700 dark:text-blue-300">
+                            <strong>Nota:</strong> Los umbrales mostrados son previsualizaciones. Se actualizarán automáticamente en la base de datos al guardar el producto.
+                        </span>
+                    </div>
+                `;
+                
+                // Insertar después del primer div de la grilla
+                const primeraColumna = document.querySelector('.grid.grid-cols-1.gap-6.md\\:grid-cols-4');
+                if (primeraColumna) {
+                    primeraColumna.parentNode.insertBefore(infoContainer, primeraColumna);
+                }
+            }
+        }
+        
+        // Función para ocultar información de actualización
+        function ocultarInfoActualizacion() {
+            const infoContainer = document.getElementById('info-actualizacion-umbrales');
+            if (infoContainer) {
+                infoContainer.remove();
+            }
+        }
+        
+        // Event listener para cambios en el stock inicial
+        stockInicialInput.addEventListener('input', calcularUmbrales);
+        
+        // Calcular umbrales al cargar la página
+        calcularUmbrales();
+        
+        // Mostrar información adicional sobre la nueva lógica
+        const infoContainer = document.createElement('div');
+        infoContainer.className = 'col-span-full p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 mb-6';
+        infoContainer.innerHTML = `
+            <div class="flex items-start">
+                <svg class="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <div>
+                    <h4 class="text-sm font-medium text-green-800 dark:text-green-200">Lógica de Alertas de Stock</h4>
+                    <p class="text-sm text-green-700 dark:text-green-300 mt-1">
+                        Los umbrales de alerta se calculan automáticamente basándose en el stock inicial:
+                    </p>
+                    <ul class="text-sm text-green-700 dark:text-green-300 mt-2 space-y-1">
+                        <li>• <strong>Umbral Bajo:</strong> 60% del stock inicial (campo "Stock Inicial")</li>
+                        <li>• <strong>Umbral Crítico:</strong> 20% del stock inicial (campo "Stock Inicial")</li>
+                        <li>• <strong>Los campos se actualizan automáticamente</strong> cuando cambias el stock inicial</li>
+                        <li>• <strong>Los valores se guardan en la base de datos</strong> al enviar el formulario</li>
+                    </ul>
+                </div>
+            </div>
+        `;
+        
+        // Insertar después del primer div de la grilla
+        const primeraColumna = document.querySelector('.grid.grid-cols-1.gap-6.md\\:grid-cols-4');
+        if (primeraColumna) {
+            primeraColumna.parentNode.insertBefore(infoContainer, primeraColumna);
+        }
+        
+        // Agregar validación antes de enviar el formulario
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const stockInicial = parseInt(stockInicialInput.value) || 0;
+                
+                if (stockInicial <= 0) {
+                    e.preventDefault();
+                    alert('El stock inicial debe ser mayor a 0 para calcular los umbrales de alerta.');
+                    stockInicialInput.focus();
+                    return false;
+                }
+                
+                // Mostrar confirmación de actualización de umbrales
+                if (confirm('¿Estás seguro de que quieres actualizar el producto? Los umbrales de alerta se recalcularán automáticamente.')) {
+                    return true;
+                } else {
+                    e.preventDefault();
+                    return false;
+                }
+            });
         }
     });
 </script>

@@ -27,8 +27,8 @@ class PedidoService extends BaseService
 
         try {
             $query = Pedido::where('usuario_id', Auth::id())
-                ->with(['items.producto', 'items.variante', 'estado', 'direccionEnvio', 'metodoPago'])
-                ->orderBy('created_at', 'desc');
+                ->with(['detalles.producto', 'detalles.variante', 'estado', 'direccion', 'pago.metodoPago'])
+                ->orderBy('fecha_pedido', 'desc');
 
             // Aplicar filtros
             if (!empty($filters['estado_id'])) {
@@ -63,12 +63,12 @@ class PedidoService extends BaseService
         try {
             $query = Pedido::with([
                 'usuario', 
-                'items.producto', 
-                'items.variante', 
+                'detalles.producto', 
+                'detalles.variante', 
                 'estado', 
-                'direccionEnvio', 
-                'metodoPago'
-            ])->orderBy('created_at', 'desc');
+                'direccion', 
+                'pago.metodoPago'
+            ])->orderBy('fecha_pedido', 'desc');
 
             // Aplicar filtros
             if (!empty($filters['estado_id'])) {
@@ -115,12 +115,11 @@ class PedidoService extends BaseService
         try {
             $pedido = Pedido::with([
                 'usuario',
-                'items.producto', 
-                'items.variante', 
+                'detalles.producto', 
+                'detalles.variante', 
                 'estado', 
-                'direccionEnvio', 
-                'metodoPago',
-                'historialEstados'
+                'direccion', 
+                'pago.metodoPago'
             ])->findOrFail($pedidoId);
 
             // Verificar permisos
@@ -153,21 +152,21 @@ class PedidoService extends BaseService
             // Obtener carrito del usuario
             $carrito = $this->getUserCart();
             
-            if (empty($carrito['items'])) {
+            if (empty($carrito['detalles'])) {
                 throw new Exception('El carrito está vacío');
             }
 
             // Verificar disponibilidad de stock
-            $this->validateCartStock($carrito['items']);
+            $this->validateCartStock($carrito['detalles']);
             
             // Crear pedido
             $pedido = $this->createOrder($data, $carrito);
             
-            // Crear items del pedido
-            $this->createOrderItems($pedido, $carrito['items']);
+            // Crear detalles del pedido
+            $this->createOrderItems($pedido, $carrito['detalles']);
             
             // Actualizar stock de productos
-            $this->updateProductStock($carrito['items']);
+            $this->updateProductStock($carrito['detalles']);
             
             // Limpiar carrito
             $this->clearUserCart();
@@ -178,7 +177,7 @@ class PedidoService extends BaseService
             $this->logOperation('pedido_creado_exitosamente', [
                 'pedido_id' => $pedido->id,
                 'user_id' => Auth::id(),
-                'total_items' => count($carrito['items'])
+                'total_detalles' => count($carrito['detalles'])
             ]);
 
             return $this->formatSuccessResponse($pedido, 'Pedido creado exitosamente');
@@ -238,7 +237,7 @@ class PedidoService extends BaseService
         ]);
 
         return $this->executeInTransaction(function () use ($pedidoId, $request) {
-            $pedido = Pedido::with(['items.producto', 'items.variante'])->findOrFail($pedidoId);
+            $pedido = Pedido::with(['detalles.producto', 'detalles.variante'])->findOrFail($pedidoId);
             
             // Verificar permisos
             if (!Auth::user()->hasRole('admin') && $pedido->usuario_id !== Auth::id()) {
@@ -251,7 +250,7 @@ class PedidoService extends BaseService
             }
 
             // Restaurar stock
-            $this->restoreProductStock($pedido->items);
+            $this->restoreProductStock($pedido->detalles);
             
             // Actualizar estado a cancelado
             $estadoCancelado = EstadoPedido::where('nombre', 'cancelado')->first();
@@ -415,7 +414,7 @@ class PedidoService extends BaseService
             ->toArray();
 
         return [
-            'items' => $carrito,
+            'detalles' => $carrito,
             'total' => collect($carrito)->sum(function ($item) {
                 $precio = $item->precio + ($item->precio_adicional ?? 0);
                 return $precio * $item->cantidad;

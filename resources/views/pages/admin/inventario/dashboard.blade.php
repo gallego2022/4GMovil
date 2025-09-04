@@ -47,6 +47,21 @@
             </div>
         </div>
 
+        <!-- Stock total de variantes -->
+        <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-purple-100 dark:bg-purple-900">
+                    <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Stock Variantes</p>
+                    <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ number_format($stockTotalVariantes ?? 0, 0, ',', '.') }}</p>
+                </div>
+            </div>
+        </div>
+
         <!-- Productos con stock crítico -->
         <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
             <div class="flex items-center">
@@ -57,52 +72,22 @@
                 </div>
                 <div class="ml-4">
                     <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Stock Crítico</p>
-                    <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $alertas['stock_critico'] }}</p>
+                    <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $alertas['productos_stock_critico'] ?? 0 }}</p>
                 </div>
             </div>
         </div>
 
-        <!-- Productos con stock bajo -->
+        <!-- Variantes con stock bajo -->
         <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
             <div class="flex items-center">
                 <div class="p-3 rounded-full bg-yellow-100 dark:bg-yellow-900">
                     <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Stock Bajo</p>
-                    <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $alertas['stock_bajo'] }}</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Productos sin stock -->
-        <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-gray-100 dark:bg-gray-700">
-                    <svg class="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 01-.707-.293l-2.414-2.414a1 1 0 00-.707-.293H6.586a1 1 0 00-.707.293L3.707 12.707A1 1 0 004.586 13H2"/>
-                    </svg>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Sin Stock</p>
-                    <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $alertas['sin_stock'] }}</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Stock Reservado -->
-        <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-blue-100 dark:bg-blue-900">
-                    <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Stock Reservado</p>
-                    <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $alertas['stock_reservado_alto'] ?? 0 }}</p>
+                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Variantes Bajo</p>
+                    <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $alertas['variantes_stock_bajo'] ?? 0 }}</p>
                 </div>
             </div>
         </div>
@@ -384,67 +369,146 @@
                 </svg>
                 <div>
                     <p class="font-medium text-gray-900 dark:text-white">Generar Reporte</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Análisis completo del inventario</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Reportes detallados de inventario</p>
                 </div>
             </a>
-            
-            <a href="{{ route('admin.inventario.productos-mas-vendidos') }}" 
-               class="flex items-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors">
-                <svg class="w-8 h-8 text-orange-600 dark:text-orange-400 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-                </svg>
-                <div>
-                    <p class="font-medium text-gray-900 dark:text-white">Productos Más Vendidos</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Análisis de demanda</p>
-                </div>
-            </a>
-            
-            <a href="{{ route('admin.inventario.valor-por-categoria') }}" 
-               class="flex items-center p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors">
-                <svg class="w-8 h-8 text-indigo-600 dark:text-indigo-400 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
-                </svg>
-                <div>
-                    <p class="font-medium text-gray-900 dark:text-white">Valor por Categoría</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Distribución del inventario</p>
-                </div>
-            </a>
-            
-            <a href="{{ route('admin.inventario.exportar-reporte') }}" 
+
+            <a href="{{ route('admin.inventario.alertas') }}" 
                class="flex items-center p-4 bg-red-50 dark:bg-red-900/20 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
                 <svg class="w-8 h-8 text-red-600 dark:text-red-400 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
                 </svg>
                 <div>
-                    <p class="font-medium text-gray-900 dark:text-white">Exportar Reporte</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">PDF y Excel</p>
+                    <p class="font-medium text-gray-900 dark:text-white">Ver Alertas</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Productos que requieren atención</p>
                 </div>
             </a>
-            
-            <a href="{{ route('admin.productos.listadoP') }}" 
-               class="flex items-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors">
-                <svg class="w-8 h-8 text-purple-600 dark:text-purple-400 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                </svg>
-                <div>
-                    <p class="font-medium text-gray-900 dark:text-white">Gestionar Productos</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Editar productos y stock</p>
-                </div>
-            </a>
-            
-            @if(isset($reporteVariantes) && $reporteVariantes['total_variantes'] > 0)
-            <a href="{{ route('admin.inventario.variantes.dashboard') }}" 
-               class="flex items-center p-4 bg-teal-50 dark:bg-teal-900/20 rounded-lg hover:bg-teal-100 dark:hover:bg-teal-900/30 transition-colors">
-                <svg class="w-8 h-8 text-teal-600 dark:text-teal-400 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
-                </svg>
-                <div>
-                    <p class="font-medium text-gray-900 dark:text-white">Gestionar Variantes</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Stock por color/tamaño</p>
-                </div>
-            </a>
-            @endif
         </div>
     </div>
+
+    <!-- Productos con Variantes -->
+    @if(isset($productosConVariantes) && $productosConVariantes->count() > 0)
+    <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+            </svg>
+            Productos con Variantes de Color
+        </h3>
+        
+        <!-- Información sobre la nueva lógica de alertas -->
+        <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+            <div class="flex items-start">
+                <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <div>
+                    <h4 class="text-sm font-medium text-blue-800 dark:text-blue-200">Nueva Lógica de Alertas de Stock</h4>
+                    <p class="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                        Las alertas ahora se calculan basándose en el stock inicial del producto:
+                    </p>
+                    <ul class="text-sm text-blue-700 dark:text-blue-300 mt-2 space-y-1">
+                        <li>• <strong>Stock Bajo:</strong> 60% del stock inicial</li>
+                        <li>• <strong>Stock Crítico:</strong> 20% del stock inicial</li>
+                        <li>• <strong>Stock Inicial:</strong> Cantidad establecida al crear el producto</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-800">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Producto</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Categoría</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Stock Inicial</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Stock Actual</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Estado</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Umbrales</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                    @foreach($productosConVariantes->take(10) as $producto)
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    @if($producto->imagenes->isNotEmpty())
+                                        <img class="h-10 w-10 rounded-full object-cover" 
+                                             src="{{ asset('storage/' . $producto->imagenes->first()->ruta_imagen) }}" 
+                                             alt="{{ $producto->nombre_producto }}">
+                                    @else
+                                        <div class="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                            </svg>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $producto->nombre_producto }}</div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">${{ number_format($producto->precio, 0, ',', '.') }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">{{ $producto->categoria->nombre ?? 'Sin categoría' }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">{{ number_format($producto->stock, 0, ',', '.') }}</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">Stock inicial</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">{{ number_format($producto->stock_disponible, 0, ',', '.') }}</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                @if($producto->stock > 0)
+                                    {{ round(($producto->stock_disponible / $producto->stock) * 100, 1) }}% del inicial
+                                @else
+                                    N/A
+                                @endif
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @php
+                                $estado = $producto->estado_stock;
+                                $clases = [
+                                    'sin_stock' => 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+                                    'critico' => 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+                                    'bajo' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+                                    'normal' => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                ];
+                                $textos = [
+                                    'sin_stock' => 'Sin Stock',
+                                    'critico' => 'Crítico',
+                                    'bajo' => 'Bajo',
+                                    'normal' => 'Normal'
+                                ];
+                            @endphp
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $clases[$estado] ?? $clases['normal'] }}">
+                                {{ $textos[$estado] ?? 'Normal' }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                <div>Bajo: {{ $producto->umbral_stock_bajo }}</div>
+                                <div>Crítico: {{ $producto->umbral_stock_critico }}</div>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        
+        @if($productosConVariantes->count() > 10)
+        <div class="mt-4 text-center">
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+                Mostrando 10 de {{ $productosConVariantes->count() }} productos con variantes
+            </p>
+        </div>
+        @endif
+    </div>
+    @endif
 </div>
 @endsection 

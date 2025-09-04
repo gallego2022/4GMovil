@@ -24,19 +24,19 @@ class EspecificacionCategoria extends Model
         'descripcion',
         'requerido',
         'orden',
-        'activo',
+        'estado',
     ];
 
     protected $casts = [
         'requerido' => 'boolean',
-        'activo' => 'boolean',
+        'estado' => 'boolean',
         'orden' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
 
     protected $attributes = [
-        'activo' => true,
+        'estado' => true,
         'requerido' => false,
         'orden' => 0,
     ];
@@ -54,7 +54,7 @@ class EspecificacionCategoria extends Model
      */
     public function scopeActivas($query)
     {
-        return $query->where('activo', true);
+        return $query->where('estado', true);
     }
 
     /**

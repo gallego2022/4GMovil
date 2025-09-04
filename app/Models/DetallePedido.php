@@ -23,4 +23,9 @@ class DetallePedido extends Model
     {
         return $this->belongsTo(Producto::class, 'producto_id');
     }
+
+    public function variante()
+    {
+        return $this->belongsTo(VarianteProducto::class, 'variante_id');
+    }
 }

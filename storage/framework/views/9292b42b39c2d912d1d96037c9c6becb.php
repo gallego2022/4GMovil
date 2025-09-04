@@ -27,6 +27,7 @@
     <!-- Custom Styles -->
     <?php echo $__env->yieldPushContent('styles'); ?>
 
+    
     <style>
         [x-cloak] {
             display: none !important;

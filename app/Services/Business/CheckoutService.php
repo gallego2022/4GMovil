@@ -75,8 +75,6 @@ class CheckoutService extends BaseService
      */
     public function processCheckout(Request $request): array
     {
-        $this->logOperation('procesando_checkout', ['user_id' => Auth::id()]);
-
         return $this->executeInTransaction(function () use ($request) {
             // Validar datos del checkout
             $checkoutData = $this->validateCheckoutData($request);
@@ -90,9 +88,6 @@ class CheckoutService extends BaseService
             // Validar disponibilidad de stock
             $this->validateStockAvailability($cart);
             
-            // Reservar stock temporalmente
-            // $reservaId = $this->reservaStockService->reservarStock($cart, Auth::id());
-            
             // Crear pedido
             $pedido = $this->createOrder($checkoutData, $cart);
             
@@ -102,25 +97,40 @@ class CheckoutService extends BaseService
             // Crear pago
             $pago = $this->createPayment($pedido, $checkoutData);
             
-            // Enviar correo de confirmación para métodos de pago no-Stripe
-            $this->enviarCorreoConfirmacionSiEsNecesario($pedido, $checkoutData['metodo_pago_id']);
+            // Verificar si es Stripe para manejo especial
+            $metodoPago = MetodoPago::find($checkoutData['metodo_pago_id']);
             
-            // Solo limpiar el carrito si todo fue exitoso
-            // El carrito se limpiará después de confirmar que no hay errores
-            // Session::forget('cart');
-            // $this->reservaStockService->confirmarReserva($reservaId);
-            
-            $this->logOperation('checkout_procesado_exitosamente', [
-                'pedido_id' => $pedido->pedido_id,
-                'user_id' => Auth::id()
-            ]);
+            if ($metodoPago && strtolower($metodoPago->nombre) === 'stripe') {
+                // Para Stripe, solo crear el pedido y redirigir al pago
+                $this->logOperation('checkout_stripe_preparado', [
+                    'pedido_id' => $pedido->pedido_id,
+                    'user_id' => Auth::id()
+                ]);
 
-            return [
-                'success' => true,
-                'pedido_id' => $pedido->pedido_id,
-                'pago_id' => $pago->pago_id,
-                'message' => 'Pedido procesado exitosamente'
-            ];
+                return [
+                    'success' => true,
+                    'pedido_id' => $pedido->pedido_id,
+                    'pago_id' => $pago->pago_id,
+                    'redirect_to_stripe' => true,
+                    'message' => 'Pedido creado, redirigiendo a Stripe'
+                ];
+            } else {
+                // Para métodos no-Stripe, procesar completamente y enviar correo
+                $this->enviarCorreoConfirmacionSiEsNecesario($pedido, $checkoutData['metodo_pago_id']);
+                
+                $this->logOperation('checkout_procesado_exitosamente', [
+                    'pedido_id' => $pedido->pedido_id,
+                    'user_id' => Auth::id()
+                ]);
+
+                return [
+                    'success' => true,
+                    'pedido_id' => $pedido->pedido_id,
+                    'pago_id' => $pago->pago_id,
+                    'redirect_to_stripe' => false,
+                    'message' => 'Pedido procesado exitosamente'
+                ];
+            }
 
         }, 'procesamiento de checkout');
     }
@@ -419,6 +429,15 @@ class CheckoutService extends BaseService
                 return;
             }
 
+            // NO enviar correo para Stripe en el checkout - se enviará después del pago
+            if (strtolower($metodoPago->nombre) === 'stripe') {
+                Log::info('Método Stripe seleccionado, no se envía correo en checkout', [
+                    'pedido_id' => $pedido->pedido_id,
+                    'metodo_pago' => $metodoPago->nombre
+                ]);
+                return;
+            }
+
             // Verificar si es un método que requiere confirmación manual
             $requiereConfirmacionManual = $this->metodoRequiereConfirmacionManual($metodoPago);
             
@@ -433,7 +452,11 @@ class CheckoutService extends BaseService
                     'metodo_pago' => $metodoPago->nombre
                 ]);
             } else {
-                Log::info('Método de pago requiere confirmación manual, no se envía correo', [
+                // Para métodos que requieren confirmación manual, también enviar notificación al administrador
+                // pero no el correo de confirmación al cliente
+                $this->notificarAdministradores($pedido, $metodoPago->nombre);
+                
+                Log::info('Método de pago requiere confirmación manual, notificación enviada al administrador', [
                     'pedido_id' => $pedido->pedido_id,
                     'metodo_pago' => $metodoPago->nombre
                 ]);
@@ -455,8 +478,25 @@ class CheckoutService extends BaseService
     private function metodoRequiereConfirmacionManual(MetodoPago $metodoPago): bool
     {
         // Métodos que requieren confirmación manual (efectivo, transferencia)
+        // Stripe NO requiere confirmación manual porque se confirma automáticamente
         $metodosManuales = ['Efectivo', 'Transferencia Bancaria'];
         
         return in_array($metodoPago->nombre, $metodosManuales);
+    }
+
+    /**
+     * Notifica a los administradores sobre un nuevo pedido.
+     */
+    private function notificarAdministradores($pedido, $metodoPagoNombre)
+    {
+        try {
+            $adminNotificationService = new \App\Services\AdminNotificationService();
+            $adminNotificationService->notificarPedidoNuevo($pedido, $metodoPagoNombre);
+        } catch (\Exception $e) {
+            Log::error('Error al notificar administradores', [
+                'pedido_id' => $pedido->pedido_id,
+                'error' => $e->getMessage()
+            ]);
+        }
     }
 }

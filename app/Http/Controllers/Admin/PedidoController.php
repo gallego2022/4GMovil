@@ -36,6 +36,24 @@ class PedidoController extends WebController
     }
 
     /**
+     * Muestra el historial de pedidos del usuario (cliente)
+     */
+    public function historial(Request $request)
+    {
+        try {
+            $filters = $this->getFilterParams($request);
+            $result = $this->pedidoService->getUserOrders($filters);
+            
+            return view('pages.cliente.pedidos.historial', [
+                'pedidos' => $result['data']
+            ]);
+
+        } catch (Exception $e) {
+            return $this->handleException($e, 'landing');
+        }
+    }
+
+    /**
      * Muestra la lista de todos los pedidos (admin)
      */
     public function adminIndex(Request $request)
@@ -69,6 +87,23 @@ class PedidoController extends WebController
 
         } catch (Exception $e) {
             return $this->handleException($e, 'pedidos.index');
+        }
+    }
+
+    /**
+     * Muestra el detalle de un pedido específico (cliente)
+     */
+    public function detalle(int $id)
+    {
+        try {
+            $result = $this->pedidoService->getOrderById($id);
+            
+            return view('pages.cliente.pedidos.detalle', [
+                'pedido' => $result['data']
+            ]);
+
+        } catch (Exception $e) {
+            return $this->handleException($e, 'pedidos.historial');
         }
     }
 

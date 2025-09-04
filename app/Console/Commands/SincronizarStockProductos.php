@@ -2,8 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Producto;
 use Illuminate\Console\Command;
+use App\Models\Producto;
+use App\Services\StockSincronizacionService;
 use Illuminate\Support\Facades\Log;
 
 class SincronizarStockProductos extends Command
@@ -13,7 +14,7 @@ class SincronizarStockProductos extends Command
      *
      * @var string
      */
-    protected $signature = 'productos:sincronizar-stock {--producto-id= : ID específico del producto} {--force : Forzar sincronización sin confirmación}';
+    protected $signature = 'productos:sincronizar-stock {--producto-id= : ID del producto específico a sincronizar} {--force : Forzar sincronización sin confirmación}';
 
     /**
      * The console command description.
@@ -30,85 +31,102 @@ class SincronizarStockProductos extends Command
         $productoId = $this->option('producto-id');
         $force = $this->option('force');
 
-        if ($productoId) {
-            $producto = Producto::find($productoId);
-            if (!$producto) {
-                $this->error("❌ Producto con ID {$productoId} no encontrado");
-                return Command::FAILURE;
+        if (!$force && !$this->confirm('¿Estás seguro de que quieres sincronizar el stock de los productos?')) {
+            $this->info('Operación cancelada.');
+            return 0;
+        }
+
+        try {
+            if ($productoId) {
+                $this->sincronizarProductoEspecifico($productoId);
+            } else {
+                $this->sincronizarTodosLosProductos();
             }
-            $productos = collect([$producto]);
-            $this->info("🔄 Sincronizando stock para producto: {$producto->nombre_producto}");
+
+            $this->info('Sincronización completada exitosamente.');
+            return 0;
+        } catch (\Exception $e) {
+            $this->error('Error durante la sincronización: ' . $e->getMessage());
+            Log::error('Error en comando SincronizarStockProductos', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return 1;
+        }
+    }
+
+    /**
+     * Sincronizar un producto específico
+     */
+    private function sincronizarProductoEspecifico(int $productoId): void
+    {
+        $producto = Producto::find($productoId);
+        
+        if (!$producto) {
+            $this->error("Producto con ID {$productoId} no encontrado.");
+            return;
+        }
+
+        $this->info("Sincronizando producto: {$producto->nombre_producto}");
+        
+        $stockAnterior = $producto->stock;
+        $producto->sincronizarStockConVariantes();
+        $producto->refresh();
+        
+        $this->info("Stock actualizado: {$stockAnterior} → {$producto->stock}");
+        
+        if ($producto->tieneVariantes()) {
+            $this->info("Variantes encontradas: " . $producto->variantes->count());
+            foreach ($producto->variantes as $variante) {
+                $this->line("  - {$variante->nombre}: {$variante->stock} unidades");
+            }
         } else {
-            $productos = Producto::with('variantes')->get();
-            $this->info("🔄 Sincronizando stock para {$productos->count()} productos");
+            $this->warn("Este producto no tiene variantes.");
         }
+    }
 
-        if (!$force && !$this->confirm('¿Deseas continuar con la sincronización?')) {
-            $this->info('❌ Sincronización cancelada');
-            return Command::SUCCESS;
-        }
-
-        $bar = $this->output->createProgressBar($productos->count());
-        $bar->start();
-
+    /**
+     * Sincronizar todos los productos
+     */
+    private function sincronizarTodosLosProductos(): void
+    {
+        $this->info('Iniciando sincronización de stock para todos los productos...');
+        
+        $productos = Producto::all();
+        $total = $productos->count();
         $sincronizados = 0;
-        $errores = 0;
+        $conVariantes = 0;
+        
+        $bar = $this->output->createProgressBar($total);
+        $bar->start();
 
         foreach ($productos as $producto) {
             try {
                 $stockAnterior = $producto->stock;
-                $producto->sincronizarStockConVariantes();
-                $stockNuevo = $producto->fresh()->stock;
                 
-                if ($stockAnterior !== $stockNuevo) {
-                    $this->newLine();
-                    $this->line("📊 Producto: {$producto->nombre_producto}");
-                    $this->line("   Stock anterior: {$stockAnterior}");
-                    $this->line("   Stock nuevo: {$stockNuevo}");
-                    $this->line("   Variantes: {$producto->variantes->count()}");
+                if ($producto->tieneVariantes()) {
+                    $conVariantes++;
+                    $producto->sincronizarStockConVariantes();
+                    $producto->refresh();
+                    
+                    if ($stockAnterior !== $producto->stock) {
+                        $sincronizados++;
+                    }
                 }
                 
-                $sincronizados++;
+                $bar->advance();
             } catch (\Exception $e) {
-                $errores++;
-                Log::error('Error al sincronizar stock del producto', [
-                    'producto_id' => $producto->producto_id,
-                    'error' => $e->getMessage()
-                ]);
                 $this->newLine();
-                $this->error("❌ Error en producto {$producto->nombre_producto}: {$e->getMessage()}");
+                $this->warn("Error al sincronizar producto {$producto->producto_id}: " . $e->getMessage());
             }
-            
-            $bar->advance();
         }
 
         $bar->finish();
         $this->newLine(2);
 
-        // Resumen
-        $this->info("✅ Sincronización completada:");
-        $this->line("   📦 Productos sincronizados: {$sincronizados}");
-        if ($errores > 0) {
-            $this->error("   ❌ Errores: {$errores}");
-        }
-
-        // Mostrar productos con variantes
-        $productosConVariantes = $productos->filter(function ($producto) {
-            return $producto->tieneVariantes();
-        });
-
-        if ($productosConVariantes->count() > 0) {
-            $this->newLine();
-            $this->info("📋 Resumen de productos con variantes:");
-            
-            foreach ($productosConVariantes as $producto) {
-                $stockTotal = $producto->stock;
-                $variantesConStock = $producto->variantes->where('stock_disponible', '>', 0)->count();
-                
-                $this->line("   • {$producto->nombre_producto}: {$stockTotal} unidades totales ({$variantesConStock} variantes con stock)");
-            }
-        }
-
-        return Command::SUCCESS;
+        $this->info("Sincronización completada:");
+        $this->line("  - Total de productos: {$total}");
+        $this->line("  - Productos con variantes: {$conVariantes}");
+        $this->line("  - Stock actualizado: {$sincronizados}");
     }
 }

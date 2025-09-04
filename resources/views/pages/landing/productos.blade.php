@@ -627,44 +627,19 @@
             return errorMessage;
         }
 
-        // Función de prueba para AJAX
-        function testAjax() {
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-            
-            fetch('/test-ajax', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: JSON.stringify({test: 'data'})
-            })
-            .then(response => {
-                console.log('Test AJAX - Status:', response.status);
-                console.log('Test AJAX - Content-Type:', response.headers.get('content-type'));
-                return response.json();
-            })
-            .then(data => {
-                console.log('Test AJAX - Success:', data);
-            })
-            .catch(error => {
-                console.error('Test AJAX - Error:', error);
-            });
-        }
+
 
         // Esperar a que el DOM esté listo
         document.addEventListener('DOMContentLoaded', function() {
-            // Probar AJAX primero
-            testAjax();
-            
             // Inicializar filtros
             initializeFilters();
 
             // Inicializar paginación
             initializePagination();
 
+            // Debuggear el estado inicial
+            debugDatabaseState();
+            
             // Cargar todos los productos al inicio
             setTimeout(() => {
                 cargarTodosLosProductos();
@@ -672,6 +647,10 @@
         });
 
         // Inicializar filtros
+        // Variable global para controlar el debounce de filtros
+        let filterDebounceTimeout;
+        let isFiltering = false;
+
         function initializeFilters() {
 
             // Filtros de categoría
@@ -697,7 +676,8 @@
                             limpiarFiltrosDinamicos();
                         }
                         
-                        aplicarFiltros();
+                        // Aplicar filtros con debounce
+                        aplicarFiltrosConDebounce();
                     });
                 });
             }
@@ -709,7 +689,7 @@
                     btn.addEventListener('click', function() {
                         brandBtns.forEach(b => b.classList.remove('active'));
                         this.classList.add('active');
-                        aplicarFiltros();
+                        aplicarFiltrosConDebounce();
                     });
                 });
             }
@@ -719,7 +699,7 @@
             if (checkboxes.length > 0) {
                 checkboxes.forEach(checkbox => {
                     checkbox.addEventListener('change', function() {
-                        aplicarFiltros();
+                        aplicarFiltrosConDebounce();
                     });
                 });
             }
@@ -739,7 +719,7 @@
 
                 // Aplicar filtros cuando se suelte el slider
                 priceRange.addEventListener('change', function() {
-                    aplicarFiltros();
+                    aplicarFiltrosConDebounce();
                 });
             }
 
@@ -747,7 +727,7 @@
             const sortSelect = document.getElementById('sortProducts');
             if (sortSelect) {
                 sortSelect.addEventListener('change', function() {
-                    aplicarFiltros();
+                    aplicarFiltrosConDebounce();
                 });
             }
 
@@ -762,7 +742,7 @@
                     clearTimeout(searchTimeout);
                     searchTimeout = setTimeout(() => {
                         if (searchValue.length >= 2 || searchValue.length === 0) {
-                            aplicarFiltros();
+                            aplicarFiltrosConDebounce();
                         }
                     }, 500);
                 });
@@ -770,7 +750,7 @@
                 // También aplicar filtros al hacer Enter
                 searchInput.addEventListener('keypress', function(e) {
                     if (e.key === 'Enter') {
-                        aplicarFiltros();
+                        aplicarFiltrosConDebounce();
                     }
                 });
             }
@@ -986,6 +966,32 @@
                     }
                 });
             });
+        }
+
+        // Función para verificar si hay filtros activos
+        function verificarFiltrosActivos() {
+            const categoriaActiva = document.querySelector('.category-btn.active');
+            const marcaActiva = document.querySelector('.brand-btn.active');
+            const checkboxesMarcados = document.querySelectorAll('.filter-checkbox:checked');
+            const activeDynamicFilterChips = document.querySelectorAll('.dynamic-filter-chip.active');
+            const priceRange = document.getElementById('priceRange');
+            const precioMaximoOriginal = {{ $precioMaximo }};
+            const precioActual = priceRange ? parseInt(priceRange.value) : precioMaximoOriginal;
+            const precioEstaFiltrado = precioUsuarioModificado && precioActual < precioMaximoOriginal;
+            const sortSelect = document.getElementById('sortProducts');
+            const ordenSeleccionado = sortSelect ? sortSelect.value : 'recommended';
+            const searchInput = document.getElementById('searchProducts');
+            const textoBusqueda = searchInput ? searchInput.value.trim() : '';
+            
+            return (
+                (categoriaActiva && categoriaActiva.dataset.category !== 'all') ||
+                (marcaActiva && marcaActiva.dataset.brand !== 'all') ||
+                checkboxesMarcados.length > 0 ||
+                precioEstaFiltrado ||
+                (textoBusqueda && textoBusqueda.length > 0) ||
+                (ordenSeleccionado && ordenSeleccionado !== 'recommended') ||
+                activeDynamicFilterChips.length > 0
+            );
         }
 
         // Función para obtener los filtros actuales
@@ -1215,116 +1221,182 @@
             console.log('=== REMOVIENDO FILTRO ===');
             console.log('Tipo:', tipo);
             console.log('Valor:', valor);
-            switch (tipo) {
-                case 'categoria':
-                    // Resetear a "Todas las categorías"
-                    const categoryBtns = document.querySelectorAll('.category-btn');
-                    categoryBtns.forEach(btn => btn.classList.remove('active'));
-                    const allCategoryBtn = document.querySelector('[data-category="all"]');
-                    if (allCategoryBtn) {
-                        allCategoryBtn.classList.add('active');
-                    }
-                    
-                    // Limpiar filtros dinámicos cuando se remueve la categoría
-                    limpiarFiltrosDinamicos();
-                    
-                    // Remover filtros dinámicos activos
-                    const dynamicFilterChips = document.querySelectorAll('.dynamic-filter-chip.active');
-                    dynamicFilterChips.forEach(chip => {
-                        chip.classList.remove('active');
-                    });
-                    break;
-                    
-                case 'marca':
-                    // Resetear a "Todas las marcas"
-                    const brandBtns = document.querySelectorAll('.brand-btn');
-                    brandBtns.forEach(btn => btn.classList.remove('active'));
-                    const allBrandBtn = document.querySelector('[data-brand="all"]');
-                    if (allBrandBtn) {
-                        allBrandBtn.classList.add('active');
-                    }
-                    break;
-                    
-                case 'estado':
-                    // Desmarcar checkbox específico
-                    const checkbox = document.querySelector(`input[value="${valor}"]`);
-                    if (checkbox) {
-                        checkbox.checked = false;
-                    }
-                    break;
-                    
-                case 'especificacion':
-                    // Remover filtro de especificación específico
-                    console.log('Removiendo especificación:', valor);
-                    
-                    // Parsear el valor que viene en formato "tipo:valor"
-                    const partes = valor.split(':');
-                    const tipoEspecificacion = partes[0];
-                    const valorEspecificacion = partes[1];
-                    
-                    console.log('Tipo especificación:', tipoEspecificacion);
-                    console.log('Valor especificación:', valorEspecificacion);
-                    
-                    // Buscar en filtros dinámicos
-                    const chip = document.querySelector(`[data-filter="${tipoEspecificacion}"][data-value="${valorEspecificacion}"]`);
-                    if (chip) {
-                        console.log('Encontrado filtro dinámico:', chip);
-                        chip.classList.remove('active');
-                    } else {
-                        console.log('No se encontró el filtro para remover');
-                    }
-                    break;
-                    
-                case 'precio':
-                    // Resetear precio
-                    const priceRange = document.getElementById('priceRange');
-                    if (priceRange) {
-                        priceRange.value = {{ $precioMaximo }};
-                        const maxPrice = document.getElementById('maxPrice');
-                        if (maxPrice) {
-                            maxPrice.textContent = '${{ number_format($precioMaximo, 0, ',', '.') }}';
-                        }
-                    }
-                    // Resetear la variable de control del precio
-                    precioUsuarioModificado = false;
-                    break;
-                    
-                case 'orden':
-                    // Resetear orden
-                    const sortSelect = document.getElementById('sortProducts');
-                    if (sortSelect) {
-                        sortSelect.value = 'recommended';
-                    }
-                    break;
-                    
-                case 'buscar':
-                    // Limpiar búsqueda
-                    const searchInput = document.getElementById('searchProducts');
-                    if (searchInput) {
-                        searchInput.value = '';
-                    }
-                    break;
+            
+            // Agregar delay para evitar múltiples llamadas
+            if (window.removingFilter) {
+                console.log('Ya se está removiendo un filtro, esperando...');
+                return;
             }
             
-            // Aplicar filtros después de remover
-            console.log('=== FIN REMOVIENDO FILTRO ===');
-            aplicarFiltros();
+            window.removingFilter = true;
+            
+            try {
+                switch (tipo) {
+                    case 'categoria':
+                        // Resetear a "Todas las categorías"
+                        const categoryBtns = document.querySelectorAll('.category-btn');
+                        categoryBtns.forEach(btn => btn.classList.remove('active'));
+                        const allCategoryBtn = document.querySelector('[data-category="all"]');
+                        if (allCategoryBtn) {
+                            allCategoryBtn.classList.add('active');
+                        }
+                        
+                        // Limpiar filtros dinámicos cuando se remueve la categoría
+                        limpiarFiltrosDinamicos();
+                        
+                        // Remover filtros dinámicos activos
+                        const dynamicFilterChips = document.querySelectorAll('.dynamic-filter-chip.active');
+                        dynamicFilterChips.forEach(chip => {
+                            chip.classList.remove('active');
+                        });
+                        break;
+                        
+                    case 'marca':
+                        // Resetear a "Todas las marcas"
+                        const brandBtns = document.querySelectorAll('.brand-btn');
+                        brandBtns.forEach(btn => btn.classList.remove('active'));
+                        const allBrandBtn = document.querySelector('[data-brand="all"]');
+                        if (allBrandBtn) {
+                            allBrandBtn.classList.add('active');
+                        }
+                        break;
+                        
+                    case 'estado':
+                        // Desmarcar checkbox específico
+                        const checkbox = document.querySelector(`input[value="${valor}"]`);
+                        if (checkbox) {
+                            checkbox.checked = false;
+                        }
+                        break;
+                        
+                    case 'especificacion':
+                        // Remover filtro de especificación específico
+                        console.log('Removiendo especificación:', valor);
+                        
+                        // Parsear el valor que viene en formato "tipo:valor"
+                        const partes = valor.split(':');
+                        const tipoEspecificacion = partes[0];
+                        const valorEspecificacion = partes[1];
+                        
+                        console.log('Tipo especificación:', tipoEspecificacion);
+                        console.log('Valor especificación:', valorEspecificacion);
+                        
+                        // Buscar en filtros dinámicos
+                        const chip = document.querySelector(`[data-filter="${tipoEspecificacion}"][data-value="${valorEspecificacion}"]`);
+                        if (chip) {
+                            console.log('Encontrado filtro dinámico:', chip);
+                            chip.classList.remove('active');
+                        } else {
+                            console.log('No se encontró el filtro para remover');
+                        }
+                        break;
+                        
+                    case 'precio':
+                        // Resetear precio
+                        const priceRange = document.getElementById('priceRange');
+                        if (priceRange) {
+                            priceRange.value = {{ $precioMaximo }};
+                            const maxPrice = document.getElementById('maxPrice');
+                            if (maxPrice) {
+                                maxPrice.textContent = '${{ number_format($precioMaximo, 0, ',', '.') }}';
+                            }
+                        }
+                        // Resetear la variable de control del precio
+                        precioUsuarioModificado = false;
+                        break;
+                        
+                    case 'orden':
+                        // Resetear orden
+                        const sortSelect = document.getElementById('sortProducts');
+                        if (sortSelect) {
+                            sortSelect.value = 'recommended';
+                        }
+                        break;
+                        
+                    case 'buscar':
+                        // Limpiar búsqueda
+                        const searchInput = document.getElementById('searchProducts');
+                        if (searchInput) {
+                            searchInput.value = '';
+                        }
+                        break;
+                }
+                
+                console.log('=== FIN REMOVIENDO FILTRO ===');
+                
+                // Verificar si realmente necesitamos aplicar filtros
+                const hayFiltrosActivos = verificarFiltrosActivos();
+                
+                if (hayFiltrosActivos) {
+                    // Si hay filtros activos, aplicar filtros
+                    setTimeout(() => {
+                        aplicarFiltrosConDebounce();
+                        window.removingFilter = false;
+                    }, 100);
+                } else {
+                    // Si no hay filtros activos, solo cargar todos los productos
+                    console.log('No hay filtros activos, cargando todos los productos');
+                    setTimeout(() => {
+                        cargarTodosLosProductos();
+                        window.removingFilter = false;
+                    }, 100);
+                }
+                
+            } catch (error) {
+                console.error('Error al remover filtro:', error);
+                window.removingFilter = false;
+            }
+        }
+
+        // Función para aplicar filtros con debounce
+        function aplicarFiltrosConDebounce() {
+            // Limpiar timeout anterior
+            clearTimeout(filterDebounceTimeout);
+            
+            // Si ya se están aplicando filtros, esperar
+            if (isFiltering) {
+                console.log('Ya se están aplicando filtros, esperando...');
+                return;
+            }
+            
+            // Aplicar filtros después de un pequeño delay
+            filterDebounceTimeout = setTimeout(() => {
+                console.log('=== APLICANDO FILTROS CON DEBOUNCE ===');
+                aplicarFiltros();
+            }, 300); // 300ms de debounce
         }
 
         // Función para aplicar filtros
         function aplicarFiltros() {
+            
+            // Prevenir múltiples llamadas simultáneas
+            if (isFiltering) {
+                console.log('Ya se están aplicando filtros, esperando...');
+                return;
+            }
+            
+            isFiltering = true;
 
             const loadingState = document.getElementById('loadingState');
             const productsSection = document.getElementById('productsSection');
 
             if (!loadingState || !productsSection) {
                 console.error('Elementos de carga no encontrados');
+                isFiltering = false;
                 return;
             }
 
             // Mostrar estado de carga
             loadingState.classList.remove('hidden');
             productsSection.classList.add('hidden');
+            
+            // Timeout de seguridad para evitar carga infinita
+            const loadingTimeout = setTimeout(() => {
+                console.warn('Timeout de carga alcanzado, reseteando estado');
+                loadingState.classList.add('hidden');
+                productsSection.classList.remove('hidden');
+                isFiltering = false;
+            }, 10000); // 10 segundos
 
             // Obtener token CSRF
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
@@ -1396,6 +1468,8 @@
 
             // Si no hay filtros activos, cargar todos los productos
             if (!hayFiltrosActivos) {
+                clearTimeout(loadingTimeout);
+                isFiltering = false;
                 cargarTodosLosProductos();
                 return;
             }
@@ -1456,19 +1530,34 @@
                         mostrarIndicadorFiltros();
                         
                         // Actualizar contador de productos
-                        actualizarContadorProductos(data.productos);
+                        if (data.productos) {
+                            actualizarContadorProductos(data.productos);
+                        } else if (data.html) {
+                            // Si no hay productos pero sí HTML, contar los elementos del DOM
+                            const productosEnDOM = document.querySelectorAll('.product-item');
+                            actualizarContadorProductos({
+                                total: productosEnDOM.length,
+                                data: Array.from(productosEnDOM),
+                                current_page: 1,
+                                last_page: 1
+                            });
+                        }
 
                         // Ocultar estado de carga
+                        clearTimeout(loadingTimeout);
                         loadingState.classList.add('hidden');
                         productsSection.classList.remove('hidden');
+                        isFiltering = false;
                     } else {
                         throw new Error(data.message || 'Error al filtrar productos');
                     }
                 })
                 .catch(error => {
                     console.error('Error al aplicar filtros:', error);
+                    clearTimeout(loadingTimeout);
                     loadingState.classList.add('hidden');
                     productsSection.classList.remove('hidden');
+                    isFiltering = false;
 
                     // Mostrar mensaje de error al usuario
                     productsSection.innerHTML = `
@@ -1492,8 +1581,26 @@
 
 
 
+        // Función para debuggear el estado de la base de datos
+        function debugDatabaseState() {
+            console.log('=== DEBUG BASE DE DATOS ===');
+            console.log('Productos en DOM al inicio:', document.querySelectorAll('.product-item').length);
+            console.log('Productos originales de Blade:', {{ $productos->count() }});
+            console.log('Total de productos:', {{ $productos->total() }});
+            console.log('Página actual:', {{ $productos->currentPage() }});
+            console.log('Última página:', {{ $productos->lastPage() }});
+            
+            // Verificar si hay productos en el HTML inicial
+            const productsGrid = document.getElementById('productsGrid');
+            if (productsGrid) {
+                console.log('Contenido del grid de productos:', productsGrid.innerHTML.substring(0, 300));
+            }
+        }
+
         // Función para cargar todos los productos (sin filtros)
         function cargarTodosLosProductos() {
+            console.log('=== CARGANDO TODOS LOS PRODUCTOS ===');
+            
             const loadingState = document.getElementById('loadingState');
             const productsSection = document.getElementById('productsSection');
 
@@ -1505,6 +1612,13 @@
             // Mostrar estado de carga
             loadingState.classList.remove('hidden');
             productsSection.classList.add('hidden');
+            
+            // Timeout de seguridad para evitar carga infinita
+            const loadingTimeout = setTimeout(() => {
+                console.warn('Timeout de carga en cargarTodosLosProductos, reseteando estado');
+                loadingState.classList.add('hidden');
+                productsSection.classList.remove('hidden');
+            }, 8000); // 8 segundos
 
             // Obtener token CSRF
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
@@ -1515,7 +1629,20 @@
                 return;
             }
 
-            // Realizar petición AJAX para obtener todos los productos
+            // Realizar petición AJAX para obtener TODOS los productos sin filtros
+            const filtrosVacios = {
+                categoria: 'all',
+                marca: 'all',
+                estado: [],
+                orden: 'recommended',
+                buscar: '',
+                precio_min: null,
+                precio_max: null
+            };
+            
+            console.log('=== SOLICITANDO TODOS LOS PRODUCTOS ===');
+            console.log('Filtros vacíos enviados:', filtrosVacios);
+            
             fetch('{{ route('productos.filtrados') }}', {
                 method: 'POST',
                 headers: {
@@ -1524,62 +1651,78 @@
                     'Accept': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
                 },
-                body: JSON.stringify({
-                    categoria: 'all',
-                    marca: 'all',
-                    estado: [],
-                    orden: 'recommended',
-                    buscar: ''
-                    // No incluir precio_max cuando no está filtrado
-                })
+                body: JSON.stringify(filtrosVacios)
             })
-                            .then(response => {
-                    console.log('Respuesta recibida:', response.status);
-                    console.log('Headers:', response.headers);
-                    
-                    // Verificar si la respuesta es JSON
-                    const contentType = response.headers.get('content-type');
-                    console.log('Content-Type:', contentType);
-                    
-                    if (!contentType || !contentType.includes('application/json')) {
-                        // Si no es JSON, obtener el texto para debug
-                        return response.text().then(text => {
-                            console.error('Respuesta no es JSON:', text.substring(0, 500));
-                            throw new Error('La respuesta del servidor no es JSON válido. Posible error del servidor.');
-                        });
-                    }
-                    
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
+            .then(response => {
+                console.log('Respuesta recibida:', response.status);
+                console.log('Headers:', response.headers);
+                
+                // Verificar si la respuesta es JSON
+                const contentType = response.headers.get('content-type');
+                console.log('Content-Type:', contentType);
+                
+                if (!contentType || !contentType.includes('application/json')) {
+                    // Si no es JSON, obtener el texto para debug
+                    return response.text().then(text => {
+                        console.error('Respuesta no es JSON:', text.substring(0, 500));
+                        throw new Error('La respuesta del servidor no es JSON válido. Posible error del servidor.');
+                    });
+                }
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
+                console.log('=== TODOS LOS PRODUCTOS RECIBIDOS ===');
+                console.log('Data completa:', data);
+                console.log('Success:', data.success);
+                console.log('Total productos:', data.productos ? data.productos.total : 'No disponible');
+                console.log('HTML recibido:', data.html ? data.html.substring(0, 300) + '...' : 'No HTML');
+                
                 if (data.success) {
-                    // Actualizar la sección de productos
+                    // Actualizar la sección de productos con TODOS los productos
                     productsSection.innerHTML = data.html;
 
                     // Reinicializar la paginación
                     initializePagination();
 
-                                            // Mostrar filtros activos (ocultará la sección si no hay filtros)
-                        mostrarFiltrosActivos();
-                        
-                        // Mostrar indicador de filtros aplicados
-                        mostrarIndicadorFiltros();
-                        
-                        // Actualizar contador de productos
+                    // Ocultar filtros activos (ya que no hay filtros)
+                    mostrarFiltrosActivos();
+                    
+                    // Ocultar indicador de filtros (ya que no hay filtros)
+                    mostrarIndicadorFiltros();
+                    
+                    // Actualizar contador con TODOS los productos
+                    if (data.productos) {
                         actualizarContadorProductos(data.productos);
+                        console.log('Contador actualizado con total:', data.productos.total);
+                    } else if (data.html) {
+                        // Si no hay productos pero sí HTML, contar los elementos del DOM
+                        const productosEnDOM = document.querySelectorAll('.product-item');
+                        console.log('Productos encontrados en DOM:', productosEnDOM.length);
+                        actualizarContadorProductos({
+                            total: productosEnDOM.length,
+                            data: Array.from(productosEnDOM),
+                            current_page: 1,
+                            last_page: 1
+                        });
+                    }
 
                     // Ocultar estado de carga
+                    clearTimeout(loadingTimeout);
                     loadingState.classList.add('hidden');
                     productsSection.classList.remove('hidden');
+                    
+                    console.log('✅ TODOS los productos cargados correctamente');
                 } else {
-                    throw new Error(data.message || 'Error al cargar productos');
+                    throw new Error(data.message || 'Error al cargar todos los productos');
                 }
             })
             .catch(error => {
-                console.error('Error al cargar productos:', error);
+                console.error('Error al cargar todos los productos:', error);
+                clearTimeout(loadingTimeout);
                 loadingState.classList.add('hidden');
                 productsSection.classList.remove('hidden');
 
@@ -1590,7 +1733,7 @@
                         <i class="fas fa-exclamation-triangle"></i>
                     </div>
                     <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-2">
-                        Error al cargar productos
+                        Error al cargar todos los productos
                     </h3>
                     <p class="text-gray-600 dark:text-gray-400">
                         ${sanitizeErrorMessage(error)}

@@ -10,77 +10,566 @@
 
     @push('styles')
         <style>
-            /* Image Zoom Modal Styles */
+            /* ===== NUEVO ESTILO CORPORATIVO 4G MÓVIL ===== */
+            
+            /* Variables CSS personalizadas */
+            :root {
+                --4g-primary: #2563eb;
+                --4g-primary-dark: #1d4ed8;
+                --4g-primary-light: #3b82f6;
+                --4g-secondary: #1e40af;
+                --4g-accent: #f59e0b;
+                --4g-success: #10b981;
+                --4g-warning: #f59e0b;
+                --4g-danger: #ef4444;
+                --4g-gray-light: #f8fafc;
+                --4g-gray-dark: #1e293b;
+                --4g-text-primary: #1e293b;
+                --4g-text-secondary: #64748b;
+                --4g-border: #e2e8f0;
+                --4g-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.1);
+                --4g-shadow-hover: 0 20px 25px -5px rgba(37, 99, 235, 0.15);
+            }
+
+            /* Modo oscuro */
+            .dark {
+                --4g-gray-light: #1e293b;
+                --4g-gray-dark: #0f172a;
+                --4g-text-primary: #f1f5f9;
+                --4g-text-secondary: #94a3b8;
+                --4g-border: #475569;
+            }
+
+            /* Product Gallery Styles - Modern Corporate Design */
+            .product-gallery-container {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                width: 100% !important;
+                gap: 2rem !important;
+                max-width: 100% !important;
+                overflow: hidden !important;
+                position: relative !important;
+            }
+
+            /* Main Image Container - Modern Corporate Design */
+            .main-image-wrapper {
+                position: relative !important;
+                width: 100% !important;
+                aspect-ratio: 4/3 !important;
+                overflow: hidden !important;
+                border-radius: 1.5rem !important;
+                min-height: 350px !important;
+                background: linear-gradient(135deg, var(--4g-gray-light), #ffffff) !important;
+                box-shadow: var(--4g-shadow) !important;
+                border: 2px solid var(--4g-border) !important;
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            }
+
+            .main-image-wrapper:hover {
+                transform: translateY(-5px) !important;
+                box-shadow: var(--4g-shadow-hover) !important;
+                border-color: var(--4g-primary) !important;
+            }
+
+            .main-image-wrapper img {
+                width: 100% !important;
+                height: 100% !important;
+                object-fit: cover !important;
+                object-position: center !important;
+                border-radius: 1rem !important;
+                transition: all 0.3s ease-in-out !important;
+                display: block !important;
+            }
+
+            /* Dark mode support for main image */
+            .dark .main-image-wrapper {
+                background: #1f2937 !important;
+            }
+
+            /* Thumbnail Gallery - Horizontal Layout */
+            .thumbnail-gallery-wrapper {
+                padding: 1.25rem 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                overflow: hidden !important;
+            }
+
+            .thumbnail-grid {
+                display: flex !important;
+                flex-direction: row !important;
+                flex-wrap: nowrap !important;
+                gap: 1rem !important;
+                overflow-x: auto !important;
+                padding: 0.5rem 0 !important;
+                scrollbar-width: thin !important;
+                scrollbar-color: #cbd5e1 #f1f5f9 !important;
+                justify-content: flex-start !important;
+                align-items: center !important;
+                scroll-behavior: smooth !important;
+                -webkit-overflow-scrolling: touch !important;
+            }
+
+            .thumbnail-grid::-webkit-scrollbar {
+                height: 4px !important;
+            }
+
+            .thumbnail-grid::-webkit-scrollbar-track {
+                background: #f1f5f9 !important;
+                border-radius: 2px !important;
+            }
+
+            .thumbnail-grid::-webkit-scrollbar-thumb {
+                background: #cbd5e1 !important;
+                border-radius: 2px !important;
+            }
+
+            .thumbnail-grid::-webkit-scrollbar-thumb:hover {
+                background: #94a3b8 !important;
+            }
+
+            /* Thumbnail Items - Modern Corporate Design */
+            .thumbnail-item {
+                flex-shrink: 0 !important;
+                flex-grow: 0 !important;
+                object-fit: cover !important;
+                border-radius: 1rem !important;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                border: 3px solid transparent !important;
+                cursor: pointer !important;
+                background: linear-gradient(135deg, var(--4g-gray-light), #ffffff) !important;
+                scroll-snap-align: start !important;
+                position: relative !important;
+                overflow: hidden !important;
+            }
+
+            .thumbnail-item::before {
+                content: '' !important;
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                bottom: 0 !important;
+                background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), transparent) !important;
+                opacity: 0 !important;
+                transition: opacity 0.3s ease !important;
+            }
+
+            /* Dark mode support for thumbnails */
+            .dark .thumbnail-item {
+                background: #374151 !important;
+            }
+
+            .thumbnail-item:hover {
+                transform: scale(1.1) !important;
+                border-color: var(--4g-primary) !important;
+                box-shadow: 0 8px 25px rgba(37, 99, 235, 0.25) !important;
+            }
+
+            .thumbnail-item:hover::before {
+                opacity: 1 !important;
+            }
+
+            .thumbnail-item.border-blue-500 {
+                border-color: var(--4g-primary) !important;
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3) !important;
+                transform: scale(1.05) !important;
+            }
+
+            .thumbnail-item.border-blue-500::before {
+                opacity: 1 !important;
+            }
+
+            /* Ensure thumbnails are always horizontal */
+            .thumbnail-grid {
+                flex-direction: row !important;
+                flex-wrap: nowrap !important;
+                overflow-x: auto !important;
+                scroll-snap-type: x mandatory !important;
+            }
+
+            /* Ensure thumbnail images display correctly */
+            .thumbnail-item img {
+                width: 100% !important;
+                height: 100% !important;
+                object-fit: cover !important;
+                border-radius: 0.75rem !important;
+                display: block !important;
+                max-width: none !important;
+                max-height: none !important;
+                min-width: 0 !important;
+                min-height: 0 !important;
+            }
+
+            /* Override any global img styles that might interfere */
+            .thumbnail-grid .thumbnail-item {
+                max-width: none !important;
+                min-width: 0 !important;
+                box-sizing: border-box !important;
+            }
+
+            /* Force thumbnail sizing - override any conflicting styles */
+            .product-gallery-container .thumbnail-item {
+                width: 5rem !important;
+                height: 5rem !important;
+                max-width: none !important;
+                max-height: none !important;
+                min-width: 0 !important;
+                min-height: 0 !important;
+            }
+
+            /* Responsive thumbnail sizing with higher specificity */
+            @media (max-width: 640px) {
+                .product-gallery-container .thumbnail-item {
+                    width: 4rem !important;
+                    height: 4rem !important;
+                }
+            }
+
+            @media (min-width: 641px) and (max-width: 768px) {
+                .product-gallery-container .thumbnail-item {
+                    width: 4.5rem !important;
+                    height: 4.5rem !important;
+                }
+            }
+
+            @media (min-width: 769px) and (max-width: 1024px) {
+                .product-gallery-container .thumbnail-item {
+                    width: 5rem !important;
+                    height: 5rem !important;
+                }
+            }
+
+            @media (min-width: 1025px) {
+                .product-gallery-container .thumbnail-item {
+                    width: 5.5rem !important;
+                    height: 5.5rem !important;
+                }
+            }
+
+            /* Pagination Dots - Modern Corporate Design */
+            .pagination-dots {
+                display: flex !important;
+                justify-content: center !important;
+                gap: 0.75rem !important;
+                width: 100% !important;
+                margin-top: 1rem !important;
+            }
+
+            .pagination-dots > div {
+                width: 0.75rem !important;
+                height: 0.75rem !important;
+                border-radius: 50% !important;
+                cursor: pointer !important;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                position: relative !important;
+                overflow: hidden !important;
+            }
+
+            .pagination-dots > div::before {
+                content: '' !important;
+                position: absolute !important;
+                top: 50% !important;
+                left: 50% !important;
+                width: 0% !important;
+                height: 0% !important;
+                background: var(--4g-primary) !important;
+                border-radius: 50% !important;
+                transform: translate(-50%, -50%) !important;
+                transition: all 0.3s ease !important;
+            }
+
+            .pagination-dots > div.bg-blue-600 {
+                background-color: var(--4g-primary) !important;
+                transform: scale(1.2) !important;
+                box-shadow: 0 0 10px rgba(37, 99, 235, 0.5) !important;
+            }
+
+            .pagination-dots > div.bg-blue-600::before {
+                width: 100% !important;
+                height: 100% !important;
+            }
+
+            .pagination-dots > div.bg-gray-300 {
+                background-color: var(--4g-border) !important;
+            }
+
+            .pagination-dots > div.bg-gray-600 {
+                background-color: var(--4g-text-secondary) !important;
+            }
+
+            .pagination-dots > div:hover {
+                transform: scale(1.1) !important;
+                background-color: var(--4g-primary-light) !important;
+            }
+
+            /* Responsive Design - Modern Corporate Design */
+            @media (max-width: 640px) {
+                .main-image-wrapper {
+                    aspect-ratio: 1/1 !important;
+                    min-height: 280px !important;
+                    border-radius: 1rem !important;
+                }
+                
+                .thumbnail-item {
+                    width: 4.5rem !important;
+                    height: 4.5rem !important;
+                    border-radius: 0.75rem !important;
+                }
+
+                .thumbnail-grid {
+                    gap: 1rem !important;
+                    padding: 0.5rem 0 !important;
+                }
+
+                .pagination-dots > div {
+                    width: 0.5rem !important;
+                    height: 0.5rem !important;
+                }
+            }
+
+            @media (min-width: 641px) and (max-width: 768px) {
+                .main-image-wrapper {
+                    aspect-ratio: 5/4 !important;
+                    min-height: 320px !important;
+                }
+
+                .thumbnail-grid {
+                    gap: 1.25rem !important;
+                }
+
+                .pagination-dots > div {
+                    width: 0.625rem !important;
+                    height: 0.625rem !important;
+                }
+            }
+
+            @media (min-width: 769px) and (max-width: 1024px) {
+                .main-image-wrapper {
+                    aspect-ratio: 4/3 !important;
+                    min-height: 380px !important;
+                }
+
+                .thumbnail-item {
+                    width: 5.5rem !important;
+                    height: 5.5rem !important;
+                }
+            }
+
+            @media (min-width: 1025px) {
+                .main-image-wrapper {
+                    aspect-ratio: 3/2 !important;
+                    min-height: 420px !important;
+                }
+
+                .thumbnail-item {
+                    width: 6rem !important;
+                    height: 6rem !important;
+                }
+            }
+
+            /* Ensure horizontal scrolling works on all devices */
+            @media (max-width: 768px) {
+                .thumbnail-grid {
+                    -webkit-overflow-scrolling: touch !important;
+                    scrollbar-width: none !important;
+                }
+                
+                .thumbnail-grid::-webkit-scrollbar {
+                    display: none !important;
+                }
+            }
+
+            /* Touch-friendly interactions for mobile */
+            @media (max-width: 768px) {
+                .thumbnail-item {
+                    touch-action: manipulation !important;
+                }
+                
+                .main-image-wrapper {
+                    touch-action: pan-x pan-y !important;
+                }
+            }
+
+            /* Focus states for accessibility */
+            .thumbnail-item:focus {
+                outline: 2px solid #3b82f6 !important;
+                outline-offset: 2px !important;
+            }
+
+            /* Image Zoom Modal Styles - Modern Corporate Design */
             #imageZoomModal {
-                backdrop-filter: blur(8px);
+                backdrop-filter: blur(12px);
+                background: rgba(15, 23, 42, 0.95) !important;
             }
 
             #zoomImage {
-                transition: transform 0.3s ease-in-out;
-                cursor: grab;
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                cursor: grab !important;
+                border-radius: 1rem !important;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
             }
 
             #zoomImage:active {
-                cursor: grabbing;
+                cursor: grabbing !important;
             }
 
             /* Smooth transitions for modal buttons */
             #imageZoomModal button {
-                transition: all 0.2s ease-in-out;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                background: rgba(255, 255, 255, 0.1) !important;
+                backdrop-filter: blur(10px) !important;
+                border: 1px solid rgba(255, 255, 255, 0.2) !important;
             }
 
             #imageZoomModal button:hover {
-                transform: scale(1.1);
+                transform: scale(1.15) !important;
+                background: rgba(255, 255, 255, 0.2) !important;
+                border-color: var(--4g-primary) !important;
+                box-shadow: 0 0 20px rgba(37, 99, 235, 0.5) !important;
             }
 
-            /* Loading animation for images */
+            /* Loading animation for images - Modern Corporate Design */
             .image-loading {
-                position: relative;
+                position: relative !important;
             }
 
             .image-loading::before {
-                content: '';
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                width: 40px;
-                height: 40px;
-                margin: -20px 0 0 -20px;
-                border: 4px solid #f3f3f3;
-                border-top: 4px solid #3B82F6;
-                border-radius: 50%;
-                animation: spin 1s linear infinite;
+                content: '' !important;
+                position: absolute !important;
+                top: 50% !important;
+                left: 50% !important;
+                width: 50px !important;
+                height: 50px !important;
+                margin: -25px 0 0 -25px !important;
+                border: 4px solid rgba(37, 99, 235, 0.1) !important;
+                border-top: 4px solid var(--4g-primary) !important;
+                border-radius: 50% !important;
+                animation: spin 1s linear infinite !important;
+                box-shadow: 0 0 20px rgba(37, 99, 235, 0.3) !important;
+            }
+
+            .image-loading::after {
+                content: '' !important;
+                position: absolute !important;
+                top: 50% !important;
+                left: 50% !important;
+                width: 30px !important;
+                height: 30px !important;
+                margin: -15px 0 0 -15px !important;
+                border: 3px solid transparent !important;
+                border-top: 3px solid var(--4g-accent) !important;
+                border-radius: 50% !important;
+                animation: spin 0.8s linear infinite reverse !important;
             }
 
             @keyframes spin {
                 0% {
-                    transform: rotate(0deg);
+                    transform: rotate(0deg) !important;
                 }
-
                 100% {
-                    transform: rotate(360deg);
+                    transform: rotate(360deg) !important;
                 }
             }
 
-            /* Responsive zoom controls */
+            /* Pulse animation for loading states */
+            @keyframes pulse-4g {
+                0%, 100% {
+                    opacity: 1 !important;
+                    transform: scale(1) !important;
+                }
+                50% {
+                    opacity: 0.7 !important;
+                    transform: scale(1.05) !important;
+                }
+            }
+
+            .pulse-4g {
+                animation: pulse-4g 2s ease-in-out infinite !important;
+            }
+
+            /* Responsive zoom controls - Modern Corporate Design */
             @media (max-width: 768px) {
                 #imageZoomModal .absolute.top-4.left-4 {
-                    top: 1rem;
-                    left: 1rem;
+                    top: 1rem !important;
+                    left: 1rem !important;
                 }
 
                 #imageZoomModal .absolute.top-4.right-4 {
-                    top: 1rem;
-                    right: 1rem;
+                    top: 1rem !important;
+                    right: 1rem !important;
                 }
 
                 #imageZoomModal .absolute.left-4 {
-                    left: 1rem;
+                    left: 1rem !important;
                 }
 
                 #imageZoomModal .absolute.right-4 {
-                    right: 1rem;
+                    right: 1rem !important;
                 }
+
+                #imageZoomModal button {
+                    padding: 0.75rem !important;
+                    font-size: 0.875rem !important;
+                }
+
+                #zoomImage {
+                    border-radius: 0.75rem !important;
+                }
+            }
+
+            /* Enhanced touch interactions for mobile */
+            @media (max-width: 768px) {
+                .thumbnail-item {
+                    touch-action: manipulation !important;
+                }
+                
+                .main-image-wrapper {
+                    touch-action: pan-x pan-y !important;
+                }
+
+                .pagination-dots > div {
+                    touch-action: manipulation !important;
+                }
+            }
+
+            /* Focus states for accessibility */
+            .thumbnail-item:focus {
+                outline: 3px solid var(--4g-primary) !important;
+                outline-offset: 3px !important;
+                transform: scale(1.05) !important;
+            }
+
+            .pagination-dots > div:focus {
+                outline: 2px solid var(--4g-primary) !important;
+                outline-offset: 2px !important;
+            }
+
+            /* Smooth scrolling enhancements */
+            .thumbnail-grid {
+                scroll-behavior: smooth !important;
+                -webkit-overflow-scrolling: touch !important;
+                scrollbar-width: thin !important;
+                scrollbar-color: var(--4g-primary) var(--4g-border) !important;
+            }
+
+            .thumbnail-grid::-webkit-scrollbar {
+                height: 6px !important;
+            }
+
+            .thumbnail-grid::-webkit-scrollbar-track {
+                background: var(--4g-border) !important;
+                border-radius: 3px !important;
+            }
+
+            .thumbnail-grid::-webkit-scrollbar-thumb {
+                background: var(--4g-primary) !important;
+                border-radius: 3px !important;
+                transition: background 0.3s ease !important;
+            }
+
+            .thumbnail-grid::-webkit-scrollbar-thumb:hover {
+                background: var(--4g-primary-dark) !important;
             }
         </style>
     @endpush
@@ -117,35 +606,73 @@
         </nav>
     </div>
 
-    <!-- Hero Section -->
-    <section class="relative bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 text-white overflow-hidden">
-        <!-- Elementos decorativos -->
-        <div class="absolute top-0 left-0 w-72 h-72 bg-white opacity-10 rounded-full -translate-x-36 -translate-y-36"></div>
-        <div class="absolute top-0 right-0 w-96 h-96 bg-white opacity-5 rounded-full translate-x-48 -translate-y-48"></div>
-        <div class="absolute bottom-0 left-1/2 w-80 h-80 bg-white opacity-10 rounded-full -translate-x-40 translate-y-40">
+    <!-- Hero Section - Modern Corporate Design -->
+    <section class="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white overflow-hidden py-16">
+        <!-- Elementos decorativos corporativos -->
+        <div class="absolute top-0 left-0 w-80 h-80 bg-white opacity-10 rounded-full -translate-x-40 -translate-y-40 animate-pulse"></div>
+        <div class="absolute top-0 right-0 w-96 h-96 bg-white opacity-5 rounded-full translate-x-48 -translate-y-48 animate-pulse" style="animation-delay: 1s;"></div>
+        <div class="absolute bottom-0 left-1/2 w-72 h-72 bg-white opacity-10 rounded-full -translate-x-36 translate-y-36 animate-pulse" style="animation-delay: 2s;"></div>
+        
+        <!-- Patrón de fondo corporativo -->
+        <div class="absolute inset-0 opacity-5">
+            <div class="absolute inset-0" style="background-image: radial-gradient(circle at 25% 25%, white 2px, transparent 2px), radial-gradient(circle at 75% 75%, white 2px, transparent 2px); background-size: 50px 50px;"></div>
+        </div>
+        
+        <!-- Contenido del hero -->
+        <div class="relative z-10 container mx-auto px-4 text-center">
+            <div class="max-w-4xl mx-auto">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+                    <span class="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+                        {{ $producto->nombre_producto }}
+                    </span>
+                </h1>
+                <p class="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
+                    Descubre la excelencia en tecnología móvil con nuestro producto premium
+                </p>
+                
+                <!-- Indicadores de calidad -->
+                <div class="flex flex-wrap justify-center gap-6 mb-8">
+                    <div class="flex items-center space-x-2 bg-white bg-opacity-10 backdrop-blur-sm px-4 py-2 rounded-full">
+                        <i class="fas fa-shield-alt text-blue-200"></i>
+                        <span class="text-sm font-medium">Garantía Oficial</span>
+                    </div>
+                    <div class="flex items-center space-x-2 bg-white bg-opacity-10 backdrop-blur-sm px-4 py-2 rounded-full">
+                        <i class="fas fa-truck text-blue-200"></i>
+                        <span class="text-sm font-medium">Envío Gratis</span>
+                    </div>
+                    <div class="flex items-center space-x-2 bg-white bg-opacity-10 backdrop-blur-sm px-4 py-2 rounded-full">
+                        <i class="fas fa-headset text-blue-200"></i>
+                        <span class="text-sm font-medium">Soporte 24/7</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
-    <!-- Product Details Section -->
-    <section id="producto" class="py-20 bg-white dark:bg-gray-900">
+    <!-- Product Details Section - Modern Corporate Design -->
+    <section id="producto" class="py-20 bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900/20">
         <div class="container mx-auto px-4">
             <div class="max-w-7xl mx-auto">
                 <!-- Product Card -->
                 <div
-                    class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-600 overflow-hidden transition-all duration-300 hover:shadow-2xl">
+                    class="bg-gradient-to-br from-white via-gray-50 to-blue-50 dark:from-gray-800 dark:via-gray-700 dark:to-blue-900/20 rounded-3xl shadow-2xl border-2 border-blue-100 dark:border-blue-800/30 overflow-hidden transition-all duration-500 hover:shadow-3xl hover:scale-[1.02] relative">
+                    
+                    <!-- Elemento decorativo superior -->
+                    <div class="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-blue-400 to-indigo-500 opacity-10 rounded-full -translate-x-16 -translate-y-16"></div>
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-purple-400 to-pink-500 opacity-10 rounded-full translate-x-12 -translate-y-12"></div>
                     <div class="grid lg:grid-cols-2 gap-12 p-8">
 
                         <!-- Left Section - Product Images -->
-                        <div class="product-gallery space-y-6">
-                            <!-- Main Image -->
-                            <div class="relative group">
+                        <div class="product-gallery-container group">
+                            <!-- Main Image Container -->
+                            <div class="main-image-wrapper">
                                 @if ($producto->imagenes->first())
                                     <img id="mainImage"
-                                        src="{{ Storage::url($producto->imagenes->first()->ruta_imagen) }}"
+                                        src="{{ $producto->imagenes->first()->url_completa }}"
                                         alt="{{ $producto->nombre_producto }}"
-                                        class="main-image w-full h-64 sm:h-80 md:h-96 lg:h-[28rem] xl:h-[32rem] object-contain bg-gray-50 dark:bg-gray-800 rounded-xl shadow-lg group-hover:scale-105 transition-transform duration-300">
+                                        class="main-image bg-gray-50 dark:bg-gray-800 shadow-lg group-hover:scale-105">
                                 @else
-                                    <div id="mainImage" class="w-full h-64 sm:h-80 md:h-96 lg:h-[28rem] xl:h-[32rem] bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-xl shadow-lg flex items-center justify-center">
+                                    <div id="mainImage" class="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-xl shadow-lg flex items-center justify-center">
                                         <i class="fas fa-image text-6xl text-gray-400 dark:text-gray-500"></i>
                                     </div>
                                 @endif
@@ -167,37 +694,40 @@
                                 </div>
                             </div>
 
-                            <!-- Thumbnail Gallery -->
-                            <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 sm:gap-3">
-                                @php
-                                    $imagenes = $producto->imagenes;
-                                    $totalImagenes = $imagenes->count();
-                                @endphp
+                            <!-- Thumbnail Gallery - Fixed below main image -->
+                            <div class="thumbnail-gallery-wrapper">
+                                <div class="thumbnail-grid">
+                                    @php
+                                        $imagenes = $producto->imagenes;
+                                        $totalImagenes = $imagenes->count();
+                                    @endphp
 
-                                @for ($i = 0; $i < 5; $i++)
-                                    @if ($i < $totalImagenes)
-                                        @php
-                                            $imagen = $imagenes[$i];
-                                            $imagenUrl = Storage::url($imagen->ruta_imagen);
-                                            $imagenPrincipal = Storage::url($imagen->ruta_imagen);
-                                        @endphp
-                                        <img src="{{ $imagenUrl }}"
-                                            alt="{{ $producto->nombre_producto }} - Vista {{ $i + 1 }}"
-                                            class="thumbnail w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 object-contain bg-gray-100 dark:bg-gray-700 rounded-lg cursor-pointer hover:scale-110 transition-transform duration-200 border-2 {{ $i === 0 ? 'border-blue-500' : 'border-transparent hover:border-blue-500' }}"
-                                            onclick="changeMainImage(this, '{{ $imagenPrincipal }}')">
-                                    @else
-                                        <div class="thumbnail w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-lg cursor-pointer hover:scale-110 transition-transform duration-200 border-2 border-transparent hover:border-blue-500 flex items-center justify-center">
-                                            <i class="fas fa-image text-gray-400 dark:text-gray-500 text-sm"></i>
-                                        </div>
-                                    @endif
-                                @endfor
+                                    @for ($i = 0; $i < 5; $i++)
+                                        @if ($i < $totalImagenes)
+                                            @php
+                                                $imagen = $imagenes[$i];
+                                                $imagenUrl = $imagen->url_completa;
+                                                $imagenPrincipal = $imagen->url_completa;
+                                            @endphp
+                                            <img src="{{ $imagenUrl }}"
+                                                alt="{{ $producto->nombre_producto }} - Vista {{ $i + 1 }}"
+                                                class="thumbnail-item {{ $i === 0 ? 'border-blue-500' : '' }}"
+                                                onclick="changeMainImage(this, '{{ $imagenPrincipal }}')">
+                                        @else
+                                            <div class="thumbnail-item flex items-center justify-center">
+                                                <i class="fas fa-image text-gray-400 dark:text-gray-500 text-sm"></i>
+                                            </div>
+                                        @endif
+                                    @endfor
+                                </div>
                             </div>
 
                             <!-- Pagination Dots -->
-                            <div class="flex justify-center space-x-2">
+                            <div class="pagination-dots">
                                 @for ($i = 1; $i <= 5; $i++)
                                     <div
-                                        class="w-2 h-2 rounded-full {{ $i === 1 ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600' }} cursor-pointer hover:bg-blue-500 transition-colors duration-200">
+                                        class="w-2 h-2 rounded-full {{ $i === 1 ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600' }} cursor-pointer hover:bg-blue-500 transition-colors duration-200"
+                                        >
                                     </div>
                                 @endfor
                             </div>
@@ -206,86 +736,132 @@
                         <!-- Right Section - Product Details -->
                         <div class="space-y-6">
 
-                            <!-- Action Icons -->
+                            <!-- Action Icons - Modern Corporate Design -->
                             <div class="flex items-center space-x-4">
                                 <button
-                                    class="p-3 rounded-full bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 hover:from-red-100 hover:to-pink-100 dark:hover:from-red-900/30 dark:hover:to-pink-900/30 transition-all duration-300 group">
+                                    class="p-4 rounded-2xl bg-gradient-to-r from-red-50 via-pink-50 to-red-100 dark:from-red-900/20 dark:via-pink-900/20 dark:to-red-800/30 hover:from-red-100 hover:via-pink-100 hover:to-red-200 dark:hover:from-red-800/30 dark:hover:via-pink-800/30 dark:hover:to-red-700/40 transition-all duration-300 group shadow-lg hover:shadow-xl border border-red-200 dark:border-red-700/30">
                                     <i
-                                        class="fas fa-heart text-red-500 group-hover:scale-110 transition-transform duration-200"></i>
+                                        class="fas fa-heart text-red-500 group-hover:scale-110 transition-transform duration-200 group-hover:text-red-600"></i>
                                 </button>
                                 <button
-                                    class="p-3 rounded-full bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 hover:from-blue-100 hover:to-indigo-100 dark:hover:from-blue-900/30 dark:hover:to-indigo-900/30 transition-all duration-300 group">
+                                    class="p-4 rounded-2xl bg-gradient-to-r from-blue-50 via-indigo-50 to-blue-100 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-blue-800/30 hover:from-blue-100 hover:via-indigo-100 hover:to-blue-200 dark:hover:from-blue-800/30 dark:hover:via-indigo-800/30 dark:hover:to-blue-700/40 transition-all duration-300 group shadow-lg hover:shadow-xl border border-blue-200 dark:border-blue-700/30">
                                     <i
-                                        class="fas fa-share-alt text-blue-500 group-hover:scale-110 transition-transform duration-200"></i>
+                                        class="fas fa-share-alt text-blue-500 group-hover:scale-110 transition-transform duration-200 group-hover:text-blue-600"></i>
                                 </button>           
                             </div>
-                            <!-- Product Title -->
-                            <div>
-                                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white leading-tight mb-2">
-                                    {{ $producto->nombre_producto }}
-                                </h1>
-                                <p class="text-gray-600 dark:text-gray-400">
-                                    <strong>SKU:</strong> {{ $producto->sku ?? 'N/A' }}
-                                </p>
-                            </div>
-
-                            <!-- Pricing -->
-                            <div class="space-y-3">
-                                <div class="flex items-baseline space-x-3">
-                                    <span class="text-4xl font-bold text-blue-600 dark:text-blue-400">
-                                        ${{ number_format($producto->precio ?? 0, 0, ',', '.') }}
-                                    </span>
-                                    @if (isset($producto->precio_anterior) && $producto->precio_anterior > $producto->precio)
-                                        <span class="text-xl text-gray-500 line-through">
-                                            ${{ number_format($producto->precio_anterior, 0, ',', '.') }}
+                            <!-- Product Title - Modern Corporate Design -->
+                            <div class="relative">
+                                <div class="absolute -left-4 top-0 w-1 h-full bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full"></div>
+                                <div class="pl-6">
+                                    <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-700 dark:from-white dark:via-blue-200 dark:to-indigo-300 bg-clip-text text-transparent leading-tight mb-3">
+                                        {{ $producto->nombre_producto }}
+                                    </h1>
+                                    <div class="flex items-center space-x-4">
+                                        <span class="inline-flex items-center px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-medium rounded-full border border-blue-200 dark:border-blue-700/30">
+                                            <i class="fas fa-barcode mr-2"></i>
+                                            SKU: {{ $producto->sku ?? 'N/A' }}
                                         </span>
-                                        <span
-                                            class="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-2 py-1 rounded-full text-sm font-medium">
-                                            -{{ round((($producto->precio_anterior - $producto->precio) / $producto->precio_anterior) * 100) }}%
+                                        <span class="inline-flex items-center px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-sm font-medium rounded-full border border-green-200 dark:border-green-700/30">
+                                            <i class="fas fa-check-circle mr-2"></i>
+                                            Disponible
                                         </span>
-                                    @endif
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Selected Variant Info -->
+                            <!-- Pricing - Modern Corporate Design -->
+                            <div class="space-y-4">
+                                <div class="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-purple-900/20 rounded-2xl p-6 border border-blue-200 dark:border-blue-700/30">
+                                    <div class="flex items-baseline space-x-4">
+                                        <div class="relative">
+                                            <span class="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                                                ${{ number_format($producto->precio ?? 0, 0, ',', '.') }}
+                                            </span>
+                                            <div class="absolute -top-2 -right-2 w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
+                                        </div>
+                                        @if (isset($producto->precio_anterior) && $producto->precio_anterior > $producto->precio)
+                                            <div class="flex flex-col items-start space-y-2">
+                                                <span class="text-xl text-gray-500 line-through">
+                                                    ${{ number_format($producto->precio_anterior, 0, ',', '.') }}
+                                                </span>
+                                                <span
+                                                    class="bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                                                    -{{ round((($producto->precio_anterior - $producto->precio) / $producto->precio_anterior) * 100) }}% OFF
+                                                </span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    
+                                    <!-- Información adicional de precio -->
+                                    <div class="mt-4 pt-4 border-t border-blue-200 dark:border-blue-700/30">
+                                        <div class="flex items-center justify-between text-sm">
+                                            <span class="text-gray-600 dark:text-gray-400">Envío:</span>
+                                            <span class="text-green-600 dark:text-green-400 font-semibold">GRATIS</span>
+                                        </div>
+                                        <div class="flex items-center justify-between text-sm">
+                                            <span class="text-gray-600 dark:text-gray-400">Garantía:</span>
+                                            <span class="text-blue-600 dark:text-blue-400 font-semibold">1 Año</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Selected Variant Info - Modern Corporate Design -->
                             <div
-                                class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-6 h-6 rounded-full border-2 border-blue-500" id="selectedColorPreview"
-                                        style="background-color: {{ $producto->variantes->first() ? $producto->variantes->first()->codigo_color ?? '#000000' : '#000000' }};">
+                                class="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-purple-900/20 rounded-2xl p-6 border-2 border-blue-200 dark:border-blue-700/30 shadow-lg relative overflow-hidden">
+                                
+                                <!-- Elemento decorativo -->
+                                <div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-400 to-indigo-500 opacity-10 rounded-full translate-x-10 -translate-y-10"></div>
+                                
+                                <div class="flex items-center space-x-4 relative z-10">
+                                    <div class="relative">
+                                        <div class="w-8 h-8 rounded-full border-3 border-blue-500 shadow-lg" id="selectedColorPreview"
+                                            style="background-color: {{ $producto->variantes->first() ? $producto->variantes->first()->codigo_color ?? '#000000' : '#000000' }};">
+                                        </div>
+                                        <div class="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white animate-pulse"></div>
                                     </div>
                                     <div class="flex-1">
-                                        <p class="text-sm font-medium text-blue-900 dark:text-blue-100">
-                                            Color seleccionado: <span
-                                                id="selectedColorText">{{ $producto->variantes->first() ? $producto->variantes->first()->nombre : 'No disponible' }}</span>
-                                        </p>
-                                        <p class="text-xs text-blue-700 dark:text-blue-300" id="selectedColorStock">
-                                            Stock disponible:
-                                            {{ $producto->variantes->first() ? $producto->variantes->first()->stock : 0 }}
-                                            unidades
-                                        </p>
-                                        <p class="text-xs text-blue-600 dark:text-blue-400" id="selectedColorPrice"
+                                        <div class="flex items-center space-x-2 mb-2">
+                                            <i class="fas fa-palette text-blue-500"></i>
+                                            <p class="text-sm font-bold text-blue-900 dark:text-blue-100">
+                                                Color: <span
+                                                    id="selectedColorText" class="text-indigo-700 dark:text-indigo-300">{{ $producto->variantes->first() ? $producto->variantes->first()->nombre : 'No disponible' }}</span>
+                                            </p>
+                                        </div>
+                                        <div class="flex items-center space-x-2 mb-2">
+                                            <i class="fas fa-boxes text-green-500"></i>
+                                            <p class="text-xs text-green-700 dark:text-green-300" id="selectedColorStock">
+                                                Stock: <span class="font-bold">{{ $producto->variantes->first() ? $producto->variantes->first()->stock : 0 }} unidades</span>
+                                            </p>
+                                        </div>
+                                        <p class="text-xs text-purple-600 dark:text-purple-400 font-medium" id="selectedColorPrice"
                                             style="display: {{ $producto->variantes->first() && $producto->variantes->first()->precio_adicional > 0 ? 'block' : 'none' }};">
+                                            <i class="fas fa-plus-circle mr-1"></i>
                                             Precio adicional: <span
-                                                id="precioAdicional">${{ number_format($producto->variantes->first() ? $producto->variantes->first()->precio_adicional : 0, 0, ',', '.') }}</span>
+                                                id="precioAdicional" class="font-bold">${{ number_format($producto->variantes->first() ? $producto->variantes->first()->precio_adicional : 0, 0, ',', '.') }}</span>
                                         </p>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Color Variants -->
-                            <div class="space-y-4">
+                            <!-- Color Variants - Modern Corporate Design -->
+                            <div class="space-y-6">
                                 <div class="flex items-center justify-between">
-                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Color</h3>
-                                    <span class="text-sm text-gray-500 dark:text-gray-400"
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-palette text-white text-sm"></i>
+                                        </div>
+                                        <h3 class="text-xl font-bold bg-gradient-to-r from-gray-900 to-blue-800 dark:from-white dark:to-blue-200 bg-clip-text text-transparent">Selecciona tu Color</h3>
+                                    </div>
+                                    <span class="text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-3 py-1 rounded-full border border-blue-200 dark:border-blue-700/30"
                                         id="selectedColorName">{{ $producto->variantes->first() ? $producto->variantes->first()->nombre : 'No disponible' }}</span>
                                 </div>
-                                <div class="flex flex-wrap gap-3">
+                                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                                     @if ($producto->variantes->count() > 0)
                                         @foreach ($producto->variantes as $index => $variante)
-                                            <div class="relative">
+                                            <div class="relative group">
                                                 <button
-                                                    class="color-variant w-12 h-12 rounded-full border-2 transition-all duration-200 {{ $index === 0 ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-300 dark:border-gray-600' }} {{ !$variante->disponible ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110 hover:shadow-lg' }}"
+                                                    class="color-variant w-16 h-16 rounded-2xl border-3 transition-all duration-300 {{ $index === 0 ? 'border-blue-500 ring-4 ring-blue-200 shadow-xl' : 'border-gray-300 dark:border-gray-600' }} {{ !$variante->disponible ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110 hover:shadow-2xl hover:border-blue-400' }}"
                                                     style="background-color: {{ $variante->codigo_color ?? '#CCCCCC' }};"
                                                     data-color="{{ $variante->nombre }}"
                                                     data-available="{{ $variante->disponible ? 'true' : 'false' }}"
@@ -293,25 +869,38 @@
                                                     data-precio-adicional="{{ $variante->precio_adicional }}"
                                                     data-descripcion="{{ $variante->descripcion }}"
                                                     data-codigo-color="{{ $variante->codigo_color }}"
+                                                    data-has-images="{{ $variante->imagenes->count() > 0 ? 'true' : 'false' }}"
                                                     {{ !$variante->disponible ? 'disabled' : '' }}
-                                                    title="{{ $variante->nombre }} - Stock: {{ $variante->stock }} {{ !$variante->disponible ? '(No disponible)' : '' }}">
+                                                    title="{{ $variante->nombre }} - Stock: {{ $variante->stock }} {{ !$variante->disponible ? '(No disponible)' : '' }} {{ $variante->imagenes->count() > 0 ? '(Con imágenes)' : '(Sin imágenes)' }}">
+                                                    
+                                                    <!-- Efecto de brillo en hover -->
+                                                    <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                                    
                                                     @if (!$variante->disponible)
-                                                        <div class="w-full h-full flex items-center justify-center">
-                                                            <i class="fas fa-times text-gray-400 text-xs"></i>
+                                                        <div class="w-full h-full flex items-center justify-center relative z-10">
+                                                            <i class="fas fa-times text-gray-400 text-lg"></i>
                                                         </div>
                                                     @endif
                                                 </button>
 
-                                                <!-- Stock indicator -->
+                                                <!-- Stock indicator - Modern Corporate Design -->
                                                 @if ($variante->stock <= 5 && $variante->stock > 0)
                                                     <div
-                                                        class="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                                                        class="absolute -top-2 -right-2 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold shadow-lg border-2 border-white animate-pulse">
                                                         {{ $variante->stock }}
                                                     </div>
                                                 @elseif($variante->stock == 0)
                                                     <div
-                                                        class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                                                        class="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center shadow-lg border-2 border-white">
                                                         <i class="fas fa-times text-xs"></i>
+                                                    </div>
+                                                @endif
+
+                                                <!-- Image indicator - Modern Corporate Design -->
+                                                @if ($variante->imagenes->count() > 0)
+                                                    <div
+                                                        class="absolute -bottom-2 -left-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center shadow-lg border-2 border-white">
+                                                        <i class="fas fa-image text-xs"></i>
                                                     </div>
                                                 @endif
                                             </div>
@@ -327,15 +916,27 @@
                                 </div>
                             </div>
 
-                            <!-- Color Description -->
-                            <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-                                <p class="text-sm text-gray-600 dark:text-gray-400" id="colorDescription">
-                                    {{ $producto->variantes->first() ? $producto->variantes->first()->descripcion ?? 'Color elegante y versátil que combina con cualquier estilo.' : 'No hay descripción disponible.' }}
-                                </p>
+                            <!-- Color Description - Modern Corporate Design -->
+                            <div class="bg-gradient-to-r from-gray-50 via-blue-50 to-indigo-50 dark:from-gray-800 dark:via-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6 border border-blue-200 dark:border-blue-700/30 shadow-lg relative overflow-hidden">
+                                
+                                <!-- Elemento decorativo -->
+                                <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-blue-400 to-indigo-500 opacity-10 rounded-full translate-x-8 -translate-y-8"></div>
+                                
+                                <div class="flex items-start space-x-3 relative z-10">
+                                    <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-info-circle text-white text-sm"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="text-sm font-bold text-blue-900 dark:text-blue-100 mb-2">Descripción del Color</h4>
+                                        <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed" id="colorDescription">
+                                            {{ $producto->variantes->first() ? $producto->variantes->first()->descripcion ?? 'Color elegante y versátil que combina con cualquier estilo y se adapta perfectamente a tu personalidad.' : 'No hay descripción disponible para este color.' }}
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
 
-                            <!-- Action Buttons -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Action Buttons - Modern Corporate Design -->
+                            <div class="space-y-4">
                                 @php
                                     $tieneVariantes = $producto->variantes && $producto->variantes->count() > 0;
                                     $stockDisponible = $producto->stock_disponible;
@@ -345,78 +946,114 @@
                                     @if ($tieneVariantes)
                                         <!-- Si tiene variantes, mostrar botón que abra modal de selección -->
                                         <button type="button"
-                                            class="select-variant w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-4 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg group"
+                                            class="select-variant w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-white py-5 px-8 rounded-2xl font-bold text-lg transition-all duration-500 transform hover:scale-105 hover:shadow-2xl shadow-xl group relative overflow-hidden"
                                             data-producto-id="{{ $producto->producto_id }}" 
                                             data-producto-nombre="{{ $producto->nombre_producto }}" 
                                             data-producto-precio="{{ $producto->precio }}">
-                                            <i class="fas fa-palette mr-2 group-hover:scale-110 transition-transform duration-200"></i>
-                                            Seleccionar Variante
+                                            
+                                            <!-- Efecto de brillo -->
+                                            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                                            
+                                            <div class="relative z-10 flex items-center justify-center">
+                                                <i class="fas fa-palette mr-3 text-xl group-hover:scale-110 transition-transform duration-300"></i>
+                                                <span>Seleccionar Variante</span>
+                                                <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform duration-300"></i>
+                                            </div>
                                         </button>
                                     @else
                                         <!-- Si no tiene variantes, agregar directamente al carrito -->
                                         <button type="button"
-                                            class="add-to-cart w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-4 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg group"
+                                            class="add-to-cart w-full bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 hover:from-green-700 hover:via-emerald-700 hover:to-teal-700 text-white py-5 px-8 rounded-2xl font-bold text-lg transition-all duration-500 transform hover:scale-105 hover:shadow-2xl shadow-xl group relative overflow-hidden"
                                             data-id="{{ $producto->producto_id }}" 
                                             data-name="{{ $producto->nombre_producto }}" 
                                             data-price="{{ $producto->precio }}">
-                                            <i class="fas fa-shopping-cart mr-2 group-hover:scale-110 transition-transform duration-200"></i>
-                                            Agregar al Carrito
+                                            
+                                            <!-- Efecto de brillo -->
+                                            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                                            
+                                            <div class="relative z-10 flex items-center justify-center">
+                                                <i class="fas fa-shopping-cart mr-3 text-xl group-hover:scale-110 transition-transform duration-300"></i>
+                                                <span>Agregar al Carrito</span>
+                                                <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform duration-300"></i>
+                                            </div>
                                         </button>
                                     @endif
                                 @else
                                     <button type="button"
-                                        class="w-full bg-gray-400 text-white py-4 px-6 rounded-xl cursor-not-allowed font-semibold" disabled>
-                                        <i class="fas fa-times mr-2"></i>
-                                        Sin stock
+                                        class="w-full bg-gradient-to-r from-gray-400 to-gray-500 text-white py-5 px-8 rounded-2xl font-bold text-lg cursor-not-allowed opacity-75" disabled>
+                                        <i class="fas fa-times mr-3 text-xl"></i>
+                                        Sin stock disponible
                                     </button>
                                 @endif
                             </div>
 
-                            <!-- Quick Actions -->
-                            <div class="flex flex-wrap gap-3">
+                            <!-- Quick Actions - Modern Corporate Design -->
+                            <div class="flex flex-wrap gap-4">
                                 <a href="#reseñas"
-                                    class="inline-flex items-center px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-lg hover:bg-yellow-200 dark:hover:bg-yellow-900/50 transition-colors duration-200">
-                                    <i class="fas fa-star mr-2"></i>
-                                    Ver Reseñas ({{ $producto->resenas->count() }})
+                                    class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-yellow-100 via-orange-100 to-yellow-200 dark:from-yellow-900/30 dark:via-orange-900/30 dark:to-yellow-800/30 text-yellow-700 dark:text-yellow-300 rounded-xl hover:from-yellow-200 hover:via-orange-200 hover:to-yellow-300 dark:hover:from-yellow-800/30 dark:hover:via-orange-800/30 dark:hover:to-yellow-700/30 transition-all duration-300 border border-yellow-200 dark:border-yellow-700/30 shadow-lg hover:shadow-xl group">
+                                    <i class="fas fa-star mr-3 text-yellow-500 group-hover:scale-110 transition-transform duration-300"></i>
+                                    <span class="font-semibold">Ver Reseñas ({{ $producto->resenas->count() }})</span>
+                                    <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform duration-300"></i>
                                 </a>
                                 <button onclick="openReviewModal()"
-                                    class="inline-flex items-center px-4 py-2 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-lg hover:bg-orange-200 dark:hover:bg-orange-900/50 transition-colors duration-200">
-                                    <i class="fas fa-edit mr-2"></i>
-                                    Escribir Reseña
+                                    class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-orange-100 via-red-100 to-orange-200 dark:from-orange-900/30 dark:via-red-900/30 dark:to-orange-800/30 text-orange-700 dark:text-orange-300 rounded-xl hover:from-orange-200 hover:via-red-200 hover:to-orange-300 dark:hover:from-orange-800/30 dark:hover:via-red-800/30 dark:hover:to-orange-700/30 transition-all duration-300 border border-orange-200 dark:border-orange-700/30 shadow-lg hover:shadow-xl group">
+                                    <i class="fas fa-edit mr-3 text-orange-500 group-hover:scale-110 transition-transform duration-300"></i>
+                                    <span class="font-semibold">Escribir Reseña</span>
+                                    <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform duration-300"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Additional Info - Full Width -->
-                    <div>
+                    <!-- Additional Info - Full Width - Modern Corporate Design -->
+                    <div class="px-8 pb-8">
                         <div
-                            class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-xl p-6 w-full">
-                            <h3 class="font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                                <i class="fas fa-shield-halved text-green-600 mr-2"></i>
-                                Información Adicional
-                            </h3>
-                            <div class="grid md:grid-cols-3 gap-6">
-                                <div class="flex items-center space-x-3">
-                                    <div
-                                        class="bg-green-100 dark:bg-green-900/30 w-8 h-8 rounded-full flex items-center justify-center">
-                                        <i class="fas fa-check text-green-600 dark:text-green-400 text-sm"></i>
+                            class="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-purple-900/20 rounded-2xl p-8 w-full border-2 border-blue-200 dark:border-blue-700/30 shadow-xl relative overflow-hidden">
+                            
+                            <!-- Elementos decorativos -->
+                            <div class="absolute top-0 left-0 w-24 h-24 bg-gradient-to-br from-blue-400 to-indigo-500 opacity-10 rounded-full -translate-x-12 -translate-y-12"></div>
+                            <div class="absolute bottom-0 right-0 w-20 h-20 bg-gradient-to-br from-purple-400 to-pink-500 opacity-10 translate-x-10 translate-y-10"></div>
+                            
+                            <div class="relative z-10">
+                                <h3 class="font-bold text-2xl text-gray-900 dark:text-white mb-6 flex items-center">
+                                    <div class="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mr-4">
+                                        <i class="fas fa-shield-halved text-white text-lg"></i>
                                     </div>
-                                    <span class="text-gray-700 dark:text-gray-300">Garantía: 1 año</span>
-                                </div>
-                                <div class="flex items-center space-x-3">
-                                    <div
-                                        class="bg-blue-100 dark:bg-blue-900/30 w-8 h-8 rounded-full flex items-center justify-center">
-                                        <i class="fas fa-undo text-blue-600 dark:text-blue-400 text-sm"></i>
+                                    <span class="bg-gradient-to-r from-gray-900 to-blue-800 dark:from-white dark:to-blue-200 bg-clip-text text-transparent">
+                                        Información Adicional
+                                    </span>
+                                </h3>
+                                <div class="grid md:grid-cols-3 gap-8">
+                                    <div class="flex items-center space-x-4 p-4 bg-white dark:bg-gray-800 rounded-xl border border-blue-200 dark:border-blue-700/30 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                                        <div
+                                            class="bg-gradient-to-r from-green-500 to-emerald-600 w-12 h-12 rounded-xl flex items-center justify-center shadow-lg">
+                                            <i class="fas fa-check text-white text-lg"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-700 dark:text-gray-300 font-semibold">Garantía Oficial</span>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">1 año completo</p>
+                                        </div>
                                     </div>
-                                    <span class="text-gray-700 dark:text-gray-300">Devolución: 30 días</span>
-                                </div>
-                                <div class="flex items-center space-x-3">
-                                    <div
-                                        class="bg-purple-100 dark:bg-purple-900/30 w-8 h-8 rounded-full flex items-center justify-center">
-                                        <i class="fas fa-headset text-purple-600 dark:text-purple-400 text-sm"></i>
+                                    <div class="flex items-center space-x-4 p-4 bg-white dark:bg-gray-800 rounded-xl border border-blue-200 dark:border-blue-700/30 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                                        <div
+                                            class="bg-gradient-to-r from-blue-500 to-indigo-600 w-12 h-12 rounded-xl flex items-center justify-center shadow-lg">
+                                            <i class="fas fa-undo text-white text-lg"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-700 dark:text-gray-300 font-semibold">Devolución</span>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">30 días sin preguntas</p>
+                                        </div>
                                     </div>
-                                    <span class="text-gray-700 dark:text-gray-300">Soporte técnico incluido</span>
+                                    <div class="flex items-center space-x-4 p-4 bg-white dark:bg-gray-800 rounded-xl border border-blue-200 dark:border-blue-700/30 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                                        <div
+                                            class="bg-gradient-to-r from-purple-500 to-pink-600 w-12 h-12 rounded-xl flex items-center justify-center shadow-lg">
+                                            <i class="fas fa-headset text-white text-lg"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-700 dark:text-gray-300 font-semibold">Soporte Técnico</span>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Incluido 24/7</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -926,9 +1563,9 @@
                          class="group bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden">
                          <div class="relative overflow-hidden">
                                                            @if ($productoRelacionado->imagenes->first())
-                                  <img src="{{ Storage::url($productoRelacionado->imagenes->first()->ruta_imagen) }}"
+                                  <img src="{{ $productoRelacionado->imagenes->first()->url_completa }}"
                                       alt="{{ $productoRelacionado->nombre_producto }}"
-                                      class="w-full h-32 sm:h-36 md:h-40 lg:h-44 xl:h-48 object-contain bg-gray-50 dark:bg-gray-800 group-hover:scale-110 transition-transform duration-300">
+                                                                              class="w-full h-32 sm:h-36 md:h-40 lg:h-44 xl:h-48 object-cover bg-gray-50 dark:bg-gray-800 group-hover:scale-110 transition-transform duration-300">
                               @else
                                   <div class="w-full h-32 sm:h-36 md:h-40 lg:h-44 xl:h-48 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                                       <i class="fas fa-mobile-alt text-2xl sm:text-3xl md:text-4xl text-gray-400 dark:text-gray-500"></i>
@@ -1055,8 +1692,6 @@
 
             // Gallery functionality
             const mainImage = document.getElementById('mainImage');
-            const thumbnails = document.querySelectorAll('.thumbnail');
-            const dots = document.querySelectorAll('.flex.justify-center.space-x-2 > div');
 
             function changeMainImage(thumbnail, newSrc) {
                 console.log('changeMainImage called with:', { thumbnail, newSrc });
@@ -1068,7 +1703,8 @@
                 console.log('Main image src updated to:', newSrc);
 
                 // Update active thumbnail
-                thumbnails.forEach(thumb => {
+                const allThumbnails = document.querySelectorAll('.thumbnail-item');
+                allThumbnails.forEach(thumb => {
                     thumb.classList.remove('border-blue-500');
                     thumb.classList.add('border-transparent');
                 });
@@ -1076,8 +1712,9 @@
                 thumbnail.classList.add('border-blue-500');
 
                 // Update active dot
-                const index = Array.from(thumbnails).indexOf(thumbnail);
-                dots.forEach((dot, i) => {
+                const index = Array.from(allThumbnails).indexOf(thumbnail);
+                const allDots = document.querySelectorAll('.pagination-dots > div');
+                allDots.forEach((dot, i) => {
                     if (i === index) {
                         dot.classList.remove('bg-gray-300', 'dark:bg-gray-600');
                         dot.classList.add('bg-blue-600');
@@ -1088,36 +1725,43 @@
                 });
             }
 
-            // Add click handlers to thumbnails
-            thumbnails.forEach((thumbnail, index) => {
-                thumbnail.addEventListener('click', function() {
-                    // Get the onclick attribute which contains the full-size image URL
-                    const onclickAttr = this.getAttribute('onclick');
-                    const match = onclickAttr.match(/changeMainImage\(this,\s*'([^']+)'\)/);
-                    const fullSizeUrl = match ? match[1] : this.src;
-                    changeMainImage(this, fullSizeUrl);
-                });
-            });
-
-            // Add click handlers to dots
-            dots.forEach((dot, index) => {
-                dot.addEventListener('click', function() {
-                    if (thumbnails[index]) {
+            // Add click handlers to thumbnails (will be added dynamically)
+            function addThumbnailClickHandlers() {
+                const allThumbnails = document.querySelectorAll('.thumbnail-item');
+                allThumbnails.forEach((thumbnail, index) => {
+                    thumbnail.addEventListener('click', function() {
                         // Get the onclick attribute which contains the full-size image URL
-                        const onclickAttr = thumbnails[index].getAttribute('onclick');
+                        const onclickAttr = this.getAttribute('onclick');
                         const match = onclickAttr.match(/changeMainImage\(this,\s*'([^']+)'\)/);
-                        const fullSizeUrl = match ? match[1] : thumbnails[index].src;
-                        changeMainImage(thumbnails[index], fullSizeUrl);
-                    }
+                        const fullSizeUrl = match ? match[1] : this.src;
+                        changeMainImage(this, fullSizeUrl);
+                    });
                 });
-            });
+            }
+
+            // Add click handlers to dots (will be added dynamically)
+            function addDotClickHandlers() {
+                const allDots = document.querySelectorAll('.pagination-dots > div');
+                allDots.forEach((dot, index) => {
+                    dot.addEventListener('click', function() {
+                        const allThumbnails = document.querySelectorAll('.thumbnail-item');
+                        if (allThumbnails[index]) {
+                            // Get the onclick attribute which contains the full-size image URL
+                            const onclickAttr = allThumbnails[index].getAttribute('onclick');
+                            const match = onclickAttr.match(/changeMainImage\(this,\s*'([^']+)'\)/);
+                            const fullSizeUrl = match ? match[1] : allThumbnails[index].src;
+                            changeMainImage(allThumbnails[index], fullSizeUrl);
+                        }
+                    });
+                });
+            }
 
             // Function to update gallery with variant images
             function updateGalleryWithVariantImages(imagenes) {
                 console.log('updateGalleryWithVariantImages called with:', imagenes);
                 
-                const thumbnailGallery = document.querySelector(
-                    '.grid.grid-cols-3.sm\\:grid-cols-4.md\\:grid-cols-5');
+                // Buscar la galería de thumbnails correcta
+                const thumbnailGallery = document.querySelector('.thumbnail-grid');
                 const mainImage = document.getElementById('mainImage');
 
                 console.log('thumbnailGallery:', thumbnailGallery);
@@ -1138,8 +1782,7 @@
                     const thumbnail = document.createElement('img');
                     thumbnail.src = imagenUrl;
                     thumbnail.alt = `Vista ${index + 1}`;
-                    thumbnail.className =
-                        `thumbnail w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 object-contain bg-gray-100 dark:bg-gray-700 rounded-lg cursor-pointer hover:scale-110 transition-transform duration-200 border-2 ${index === 0 ? 'border-blue-500' : 'border-transparent hover:border-blue-500'}`;
+                    thumbnail.className = `thumbnail-item ${index === 0 ? 'border-blue-500' : ''}`;
                     
                     // Add error handling for image loading
                     thumbnail.onerror = function() {
@@ -1187,11 +1830,15 @@
 
                 // Update pagination dots
                 updatePaginationDots(imagenes.length);
+                
+                // Add click handlers to new thumbnails and dots
+                addThumbnailClickHandlers();
+                addDotClickHandlers();
             }
 
             // Function to update pagination dots
             function updatePaginationDots(count) {
-                const paginationContainer = document.querySelector('.flex.justify-center.space-x-2');
+                const paginationContainer = document.querySelector('.pagination-dots');
                 if (!paginationContainer) return;
 
                 paginationContainer.innerHTML = '';
@@ -1201,7 +1848,7 @@
                     dot.className =
                         `w-2 h-2 rounded-full ${i === 1 ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600'} cursor-pointer hover:bg-blue-500 transition-colors duration-200`;
                     dot.onclick = function() {
-                        const thumbnails = document.querySelectorAll('.thumbnail');
+                        const thumbnails = document.querySelectorAll('.thumbnail-item');
                         if (thumbnails[i - 1]) {
                             changeMainImage(thumbnails[i - 1], thumbnails[i - 1].src);
                         }
@@ -1212,8 +1859,7 @@
 
             // Function to restore original product images
             function restoreOriginalImages() {
-                const thumbnailGallery = document.querySelector(
-                    '.grid.grid-cols-3.sm\\:grid-cols-4.md\\:grid-cols-5');
+                const thumbnailGallery = document.querySelector('.thumbnail-grid');
                 const mainImage = document.getElementById('mainImage');
 
                 if (!thumbnailGallery || !mainImage) return;
@@ -1231,23 +1877,23 @@
                     @if ($i < $totalImagenes)
                         @php
                             $imagen = $imagenes[$i];
-                            $imagenUrl = asset(Storage::url($imagen->ruta_imagen));
-                            $imagenPrincipal = asset(Storage::url($imagen->ruta_imagen));
+                                                    $imagenUrl = $imagen->url_completa;
+                        $imagenPrincipal = $imagen->url_completa;
                         @endphp
                         const thumbnail{{ $i }} = document.createElement('img');
                         thumbnail{{ $i }}.src = '{{ $imagenUrl }}';
                         thumbnail{{ $i }}.alt =
                             '{{ $producto->nombre_producto }} - Vista {{ $i + 1 }}';
-                        thumbnail{{ $i }}.className =
-                            'thumbnail w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 object-contain bg-gray-100 dark:bg-gray-700 rounded-lg cursor-pointer hover:scale-110 transition-transform duration-200 border-2 {{ $i === 0 ? 'border-blue-500' : 'border-transparent hover:border-blue-500' }}';
+                        thumbnail{{ $i }}.className = 'thumbnail-item {{ $i === 0 ? 'border-blue-500' : '' }}';
+                        
                         thumbnail{{ $i }}.onclick = function() {
                             changeMainImage(this, '{{ $imagenPrincipal }}');
                         };
                         thumbnailGallery.appendChild(thumbnail{{ $i }});
                     @else
                         const thumbnail{{ $i }} = document.createElement('div');
-                        thumbnail{{ $i }}.className =
-                            'thumbnail w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-lg cursor-pointer hover:scale-110 transition-transform duration-200 border-2 border-transparent hover:border-blue-500 flex items-center justify-center';
+                        thumbnail{{ $i }}.className = 'thumbnail-item flex items-center justify-center';
+                        
                         thumbnail{{ $i }}.innerHTML = '<i class="fas fa-image text-gray-400 dark:text-gray-500 text-sm"></i>';
                         thumbnail{{ $i }}.onclick = function() {
                             // No action for placeholder thumbnails
@@ -1258,7 +1904,7 @@
 
                 // Restore main image
                 @if ($producto->imagenes->first())
-                    mainImage.src = '{{ asset(Storage::url($producto->imagenes->first()->ruta_imagen)) }}';
+                    mainImage.src = '{{ $producto->imagenes->first()->url_completa }}';
                 @else
                     // If no images, show a placeholder div instead of an image
                     mainImage.style.display = 'none';
@@ -1271,13 +1917,17 @@
                 // Update zoom images array
                 window.zoomImages = [
                     @foreach ($producto->imagenes as $imagen)
-                        '{{ asset(Storage::url($imagen->ruta_imagen)) }}',
+                        '{{ $imagen->url_completa }}',
                     @endforeach
                 ];
                 window.currentZoomIndex = 0;
 
                 // Update pagination dots
                 updatePaginationDots({{ $totalImagenes }});
+                
+                // Add click handlers to restored thumbnails and dots
+                addThumbnailClickHandlers();
+                addDotClickHandlers();
             }
 
             // Smooth scroll for anchor links
@@ -1293,6 +1943,10 @@
                     }
                 });
             });
+
+            // Initialize thumbnail and dot click handlers for original images
+            addThumbnailClickHandlers();
+            addDotClickHandlers();
 
             // Add to cart functionality
             const addCartBtn = document.querySelector('button:has(i.fa-shopping-cart)');
@@ -1401,13 +2055,13 @@
                     if (colorData['{{ $variante->nombre }}']) {
                         colorData['{{ $variante->nombre }}'].imagenes = [
                             @foreach ($variante->imagenes as $imagen)
-                                '{{ asset(Storage::url($imagen->ruta_imagen)) }}',
+                                '{{ $imagen->url_completa }}',
                             @endforeach
                         ];
                         console.log('Images loaded for {{ $variante->nombre }}:', colorData['{{ $variante->nombre }}'].imagenes);
                         console.log('Image URLs for {{ $variante->nombre }}:');
                         @foreach ($variante->imagenes as $imagen)
-                            console.log('  - {{ asset(Storage::url($imagen->ruta_imagen)) }}');
+                            console.log('  - {{ $imagen->url_completa }}');
                         @endforeach
                     } else {
                         console.log('No colorData found for variant: {{ $variante->nombre }}');
@@ -1521,25 +2175,30 @@
                             console.log('Updating gallery with variant images');
                             updateGalleryWithVariantImages(colorInfo.imagenes);
                         } else {
-                            console.log('No variant images, restoring original images');
-                            // Restore original product images if no variant images
-                            restoreOriginalImages();
+                            console.log('No variant images, keeping original product images');
+                            // Keep original product images if no variant images
+                            // No need to restore, just keep current state
                         }
 
-                        // Show success message with stock info
+                        // Show success message with stock info and image status
                         const stock = parseInt(this.dataset.stock);
+                        const hasImages = this.dataset.hasImages === 'true';
                         let stockMessage = `Has seleccionado el color ${colorName}`;
 
                         if (stock <= 5 && stock > 0) {
                             stockMessage += ` (Solo quedan ${stock} disponibles)`;
                         }
 
+                        if (!hasImages) {
+                            stockMessage += ` - Se muestran las imágenes generales del producto`;
+                        }
+
                         if (typeof Swal !== 'undefined') {
                             Swal.fire({
                                 title: 'Color Seleccionado',
                                 text: stockMessage,
-                                icon: stock <= 3 ? 'warning' : 'success',
-                                timer: 2000,
+                                icon: stock <= 3 ? 'warning' : (hasImages ? 'success' : 'info'),
+                                timer: 3000,
                                 showConfirmButton: false,
                                 toast: true,
                                 position: 'top-end'

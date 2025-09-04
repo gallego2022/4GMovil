@@ -17,21 +17,20 @@ class VarianteProducto extends Model
         'producto_id',
         'nombre',
         'codigo_color',
-        'stock_disponible',
-        'stock_minimo',
-        'stock_maximo',
-        'precio_adicional',
         'descripcion',
+        'precio_adicional',
+        'stock',
+        'stock_reservado',
         'disponible',
-        'orden'
+        'sku',
+        'referencia'
     ];
 
     protected $casts = [
         'disponible' => 'boolean',
         'precio_adicional' => 'decimal:2',
-        'stock_disponible' => 'integer',
-        'stock_minimo' => 'integer',
-        'stock_maximo' => 'integer'
+        'stock' => 'integer',
+        'stock_reservado' => 'integer'
     ];
 
     // Relaciones
@@ -45,6 +44,11 @@ class VarianteProducto extends Model
         return $this->hasMany(ImagenVariante::class, 'variante_id', 'variante_id');
     }
 
+    public function detallesPedido(): HasMany
+    {
+        return $this->hasMany(DetallePedido::class, 'variante_id', 'variante_id');
+    }
+
     public function movimientosInventario(): HasMany
     {
         return $this->hasMany(MovimientoInventarioVariante::class, 'variante_id', 'variante_id');
@@ -54,11 +58,11 @@ class VarianteProducto extends Model
     public function registrarEntrada(int $cantidad, string $motivo, int $usuarioId, ?string $referencia = null): bool
     {
         return DB::transaction(function () use ($cantidad, $motivo, $usuarioId, $referencia) {
-            $stockAnterior = $this->stock_disponible;
+            $stockAnterior = $this->stock;
             $stockNuevo = $stockAnterior + $cantidad;
 
             // Actualizar stock
-            $this->update(['stock_disponible' => $stockNuevo]);
+            $this->update(['stock' => $stockNuevo]);
 
             // Sincronizar stock del producto padre
             $this->sincronizarStockProducto();
@@ -95,7 +99,7 @@ class VarianteProducto extends Model
     public function registrarSalida(int $cantidad, string $motivo, int $usuarioId, ?string $referencia = null): bool
     {
         return DB::transaction(function () use ($cantidad, $motivo, $usuarioId, $referencia) {
-            $stockAnterior = $this->stock_disponible;
+            $stockAnterior = $this->stock;
             
             // Verificar stock disponible
             if ($stockAnterior < $cantidad) {
@@ -105,7 +109,7 @@ class VarianteProducto extends Model
             $stockNuevo = $stockAnterior - $cantidad;
 
             // Actualizar stock
-            $this->update(['stock_disponible' => $stockNuevo]);
+            $this->update(['stock' => $stockNuevo]);
 
             // Sincronizar stock del producto padre
             $this->sincronizarStockProducto();
@@ -143,14 +147,14 @@ class VarianteProducto extends Model
     public function reservarStock(int $cantidad, string $motivo, int $usuarioId, ?string $referencia = null): bool
     {
         return DB::transaction(function () use ($cantidad, $motivo, $usuarioId, $referencia) {
-            $stockAnterior = $this->stock_disponible;
+            $stockAnterior = $this->stock;
             
             // Verificar stock disponible
             if ($stockAnterior < $cantidad) {
                 Log::warning('Stock insuficiente para reserva', [
                     'variante_id' => $this->variante_id,
                     'color' => $this->nombre,
-                    'stock_disponible' => $stockAnterior,
+                    'stock' => $stockAnterior,
                     'cantidad_solicitada' => $cantidad
                 ]);
                 return false;
@@ -159,7 +163,7 @@ class VarianteProducto extends Model
             $stockNuevo = $stockAnterior - $cantidad;
 
             // Actualizar stock (reserva = salida temporal)
-            $this->update(['stock_disponible' => $stockNuevo]);
+            $this->update(['stock' => $stockNuevo]);
 
             // Sincronizar stock del producto padre
             $this->sincronizarStockProducto();
@@ -201,8 +205,8 @@ class VarianteProducto extends Model
                 'variante_id' => $this->variante_id,
                 'tipo_movimiento' => 'venta',
                 'cantidad' => $cantidad,
-                'stock_anterior' => $this->stock_disponible,
-                'stock_nuevo' => $this->stock_disponible, // No cambia porque ya se reservó
+                'stock_anterior' => $this->stock,
+                'stock_nuevo' => $this->stock, // No cambia porque ya se reservó
                 'motivo' => $motivo,
                 'usuario_id' => $usuarioId,
                 'referencia' => $referencia,
@@ -223,11 +227,11 @@ class VarianteProducto extends Model
     public function liberarReserva(int $cantidad, string $motivo, int $usuarioId, ?string $referencia = null): bool
     {
         return DB::transaction(function () use ($cantidad, $motivo, $usuarioId, $referencia) {
-            $stockAnterior = $this->stock_disponible;
+            $stockAnterior = $this->stock;
             $stockNuevo = $stockAnterior + $cantidad;
 
             // Restaurar stock (liberar reserva)
-            $this->update(['stock_disponible' => $stockNuevo]);
+            $this->update(['stock' => $stockNuevo]);
 
             // Sincronizar stock del producto padre
             $this->sincronizarStockProducto();
@@ -262,7 +266,8 @@ class VarianteProducto extends Model
     private function verificarAlertaStockBajo(int $stockAnterior, int $stockNuevo): void
     {
         // Solo enviar alerta si el stock anterior estaba por encima del umbral y ahora está por debajo
-        if ($stockAnterior > $this->stock_minimo && $stockNuevo <= $this->stock_minimo) {
+        $stockMinimo = 10; // Valor por defecto
+        if ($stockAnterior > $stockMinimo && $stockNuevo <= $stockMinimo) {
             $tipoAlerta = $this->determinarTipoAlerta($stockNuevo);
             
             if ($tipoAlerta) {
@@ -279,7 +284,8 @@ class VarianteProducto extends Model
     private function verificarAlertaReposicion(int $stockAnterior, int $stockNuevo): void
     {
         // Si el stock anterior estaba por debajo del mínimo y ahora está por encima, enviar alerta de reposición
-        if ($stockAnterior <= $this->stock_minimo && $stockNuevo > $this->stock_minimo) {
+        $stockMinimo = 10; // Valor por defecto
+        if ($stockAnterior <= $stockMinimo && $stockNuevo > $stockMinimo) {
             Log::info('Stock repuesto para variante', [
                 'variante_id' => $this->variante_id,
                 'color' => $this->nombre,
@@ -295,7 +301,8 @@ class VarianteProducto extends Model
             return 'agotado';
         }
         
-        $porcentaje = $this->stock_minimo > 0 ? ($stockActual / $this->stock_minimo) * 100 : 0;
+        $stockMinimo = 10; // Valor por defecto
+        $porcentaje = $stockMinimo > 0 ? ($stockActual / $stockMinimo) * 100 : 0;
         
         if ($porcentaje <= 20) {
             return 'critico';
@@ -309,12 +316,13 @@ class VarianteProducto extends Model
     // Métodos de consulta
     public function tieneStockSuficiente(int $cantidad): bool
     {
-        return $this->stock_disponible >= $cantidad;
+        return $this->stock >= $cantidad;
     }
 
     public function necesitaReposicion(): bool
     {
-        return $this->stock_disponible <= $this->stock_minimo;
+        $stockMinimo = 10; // Valor por defecto
+        return $this->stock <= $stockMinimo;
     }
 
     public function getPrecioFinalAttribute(): float
@@ -330,12 +338,12 @@ class VarianteProducto extends Model
 
     public function scopeConStock($query)
     {
-        return $query->where('stock_disponible', '>', 0);
+        return $query->where('stock', '>', 0);
     }
 
     public function scopeNecesitaReposicion($query)
     {
-        return $query->whereRaw('stock_disponible <= stock_minimo');
+        return $query->where('stock', '<=', 10); // Valor por defecto
     }
 
     /**
@@ -355,5 +363,26 @@ class VarianteProducto extends Model
                 'error' => $e->getMessage()
             ]);
         }
+    }
+
+    /**
+     * Boot del modelo para sincronización automática
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Después de crear, actualizar o eliminar una variante, sincronizar el producto padre
+        static::created(function ($variante) {
+            $variante->sincronizarStockProducto();
+        });
+
+        static::updated(function ($variante) {
+            $variante->sincronizarStockProducto();
+        });
+
+        static::deleted(function ($variante) {
+            $variante->sincronizarStockProducto();
+        });
     }
 }

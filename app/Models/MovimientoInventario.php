@@ -14,22 +14,17 @@ class MovimientoInventario extends Model
 
     protected $fillable = [
         'producto_id',
-        'tipo_movimiento',
+        'tipo',
         'cantidad',
-        'stock_anterior',
-        'stock_nuevo',
         'motivo',
         'usuario_id',
-        'pedido_id',
         'referencia',
-        'costo_unitario'
+        'fecha_movimiento'
     ];
 
     protected $casts = [
         'cantidad' => 'integer',
-        'stock_anterior' => 'integer',
-        'stock_nuevo' => 'integer',
-        'costo_unitario' => 'decimal:2',
+        'fecha_movimiento' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];
@@ -45,40 +40,35 @@ class MovimientoInventario extends Model
         return $this->belongsTo(Usuario::class, 'usuario_id');
     }
 
-    public function pedido(): BelongsTo
-    {
-        return $this->belongsTo(Pedido::class, 'pedido_id');
-    }
-
     // Scopes para filtros
     public function scopeEntradas($query)
     {
-        return $query->where('tipo_movimiento', 'entrada');
+        return $query->where('tipo', 'entrada');
     }
 
     public function scopeSalidas($query)
     {
-        return $query->where('tipo_movimiento', 'salida');
+        return $query->where('tipo', 'salida');
     }
 
     public function scopeAjustes($query)
     {
-        return $query->where('tipo_movimiento', 'ajuste');
+        return $query->where('tipo', 'ajuste');
     }
 
     public function scopeDevoluciones($query)
     {
-        return $query->where('tipo_movimiento', 'devolucion');
+        return $query->where('tipo', 'devolucion');
     }
 
     public function scopeReservas($query)
     {
-        return $query->where('tipo_movimiento', 'reserva');
+        return $query->where('tipo', 'reserva');
     }
 
     public function scopeLiberaciones($query)
     {
-        return $query->where('tipo_movimiento', 'liberacion');
+        return $query->where('tipo', 'liberacion');
     }
 
     public function scopePorProducto($query, $productoId)
@@ -88,14 +78,14 @@ class MovimientoInventario extends Model
 
     public function scopePorFecha($query, $fechaInicio, $fechaFin = null)
     {
-        $query->whereBetween('created_at', [$fechaInicio, $fechaFin ?? now()]);
+        $query->whereBetween('fecha_movimiento', [$fechaInicio, $fechaFin ?? now()]);
         return $query;
     }
 
     // Métodos de utilidad
     public function getTipoMovimientoLabelAttribute(): string
     {
-        return match($this->tipo_movimiento) {
+        return match($this->tipo) {
             'entrada' => 'Entrada',
             'salida' => 'Salida',
             'ajuste' => 'Ajuste',
@@ -108,7 +98,7 @@ class MovimientoInventario extends Model
 
     public function getClaseColorAttribute(): string
     {
-        return match($this->tipo_movimiento) {
+        return match($this->tipo) {
             'entrada' => 'text-green-600 bg-green-50',
             'salida' => 'text-red-600 bg-red-50',
             'ajuste' => 'text-yellow-600 bg-yellow-50',

@@ -61,14 +61,21 @@ class StripeService
                 ]
             ]);
 
-            // Registrar el Payment Intent en la base de datos
-            $pago = Pago::create([
-                'pedido_id' => $pedido->pedido_id,
-                'metodo_pago_id' => 1, // Stripe
-                'monto' => $request->amount / 100, // Convertir de centavos a pesos
-                'estado' => 'pending',
-                'stripe_payment_intent_id' => $paymentIntent->id,
-                'fecha_pago' => now()
+            // Buscar el pago existente para este pedido
+            $pago = Pago::where('pedido_id', $pedido->pedido_id)
+                        ->where('estado', 'pendiente')
+                        ->first();
+
+            if (!$pago) {
+                return [
+                    'success' => false,
+                    'message' => 'No se encontró un pago pendiente para este pedido'
+                ];
+            }
+
+            // Actualizar el pago existente con la referencia de Stripe
+            $pago->update([
+                'referencia_externa' => $paymentIntent->id
             ]);
 
             Log::info('Payment Intent creado exitosamente', [
@@ -111,7 +118,7 @@ class StripeService
             ]);
 
             $pedido = Pedido::with(['usuario', 'detalles.producto'])->findOrFail($request->pedido_id);
-            $pago = Pago::where('stripe_payment_intent_id', $request->payment_intent_id)->first();
+            $pago = Pago::where('referencia_externa', $request->payment_intent_id)->first();
 
             if (!$pago) {
                 return [
@@ -193,9 +200,9 @@ class StripeService
 
             // Registrar evento en la base de datos
             $webhookEvent = WebhookEvent::create([
-                'event_type' => $event->type,
-                'stripe_event_id' => $event->id,
-                'data' => json_encode($event->data),
+                'type' => $event->type,
+                'stripe_id' => $event->id,
+                'data' => $event->data,
                 'status' => 'pending'
             ]);
 
@@ -268,7 +275,7 @@ class StripeService
 
             // Actualizar estado del pago
             $pago->update([
-                'estado' => 'completed',
+                'estado' => 'completado', // Usar 'completado' en lugar de 'completed'
                 'fecha_pago' => now()
             ]);
 
@@ -352,7 +359,7 @@ class StripeService
                 ];
             }
 
-            $pago = Pago::where('stripe_payment_intent_id', $paymentIntent->id)->first();
+            $pago = Pago::where('referencia_externa', $paymentIntent->id)->first();
             if (!$pago) {
                 Log::warning('Pago no encontrado en webhook', [
                     'pedido_id' => $pedidoId,
@@ -515,15 +522,18 @@ class StripeService
     {
         try {
             WebhookEvent::create([
-                'event_type' => 'payment_intent.succeeded',
-                'stripe_event_id' => 'local_' . time(),
+                'type' => 'payment_intent.succeeded',
+                'stripe_id' => 'local_' . time(),
+                'livemode' => false, // Webhook local siempre es false
                 'pedido_id' => $pedido->pedido_id,
-                'data' => json_encode([
+                'data' => [
                     'pedido_id' => $pedido->pedido_id,
                     'payment_intent_id' => $paymentIntent->id,
                     'monto' => $paymentIntent->amount / 100
-                ]),
-                'status' => 'processed'
+                ],
+                'status' => 'processed',
+                'processed' => true,
+                'processed_at' => now()
             ]);
         } catch (\Exception $e) {
             Log::error('Error al generar webhook local: ' . $e->getMessage());

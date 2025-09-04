@@ -202,9 +202,9 @@
                            name="pais" 
                            id="pais" 
                            class="w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 text-gray-900"
-                           value="Argentina"
-                           placeholder="Ej: Argentina">
-                    <p class="mt-1 text-sm text-gray-500">País de la dirección (por defecto: Argentina)</p>
+                           value="Colombia"
+                           placeholder="Ej: Colombia">
+                    <p class="mt-1 text-sm text-gray-500">País de la dirección (por defecto: Colombia)</p>
                 </div>
 
                 <!-- Dirección Predeterminada -->

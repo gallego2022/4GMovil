@@ -23,81 +23,71 @@ class ProductoRepository implements ProductoRepositoryInterface
 
     public function create(array $data): Producto
     {
+        $stockInicial = $data['stock_inicial'] ?? 0;
+        
+        // Calcular umbrales automáticamente basados en el stock inicial
+        $umbralBajo = $stockInicial > 0 ? (int) ceil(($stockInicial * 60) / 100) : 0;
+        $umbralCritico = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 0;
+        
         return Producto::create([
             'nombre_producto' => $data['nombre_producto'],
             'descripcion' => $data['descripcion'],
             'precio' => $data['precio'],
-            'stock' => $data['stock'],
+            'stock' => 0, // Se calcula automáticamente desde variantes
+            'stock_inicial' => $stockInicial, // Stock inicial para calcular alertas
             'estado' => $data['estado'],
             'categoria_id' => $data['categoria_id'],
             'marca_id' => $data['marca_id'],
             'sku' => $data['sku'] ?? null,
             'costo_unitario' => $data['costo_unitario'] ?? null,
-            'stock_minimo' => $data['stock_minimo'] ?? null,
-            'stock_maximo' => $data['stock_maximo'] ?? null,
+            'stock_minimo' => $umbralCritico, // Umbral crítico (20% del stock inicial)
+            'stock_maximo' => $umbralBajo, // Umbral bajo (60% del stock inicial)
             'peso' => $data['peso'] ?? null,
             'dimensiones' => $data['dimensiones'] ?? null,
             'codigo_barras' => $data['codigo_barras'] ?? null,
             'notas_inventario' => $data['notas_inventario'] ?? null,
             'activo' => $data['activo'] ?? true,
             'stock_reservado' => 0, // Inicialmente no hay stock reservado
-            'stock_disponible' => $data['stock'], // El stock disponible inicial es igual al stock total
+            'stock_disponible' => 0, // Se calcula automáticamente desde variantes
         ]);
     }
 
+    /**
+     * Actualizar los umbrales de alerta basados en el stock inicial
+     */
+    public function actualizarUmbrales(Producto $producto): void
+    {
+        $stockInicial = $producto->stock_inicial;
+        
+        if ($stockInicial > 0) {
+            $umbralBajo = (int) ceil(($stockInicial * 60) / 100);
+            $umbralCritico = (int) ceil(($stockInicial * 20) / 100);
+            
+            $producto->update([
+                'stock_minimo' => $umbralCritico,
+                'stock_maximo' => $umbralBajo
+            ]);
+        }
+    }
+
+    /**
+     * Actualizar producto con recálculo automático de umbrales
+     */
     public function update(int $id, array $data): bool
     {
-        Log::info('Iniciando actualización en repositorio', ['id' => $id, 'data' => $data]);
-        
         $producto = $this->findById($id);
         if (!$producto) {
-            Log::warning('Producto no encontrado para actualizar', ['id' => $id]);
             return false;
         }
-
-        try {
-            // Calcular el nuevo stock_disponible si el stock cambió
-            $nuevoStockDisponible = null;
-            if (isset($data['stock']) && $data['stock'] != $producto->stock) {
-                $nuevoStockDisponible = $data['stock'] - ($producto->stock_reservado ?? 0);
-                $nuevoStockDisponible = max(0, $nuevoStockDisponible);
-            }
-
-            $updated = $producto->update([
-                'nombre_producto' => $data['nombre_producto'],
-                'descripcion' => $data['descripcion'] ?? '',
-                'precio' => $data['precio'],
-                'stock' => $data['stock'],
-                'estado' => strtolower($data['estado']),
-                'categoria_id' => $data['categoria_id'],
-                'marca_id' => $data['marca_id'],
-                'sku' => $data['sku'] ?? $producto->sku,
-                'costo_unitario' => $data['costo_unitario'] ?? $producto->costo_unitario,
-                'stock_minimo' => $data['stock_minimo'] ?? $producto->stock_minimo,
-                'stock_maximo' => $data['stock_maximo'] ?? $producto->stock_maximo,
-                'peso' => $data['peso'] ?? $producto->peso,
-                'dimensiones' => $data['dimensiones'] ?? $producto->dimensiones,
-                'codigo_barras' => $data['codigo_barras'] ?? $producto->codigo_barras,
-                'notas_inventario' => $data['notas_inventario'] ?? $producto->notas_inventario,
-                'activo' => $data['activo'] ?? $producto->activo,
-                'stock_disponible' => $nuevoStockDisponible ?? $producto->stock_disponible,
-            ]);
-
-            Log::info('Resultado de actualización', [
-                'id' => $id,
-                'success' => $updated,
-                'producto' => $producto->toArray()
-            ]);
-
-            return $updated;
-        } catch (\Exception $e) {
-            Log::error('Error al actualizar producto', [
-                'id' => $id,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            throw $e;
+        
+        $resultado = $producto->update($data);
+        
+        // Si se cambió el stock inicial, recalcular umbrales
+        if (isset($data['stock_inicial']) && $data['stock_inicial'] != $producto->getOriginal('stock_inicial')) {
+            $this->actualizarUmbrales($producto->fresh());
         }
+        
+        return $resultado;
     }
 
     public function delete(int $id): bool

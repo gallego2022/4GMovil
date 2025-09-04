@@ -86,15 +86,43 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/carrito/verificar-stock', [App\Http\Controllers\Cliente\CarritoController::class, 'verificarStock'])->name('carrito.verificar-stock');
 });
 
-// Rutas de productos con variantes
-Route::get('/productos-variantes', [ProductoController::class, 'conVariantes'])->name('productos.variantes');
-Route::get('/productos-variantes/{producto}', [ProductoController::class, 'detalleConVariantes'])->name('productos.variantes.show');
-Route::get('/productos-variantes/{producto}/stock', [ProductoController::class, 'obtenerStock'])->name('productos.variantes.stock');
-Route::get('/productos-variantes/{producto}/variantes', [ProductoController::class, 'obtenerVariantes'])->name('productos.variantes.lista');
-Route::get('/productos-variantes/buscar', [ProductoController::class, 'buscarConVariantes'])->name('productos.variantes.buscar');
-Route::get('/productos-variantes/categoria/{categoria}', [ProductoController::class, 'porCategoriaConVariantes'])->name('productos.variantes.categoria');
-Route::get('/productos-variantes/stock-bajo', [ProductoController::class, 'stockBajo'])->name('productos.variantes.stock-bajo');
-Route::get('/productos-variantes/sin-stock', [ProductoController::class, 'sinStock'])->name('productos.variantes.sin-stock');
+// Rutas de productos con variantes - Redirigidas a la vista principal
+Route::get('/productos-variantes', function() {
+    return redirect()->route('productos.index')->with('info', 'La vista de productos con variantes ha sido consolidada en la vista principal de productos.');
+})->name('productos.variantes');
+
+Route::get('/productos-variantes/{producto}', function($producto) {
+    return redirect()->route('productos.show', $producto)->with('info', 'Redirigido a la vista principal del producto.');
+})->name('productos.variantes.show');
+
+Route::get('/productos-variantes/{producto}/stock', function($producto) {
+    return redirect()->route('productos.show', $producto)->with('info', 'Redirigido a la vista principal del producto.');
+})->name('productos.variantes.stock');
+
+// Demo del Sistema de Carga
+Route::get('/demo-loading', function() {
+    return view('examples.loading-demo');
+})->name('demo.loading');
+
+Route::get('/productos-variantes/{producto}/variantes', function($producto) {
+    return redirect()->route('productos.show', $producto)->with('info', 'Redirigido a la vista principal del producto.');
+})->name('productos.variantes.lista');
+
+Route::get('/productos-variantes/buscar', function() {
+    return redirect()->route('productos.index')->with('info', 'La búsqueda de productos con variantes está disponible en la vista principal.');
+})->name('productos.variantes.buscar');
+
+Route::get('/productos-variantes/categoria/{categoria}', function($categoria) {
+    return redirect()->route('productos.categoria', $categoria)->with('info', 'Redirigido a la vista de categoría de productos.');
+})->name('productos.variantes.categoria');
+
+Route::get('/productos-variantes/stock-bajo', function() {
+    return redirect()->route('productos.index')->with('info', 'La información de stock bajo está disponible en la vista principal de productos.');
+})->name('productos.variantes.stock-bajo');
+
+Route::get('/productos-variantes/sin-stock', function() {
+    return redirect()->route('productos.index')->with('info', 'La información de productos sin stock está disponible en la vista principal.');
+})->name('productos.variantes.sin-stock');
 
 // Rutas que requieren email verificado
 Route::middleware(['auth', 'email.verified'])->group(function () {
@@ -118,7 +146,7 @@ Route::post('/servicio-tecnico/enviar', [ContactoController::class, 'enviarServi
 // Ruta API para obtener especificaciones por categoría
 Route::get('/api/especificaciones/{categoriaId}', function ($categoriaId) {
     $especificaciones = \App\Models\EspecificacionCategoria::where('categoria_id', $categoriaId)
-        ->where('activo', true)
+        ->where('estado', true)
         ->orderBy('orden', 'asc')
         ->get();
     
@@ -128,7 +156,7 @@ Route::get('/api/especificaciones/{categoriaId}', function ($categoriaId) {
 // Ruta API para obtener valores disponibles de especificaciones por categoría
 Route::get('/api/especificaciones/{categoriaId}/valores', function ($categoriaId) {
     $especificaciones = \App\Models\EspecificacionCategoria::where('categoria_id', $categoriaId)
-        ->where('activo', true)
+        ->where('estado', true)
         ->orderBy('orden', 'asc')
         ->get();
     
@@ -161,8 +189,8 @@ Route::get('/api/especificaciones/{categoriaId}/valores', function ($categoriaId
 })->name('api.especificaciones.valores');
 
 // Ruta API para obtener variantes de un producto
-Route::get('/api/productos/{productoId}/variantes', function ($productoId) {
-    $variantes = \App\Models\VarianteProducto::where('producto_id', $productoId)
+Route::get('/api/productos/{producto}/variantes', function ($producto) {
+    $variantes = \App\Models\VarianteProducto::where('producto_id', $producto)
         ->where('disponible', true)
         ->orderBy('nombre', 'asc')
         ->get();

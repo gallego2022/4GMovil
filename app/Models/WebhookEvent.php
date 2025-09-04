@@ -7,24 +7,28 @@ use Illuminate\Database\Eloquent\Model;
 class WebhookEvent extends Model
 {
     protected $table = 'webhook_events';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'webhook_id';
 
     protected $fillable = [
-        'stripe_event_id',
-        'event_type',
-        'pedido_id',
-        'payload',
+        'stripe_id',
+        'type',
+        'livemode',
+        'data',
+        'request_id',
+        'processed',
+        'processed_at',
         'status',
         'attempts',
         'last_attempt_at',
-        'processed_at',
-        'error_message'
+        'error_message',
+        'pedido_id'
     ];
 
     protected $casts = [
-        'payload' => 'array',
-        'last_attempt_at' => 'datetime',
+        'data' => 'array',
+        'processed' => 'boolean',
         'processed_at' => 'datetime',
+        'last_attempt_at' => 'datetime',
     ];
 
     public function pedido()

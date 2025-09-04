@@ -11,7 +11,7 @@
                 Pedido #{{ $pedido->pedido_id }}
             </h2>
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Detalle completo del pedido realizado el {{ \Carbon\Carbon::parse($pedido->fecha_pedido)->format('d/m/Y \a \l\a\s H:i') }}
+                Detalle completo del pedido realizado el {{ $pedido->fecha_pedido instanceof \Carbon\Carbon ? $pedido->fecha_pedido->format('d/m/Y \a \l\a\s H:i') : \Carbon\Carbon::parse($pedido->fecha_pedido)->format('d/m/Y \a \l\a\s H:i') }}
             </p>
         </div>
         
@@ -89,22 +89,22 @@
                 </div>
                 
                 <div class="mt-4">
-                                         @php
-                         $estadoClasses = 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 ring-gray-600/20 dark:ring-gray-600/30';
-                         switch(strtolower($pedido->estado->nombre)) {
-                             case 'pendiente':
-                                 $estadoClasses = 'bg-yellow-50 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 ring-yellow-600/20 dark:ring-yellow-600/30';
-                                 break;
-                             case 'confirmado':
-                                 $estadoClasses = 'bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-300 ring-green-600/20 dark:ring-green-600/30';
-                                 break;
-                             case 'cancelado':
-                                 $estadoClasses = 'bg-red-50 dark:bg-red-900 text-red-700 dark:text-red-300 ring-red-600/20 dark:ring-red-600/30';
-                                 break;
-                             default:
-                                 $estadoClasses = 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 ring-gray-600/20 dark:ring-gray-600/30';
-                         }
-                     @endphp
+                    @php
+                        $estadoClasses = 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 ring-gray-600/20 dark:ring-gray-600/30';
+                        switch(strtolower($pedido->estado->nombre)) {
+                            case 'pendiente':
+                                $estadoClasses = 'bg-yellow-50 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 ring-yellow-600/20 dark:ring-yellow-600/30';
+                                break;
+                            case 'confirmado':
+                                $estadoClasses = 'bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-300 ring-green-600/20 dark:ring-green-600/30';
+                                break;
+                            case 'cancelado':
+                                $estadoClasses = 'bg-red-50 dark:bg-red-900 text-red-700 dark:text-red-300 ring-red-600/20 dark:ring-red-600/30';
+                                break;
+                            default:
+                                $estadoClasses = 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 ring-gray-600/20 dark:ring-gray-600/30';
+                        }
+                    @endphp
                     <span class="inline-flex items-center rounded-md {{ $estadoClasses }} px-3 py-1 text-sm font-medium ring-1 ring-inset">
                         {{ $pedido->estado->nombre }}
                     </span>
@@ -119,8 +119,6 @@
                     </svg>
                     Productos del Pedido
                 </h3>
-                
-
                 
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -165,6 +163,11 @@
                                                 <div class="text-sm text-gray-500 dark:text-gray-400">
                                                     SKU: {{ $detalle->producto->sku ?? 'N/A' }}
                                                 </div>
+                                                @if($detalle->variante)
+                                                    <div class="text-xs text-blue-600 dark:text-blue-400">
+                                                        Variante: {{ $detalle->variante->nombre }}
+                                                    </div>
+                                                @endif
                                             </div>
                                         </div>
                                     </td>
@@ -194,13 +197,56 @@
                                 </td>
                                 <td class="px-4 py-4 whitespace-nowrap">
                                     <div class="text-lg font-bold text-gray-900 dark:bg-gray-700 dark:text-gray-100">
-                                        ${{ number_format($pedido->detalles->sum(function($detalle) { return $detalle->cantidad * $detalle->precio_unitario; }), 0, ',', '.') }}
+                                        ${{ number_format($pedido->total, 0, ',', '.') }}
                                     </div>
                                 </td>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
+            </div>
+            <!-- Información de Envío -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Dirección de Envío
+                </h3>
+                
+                @if($pedido->direccion)
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Dirección</label>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $pedido->direccion->direccion_completa ?? 'No especificado' }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Referencias</label>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $pedido->direccion->referencias ?? 'No especificado' }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Ciudad</label>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                                {{ $pedido->direccion->ciudad ?? 'No especificado' }}{{ $pedido->direccion->departamento ? ', ' . $pedido->direccion->departamento : '' }}
+                            </p>
+                        </div>
+                        @if($pedido->direccion->codigo_postal)
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Código Postal</label>
+                                <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $pedido->direccion->codigo_postal }}</p>
+                            </div>
+                        @endif
+                        @if($pedido->direccion->instrucciones)
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Instrucciones adicionales</label>
+                                <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $pedido->direccion->instrucciones }}</p>
+                            </div>
+                        @endif
+                    </div>
+                @else
+                    <p class="text-sm text-gray-500 dark:text-gray-400">No hay dirección de envío registrada</p>
+                @endif
             </div>
         </div>
 
@@ -218,16 +264,22 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Nombre</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $pedido->usuario->nombre_usuario }}</p>
+                        <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $pedido->usuario->nombre_usuario ?? 'No especificado' }}</p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Email</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $pedido->usuario->correo_electronico }}</p>
+                        <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $pedido->usuario->correo_electronico ?? 'No especificado' }}</p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Teléfono</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $pedido->direccion->telefono ?? 'No especificado' }}</p>
+                        <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $pedido->usuario->telefono ?? 'No especificado' }}</p>
                     </div>
+                    @if($pedido->notas)
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Notas del pedido</label>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $pedido->notas }}</p>
+                        </div>
+                    @endif
                 </div>
             </div>
 
@@ -244,65 +296,59 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Método de pago</label>
                         <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                            {{ \App\Helpers\PaymentHelper::getPaymentMethodName($pedido) }}
+                            @if($pedido->pago && $pedido->pago->metodoPago)
+                                {{ $pedido->pago->metodoPago->nombre }}
+                            @else
+                                No especificado
+                            @endif
                         </p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Estado del pago</label>
-                        <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-900 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-300 ring-1 ring-inset ring-green-600/20 dark:ring-green-600/30">
-                            {{ ucfirst($pedido->pago->estado ?? 'Completado') }}
-                        </span>
+                        @if($pedido->pago)
+                            @php
+                                $estadoPagoClasses = 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 ring-gray-600/20 dark:ring-gray-600/30';
+                                switch(strtolower($pedido->pago->estado)) {
+                                    case 'pendiente':
+                                        $estadoPagoClasses = 'bg-yellow-50 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 ring-yellow-600/20 dark:ring-yellow-600/30';
+                                        break;
+                                    case 'completado':
+                                        $estadoPagoClasses = 'bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-300 ring-green-600/20 dark:ring-green-600/30';
+                                        break;
+                                    case 'fallido':
+                                        $estadoPagoClasses = 'bg-red-50 dark:bg-red-900 text-red-700 dark:text-red-300 ring-red-600/20 dark:ring-red-600/30';
+                                        break;
+                                    default:
+                                        $estadoPagoClasses = 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 ring-gray-600/20 dark:ring-gray-600/30';
+                                }
+                            @endphp
+                            <span class="inline-flex items-center rounded-md {{ $estadoPagoClasses }} px-2 py-1 text-xs font-medium ring-1 ring-inset">
+                                {{ ucfirst($pedido->pago->estado ?? 'No especificado') }}
+                            </span>
+                        @else
+                            <span class="text-sm text-gray-500 dark:text-gray-400">Sin pago registrado</span>
+                        @endif
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Fecha del pago</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                            {{ \Carbon\Carbon::parse($pedido->pago->fecha_pago)->format('d/m/Y H:i') }}
-                        </p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Monto pagado</label>
-                        <p class="mt-1 text-lg font-bold text-green-600 dark:text-green-400">
-                            ${{ number_format($pedido->detalles->sum(function($detalle) { return $detalle->cantidad * $detalle->precio_unitario; }), 0, ',', '.') }}
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Información de Envío -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    Dirección de Envío
-                </h3>
-                
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Tipo de dirección</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ ucfirst($pedido->direccion->tipo_direccion) }}</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Dirección</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $pedido->direccion->direccion }}</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Barrio</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $pedido->direccion->barrio }}</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Ciudad</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $pedido->direccion->ciudad }}, {{ $pedido->direccion->departamento }}</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Código Postal</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $pedido->direccion->codigo_postal }}</p>
-                    </div>
-                    @if($pedido->direccion->instrucciones)
+                    @if($pedido->pago && $pedido->pago->fecha_pago)
                         <div>
-                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Instrucciones adicionales</label>
-                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $pedido->direccion->instrucciones }}</p>
+                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Fecha del pago</label>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                                {{ $pedido->pago->fecha_pago instanceof \Carbon\Carbon ? $pedido->pago->fecha_pago->format('d/m/Y H:i') : \Carbon\Carbon::parse($pedido->pago->fecha_pago)->format('d/m/Y H:i') }}
+                            </p>
+                        </div>
+                    @endif
+                    <div>
+                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Monto total</label>
+                        <p class="mt-1 text-lg font-bold text-green-600 dark:text-green-400">
+                            ${{ number_format($pedido->total, 0, ',', '.') }}
+                        </p>
+                    </div>
+                    @if($pedido->pago && $pedido->pago->referencia_externa)
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Referencia externa</label>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100 font-mono">
+                                {{ $pedido->pago->referencia_externa }}
+                            </p>
                         </div>
                     @endif
                 </div>

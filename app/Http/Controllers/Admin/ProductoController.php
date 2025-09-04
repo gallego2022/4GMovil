@@ -38,6 +38,15 @@ class ProductoController extends WebController
     }
 
     /**
+     * Muestra la lista de productos (método listado para compatibilidad)
+     */
+    public function listado(Request $request)
+    {
+        // Redirige al método index para mantener consistencia
+        return $this->index($request);
+    }
+
+    /**
      * Muestra el formulario de creación
      */
     public function create()
@@ -117,12 +126,12 @@ class ProductoController extends WebController
         try {
             $result = $this->productoService->updateProduct($id, $request);
             
-            return $this->redirectSuccess('productos.show', 'Producto actualizado exitosamente', ['id' => $id]);
+            return $this->redirectSuccess('productos.index', 'Producto actualizado exitosamente');
 
         } catch (ValidationException $e) {
-            return $this->handleValidationException($e, 'productos.edit', ['id' => $id]);
+            return $this->handleValidationException($e, 'productos.edit', ['producto' => $id]);
         } catch (Exception $e) {
-            return $this->handleException($e, 'productos.edit', ['id' => $id]);
+            return $this->handleException($e, 'productos.edit', ['producto' => $id]);
         }
     }
 
@@ -227,9 +236,8 @@ class ProductoController extends WebController
         try {
             $result = $this->productoService->getProductosConVariantes();
             
-            return view('productos.con-variantes', [
-                'productos' => $result['data']
-            ]);
+            // Vista eliminada - usar show.blade.php en su lugar
+            return redirect()->route('productos.index')->with('info', 'La vista de productos con variantes ha sido consolidada en la vista principal de productos.');
 
         } catch (Exception $e) {
             return $this->handleException($e, 'productos.index');
@@ -412,9 +420,9 @@ class ProductoController extends WebController
             return $this->backWithInput($result['message']);
 
         } catch (ValidationException $e) {
-            return $this->handleValidationException($e, 'productos.variantes.create', ['productoId' => $productoId]);
+            return $this->handleValidationException($e, 'productos.variantes.create', ['producto' => $productoId]);
         } catch (Exception $e) {
-            return $this->handleException($e, 'productos.variantes.create', ['productoId' => $productoId]);
+            return $this->handleException($e, 'productos.variantes.create', ['producto' => $productoId]);
         }
     }
 
@@ -451,9 +459,9 @@ class ProductoController extends WebController
             return $this->backWithInput($result['message']);
 
         } catch (ValidationException $e) {
-            return $this->handleValidationException($e, 'productos.variantes.edit', ['productoId' => $productoId, 'varianteId' => $varianteId]);
+            return $this->handleValidationException($e, 'productos.variantes.edit', ['producto' => $productoId, 'variante' => $varianteId]);
         } catch (Exception $e) {
-            return $this->handleException($e, 'productos.variantes.edit', ['productoId' => $productoId, 'varianteId' => $varianteId]);
+            return $this->handleException($e, 'productos.variantes.edit', ['producto' => $productoId, 'variante' => $varianteId]);
         }
     }
 
@@ -472,7 +480,7 @@ class ProductoController extends WebController
             return $this->backWithInput($result['message']);
 
         } catch (Exception $e) {
-            return $this->handleException($e, 'productos.variantes.index', ['productoId' => $productoId]);
+            return $this->handleException($e, 'productos.variantes.index', ['producto' => $productoId]);
         }
     }
 
@@ -522,9 +530,9 @@ class ProductoController extends WebController
             return $this->backWithInput($result['message']);
 
         } catch (ValidationException $e) {
-            return $this->handleValidationException($e, 'productos.resenas.create', ['productoId' => $productoId]);
+            return $this->handleValidationException($e, 'productos.resenas.create', ['producto' => $productoId]);
         } catch (Exception $e) {
-            return $this->handleException($e, 'productos.resenas.create', ['productoId' => $productoId]);
+            return $this->handleException($e, 'productos.resenas.create', ['producto' => $productoId]);
         }
     }
 
@@ -559,9 +567,9 @@ class ProductoController extends WebController
             return $this->backWithInput($result['message']);
 
         } catch (ValidationException $e) {
-            return $this->handleValidationException($e, 'productos.resenas.edit', ['productoId' => $productoId, 'resenaId' => $resenaId]);
+            return $this->handleValidationException($e, 'productos.resenas.edit', ['producto' => $productoId, 'resena' => $resenaId]);
         } catch (Exception $e) {
-            return $this->handleException($e, 'productos.resenas.edit', ['productoId' => $productoId, 'resenaId' => $resenaId]);
+            return $this->handleException($e, 'productos.resenas.edit', ['producto' => $productoId, 'resena' => $resenaId]);
         }
     }
 
@@ -581,6 +589,25 @@ class ProductoController extends WebController
 
         } catch (Exception $e) {
             return $this->handleException($e, 'productos.index');
+        }
+    }
+
+    /**
+     * Eliminar una imagen específica del producto
+     */
+    public function destroyImagen(int $productoId, int $imagenId)
+    {
+        try {
+            $result = $this->productoService->deleteImage($productoId, $imagenId);
+
+            if ($result['success']) {
+                return $this->redirectSuccess('productos.edit', 'Imagen eliminada exitosamente', ['producto' => $productoId]);
+            }
+
+            return $this->backError($result['message']);
+
+        } catch (Exception $e) {
+            return $this->handleException($e, 'productos.edit', ['producto' => $productoId]);
         }
     }
 }

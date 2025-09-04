@@ -61,6 +61,37 @@ return new class extends Migration
             $table->index('stripe_id');
         });
         
+        // ===== TABLA DE WEBHOOK EVENTS =====
+        Schema::create('webhook_events', function (Blueprint $table) {
+            $table->id('webhook_id');
+            $table->string('stripe_id')->unique();
+            $table->string('type');
+            $table->string('livemode');
+            $table->json('data');
+            $table->string('request_id')->nullable();
+            $table->boolean('processed')->default(false);
+            $table->timestamp('processed_at')->nullable();
+            
+            // Columnas para funcionalidad completa de webhooks
+            $table->string('status')->default('pending');
+            $table->unsignedInteger('attempts')->default(0);
+            $table->timestamp('last_attempt_at')->nullable();
+            $table->text('error_message')->nullable();
+            $table->unsignedBigInteger('pedido_id')->nullable();
+            
+            $table->timestamps();
+            
+            // Índices para mejor rendimiento
+            $table->index(['type', 'processed']);
+            $table->index('stripe_id');
+            $table->index('processed');
+            $table->index(['status', 'processed']);
+            $table->index('attempts');
+            $table->index('pedido_id');
+            
+            // Nota: La foreign key se agregará después de que se cree la tabla pedidos
+        });
+        
         // ===== TABLA DE CUSTOMER COLUMNS (ya incluida en usuarios) =====
         // Los campos de Stripe ya están incluidos en la migración consolidada de usuarios
         // stripe_id, pm_type, pm_last_four, trial_ends_at
@@ -71,6 +102,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('webhook_events');
         Schema::dropIfExists('subscription_items');
         Schema::dropIfExists('subscriptions');
     }

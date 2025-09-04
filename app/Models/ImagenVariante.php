@@ -3,27 +3,23 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 
 class ImagenVariante extends Model
 {
     protected $table = 'imagenes_variantes';
-    protected $primaryKey = 'imagen_variante_id';
+    protected $primaryKey = 'imagen_id';
 
     protected $fillable = [
         'variante_id',
-        'ruta_imagen',
-        'nombre_archivo',
-        'tipo_mime',
-        'tamaño_bytes',
+        'url_imagen',
+        'alt_text',
         'orden',
-        'es_principal'
+        'principal'
     ];
 
     protected $casts = [
-        'es_principal' => 'boolean',
-        'orden' => 'integer',
-        'tamaño_bytes' => 'integer'
+        'principal' => 'boolean',
+        'orden' => 'integer'
     ];
 
     public function variante()
@@ -36,30 +32,29 @@ class ImagenVariante extends Model
      */
     public function getUrlAttribute()
     {
-        return Storage::url($this->ruta_imagen);
+        return $this->url_imagen;
     }
 
     /**
-     * Obtener el tamaño formateado del archivo
+     * Obtener la URL completa de la imagen (para compatibilidad)
      */
-    public function getTamañoFormateadoAttribute()
+    public function getUrlCompletaAttribute()
     {
-        $bytes = $this->tamaño_bytes;
-        $units = ['B', 'KB', 'MB', 'GB'];
-        
-        for ($i = 0; $bytes > 1024 && $i < count($units) - 1; $i++) {
-            $bytes /= 1024;
+        if (str_starts_with($this->url_imagen, 'http')) {
+            return $this->url_imagen;
         }
         
-        return round($bytes, 2) . ' ' . $units[$i];
+        return asset('storage/' . $this->url_imagen);
     }
+
+
 
     /**
      * Scope para obtener solo imágenes principales
      */
     public function scopePrincipales($query)
     {
-        return $query->where('es_principal', true);
+        return $query->where('principal', true);
     }
 
     /**

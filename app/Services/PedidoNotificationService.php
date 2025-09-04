@@ -106,10 +106,20 @@ class PedidoNotificationService
     /**
      * Enviar correo de confirmación para métodos de pago no-Stripe
      * Este método se llama cuando se confirma un pedido con efectivo, transferencia, etc.
+     * NO se debe usar para Stripe
      */
     public function confirmarPedidoMetodoNoStripe(Pedido $pedido, string $metodoPago): bool
     {
         try {
+            // Verificar que NO sea Stripe
+            if (strtolower($metodoPago) === 'stripe') {
+                Log::warning('No se debe usar confirmarPedidoMetodoNoStripe para Stripe', [
+                    'pedido_id' => $pedido->pedido_id,
+                    'metodo_pago' => $metodoPago
+                ]);
+                return false;
+            }
+
             Log::info('Confirmando pedido con método de pago no-Stripe', [
                 'pedido_id' => $pedido->pedido_id,
                 'metodo_pago' => $metodoPago,

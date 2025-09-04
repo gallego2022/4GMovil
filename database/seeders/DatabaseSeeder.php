@@ -35,6 +35,8 @@ class DatabaseSeeder extends Seeder
             EspecificacionesCategoriaSeeder::class,
             MarcaSeeder::class,
             ProductoSeeder::class,
+            VarianteProductoSeeder::class,
+            EspecificacionesProductoSeeder::class,
         ]);
 
         $this->command->info('✅ Base de datos poblada exitosamente!');

@@ -51,9 +51,14 @@ class CheckoutController extends WebController
         try {
             $result = $this->checkoutService->processCheckout($request);
             
-            // NO limpiar el carrito aquí - se limpiará en la página de éxito
-            // Session::forget('cart');
+            // Verificar si debe redirigir a Stripe
+            if (isset($result['redirect_to_stripe']) && $result['redirect_to_stripe']) {
+                // Redirigir a la página de pago de Stripe
+                return redirect()->route('stripe.payment', $result['pedido_id'])
+                    ->with('info', 'Pedido creado. Completa el pago con Stripe.');
+            }
             
+            // Para métodos no-Stripe, redirigir a la página de éxito
             return $this->redirectSuccess('checkout.success', 
                 'Pedido procesado exitosamente', 
                 ['pedido' => $result['pedido_id']]
@@ -97,9 +102,14 @@ class CheckoutController extends WebController
             
             $result = $this->checkoutService->processCheckout($request);
             
-            // NO limpiar el carrito aquí - se limpiará en la página de éxito
-            // Session::forget('cart');
+            // Verificar si debe redirigir a Stripe
+            if (isset($result['redirect_to_stripe']) && $result['redirect_to_stripe']) {
+                // Redirigir a la página de pago de Stripe
+                return redirect()->route('stripe.payment', $result['pedido_id'])
+                    ->with('info', 'Pedido confirmado. Completa el pago con Stripe.');
+            }
             
+            // Para métodos no-Stripe, redirigir a la página de éxito
             return $this->redirectSuccess('checkout.success', 
                 'Pedido confirmado exitosamente', 
                 ['pedido' => $result['pedido_id']]
