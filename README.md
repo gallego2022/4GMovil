@@ -160,10 +160,6 @@ php artisan key:generate
 # Ejecutar migraciones y seeders principales
 php artisan migrate:fresh --seed
 
-# Ejecutar seeder de especificaciones dinámicas (opcional)
-php artisan db:seed --class=EspecificacionesCategoriaSeeder
-```
-
 #### **6. Construir Assets Frontend**
 ```bash
 npm run build
