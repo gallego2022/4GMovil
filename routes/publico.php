@@ -25,21 +25,25 @@ Route::get('/productos/filtrados', [LandingController::class, 'productosFiltrado
 
 // Ruta para ver la página de nosotros
 Route::get('/nosotros', function () {
+    \App\Helpers\ViewHelper::applyLocalization();
     return view('pages.landing.nosotros');
 })->name('nosotros');
 
 // Ruta para ver la página de contactanos
 Route::get('/contactanos', function () {
+    \App\Helpers\ViewHelper::applyLocalization();
     return view('pages.landing.contactanos');
 })->name('contactanos');
 
 // Ruta para ver la página de servicio técnico
 Route::get('/servicio-tecnico', function () {
+    \App\Helpers\ViewHelper::applyLocalization();
     return view('pages.landing.servicio-tecnico');
 })->name('servicio-tecnico');
 
 // Ruta para ver la página de servicios
 Route::get('/servicios', function () {
+    \App\Helpers\ViewHelper::applyLocalization();
     return view('pages.landing.servicio-tecnico');
 })->name('servicios');
 

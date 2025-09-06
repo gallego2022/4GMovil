@@ -1,8 +1,7 @@
 @extends('layouts.landing')
-@section('title', '4GMovil - Productos Destacados')
+@section('title', '4GMovil - ' . __('messages.products.featured'))
 @section('meta-description',
-    'Descubre nuestros productos destacados en 4GMovil. Encuentra lo mejor en tecnología móvil
-    y accesorios.')
+    __('messages.products.featured') . ' - 4GMovil. ' . __('messages.welcome'))
 
     @push('head')
         <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -17,13 +16,13 @@
                 <a href="{{ route('landing') }}"
                     class="inline-flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">
                     <i class="fas fa-home mr-2"></i>
-                    Inicio
+                    {{ __('messages.nav.home') }}
                 </a>
             </li>
             <li aria-current="page">
                 <div class="flex items-center">
                     <i class="fas fa-angle-right text-gray-400 mx-2"></i>
-                    <span class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ml-2">Productos</span>
+                    <span class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ml-2">{{ __('messages.nav.products') }}</span>
                 </div>
             </li>
         </ol>
@@ -43,11 +42,10 @@
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
             <h1 class="text-3xl sm:text-4xl lg:text-6xl font-bold mb-4 sm:mb-6 text-white leading-tight">
-                Catálogo de Productos
+                {{ __('messages.products.featured') }}
             </h1>
             <p class="text-lg sm:text-xl lg:text-2xl mb-6 sm:mb-8 text-blue-100 leading-relaxed max-w-3xl mx-auto px-4">
-                Descubre nuestra amplia selección de dispositivos móviles, tablets y computadoras con la mejor calidad y
-                precios del mercado
+                {{ __('messages.welcome') }} - {{ __('messages.products.featured') }}
             </p>
 
             <!-- Búsqueda en tiempo real -->
@@ -55,7 +53,7 @@
                 <div class="relative">
                     <input type="text" id="searchProducts"
                         class="w-full px-4 sm:px-6 py-3 sm:py-4 text-base sm:text-lg rounded-2xl border-0 shadow-2xl focus:ring-4 focus:ring-blue-300 focus:outline-none transition-all duration-300"
-                        placeholder="Buscar productos...">
+                        placeholder="{{ __('messages.products.search_placeholder') }}">
                     <i
                         class="fas fa-search absolute right-4 sm:right-6 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg sm:text-xl"></i>
                 </div>
@@ -75,17 +73,17 @@
                     class="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 h-fit lg:sticky lg:top-4">
                     <h2
                         class="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-gray-800 dark:text-white border-b border-gray-200 dark:border-gray-600 pb-2 sm:pb-3">
-                        <i class="fas fa-filter text-blue-500 mr-2"></i>Filtros
+                        <i class="fas fa-filter text-blue-500 mr-2"></i>{{ __('messages.products.filters') }}
                     </h2>
 
                     <!-- Categories -->
                     <div class="mb-6">
-                        <h3 class="font-semibold text-gray-700 dark:text-gray-300 mb-3 text-sm sm:text-base">Categorías</h3>
+                        <h3 class="font-semibold text-gray-700 dark:text-gray-300 mb-3 text-sm sm:text-base">{{ __('messages.products.categories') }}</h3>
                         <div class="space-y-2">
                             <button
                                 class="category-btn w-full text-left px-3 sm:px-4 py-2 sm:py-3 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 active bg-blue-500 text-white font-medium transition-all duration-200 text-sm sm:text-base"
                                 data-category="all">
-                                <i class="fas fa-boxes mr-2"></i>Todos los productos
+                                <i class="fas fa-boxes mr-2"></i>{{ __('messages.products.all_products') }}
                             </button>
                             @foreach ($categorias as $categoria)
                                 <button
@@ -99,8 +97,7 @@
 
                     <!-- Price Range -->
                     <div class="mb-6">
-                        <h3 class="font-semibold text-gray-700 dark:text-gray-300 mb-3 text-sm sm:text-base">Rango de
-                            precios</h3>
+                        <h3 class="font-semibold text-gray-700 dark:text-gray-300 mb-3 text-sm sm:text-base">{{ __('messages.products.price_range') }}</h3>
                         <div class="bg-gray-100 dark:bg-gray-700 rounded-xl p-3 sm:p-4">
                             <div class="mb-3">
                                 <input type="range" min="{{ $precioMinimo }}" max="{{ $precioMaximo }}"
@@ -108,13 +105,13 @@
                                     id="priceRange">
                             </div>
                             <div class="flex justify-between text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2">
-                                <span>Mín: ${{ number_format($precioMinimo, 0, ',', '.') }}</span>
-                                <span>Máx: ${{ number_format($precioMaximo, 0, ',', '.') }}</span>
+                                <span>{{ __('messages.products.min') }}: {{ \App\Helpers\CurrencyHelper::formatPrice($precioMinimo) }}</span>
+                                <span>{{ __('messages.products.max') }}: {{ \App\Helpers\CurrencyHelper::formatPrice($precioMaximo) }}</span>
                             </div>
                             <div class="text-center">
                                 <span class="text-sm sm:text-lg font-bold text-blue-600 dark:text-blue-400">
-                                    Precio máximo: <span
-                                        id="maxPrice">${{ number_format($precioMaximo, 0, ',', '.') }}</span>
+                                    {{ __('messages.products.max_price') }}: <span
+                                        id="maxPrice">{{ \App\Helpers\CurrencyHelper::formatPrice($precioMaximo) }}</span>
                                 </span>
                             </div>
                         </div>
@@ -129,12 +126,12 @@
 
                     <!-- Marcas -->
                     <div class="mb-6">
-                        <h3 class="font-semibold text-gray-700 dark:text-gray-300 mb-3 text-sm sm:text-base">Marcas</h3>
+                        <h3 class="font-semibold text-gray-700 dark:text-gray-300 mb-3 text-sm sm:text-base">{{ __('messages.products.brands') }}</h3>
                         <div class="space-y-2">
                             <button
                                 class="brand-btn w-full text-left px-3 sm:px-4 py-2 sm:py-3 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 active bg-blue-500 text-white font-medium transition-all duration-200 text-sm sm:text-base"
                                 data-brand="all">
-                                <i class="fas fa-tags mr-2"></i>Todas las marcas
+                                <i class="fas fa-tags mr-2"></i>{{ __('messages.products.all_brands') }}
                             </button>
                             @foreach ($marcas as $marca)
                                 <button
@@ -148,15 +145,15 @@
 
                     <!-- Estado del producto -->
                     <div class="mb-6">
-                        <h3 class="font-semibold text-gray-700 dark:text-gray-300 mb-3 text-sm sm:text-base">Estado</h3>
+                        <h3 class="font-semibold text-gray-700 dark:text-gray-300 mb-3 text-sm sm:text-base">{{ __('messages.products.condition') }}</h3>
                         <div class="space-y-2">
                             <label class="flex items-center">
                                 <input type="checkbox" class="filter-checkbox mr-3 rounded text-blue-500" value="nuevo">
-                                <span class="text-xs sm:text-sm text-gray-700 dark:text-gray-300">Nuevo</span>
+                                <span class="text-xs sm:text-sm text-gray-700 dark:text-gray-300">{{ __('messages.products.new') }}</span>
                             </label>
                             <label class="flex items-center">
                                 <input type="checkbox" class="filter-checkbox mr-3 rounded text-blue-500" value="usado">
-                                <span class="text-xs sm:text-sm text-gray-700 dark:text-gray-300">Usado</span>
+                                <span class="text-xs sm:text-sm text-gray-700 dark:text-gray-300">{{ __('messages.products.used') }}</span>
                             </label>
                         </div>
                     </div>
@@ -165,7 +162,7 @@
                         class="w-full text-blue-600 dark:text-blue-400 py-2 sm:py-3 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-300 font-medium border border-blue-200 dark:border-blue-700 relative overflow-hidden group text-sm sm:text-base">
                         <span class="relative z-10 flex items-center justify-center">
                             <i class="fas fa-undo mr-2 transition-transform duration-300 group-hover:rotate-12"></i>
-                            Limpiar Filtros
+                            {{ __('messages.products.clear_filters') }}
                         </span>
                         <div
                             class="absolute inset-0 bg-blue-50 dark:bg-blue-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -181,22 +178,21 @@
                     class="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 mb-6 sm:mb-8">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div>
-                            <h2 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">Nuestros Productos</h2>
-                            <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">Encuentra el dispositivo
-                                perfecto para ti</p>
+                            <h2 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">{{ __('messages.products.our_products') }}</h2>
+                            <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">{{ __('messages.products.find_perfect_device') }}</p>
                             <div id="productosContador" class="text-sm text-blue-600 dark:text-blue-400 mt-1">
                                 <!-- El contador se actualizará dinámicamente -->
                             </div>
                         </div>
                         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
-                            <span class="text-sm text-gray-600 dark:text-gray-400">Ordenar por:</span>
+                            <span class="text-sm text-gray-600 dark:text-gray-400">{{ __('messages.products.sort_by') }}</span>
                             <select id="sortProducts"
                                 class="w-full sm:w-auto border border-gray-200 dark:border-gray-600 rounded-xl px-3 sm:px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-                                <option value="recommended">Recomendados</option>
-                                <option value="price_low">Precio: Menor a Mayor</option>
-                                <option value="price_high">Precio: Mayor a Menor</option>
-                                <option value="rating">Mejor Valorados</option>
-                                <option value="newest">Novedades</option>
+                                <option value="recommended">{{ __('messages.products.recommended') }}</option>
+                                <option value="price_low">{{ __('messages.products.price_low_high') }}</option>
+                                <option value="price_high">{{ __('messages.products.price_high_low') }}</option>
+                                <option value="rating">{{ __('messages.products.best_rated') }}</option>
+                                <option value="newest">{{ __('messages.products.newest') }}</option>
                             </select>
                         </div>
                     </div>
@@ -207,7 +203,7 @@
                     <div
                         class="bg-blue-50 dark:bg-blue-900/20 p-3 sm:p-4 rounded-2xl border border-blue-200 dark:border-blue-700">
                         <h3 class="font-semibold text-blue-800 dark:text-blue-300 mb-2 sm:mb-3 text-sm sm:text-base">
-                            Filtros Activos:</h3>
+                            {{ __('messages.products.active_filters') }}:</h3>
                         <div class="flex flex-wrap gap-2" id="activeFiltersList">
                             <!-- Filtros activos aparecerán aquí -->
                         </div>
@@ -218,8 +214,7 @@
                 <div id="loadingState" class="hidden">
                     <div class="flex flex-col sm:flex-row items-center justify-center py-8 sm:py-12 gap-3 sm:gap-0">
                         <div class="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-b-2 border-blue-500"></div>
-                        <span class="text-sm sm:text-base text-gray-600 dark:text-gray-400 sm:ml-3">Cargando
-                            productos...</span>
+                        <span class="text-sm sm:text-base text-gray-600 dark:text-gray-400 sm:ml-3">{{ __('messages.products.loading_products') }}</span>
                     </div>
                 </div>
 
@@ -731,7 +726,15 @@
                     const precio = parseInt(this.value);
                     const maxPrice = document.getElementById('maxPrice');
                     if (maxPrice) {
-                        maxPrice.textContent = '$' + precio.toLocaleString('es-CO');
+                        // Usar el formato de moneda actual
+                        const currency = '{{ session("currency", "COP") }}';
+                        if (currency === 'USD') {
+                            maxPrice.textContent = `$${precio.toLocaleString('en-US')}`;
+                        } else if (currency === 'BRL') {
+                            maxPrice.textContent = `R$ ${precio.toLocaleString('pt-BR')}`;
+                        } else {
+                            maxPrice.textContent = `$${precio.toLocaleString('es-CO')}`;
+                        }
                     }
                     // Marcar que el usuario ha modificado el precio
                     precioUsuarioModificado = true;
@@ -1282,7 +1285,7 @@
                         priceRange.value = {{ $precioMaximo }};
                         const maxPrice = document.getElementById('maxPrice');
                         if (maxPrice) {
-                            maxPrice.textContent = '${{ number_format($precioMaximo, 0, ',', '.') }}';
+                            maxPrice.textContent = '{{ \App\Helpers\CurrencyHelper::formatPrice($precioMaximo) }}';
                         }
                     }
                     // Resetear la variable de control del precio
@@ -1615,7 +1618,7 @@
             
             let texto = '';
             if (total === 0) {
-                texto = 'No se encontraron productos';
+                texto = '{{ __("messages.products.no_results") }}';
             } else if (ultimaPagina === 1) {
                 texto = `${total} producto${total > 1 ? 's' : ''} encontrado${total > 1 ? 's' : ''}`;
             } else {
@@ -1716,7 +1719,7 @@
                 priceRange.value = {{ $precioMaximo }};
                 const maxPrice = document.getElementById('maxPrice');
                 if (maxPrice) {
-                    maxPrice.textContent = '${{ number_format($precioMaximo, 0, ',', '.') }}';
+                    maxPrice.textContent = '{{ \App\Helpers\CurrencyHelper::formatPrice($precioMaximo) }}';
                 }
             }
             

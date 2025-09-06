@@ -17,35 +17,39 @@
                 <!-- Left Content -->
                 <div class="text-white">
                     <h1 class="text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                        Crédito para Reportados
+                        <?php echo e(__('messages.messages.welcome')); ?>
+
                     </h1>
                     <p class="text-xl lg:text-2xl mb-8 text-gray-100 leading-relaxed">
-                        Financiación sin complicaciones. Aprobación en 24 horas con documentos mínimos.
+                        <?php echo e(__('messages.products.featured')); ?> - <?php echo e(__('messages.home.subtitle')); ?>
+
                     </p>
 
                     <!-- Features List -->
                     <div class="space-y-4 mb-8">
                         <div class="flex items-center">
                             <i class="fas fa-check-circle text-4g-blue mr-3 text-xl"></i>
-                            <span class="text-lg">Sin estudio de crédito</span>
+                            <span class="text-lg"><?php echo e(__('messages.home.no_credit_check')); ?></span>
                         </div>
                         <div class="flex items-center">
                             <i class="fas fa-check-circle text-4g-blue mr-3 text-xl"></i>
-                            <span class="text-lg">Documentos mínimos</span>
+                            <span class="text-lg"><?php echo e(__('messages.home.minimal_documents')); ?></span>
                         </div>
                         <div class="flex items-center">
                             <i class="fas fa-check-circle text-4g-blue mr-3 text-xl"></i>
-                            <span class="text-lg">Aprobación en 24 horas</span>
+                            <span class="text-lg"><?php echo e(__('messages.home.approval_24h')); ?></span>
                         </div>
                     </div>
 
                     <!-- Action Buttons -->
                     <div class="flex flex-col sm:flex-row gap-6">
                         <button class="btn-primary text-lg px-4 py-2">
-                            <i class="fas fa-rocket mr-2"></i>Solicitar Crédito
+                            <i class="fas fa-rocket mr-2"></i><?php echo e(__('messages.home.request_credit')); ?>
+
                         </button>
                         <button class="btn-secondary text-lg px-4 py-2">
-                            <i class="fas fa-info-circle mr-2"></i>Conoce Más
+                            <i class="fas fa-info-circle mr-2"></i><?php echo e(__('messages.home.learn_more')); ?>
+
                         </button>
                     </div>
                 </div>
@@ -64,15 +68,15 @@
             <div class="grid grid-cols-2 md:grid-cols-3 gap-8 text-center">
                 <div class="space-y-2">
                     <div class="text-4xl md:text-5xl font-bold text-yellow-300">5000+</div>
-                    <div class="text-lg font-medium">Clientes satisfechos</div>
+                    <div class="text-lg font-medium"><?php echo e(__('messages.home.satisfied_clients')); ?></div>
                 </div>
                 <div class="space-y-2">
                     <div class="text-4xl md:text-5xl font-bold text-green-300">1000+</div>
-                    <div class="text-lg font-medium">Reparaciones exitosas</div>
+                    <div class="text-lg font-medium"><?php echo e(__('messages.home.successful_repairs')); ?></div>
                 </div>
                 <div class="space-y-2">
                     <div class="text-4xl md:text-5xl font-bold text-purple-300">50+</div>
-                    <div class="text-lg font-medium">Marcas disponibles</div>
+                    <div class="text-lg font-medium"><?php echo e(__('messages.home.available_brands')); ?></div>
                 </div>
             </div>
         </div>
@@ -82,10 +86,8 @@
     <section class="py-16 bg-white dark:bg-gray-900 overflow-hidden">
         <div class="container mx-auto px-4">
             <div class="text-center mb-12">
-                <h2 class="text-4xl font-bold text-gray-800 dark:text-white mb-4">Marcas de confianza</h2>
-                <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">Trabajamos con las mejores marcas del
-                    mercado para
-                    ofrecerte productos de calidad</p>
+                <h2 class="text-4xl font-bold text-gray-800 dark:text-white mb-4"><?php echo e(__('messages.home.trusted_brands')); ?></h2>
+                <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto"><?php echo e(__('messages.home.trusted_brands_desc')); ?></p>
             </div>
 
             <!-- Carrusel Container -->
@@ -192,18 +194,20 @@
             <!-- Header de la sección -->
             <div class="text-center mb-16">
                 <h2 class="text-4xl sm:text-5xl font-bold text-gray-800 dark:text-white mb-6">
-                    Productos Destacados
+                    <?php echo e(__('messages.home.featured_products')); ?>
+
                 </h2>
                 <p class="text-lg sm:text-xl text-gray-700 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed mb-8">
-                    Descubre nuestra selección premium de dispositivos móviles con la mejor tecnología,
-                    garantía extendida y soporte técnico especializado
+                    <?php echo e(__('messages.home.featured_products_desc')); ?>
+
                 </p>
                 
                 <!-- Información de productos -->
                 <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-4 mb-8 inline-block">
                     <p class="text-sm text-blue-700 dark:text-blue-300 font-medium">
                         <i class="fas fa-info-circle mr-2"></i>
-                        Mostrando <?php echo e(count($productosDestacados)); ?> productos destacados
+                        <?php echo e(__('messages.home.showing_products', ['count' => count($productosDestacados)])); ?>
+
                     </p>
                 </div>
                 
@@ -211,15 +215,15 @@
                 <div class="flex flex-wrap justify-center items-center gap-6 sm:gap-8 text-sm text-gray-600 dark:text-gray-400">
                     <div class="flex items-center">
                         <i class="fas fa-shield-alt text-green-500 mr-2 text-lg"></i>
-                        <span class="font-medium">Garantía oficial</span>
+                        <span class="font-medium"><?php echo e(__('messages.home.quality_guarantee')); ?></span>
                     </div>
                     <div class="flex items-center">
                         <i class="fas fa-truck text-blue-500 mr-2 text-lg"></i>
-                        <span class="font-medium">Envío gratis</span>
+                        <span class="font-medium"><?php echo e(__('messages.home.fast_shipping')); ?></span>
                     </div>
                     <div class="flex items-center">
                         <i class="fas fa-headset text-purple-500 mr-2 text-lg"></i>
-                        <span class="font-medium">Soporte 24/7</span>
+                        <span class="font-medium"><?php echo e(__('messages.home.customer_support')); ?></span>
                     </div>
                 </div>
             </div>
@@ -264,8 +268,8 @@
                             <div class="w-full text-center py-16">
                                 <div class="text-gray-500 dark:text-gray-400">
                                     <i class="fas fa-box-open text-6xl mb-6"></i>
-                                    <p class="text-xl font-medium">No hay productos destacados disponibles</p>
-                                    <p class="text-gray-400 mt-2">Pronto tendremos nuevos productos para ti</p>
+                                    <p class="text-xl font-medium"><?php echo e(__('messages.products.no_products')); ?></p>
+                                    <p class="text-gray-400 mt-2"><?php echo e(__('messages.products.coming_soon')); ?></p>
                                 </div>
                             </div>
                         <?php endif; ?>
@@ -284,7 +288,8 @@
                         
                         <p class="text-sm text-gray-600 dark:text-gray-400 font-medium">
                             <i class="fas fa-arrows-alt-h mr-2"></i>
-                            Desliza horizontalmente para ver todos los productos
+                            <?php echo e(__('messages.home.scroll_horizontally')); ?>
+
                         </p>
                         
                         <!-- Indicador de scroll visual -->
@@ -301,15 +306,18 @@
             <div class="text-center mt-16">
                 <div class="bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-800 dark:to-indigo-900 rounded-3xl p-8 shadow-2xl dark:shadow-gray-900/50">
                     <h3 class="text-2xl sm:text-3xl font-bold text-white mb-4">
-                        ¿No encuentras lo que buscas?
+                        <?php echo e(__('messages.home.not_find_what_you_need')); ?>
+
                     </h3>
                     <p class="text-blue-100 mb-8 text-lg">
-                        Explora nuestro catálogo completo con más de 1000 productos
+                        <?php echo e(__('messages.home.explore_catalog')); ?>
+
                     </p>
                     <a href="<?php echo e(route('productos.lista')); ?>"
                         class="inline-block bg-white text-blue-600 px-8 py-4 rounded-xl font-bold hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
                         <i class="fas fa-th-large mr-2"></i>
-                        Ver todos los productos
+                        <?php echo e(__('messages.home.view_all')); ?>
+
                     </a>
                 </div>
             </div>
@@ -320,10 +328,8 @@
     <section class="py-16 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-800 dark:to-gray-900">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-gray-800 dark:text-white mb-4">Nuestros Aliados</h2>
-                <p class="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">Empresas que confían
-                    en nosotros y con
-                    las que trabajamos para ofrecerte lo mejor</p>
+                <h2 class="text-4xl font-bold text-gray-800 dark:text-white mb-4"><?php echo e(__('messages.home.our_allies')); ?></h2>
+                <p class="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed"><?php echo e(__('messages.home.our_allies_desc')); ?></p>
             </div>
             <br>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -380,10 +386,8 @@
     <section class="py-16 bg-white dark:bg-gray-900">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-gray-800 dark:text-white mb-4">Lo que dicen nuestros clientes</h2>
-                <p class="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">Experiencias reales
-                    de personas que han
-                    confiado en nosotros</p>
+                <h2 class="text-4xl font-bold text-gray-800 dark:text-white mb-4"><?php echo e(__('messages.home.testimonials')); ?></h2>
+                <p class="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed"><?php echo e(__('messages.home.testimonials_desc')); ?></p>
             </div>
             <br>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -468,14 +472,13 @@
             <div class="max-w-4xl mx-auto">
                 <img src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
                     alt="Contacto" class="w-full h-80 object-cover rounded-2xl mb-8 shadow-2xl">
-                <h2 class="text-4xl font-bold mb-6 text-white">¿Necesitas ayuda con tu dispositivo?</h2>
-                <p class="text-xl mb-10 max-w-3xl mx-auto leading-relaxed text-white">Contáctanos y recibe asesoría
-                    personalizada de
-                    nuestros expertos certificados</p>
+                <h2 class="text-4xl font-bold mb-6 text-white"><?php echo e(__('messages.home.need_help')); ?></h2>
+                <p class="text-xl mb-10 max-w-3xl mx-auto leading-relaxed text-white"><?php echo e(__('messages.home.need_help_desc')); ?></p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
                     <a href="<?php echo e(route('contactanos')); ?>"
                         class="inline-block bg-white text-blue-600 px-8 py-4 rounded-xl font-bold hover:bg-gray-100 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 hover:scale-105">
-                        <i class="fas fa-phone mr-2"></i>Contáctanos ahora
+                        <i class="fas fa-phone mr-2"></i><?php echo e(__('messages.home.contact_us_now')); ?>
+
                     </a>
                 </div>
             </div>

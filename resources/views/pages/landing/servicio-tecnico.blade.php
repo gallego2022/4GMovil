@@ -16,13 +16,13 @@
                 <a href="{{ route('landing') }}"
                     class="inline-flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">
                     <i class="fas fa-home mr-2"></i>
-                    Inicio
+                    {{ __('messages.nav.home') }}
                 </a>
             </li>
             <li aria-current="page">
                 <div class="flex items-center">
                     <i class="fas fa-angle-right text-gray-400 mx-2"></i>
-                    <span class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ml-2">Servicio Técnico</span>
+                    <span class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ml-2">{{ __('messages.nav.technical_service') }}</span>
                 </div>
             </li>
         </ol>
@@ -39,29 +39,25 @@
             <div class="text-center max-w-4xl mx-auto">
                 <div class="inline-flex items-center px-4 py-2 bg-white bg-opacity-20 rounded-full text-sm font-medium mb-6 backdrop-blur-sm">
                     <i class="fas fa-screwdriver-wrench mr-2"></i>
-                    Servicio Técnico Profesional
+                    {{ __('messages.technical_service.title') }}
                 </div>
                 
                 <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-                    Reparamos tu 
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
-                        dispositivo
-                    </span> 
-                    con garantía
+                    {{ __('messages.technical_service.subtitle') }}
                 </h1>
                 
                 <p class="text-xl md:text-2xl mb-8 opacity-90 leading-relaxed">
-                    Diagnóstico gratuito, repuestos originales y atención rápida para celulares, tablets y computadoras
+                    {{ __('messages.technical_service.description') }}
                 </p>
                 
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
                     <a href="#servicios"
                         class="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
-                        <i class="fas fa-tools mr-2"></i>Ver Servicios
+                        <i class="fas fa-tools mr-2"></i>{{ __('messages.technical_service.view_services') }}
                     </a>
                     <a href="#diagnostico"
                         class="border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-blue-600 dark:hover:text-blue-600 transition-all duration-300 transform hover:scale-105">
-                        <i class="fas fa-stethoscope mr-2"></i>Diagnóstico Gratuito
+                        <i class="fas fa-stethoscope mr-2"></i>{{ __('messages.technical_service.free_diagnosis') }}
                     </a>
                 </div>
             </div>
@@ -75,13 +71,13 @@
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
                 <span class="inline-flex items-center px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-sm font-medium mb-4">
-                    <i class="fas fa-star mr-2"></i>Servicios Especializados
+                    <i class="fas fa-star mr-2"></i>{{ __('messages.technical_service.specialized_services') }}
                 </span>
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-                    Soluciones técnicas integrales para todos tus dispositivos
+                    {{ __('messages.technical_service.integral_solutions') }}
                 </h2>
                 <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-                    Contamos con técnicos certificados y herramientas de última generación para brindarte el mejor servicio
+                    {{ __('messages.technical_service.certified_technicians') }}
                 </p>
             </div>
 
@@ -91,9 +87,9 @@
                     <div class="bg-gradient-to-br from-blue-500 to-indigo-600 w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                         <i class="fas fa-stethoscope text-white text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Diagnóstico Gratuito</h3>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">{{ __('messages.technical_service.free_diagnosis_title') }}</h3>
                     <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
-                        Evaluación completa de tu dispositivo con reporte detallado y cotización sin compromiso
+                        {{ __('messages.technical_service.free_diagnosis_desc') }}
                     </p>
                 </div>
 
@@ -102,9 +98,9 @@
                     <div class="bg-gradient-to-br from-green-500 to-emerald-600 w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                         <i class="fas fa-tools text-white text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Reparaciones Rápidas</h3>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">{{ __('messages.technical_service.fast_repairs') }}</h3>
                     <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
-                        Cambio de pantallas, baterías, módulos y componentes con repuestos de calidad
+                        {{ __('messages.technical_service.fast_repairs_desc') }}
                     </p>
                 </div>
 
@@ -113,9 +109,9 @@
                     <div class="bg-gradient-to-br from-purple-500 to-violet-600 w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                         <i class="fas fa-robot text-white text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Software & Sistema</h3>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">{{ __('messages.technical_service.software_system') }}</h3>
                     <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
-                        Optimización, respaldos, recuperación de datos y actualizaciones de sistema
+                        {{ __('messages.technical_service.software_system_desc') }}
                     </p>
                 </div>
 
@@ -124,9 +120,9 @@
                     <div class="bg-gradient-to-br from-orange-500 to-red-600 w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                         <i class="fas fa-shield-halved text-white text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Garantía Total</h3>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">{{ __('messages.technical_service.total_warranty') }}</h3>
                     <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
-                        Todas nuestras reparaciones incluyen garantía por escrito y pruebas de calidad
+                        {{ __('messages.technical_service.total_warranty_desc') }}
                     </p>
                 </div>
             </div>
@@ -138,10 +134,10 @@
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-                    Reparamos todos los dispositivos
+                    {{ __('messages.technical_service.repair_all_devices') }}
                 </h2>
                 <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-                    Desde smartphones hasta computadoras, tenemos la experiencia para solucionar cualquier problema
+                    {{ __('messages.technical_service.repair_all_devices_desc') }}
                 </p>
             </div>
 
@@ -152,7 +148,7 @@
                         <div class="bg-gradient-to-br from-blue-500 to-indigo-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
                             <i class="fas fa-mobile-screen-button text-white text-3xl"></i>
                         </div>
-                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Celulares</h3>
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">{{ __('messages.technical_service.smartphones') }}</h3>
                         <ul class="text-gray-600 dark:text-gray-300 space-y-2 text-left">
                             <li class="flex items-center">
                                 <i class="fas fa-check text-green-500 mr-2"></i>
@@ -184,7 +180,7 @@
                         <div class="bg-gradient-to-br from-green-500 to-emerald-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
                             <i class="fas fa-tablet-screen-button text-white text-3xl"></i>
                         </div>
-                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Tablets</h3>
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">{{ __('messages.technical_service.tablets') }}</h3>
                         <ul class="text-gray-600 dark:text-gray-300 space-y-2 text-left">
                             <li class="flex items-center">
                                 <i class="fas fa-check text-green-500 mr-2"></i>
@@ -216,7 +212,7 @@
                         <div class="bg-gradient-to-br from-purple-500 to-violet-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
                             <i class="fas fa-laptop text-white text-3xl"></i>
                         </div>
-                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Computadoras</h3>
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">{{ __('messages.technical_service.computers') }}</h3>
                         <ul class="text-gray-600 dark:text-gray-300 space-y-2 text-left">
                             <li class="flex items-center">
                                 <i class="fas fa-check text-green-500 mr-2"></i>

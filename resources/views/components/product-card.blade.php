@@ -89,11 +89,11 @@
                         
                         @if ($totalResenas > 0)
                             <span class="text-gray-500 text-sm ml-2 font-medium">
-                                ({{ $totalResenas }} {{ $totalResenas == 1 ? 'reseña' : 'reseñas' }})
+                                ({{ $totalResenas }} {{ $totalResenas == 1 ? __('messages.products.review') : __('messages.products.reviews') }})
                             </span>
                         @else
                             <span class="text-gray-400 text-sm ml-2 font-medium">
-                                (Sin reseñas)
+                                ({{ __('messages.products.no_reviews') }})
                             </span>
                         @endif
                     </div>
@@ -116,7 +116,7 @@
                             $precio = $producto['precio'] ?? $producto->precio;
                         @endphp
                         <span
-                            class="font-black text-2xl text-blue-600">${{ number_format($precio, 0, ',', '.') }}</span>
+                            class="font-black text-2xl text-blue-600">{{ \App\Helpers\CurrencyHelper::formatPrice($precio) }}</span>
                     </div>
                     @if ($showShipping)
                         <div class="text-right">
@@ -160,7 +160,7 @@
                         data-producto-nombre="{{ $nombreProducto }}" 
                         data-producto-precio="{{ $precio }}">
                         <i class="fas fa-palette mr-2 group-hover/btn:animate-bounce"></i>
-                        Seleccionar Variante
+                        {{ __('messages.products.select_variant') }}
                     </button>
                 @else
                     <!-- Si no tiene variantes, agregar directamente al carrito -->
@@ -170,14 +170,14 @@
                         data-name="{{ $nombreProducto }}" 
                         data-price="{{ $precio }}">
                         <i class="fas fa-shopping-cart mr-2 group-hover/btn:animate-bounce"></i>
-                        Agregar al carrito
+                        {{ __('messages.products.add_to_cart') }}
                     </button>
                 @endif
             @else
                 <button type="button"
                     class="w-full bg-gray-400 text-white py-4 rounded-xl cursor-not-allowed font-bold" disabled>
                     <i class="fas fa-times mr-2"></i>
-                    Sin stock
+                    {{ __('messages.products.out_of_stock') }}
                 </button>
             @endif
         </div>

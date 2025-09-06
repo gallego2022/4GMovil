@@ -19,12 +19,14 @@ class AuthController extends WebController
     // Esta función muestra el formulario de inicio de sesión
     public function index()
     {
+        $this->applyLocalization();
         return view('modules.auth.login');
     }
 
     // Esta funcion muestra el formulario para cambiar contraseña
     public function formCambiarContrasena()
     {
+        $this->applyLocalization();
         return view('modules.auth.cambiar-contrasena');
     }
 

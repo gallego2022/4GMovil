@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' }" :class="{ 'dark': darkMode }" x-init="$watch('darkMode', val => localStorage.setItem('darkMode', val))">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' }" :class="{ 'dark': darkMode }" x-init="$watch('darkMode', val => localStorage.setItem('darkMode', val))">
 
 <head>
     <meta charset="UTF-8">
@@ -395,17 +395,17 @@
             <!-- Desktop Menu -->
             <div class="hidden md:flex items-center space-x-6">
                 <a href="{{ route('landing') }}"
-                    class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300">Inicio</a>
+                    class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300">{{ __('messages.nav.home') }}</a>
 
                 <a href="{{ route('productos.lista') }}"
-                    class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300">Productos</a>
+                    class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300">{{ __('messages.nav.products') }}</a>
 
                 <a href="{{ route('servicios') }}"
-                    class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300">Servicio Tecnico</a>
+                    class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300">{{ __('messages.nav.technical_service') }}</a>
                 <a href="{{ route('nosotros') }}"
-                    class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300">Nosotros</a>
+                    class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300">{{ __('messages.nav.about') }}</a>
                 <a href="{{ route('contactanos') }}"
-                    class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300">Contacto</a>
+                    class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300">{{ __('messages.nav.contact') }}</a>
             </div>
 
             <!-- Desktop Actions -->
@@ -425,6 +425,9 @@
                             d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                     </svg>
                 </button>
+
+                <!-- Selector de idioma/país/moneda -->
+                @include('components.language-selector-modal')
 
                 <a href="#"
                     class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300"><i

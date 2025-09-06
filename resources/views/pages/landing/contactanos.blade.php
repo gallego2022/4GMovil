@@ -16,13 +16,13 @@
                     <a href="{{ route('landing') }}"
                         class="inline-flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">
                         <i class="fas fa-home mr-2"></i>
-                        Inicio
+                        {{ __('messages.nav.home') }}
                     </a>
                 </li>
                 <li aria-current="page">
                     <div class="flex items-center">
                         <i class="fas fa-angle-right text-gray-400 mx-2"></i>
-                        <span class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ml-2">Contáctanos</span>
+                        <span class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ml-2">{{ __('messages.nav.contact') }}</span>
                     </div>
                 </li>
             </ol>
@@ -42,19 +42,19 @@
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
             <h1 class="text-3xl sm:text-4xl lg:text-6xl font-bold mb-4 sm:mb-6 text-white leading-tight">
-                Contáctanos
+                {{ __('messages.contact.title') }}
             </h1>
             <p class="text-lg sm:text-xl lg:text-2xl mb-6 sm:mb-8 text-blue-100 leading-relaxed max-w-3xl mx-auto px-4">
-                Estamos aquí para ayudarte. ¡Conversemos sobre tus necesidades tecnológicas!
+                {{ __('messages.contact.subtitle') }}
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
                 <a href="#contacto"
                     class="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
-                    <i class="fas fa-paper-plane mr-2"></i>Enviar Mensaje
+                    <i class="fas fa-paper-plane mr-2"></i>{{ __('messages.contact.send_message') }}
                 </a>
                 <a href="#ubicacion"
                     class="border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-blue-600 dark:hover:text-blue-600 transition-all duration-300 transform hover:scale-105">
-                    <i class="fas fa-map-marker-alt mr-2"></i>Ver Ubicación
+                    <i class="fas fa-map-marker-alt mr-2"></i>{{ __('messages.contact.view_location') }}
                 </a>
             </div>
         </div>
@@ -64,10 +64,9 @@
     <section class="py-20 bg-white dark:bg-gray-900">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-6">Múltiples Formas de
-                    Contactarnos</h2>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-6">{{ __('messages.contact.multiple_ways') }}</h2>
                 <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-                    Elige la opción que mejor se adapte a tus necesidades
+                    {{ __('messages.contact.choose_option') }}
                 </p>
             </div>
             <div class="grid md:grid-cols-2 gap-8">
@@ -78,11 +77,11 @@
                         class="bg-white bg-opacity-20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
                         <i class="fas fa-phone text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold mb-4">Llámanos</h3>
+                    <h3 class="text-xl font-bold mb-4">{{ __('messages.contact.call_us') }}</h3>
                     <p class="text-lg mb-2">+57 302 597 0220</p>
                     <a href="tel:+573025970220"
                         class="inline-block mt-4 bg-white bg-opacity-20 px-4 py-2 rounded-lg hover:bg-opacity-30 transition-all duration-300">
-                        <i class="fas fa-phone mr-2"></i>Llamar Ahora
+                        <i class="fas fa-phone mr-2"></i>{{ __('messages.contact.call_now') }}
                     </a>
                 </div>
                 <!-- Email -->
@@ -92,11 +91,11 @@
                         class="bg-white bg-opacity-20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
                         <i class="fas fa-envelope text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold mb-4">Escríbenos</h3>
+                    <h3 class="text-xl font-bold mb-4">{{ __('messages.contact.write_us') }}</h3>
                     <p class="text-lg mb-2">osmandavidgallego@gmail.com</p>
                     <a href="mailto:osmandavidgallego@gmail.com?subject=Consulta%204GMovil&body=Hola%20equipo%20de%204GMovil,%0A%0AMe%20gustaría%20obtener%20más%20información%20sobre%20sus%20productos%20y%20servicios.%0A%0ASaludos,%0A"
                         class="inline-block mt-4 bg-white bg-opacity-20 px-4 py-2 rounded-lg hover:bg-opacity-30 transition-all duration-300">
-                        <i class="fas fa-envelope mr-2"></i>Enviar Email
+                        <i class="fas fa-envelope mr-2"></i>{{ __('messages.contact.send_email') }}
                     </a>
                 </div>
             </div>
@@ -108,9 +107,9 @@
         <div class="container mx-auto px-4">
             <div class="max-w-6xl mx-auto">
                 <div class="text-center mb-16">
-                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-6">Envíanos un Mensaje</h2>
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-6">{{ __('messages.contact.send_us_message') }}</h2>
                     <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                        Completa el formulario y nos pondremos en contacto contigo lo antes posible
+                        {{ __('messages.contact.complete_form') }}
                     </p>
                 </div>
 
@@ -122,71 +121,71 @@
                             <div class="grid md:grid-cols-2 gap-6">
                                 <div>
                                     <label for="nombre"
-                                        class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nombre
+                                        class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{{ __('messages.contact.name') }}
                                         *</label>
                                     <input type="text" id="nombre" name="nombre" required
                                         class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
-                                        placeholder="Tu nombre completo">
+                                        placeholder="{{ __('messages.contact.your_full_name') }}">
                                 </div>
                                 <div>
                                     <label for="apellido"
-                                        class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Apellido
+                                        class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{{ __('messages.contact.lastname') }}
                                         *</label>
                                     <input type="text" id="apellido" name="apellido" required
                                         class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
-                                        placeholder="Tu apellido">
+                                        placeholder="{{ __('messages.contact.your_lastname') }}">
                                 </div>
                             </div>
 
                             <div class="grid md:grid-cols-2 gap-6">
                                 <div>
                                     <label for="email"
-                                        class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Email
+                                        class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{{ __('messages.contact.email') }}
                                         *</label>
                                     <input type="email" id="email" name="email" required
                                         class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
-                                        placeholder="tu@email.com">
+                                        placeholder="{{ __('messages.contact.your_email') }}">
                                 </div>
                                 <div>
                                     <label for="telefono"
-                                        class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Teléfono
+                                        class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{{ __('messages.contact.phone') }}
                                         *</label>
                                     <input type="tel" id="telefono" name="telefono" required
                                         class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
-                                        placeholder="+57 302 597 0220">
+                                        placeholder="{{ __('messages.contact.your_phone') }}">
                                 </div>
                             </div>
 
                             <div>
                                 <label for="asunto"
-                                    class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Asunto
+                                    class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{{ __('messages.contact.subject') }}
                                     *</label>
                                 <select id="asunto" name="asunto" required
                                     class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-600 text-gray-900 dark:text-white">
-                                    <option value="">Selecciona un asunto</option>
-                                    <option value="consulta-producto">Consulta sobre producto</option>
-                                    <option value="servicio-tecnico">Servicio técnico</option>
-                                    <option value="venta-corporativa">Venta corporativa</option>
-                                    <option value="soporte">Soporte técnico</option>
-                                    <option value="otro">Otro</option>
+                                    <option value="">{{ __('messages.contact.select_subject') }}</option>
+                                    <option value="consulta-producto">{{ __('messages.contact.product_inquiry') }}</option>
+                                    <option value="servicio-tecnico">{{ __('messages.contact.technical_service') }}</option>
+                                    <option value="venta-corporativa">{{ __('messages.contact.corporate_sales') }}</option>
+                                    <option value="soporte">{{ __('messages.contact.support') }}</option>
+                                    <option value="otro">{{ __('messages.contact.other') }}</option>
                                 </select>
                             </div>
 
                             <div>
                                 <label for="mensaje"
-                                    class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Mensaje
+                                    class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{{ __('messages.contact.message') }}
                                     *</label>
                                 <textarea id="mensaje" name="mensaje" rows="5" required
                                     class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 resize-none bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
-                                    placeholder="Cuéntanos en qué podemos ayudarte..."></textarea>
+                                    placeholder="{{ __('messages.contact.tell_us_help') }}"></textarea>
                             </div>
 
                             <div class="flex items-center">
                                 <input type="checkbox" id="terminos" name="terminos" required
                                     class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                                 <label for="terminos" class="ml-2 text-sm text-gray-600 dark:text-gray-300">
-                                    Acepto los <a href="#"
-                                        class="text-blue-600 dark:text-blue-400 hover:underline">términos y condiciones</a>
+                                    {{ __('messages.contact.accept_terms') }} <a href="#"
+                                        class="text-blue-600 dark:text-blue-400 hover:underline">{{ __('messages.contact.terms_conditions') }}</a>
                                     *
                                 </label>
                             </div>
@@ -194,7 +193,7 @@
                             <button type="submit"
                                 class="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-4 px-8 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105">
                                 <i class="fas fa-paper-plane mr-2"></i>
-                                Enviar Mensaje
+                                {{ __('messages.contact.send_message') }}
                             </button>
                         </form>
                     </div>
