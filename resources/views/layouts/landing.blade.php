@@ -622,7 +622,7 @@
                             <h3 class="text-2xl font-bold text-gray-900 dark:text-white">4GMovil</h3>
                         </div>
                         <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
-                            Somos expertos en venta y reparación de dispositivos móviles. Ofrecemos la mejor calidad, garantía y servicio técnico especializado en Medellín.
+                            {{ __('messages.footer.about_us') }}
                         </p>
                         <div class="flex space-x-3">
                             <a href="https://www.facebook.com/cuatro.g.movil.2025/"
@@ -647,37 +647,37 @@
                     <div>
                         <h3 class="text-xl font-bold mb-6 text-gray-900 dark:text-white flex items-center">
                             <i class="fas fa-link mr-3 text-blue-600 dark:text-blue-400"></i>
-                            Enlaces rápidos
+                            {{ __('messages.footer.quick_links') }}
                         </h3>
                         <ul class="space-y-3">
                             <li>
                                 <a href="{{ route('landing') }}" class="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors duration-300 flex items-center group">
                                     <i class="fas fa-chevron-right mr-2 text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform duration-300"></i>
-                                    Inicio
+                                    {{ __('messages.footer.home') }}
                                 </a>
                             </li>
                             <li>
                                 <a href="{{ route('productos.lista') }}" class="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors duration-300 flex items-center group">
                                     <i class="fas fa-chevron-right mr-2 text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform duration-300"></i>
-                                    Productos
+                                    {{ __('messages.footer.products') }}
                                 </a>
                             </li>
                             <li>
                                 <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors duration-300 flex items-center group">
                                     <i class="fas fa-chevron-right mr-2 text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform duration-300"></i>
-                                    Servicios
+                                    {{ __('messages.footer.services') }}
                                 </a>
                             </li>
                             <li>
                                 <a href="{{ route('nosotros') }}" class="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors duration-300 flex items-center group">
                                     <i class="fas fa-chevron-right mr-2 text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform duration-300"></i>
-                                    Nosotros
+                                    {{ __('messages.footer.about') }}
                                 </a>
                             </li>
                             <li>
                                 <a href="{{ route('contactanos') }}" class="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors duration-300 flex items-center group">
                                     <i class="fas fa-chevron-right mr-2 text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform duration-300"></i>
-                                    Contacto
+                                    {{ __('messages.footer.contact') }}
                                 </a>
                             </li>
                         </ul>
@@ -688,7 +688,7 @@
                     <div>
                         <h3 class="text-xl font-bold mb-6 text-gray-900 dark:text-white flex items-center">
                             <i class="fas fa-address-card mr-3 text-pink-600 dark:text-pink-400"></i>
-                            Contacto
+                            {{ __('messages.footer.contact') }}
                         </h3>
                         <ul class="space-y-4 text-gray-600 dark:text-gray-300">
                             <li class="flex items-start group">
@@ -696,8 +696,8 @@
                                     <i class="fas fa-map-marker-alt text-blue-600 dark:text-blue-400"></i>
                                 </div>
                                 <div>
-                                    <span class="font-medium text-gray-900 dark:text-white">Dirección</span>
-                                    <p class="text-sm text-gray-600 dark:text-gray-300">Calle 123 #45-67, Medellín, Colombia</p>
+                                    <span class="font-medium text-gray-900 dark:text-white">{{ __('messages.footer.address') }}</span>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">{!! __('messages.footer.address_value') !!}</p>
                                 </div>
                             </li>
                             <li class="flex items-start group">
@@ -705,8 +705,8 @@
                                     <i class="fas fa-phone-alt text-green-600 dark:text-green-400"></i>
                                 </div>
                                 <div>
-                                    <span class="font-medium text-gray-900 dark:text-white">Teléfono</span>
-                                    <p class="text-sm text-gray-600 dark:text-gray-300">+57 320 123 4567</p>
+                                    <span class="font-medium text-gray-900 dark:text-white">{{ __('messages.footer.phone') }}</span>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">{{ __('messages.footer.phone_value') }}</p>
                                 </div>
                             </li>
                             <li class="flex items-start group">
@@ -714,8 +714,8 @@
                                     <i class="fas fa-envelope text-purple-600 dark:text-purple-400"></i>
                                 </div>
                                 <div>
-                                    <span class="font-medium text-gray-900 dark:text-white">Email</span>
-                                    <p class="text-sm text-gray-600 dark:text-gray-300">info@4gmovil.com.co</p>
+                                    <span class="font-medium text-gray-900 dark:text-white">{{ __('messages.footer.email') }}</span>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">{{ __('messages.footer.email_value') }}</p>
                                 </div>
                             </li>
                             <li class="flex items-start group">
@@ -723,8 +723,8 @@
                                     <i class="fas fa-clock text-orange-600 dark:text-orange-400"></i>
                                 </div>
                                 <div>
-                                    <span class="font-medium text-gray-900 dark:text-white">Horarios</span>
-                                    <p class="text-sm text-gray-600 dark:text-gray-300">Lun-Vie: 9am - 7pm<br>Sáb: 9am - 2pm</p>
+                                    <span class="font-medium text-gray-900 dark:text-white">{{ __('messages.footer.hours') }}</span>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">{!! __('messages.footer.hours_value') !!}</p>
                                 </div>
                             </li>
                         </ul>
@@ -738,27 +738,27 @@
                             <div class="bg-blue-500/20 p-3 rounded-lg mr-4">
                                 <i class="fas fa-shield-alt text-blue-400 text-xl"></i>
                             </div>
-                            <h4 class="text-lg font-bold text-gray-900 dark:text-white">Garantía Oficial</h4>
+                            <h4 class="text-lg font-bold text-gray-900 dark:text-white">{{ __('messages.footer.official_warranty') }}</h4>
                         </div>
-                        <p class="text-gray-600 dark:text-gray-300 text-sm">Todos nuestros productos incluyen garantía oficial del fabricante y soporte técnico especializado.</p>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm">{{ __('messages.footer.official_warranty_desc') }}</p>
                     </div>
                     <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300 hover:bg-white/10">
                         <div class="flex items-center mb-4">
                             <div class="bg-green-500/20 p-3 rounded-lg mr-4">
                                 <i class="fas fa-truck text-green-400 text-xl"></i>
                             </div>
-                            <h4 class="text-lg font-bold text-gray-900 dark:text-white">Envío Gratis</h4>
+                            <h4 class="text-lg font-bold text-gray-900 dark:text-white">{{ __('messages.footer.free_shipping') }}</h4>
                         </div>
-                        <p class="text-gray-600 dark:text-gray-300 text-sm">Envío gratuito en Medellín para compras superiores a $500.000. Entrega rápida y segura.</p>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm">{{ __('messages.footer.free_shipping_desc') }}</p>
                     </div>
                     <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300 hover:bg-white/10">
                         <div class="flex items-center mb-4">
                             <div class="bg-purple-500/20 p-3 rounded-lg mr-4">
                                 <i class="fas fa-headset text-purple-400 text-xl"></i>
                             </div>
-                            <h4 class="text-lg font-bold text-gray-900 dark:text-white">Soporte 24/7</h4>
+                            <h4 class="text-lg font-bold text-gray-900 dark:text-white">{{ __('messages.footer.support_24_7') }}</h4>
                         </div>
-                        <p class="text-gray-600 dark:text-gray-300 text-sm">Atención al cliente disponible 24/7. Resolvemos tus dudas y problemas en tiempo real.</p>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm">{{ __('messages.footer.support_24_7_desc') }}</p>
                     </div>
                 </div>
 
@@ -772,13 +772,13 @@
                             <img src="{{ asset('img/Logo_2.png') }}" alt="Logo 4GMovil" class="h-10 mr-3">
                             <div>
                                 <p class="text-gray-900 dark:text-white font-bold">© 2025 4GMovil</p>
-                                <p class="text-gray-500 dark:text-gray-400 text-sm">Todos los derechos reservados</p>
+                                <p class="text-gray-500 dark:text-gray-400 text-sm">{{ __('messages.footer.all_rights_reserved') }}</p>
                             </div>
                         </div>
                         <div class="flex space-x-6 text-sm text-gray-500 dark:text-gray-400">
-                            <a href="#" class="hover:text-gray-900 dark:hover:text-white transition-colors duration-300">Política de privacidad</a>
-                            <a href="#" class="hover:text-gray-900 dark:hover:text-white transition-colors duration-300">Términos de servicio</a>
-                            <a href="#" class="hover:text-gray-900 dark:hover:text-white transition-colors duration-300">Política de cookies</a>
+                            <a href="#" class="hover:text-gray-900 dark:hover:text-white transition-colors duration-300">{{ __('messages.footer.privacy_policy') }}</a>
+                            <a href="#" class="hover:text-gray-900 dark:hover:text-white transition-colors duration-300">{{ __('messages.footer.terms_of_service') }}</a>
+                            <a href="#" class="hover:text-gray-900 dark:hover:text-white transition-colors duration-300">{{ __('messages.footer.cookie_policy') }}</a>
                         </div>
                     </div>
                 </div>

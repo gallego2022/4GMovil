@@ -220,20 +220,21 @@
                             class="bg-white dark:bg-gray-700 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-600">
                             <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center">
                                 <i class="fas fa-clock text-blue-600 dark:text-blue-400 mr-3"></i>
-                                Horarios de Atención
+                                <?php echo e(__('messages.contact.opening_hours')); ?>
+
                             </h3>
                             <div class="space-y-3">
                                 <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-600 rounded-lg">
-                                    <span class="text-gray-600 dark:text-gray-300">Lunes - Viernes</span>
+                                    <span class="text-gray-600 dark:text-gray-300"><?php echo e(__('messages.contact.monday_friday')); ?></span>
                                     <span class="font-semibold text-gray-800 dark:text-white">8:00 AM - 6:00 PM</span>
                                 </div>
                                 <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-600 rounded-lg">
-                                    <span class="text-gray-600 dark:text-gray-300">Sábados</span>
+                                    <span class="text-gray-600 dark:text-gray-300"><?php echo e(__('messages.contact.saturday')); ?></span>
                                     <span class="font-semibold text-gray-800 dark:text-white">9:00 AM - 4:00 PM</span>
                                 </div>
                                 <div class="flex justify-between items-center p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
-                                    <span class="text-gray-600 dark:text-gray-300">Domingos</span>
-                                    <span class="font-semibold text-red-500">Cerrado</span>
+                                    <span class="text-gray-600 dark:text-gray-300"><?php echo e(__('messages.contact.sunday')); ?></span>
+                                    <span class="font-semibold text-red-500"><?php echo e(__('messages.contact.closed')); ?></span>
                                 </div>
                             </div>
                         </div>
@@ -245,7 +246,8 @@
                             class="bg-white dark:bg-gray-700 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-600">
                             <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center">
                                 <i class="fas fa-map-marker-alt text-blue-600 dark:text-blue-400 mr-3"></i>
-                                Nuestra Ubicación
+                                <?php echo e(__('messages.contact.our_location')); ?>
+
                             </h3>
                             <!-- Mapa interactivo - Solución 100% funcional -->
                             <div class="bg-gray-200 dark:bg-gray-600 rounded-lg h-64 flex items-center justify-center relative overflow-hidden group">
@@ -275,10 +277,10 @@
                                         <div class="text-center">
                                             <div class="flex items-center justify-center mb-1">
                                                 <i class="fas fa-map-marker-alt text-red-500 mr-2"></i>
-                                                <p class="text-sm font-bold text-gray-800 dark:text-white">4G Móvil</p>
+                                                <p class="text-sm font-bold text-gray-800 dark:text-white"><?php echo e(__('messages.contact.address_line1')); ?></p>
                                             </div>
-                                            <p class="text-xs text-gray-600 dark:text-gray-300">La Candelaria</p>
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">Cra 52 #49-100</p>
+                                            <p class="text-xs text-gray-600 dark:text-gray-300"><?php echo e(__('messages.contact.address_line2')); ?></p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400"><?php echo e(__('messages.contact.address_line3')); ?></p>
                                         </div>
                                     </div>
                                     
