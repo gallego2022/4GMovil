@@ -261,14 +261,14 @@
             left: 0;
             width: 0%;
             height: 4px;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+            background: linear-gradient(90deg, #088af5, #023dfd, #0a2bbe);
             z-index: 9999;
             transition: width 0.1s ease-out;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .dark .scroll-indicator {
-            background: linear-gradient(90deg, #60a5fa, #a78bfa, #f472b6);
+            background: linear-gradient(90deg, #088af5, #023dfd, #0a2bbe);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
@@ -607,7 +607,7 @@
         <footer class="py-16 bg-white dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-white transition-colors duration-300 relative overflow-hidden">
             <!-- Elementos decorativos de fondo -->
             <div class="absolute inset-0">
-                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-500 dark:via-purple-500 dark:to-pink-500"></div>
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-azul1 via-azul2 to-azul3 "></div>
                 <div class="absolute top-20 right-10 w-32 h-32 bg-blue-500/5 dark:bg-blue-400/5 rounded-full blur-3xl"></div>
                 <div class="absolute bottom-20 left-10 w-40 h-40 bg-purple-500/5 dark:bg-purple-400/5 rounded-full blur-3xl"></div>
             </div>
@@ -684,10 +684,10 @@
                     </div>
 
 
-                    <!-- Column 4: Contacto -->
+                    <!-- Column 3: Contacto -->
                     <div>
                         <h3 class="text-xl font-bold mb-6 text-gray-900 dark:text-white flex items-center">
-                            <i class="fas fa-address-card mr-3 text-pink-600 dark:text-pink-400"></i>
+                            <i class="fas fa-address-card mr-3 text-blue-600 dark:text-blue-400"></i>
                             Contacto
                         </h3>
                         <ul class="space-y-4 text-gray-600 dark:text-gray-300">
@@ -769,11 +769,12 @@
                 <div class="pt-8 text-center">
                     <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                         <div class="flex items-center">
-                            <img src="{{ asset('img/Logo_2.png') }}" alt="Logo 4GMovil" class="h-10 mr-3">
-                            <div>
-                                <p class="text-gray-900 dark:text-white font-bold">© 2025 4GMovil</p>
-                                <p class="text-gray-500 dark:text-gray-400 text-sm">Todos los derechos reservados</p>
-                            </div>
+                            <img src="{{ asset('img/Logo_2.png') }}" alt="Logo 4GMovil" class="h-16 mr-3">
+                            
+                        </div>
+                        <div class="align items-center">
+                            <p class="text-gray-900 dark:text-white font-bold">© 2025 4GMovil</p>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm">Todos los derechos reservados</p>
                         </div>
                         <div class="flex space-x-6 text-sm text-gray-500 dark:text-gray-400">
                             <a href="#" class="hover:text-gray-900 dark:hover:text-white transition-colors duration-300">Política de privacidad</a>

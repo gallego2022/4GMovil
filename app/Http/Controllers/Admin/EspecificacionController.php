@@ -35,7 +35,7 @@ class EspecificacionController extends Controller
     public function create()
     {
         try {
-            $categorias = Categoria::where('activo', true)
+            $categorias = Categoria::where('estado', true)
                 ->orderBy('nombre')
                 ->get();
 
@@ -127,7 +127,7 @@ class EspecificacionController extends Controller
     {
         try {
             $especificacion = EspecificacionCategoria::findOrFail($id);
-            $categorias = Categoria::where('activo', true)
+            $categorias = Categoria::where('estado', true)
                 ->orderBy('nombre')
                 ->get();
 

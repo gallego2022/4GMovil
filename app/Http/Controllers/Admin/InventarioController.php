@@ -173,7 +173,7 @@ class InventarioController extends Controller
             'fecha_inicio' => $request->get('fecha_inicio') ? Carbon::parse($request->fecha_inicio) : now()->subMonth(),
             'fecha_fin' => $request->get('fecha_fin') ? Carbon::parse($request->fecha_fin) : now(),
             'producto_id' => $request->get('producto_id'),
-            'tipo_movimiento' => $request->get('tipo_movimiento'),
+            'tipo' => $request->get('tipo'),
             'usuario_id' => $request->get('usuario_id')
         ];
     }

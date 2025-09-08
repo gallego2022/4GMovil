@@ -150,17 +150,17 @@ class InventarioService
             ->get();
 
         $resumen = [
-            'total_entradas' => $movimientos->where('tipo_movimiento', 'entrada')->sum('cantidad'),
-            'total_salidas' => $movimientos->where('tipo_movimiento', 'salida')->sum('cantidad'),
-            'total_ajustes' => $movimientos->where('tipo_movimiento', 'ajuste')->count(),
-            'total_devoluciones' => $movimientos->where('tipo_movimiento', 'devolucion')->sum('cantidad'),
-            'valor_entradas' => $movimientos->where('tipo_movimiento', 'entrada')->sum(function ($mov) {
+            'total_entradas' => $movimientos->where('tipo', 'entrada')->sum('cantidad'),
+            'total_salidas' => $movimientos->where('tipo', 'salida')->sum('cantidad'),
+            'total_ajustes' => $movimientos->where('tipo', 'ajuste')->count(),
+            'total_devoluciones' => $movimientos->where('tipo', 'devolucion')->sum('cantidad'),
+            'valor_entradas' => $movimientos->where('tipo', 'entrada')->sum(function ($mov) {
                 return $mov->cantidad * ($mov->producto->costo_unitario ?? 0);
             }),
-            'valor_salidas' => $movimientos->where('tipo_movimiento', 'salida')->sum(function ($mov) {
+            'valor_salidas' => $movimientos->where('tipo', 'salida')->sum(function ($mov) {
                 return $mov->cantidad * ($mov->producto->costo_unitario ?? 0);
             }),
-            'valor_devoluciones' => $movimientos->where('tipo_movimiento', 'devolucion')->sum(function ($mov) {
+            'valor_devoluciones' => $movimientos->where('tipo', 'devolucion')->sum(function ($mov) {
                 return $mov->cantidad * ($mov->producto->costo_unitario ?? 0);
             }),
             'total_movimientos' => $movimientos->count(),
@@ -212,7 +212,7 @@ class InventarioService
     public function getProductosMasVendidos(int $limite = 10, ?Carbon $fechaInicio = null, ?Carbon $fechaFin = null): Collection
     {
         $query = MovimientoInventario::with(['producto'])
-            ->where('tipo_movimiento', 'salida');
+            ->where('tipo', 'salida');
 
         if ($fechaInicio && $fechaFin) {
             $query->whereBetween('created_at', [$fechaInicio, $fechaFin]);
@@ -313,13 +313,13 @@ class InventarioService
                 // Alertas inteligentes basadas en demanda
                 if ($producto->stock_disponible <= 0) {
                     $alertas[] = 'sin_stock';
-                } elseif ($producto->stock_disponible < $stockOptimo['stock_minimo_recomendado'] * 0.2) {
+                } elseif ($producto->stock_disponible < $stockOptimo['stock_recomendado'] * 0.2) {
                     $alertas[] = 'stock_critico';
-                } elseif ($producto->stock_disponible < $stockOptimo['stock_minimo_recomendado']) {
+                } elseif ($producto->stock_disponible < $stockOptimo['stock_recomendado']) {
                     $alertas[] = 'stock_bajo';
                 }
 
-                if ($producto->stock_disponible < $stockOptimo['stock_minimo_recomendado']) {
+                if ($producto->stock_disponible < $stockOptimo['stock_recomendado']) {
                     $alertas[] = 'necesita_reabastecimiento';
                 }
 
@@ -384,7 +384,7 @@ class InventarioService
         $fechaInicio = now()->subDays($dias);
         
         $ventas = MovimientoInventario::where('producto_id', $productoId)
-            ->where('tipo_movimiento', 'salida')
+            ->where('tipo', 'salida')
             ->where('created_at', '>=', $fechaInicio)
             ->get();
 
@@ -424,10 +424,10 @@ class InventarioService
             'stock_actual' => $producto->stock,
             'stock_disponible' => $producto->stock_disponible,
             'stock_reservado' => $producto->stock_reservado,
-            'stock_minimo_actual' => $producto->stock_minimo,
+            'stock_actual' => $producto->stock,
             'stock_maximo_actual' => $producto->stock_maximo,
             'stock_optimo_recomendado' => round($stockOptimo),
-            'stock_minimo_recomendado' => round($stockMinimoRecomendado),
+            'stock_recomendado' => round($stockMinimoRecomendado),
             'stock_maximo_recomendado' => round($stockMaximoRecomendado),
             'demanda' => $demanda,
             'tiempo_reposicion' => $tiempoReposicion,
@@ -442,7 +442,7 @@ class InventarioService
     {
         return Producto::activos()->get()->filter(function ($producto) {
             $stockOptimo = $this->calcularStockOptimo($producto->producto_id);
-            return !empty($stockOptimo) && $producto->stock_disponible < $stockOptimo['stock_minimo_recomendado'];
+            return !empty($stockOptimo) && $producto->stock_disponible < $stockOptimo['stock_recomendado'];
         });
     }
 
@@ -455,7 +455,7 @@ class InventarioService
     {
         return VarianteProducto::with(['producto', 'imagenes'])
             ->where('disponible', true)
-            ->whereRaw('stock_disponible <= stock_minimo')
+            ->whereRaw('stock_disponible <= stock')
             ->orderBy('stock_disponible')
             ->get();
     }
@@ -478,7 +478,7 @@ class InventarioService
     {
         return VarianteProducto::with(['producto', 'imagenes'])
             ->where('disponible', true)
-            ->whereRaw('stock_disponible <= stock_minimo')
+            ->whereRaw('stock_disponible <= stock')
             ->get();
     }
 
@@ -575,8 +575,8 @@ class InventarioService
             $query = VarianteProducto::with(['producto', 'imagenes'])
                 ->select([
                     'variantes_producto.*',
-                    DB::raw('(SELECT SUM(cantidad) FROM movimientos_inventario_variantes WHERE variante_id = variantes_producto.variante_id AND tipo_movimiento = "entrada") as total_entradas'),
-                    DB::raw('(SELECT SUM(cantidad) FROM movimientos_inventario_variantes WHERE variante_id = variantes_producto.variante_id AND tipo_movimiento = "salida") as total_salidas')
+                    DB::raw('(SELECT SUM(cantidad) FROM movimientos_inventario_variantes WHERE variante_id = variantes_producto.variante_id AND tipo = "entrada") as total_entradas'),
+                    DB::raw('(SELECT SUM(cantidad) FROM movimientos_inventario_variantes WHERE variante_id = variantes_producto.variante_id AND tipo = "salida") as total_salidas')
                 ]);
 
             if ($productoId) {
@@ -598,7 +598,7 @@ class InventarioService
                         'producto' => $variante->producto->nombre_producto,
                         'color' => $variante->nombre,
                         'stock_disponible' => $variante->stock_disponible,
-                        'stock_minimo' => $variante->stock_minimo,
+                        'stock' => $variante->stock,
                         'stock_maximo' => $variante->stock_maximo,
                         'precio_unitario' => $variante->precio_final,
                         'valor_inventario' => $variante->stock_disponible * $variante->precio_final,
@@ -765,15 +765,15 @@ class InventarioService
             $movimientos = MovimientoInventario::whereBetween('fecha_movimiento', [$fechaInicio, $fechaFin])->get();
             
             return [
-                'total_entradas' => $movimientos->where('tipo_movimiento', 'entrada')->sum('cantidad'),
-                'total_salidas' => $movimientos->where('tipo_movimiento', 'salida')->sum('cantidad'),
-                'total_ajustes' => $movimientos->where('tipo_movimiento', 'ajuste')->sum('cantidad'),
+                'total_entradas' => $movimientos->where('tipo', 'entrada')->sum('cantidad'),
+                'total_salidas' => $movimientos->where('tipo', 'salida')->sum('cantidad'),
+                'total_ajustes' => $movimientos->where('tipo', 'ajuste')->sum('cantidad'),
                 'productos_afectados' => $movimientos->unique('producto_id')->count(),
-                'valor_entradas' => $movimientos->where('tipo_movimiento', 'entrada')->sum(function($m) {
+                'valor_entradas' => $movimientos->where('tipo', 'entrada')->sum(function($m) {
                     $producto = Producto::find($m->producto_id);
                     return $producto ? $m->cantidad * $producto->precio_final : 0;
                 }),
-                'valor_salidas' => $movimientos->where('tipo_movimiento', 'salida')->sum(function($m) {
+                'valor_salidas' => $movimientos->where('tipo', 'salida')->sum(function($m) {
                     $producto = Producto::find($m->producto_id);
                     return $producto ? $m->cantidad * $producto->precio_final : 0;
                 })
@@ -818,7 +818,7 @@ class InventarioService
         try {
             $fechaInicio = now()->subDays($dias);
             $movimientos = MovimientoInventario::whereBetween('fecha_movimiento', [$fechaInicio, now()])
-                ->where('tipo_movimiento', 'salida')
+                ->where('tipo', 'salida')
                 ->get();
             
             $productos = Producto::activos()->get();

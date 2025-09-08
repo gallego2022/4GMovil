@@ -961,7 +961,9 @@
 
                 <!-- Logo -->
                 <div class="sidebar-logo">
-                    <img src="<?php echo e(asset('img/Logo_2.png')); ?>" alt="4GMovil">
+                    <a href="<?php echo e(route('admin.index')); ?>" class="text-2xl font-bold text-blue-600">
+                        <img src="<?php echo e(asset('img/Logo_2.png')); ?>" alt="4GMovil " class="h-16">
+                    </a>
                 </div>
 
                 <!-- Navegación móvil -->
@@ -975,7 +977,9 @@
         <div class="sidebar-wrapper hidden lg:block" :class="{ 'dark': darkMode }">
             <!-- Logo -->
             <div class="sidebar-logo">
-                <img src="<?php echo e(asset('img/Logo_2.png')); ?>" alt="4GMovil">
+                <a href="<?php echo e(route('admin.index')); ?>" class="text-2xl font-bold text-blue-600">
+                    <img src="<?php echo e(asset('img/Logo_2.png')); ?>" alt="4GMovil " class="h-16">
+                </a>
             </div>
 
 

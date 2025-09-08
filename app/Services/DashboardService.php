@@ -6,6 +6,7 @@ use App\Models\Producto;
 use App\Models\Categoria;
 use App\Models\Marca;
 use App\Models\Usuario;
+use App\Models\VarianteProducto;
 use App\Models\WebhookEvent;
 use App\Models\Pedido;
 use Illuminate\Http\Request;
@@ -23,7 +24,8 @@ class DashboardService
                 'totalProductos' => Producto::count(),
                 'usuarios' => Usuario::count(),
                 'totalCategorias' => Categoria::count(),
-                'totalMarcas' => Marca::count()
+                'totalMarcas' => Marca::count(),
+                'total_variantes'=> VarianteProducto::count(),
             ];
         } catch (\Exception $e) {
             Log::error('Error obteniendo estadísticas básicas: ' . $e->getMessage());
@@ -31,7 +33,8 @@ class DashboardService
                 'totalProductos' => 0,
                 'usuarios' => 0,
                 'totalCategorias' => 0,
-                'totalMarcas' => 0
+                'totalMarcas' => 0,
+                'total_variantes'=> 0,
             ];
         }
     }

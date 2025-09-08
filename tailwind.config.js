@@ -94,6 +94,10 @@ export default {
           800: '#991b1b',
           900: '#7f1d1d',
         },
+          azul1: '#088af5',
+          azul2: '#023dfd',
+          azul3: '#0a2bbe',
+    
       },
       
       // Fuentes personalizadas

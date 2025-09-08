@@ -16,7 +16,7 @@
             <div class="grid lg:grid-cols-2 gap-12 items-center">
                 <!-- Left Content -->
                 <div class="text-white">
-                    <h1 class="text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                    <h1 class="text-5xl lg:text-6xl dark:text-black font-bold mb-6 leading-tight">
                         Crédito para Reportados
                     </h1>
                     <p class="text-xl lg:text-2xl mb-8 text-gray-100 leading-relaxed">
@@ -41,13 +41,19 @@
 
                     <!-- Action Buttons -->
                     <div class="flex flex-col sm:flex-row gap-6">
-                        <button class="btn-primary text-lg px-4 py-2">
+                        <!-- Botón primario -->
+                        <button
+                            class="flex items-center justify-center text-lg px-4 py-2 bg-blue-600 text-white rounded-2xl shadow-md hover:bg-blue-700 transition">
                             <i class="fas fa-rocket mr-2"></i>Solicitar Crédito
                         </button>
-                        <button class="btn-secondary text-lg px-4 py-2">
+
+                        <!-- Botón secundario -->
+                        <button
+                            class="flex items-center justify-center text-lg px-4 py-2 bg-gray-200 text-gray-700 rounded-2xl shadow-md hover:bg-gray-300 transition">
                             <i class="fas fa-info-circle mr-2"></i>Conoce Más
                         </button>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -103,61 +109,61 @@
                 <!-- Contenedor del carrusel -->
                 <div class="overflow-hidden">
                     <div id="brands-carousel" class="flex transition-transform duration-500 ease-in-out">
-                                                 <!-- Página 1: Samsung, Apple, Xiaomi -->
-                         <div class="flex gap-6 w-full flex-shrink-0">
-                                                         <div
-                                 class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700 flex-1">
-                                 <img src="<?php echo e(asset('img/marcas/samsung.png')); ?>" alt="Samsung"
+                        <!-- Página 1: Samsung, Apple, Xiaomi -->
+                        <div class="flex gap-6 w-full flex-shrink-0">
+                            <div
+                                class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700 flex-1">
+                                <img src="<?php echo e(asset('img/marcas/samsung.png')); ?>" alt="Samsung"
                                     class="w-full h-16 sm:h-16 lg:h-20 object-contain opacity-70 hover:opacity-100 transition-all duration-300 dark:filter dark:brightness-0 dark:invert"
                                     loading="lazy"
                                     onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-12 sm:h-16 lg:h-20 flex items-center justify-center text-gray-500 dark:text-gray-400 font-bold text-xs sm:text-sm lg:text-base\'>SAMSUNG</div>';">
                             </div>
-                                                         <div
-                                 class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700 flex-1">
-                                 <img src="<?php echo e(asset('img/marcas/apple.png')); ?>" alt="Apple"
+                            <div
+                                class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700 flex-1">
+                                <img src="<?php echo e(asset('img/marcas/apple.png')); ?>" alt="Apple"
                                     class="w-full h-12 sm:h-16 lg:h-20 object-contain opacity-70 hover:opacity-100 transition-all duration-300 dark:filter dark:brightness-0 dark:invert"
                                     loading="lazy"
                                     onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-12 sm:h-16 lg:h-20 flex items-center justify-center text-gray-500 dark:text-gray-400 font-bold text-xs sm:text-sm lg:text-base\'>APPLE</div>';">
                             </div>
-                                                         <div
-                                 class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700 flex-1">
-                                 <img src="<?php echo e(asset('img/marcas/xiaomi.png')); ?>" alt="Xiaomi"
+                            <div
+                                class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700 flex-1">
+                                <img src="<?php echo e(asset('img/marcas/xiaomi.png')); ?>" alt="Xiaomi"
                                     class="w-full h-12 sm:h-16 lg:h-20 object-contain opacity-70 hover:opacity-100 transition-all duration-300 dark:filter dark:brightness-0 dark:invert"
                                     loading="lazy"
                                     onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-12 sm:h-16 lg:h-20 flex items-center justify-center text-gray-500 dark:text-gray-400 font-bold text-xs sm:text-sm lg:text-base\'>XIAOMI</div>';">
                             </div>
                         </div>
 
-                                                 <!-- Página 2: Infinix, Motorola, Oppo -->
-                         <div class="flex gap-6 w-full flex-shrink-0">
-                                                         <div
-                                 class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700 flex-1">
-                                 <img src="<?php echo e(asset('img/marcas/infinix.png')); ?>" alt="Infinix"
+                        <!-- Página 2: Infinix, Motorola, Oppo -->
+                        <div class="flex gap-6 w-full flex-shrink-0">
+                            <div
+                                class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700 flex-1">
+                                <img src="<?php echo e(asset('img/marcas/infinix.png')); ?>" alt="Infinix"
                                     class="w-full h-16 sm:h-20 lg:h-24 object-contain opacity-70 hover:opacity-100 transition-all duration-300 dark:filter dark:brightness-0 dark:invert"
                                     loading="lazy"
                                     onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-16 sm:h-20 lg:h-24 flex items-center justify-center text-gray-500 dark:text-gray-400 font-bold text-xs sm:text-sm lg:text-base\'>INFINIX</div>';">
                             </div>
-                                                         <div
-                                 class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700 flex-1">
-                                 <img src="<?php echo e(asset('img/marcas/motorola.png')); ?>" alt="Motorola"
+                            <div
+                                class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700 flex-1">
+                                <img src="<?php echo e(asset('img/marcas/motorola.png')); ?>" alt="Motorola"
                                     class="w-full h-16 sm:h-20 lg:h-24 object-contain opacity-70 hover:opacity-100 transition-all duration-300 dark:filter dark:brightness-0 dark:invert"
                                     loading="lazy"
                                     onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-16 sm:h-20 lg:h-24 flex items-center justify-center text-gray-500 dark:text-gray-400 font-bold text-xs sm:text-sm lg:text-base\'>MOTOROLA</div>';">
                             </div>
-                                                         <div
-                                 class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700 flex-1">
-                                 <img src="<?php echo e(asset('img/marcas/oppo.png')); ?>" alt="Oppo"
+                            <div
+                                class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700 flex-1">
+                                <img src="<?php echo e(asset('img/marcas/oppo.png')); ?>" alt="Oppo"
                                     class="w-full h-16 sm:h-20 lg:h-24 object-contain opacity-70 hover:opacity-100 transition-all duration-300 dark:filter dark:brightness-0 dark:invert"
                                     loading="lazy"
                                     onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-16 sm:h-20 lg:h-24 flex items-center justify-center text-gray-500 dark:text-gray-400 font-bold text-xs sm:text-sm lg:text-base\'>OPPO</div>';">
                             </div>
                         </div>
 
-                                                 <!-- Página 3: ZTE -->
-                         <div class="flex gap-6 w-full flex-shrink-0">
-                                                         <div
-                                 class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700 flex-1">
-                                 <img src="<?php echo e(asset('img/marcas/ZTE.png')); ?>" alt="ZTE"
+                        <!-- Página 3: ZTE -->
+                        <div class="flex gap-6 w-full flex-shrink-0">
+                            <div
+                                class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700 flex-1">
+                                <img src="<?php echo e(asset('img/marcas/ZTE.png')); ?>" alt="ZTE"
                                     class="w-full h-10 sm:h-14 lg:h-18 object-contain opacity-70 hover:opacity-100 transition-all duration-300 dark:filter dark:brightness-0 dark:invert"
                                     loading="lazy"
                                     onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-12 sm:h-16 lg:h-20 flex items-center justify-center text-gray-500 dark:text-gray-400 font-bold text-xs sm:text-sm lg:text-base\'>ZTE</div>';">
@@ -187,7 +193,8 @@
 
 
     <!-- Productos Destacados - Nueva Implementación -->
-    <section class="py-16 bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden">
+    <section
+        class="py-16 bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <!-- Header de la sección -->
             <div class="text-center mb-16">
@@ -198,17 +205,19 @@
                     Descubre nuestra selección premium de dispositivos móviles con la mejor tecnología,
                     garantía extendida y soporte técnico especializado
                 </p>
-                
+
                 <!-- Información de productos -->
-                <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-4 mb-8 inline-block">
+                <div
+                    class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-4 mb-8 inline-block">
                     <p class="text-sm text-blue-700 dark:text-blue-300 font-medium">
                         <i class="fas fa-info-circle mr-2"></i>
                         Mostrando <?php echo e(count($productosDestacados)); ?> productos destacados
                     </p>
                 </div>
-                
+
                 <!-- Características destacadas -->
-                <div class="flex flex-wrap justify-center items-center gap-6 sm:gap-8 text-sm text-gray-600 dark:text-gray-400">
+                <div
+                    class="flex flex-wrap justify-center items-center gap-6 sm:gap-8 text-sm text-gray-600 dark:text-gray-400">
                     <div class="flex items-center">
                         <i class="fas fa-shield-alt text-green-500 mr-2 text-lg"></i>
                         <span class="font-medium">Garantía oficial</span>
@@ -228,7 +237,8 @@
             <div class="w-full">
 
                 <!-- Contenedor del carrusel -->
-                <div class="overflow-x-auto rounded-2xl bg-white dark:bg-gray-800 shadow-lg dark:shadow-gray-900/50 mx-4 sm:mx-6 lg:mx-8 scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-gray-100 dark:scrollbar-track-gray-700 hover:scrollbar-thumb-blue-600 transition-all duration-300">
+                <div
+                    class="overflow-x-auto rounded-2xl bg-white dark:bg-gray-800 shadow-lg dark:shadow-gray-900/50 mx-4 sm:mx-6 lg:mx-8 scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-gray-100 dark:scrollbar-track-gray-700 hover:scrollbar-thumb-blue-600 transition-all duration-300">
                     <div id="products-carousel" class="flex gap-4 sm:gap-6 px-4 sm:px-6 py-4 min-w-max">
                         <?php
                             $totalItems = count($productosDestacados);
@@ -278,19 +288,23 @@
                         <!-- Indicador de scroll visual -->
                         <div class="flex items-center space-x-2">
                             <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                            <div class="w-2 h-2 bg-blue-400 rounded-full animate-pulse" style="animation-delay: 0.2s;"></div>
-                            <div class="w-2 h-2 bg-blue-300 rounded-full animate-pulse" style="animation-delay: 0.4s;"></div>
+                            <div class="w-2 h-2 bg-blue-400 rounded-full animate-pulse" style="animation-delay: 0.2s;">
+                            </div>
+                            <div class="w-2 h-2 bg-blue-300 rounded-full animate-pulse" style="animation-delay: 0.4s;">
+                            </div>
                         </div>
-                        
+
                         <p class="text-sm text-gray-600 dark:text-gray-400 font-medium">
                             <i class="fas fa-arrows-alt-h mr-2"></i>
                             Desliza horizontalmente para ver todos los productos
                         </p>
-                        
+
                         <!-- Indicador de scroll visual -->
                         <div class="flex items-center space-x-2">
-                            <div class="w-2 h-2 bg-blue-300 rounded-full animate-pulse" style="animation-delay: 0.4s;"></div>
-                            <div class="w-2 h-2 bg-blue-400 rounded-full animate-pulse" style="animation-delay: 0.2s;"></div>
+                            <div class="w-2 h-2 bg-blue-300 rounded-full animate-pulse" style="animation-delay: 0.4s;">
+                            </div>
+                            <div class="w-2 h-2 bg-blue-400 rounded-full animate-pulse" style="animation-delay: 0.2s;">
+                            </div>
                             <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
                         </div>
                     </div>
@@ -299,7 +313,8 @@
 
             <!-- Call to action -->
             <div class="text-center mt-16">
-                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-800 dark:to-indigo-900 rounded-3xl p-8 shadow-2xl dark:shadow-gray-900/50">
+                <div
+                    class="bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-800 dark:to-indigo-900 rounded-3xl p-8 shadow-2xl dark:shadow-gray-900/50">
                     <h3 class="text-2xl sm:text-3xl font-bold text-white mb-4">
                         ¿No encuentras lo que buscas?
                     </h3>
@@ -327,10 +342,11 @@
             </div>
             <br>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                                 <!-- Ally 1 - Alquería -->
-                 <div
-                     class="bg-white dark:bg-gray-800 p-8 rounded-2xl text-center shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-gray-100 dark:border-gray-700">
-                                         <div class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-700 dark:to-gray-600 p-6 rounded-2xl mb-6">
+                <!-- Ally 1 - Alquería -->
+                <div
+                    class="bg-white dark:bg-gray-800 p-8 rounded-2xl text-center shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-gray-100 dark:border-gray-700">
+                    <div
+                        class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 p-6 rounded-2xl mb-6">
                         <img src="https://yt3.googleusercontent.com/7oj-EkIyJE1hS06HKVpqz7Nzmg4wJEz3Lu9CD4JO39Mzf1k-1XYp-_KMlHJQYZocuBdRGKf7=s900-c-k-c0x00ffffff-no-rj"
                             alt="Alquería" class="w-full h-20 object-contain">
                     </div>
@@ -339,10 +355,11 @@
                     </p>
                 </div>
 
-                                 <!-- Ally 2 - Grupo Forma Íntimas -->
-                 <div
-                     class="bg-white dark:bg-gray-800 p-8 rounded-2xl text-center shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-gray-100 dark:border-gray-700">
-                                         <div class="bg-gradient-to-br from-pink-50 to-pink-100 dark:from-gray-700 dark:to-gray-600 p-6 rounded-2xl mb-6">
+                <!-- Ally 2 - Grupo Forma Íntimas -->
+                <div
+                    class="bg-white dark:bg-gray-800 p-8 rounded-2xl text-center shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-gray-100 dark:border-gray-700">
+                    <div
+                        class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 p-6 rounded-2xl mb-6">
                         <img src="<?php echo e(asset('img/gfi.png')); ?>" alt="Grupo Forma Íntimas"
                             class="w-full h-20 object-contain">
                     </div>
@@ -350,10 +367,11 @@
                     <p class="text-gray-600 leading-relaxed">Ropa interior femenina con diseños innovadores y cómodos</p>
                 </div>
 
-                                 <!-- Ally 3 - Centro Colombo Americano -->
-                 <div
-                     class="bg-white dark:bg-gray-800 p-8 rounded-2xl text-center shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-gray-100 dark:border-gray-700">
-                                         <div class="bg-gradient-to-br from-red-50 to-red-100 dark:from-gray-700 dark:to-gray-600 p-6 rounded-2xl mb-6">
+                <!-- Ally 3 - Centro Colombo Americano -->
+                <div
+                    class="bg-white dark:bg-gray-800 p-8 rounded-2xl text-center shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-gray-100 dark:border-gray-700">
+                    <div
+                        class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 p-6 rounded-2xl mb-6">
                         <img src="https://pbs.twimg.com/profile_images/827330867097980928/Rm4yC6YI_400x400.jpg"
                             alt="Centro Colombo Americano" class="w-full h-20 object-contain">
                     </div>
@@ -362,10 +380,11 @@
                         bilingües</p>
                 </div>
 
-                                 <!-- Ally 4 - Aderezos -->
-                 <div
-                     class="bg-white dark:bg-gray-800 p-8 rounded-2xl text-center shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-gray-100 dark:border-gray-700">
-                                         <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-gray-700 dark:to-gray-600 p-6 rounded-2xl mb-6">
+                <!-- Ally 4 - Aderezos -->
+                <div
+                    class="bg-white dark:bg-gray-800 p-8 rounded-2xl text-center shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-gray-100 dark:border-gray-700">
+                    <div
+                        class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 p-6 rounded-2xl mb-6">
                         <img src="https://cdn.shopify.com/s/files/1/0559/1266/1155/files/Logo-aderezos-original_c6d4acd6-d8e7-4356-97f8-0f3eda5c0886.png?v=1625758391"
                             alt="Aderezos" class="w-full h-20 object-contain">
                     </div>
@@ -387,9 +406,9 @@
             </div>
             <br>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                 <!-- Testimonial 1 -->
-                 <div
-                     class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700 p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-blue-100 dark:border-gray-600">
+                <!-- Testimonial 1 -->
+                <div
+                    class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-blue-100 dark:border-gray-600">
                     <div class="flex items-center mb-6">
                         <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Cliente"
                             class="w-16 h-16 rounded-full mr-4 ring-4 ring-blue-200 shadow-lg">
@@ -408,9 +427,9 @@
                         menos de una hora y quedó como nuevo. Muy recomendados!"</p>
                 </div>
 
-                                 <!-- Testimonial 2 -->
-                 <div
-                     class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-gray-800 dark:to-gray-700 p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-green-100 dark:border-gray-600">
+                <!-- Testimonial 2 -->
+                <div
+                    class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-green-100 dark:border-gray-600">
                     <div class="flex items-center mb-6">
                         <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Cliente"
                             class="w-16 h-16 rounded-full mr-4 ring-4 ring-green-200 shadow-lg">
@@ -429,9 +448,9 @@
                         mejor que encontré en el mercado. Además, la atención fue muy personalizada."</p>
                 </div>
 
-                                 <!-- Testimonial 3 -->
-                 <div
-                     class="bg-gradient-to-br from-purple-50 to-violet-50 dark:from-gray-800 dark:to-gray-700 p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-purple-100 dark:border-gray-600">
+                <!-- Testimonial 3 -->
+                <div
+                    class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-purple-100 dark:border-gray-600">
                     <div class="flex items-center mb-6">
                         <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Cliente"
                             class="w-16 h-16 rounded-full mr-4 ring-4 ring-purple-200 shadow-lg">
@@ -484,50 +503,50 @@
 
     <!-- Estilos CSS optimizados -->
     <link rel="stylesheet" href="<?php echo e(asset('css/landing-optimized.css')); ?>">
-    
+
     <!-- Estilos personalizados para el scrollbar -->
     <style>
         /* Scrollbar personalizado para Webkit (Chrome, Safari, Edge) */
         .scrollbar-thin::-webkit-scrollbar {
             height: 8px;
         }
-        
+
         .scrollbar-thin::-webkit-scrollbar-track {
             background: #f3f4f6;
             border-radius: 4px;
         }
-        
+
         .scrollbar-thin::-webkit-scrollbar-thumb {
             background: linear-gradient(135deg, #3b82f6, #1d4ed8);
             border-radius: 4px;
             transition: all 0.3s ease;
         }
-        
+
         .scrollbar-thin::-webkit-scrollbar-thumb:hover {
             background: linear-gradient(135deg, #2563eb, #1e40af);
             transform: scaleY(1.1);
         }
-        
+
         /* Scrollbar personalizado para Firefox */
         .scrollbar-thin {
             scrollbar-width: thin;
             scrollbar-color: #3b82f6 #f3f4f6;
         }
-        
+
         /* Modo oscuro */
         .dark .scrollbar-thin::-webkit-scrollbar-track {
             background: #374151;
         }
-        
+
         .dark .scrollbar-thin {
             scrollbar-color: #3b82f6 #374151;
         }
-        
+
         /* Animación suave para el scroll */
         .scrollbar-thin {
             scroll-behavior: smooth;
         }
-        
+
         /* Indicador de scroll visual */
         .scrollbar-thin::after {
             content: '';
@@ -540,7 +559,7 @@
             opacity: 0;
             transition: opacity 0.3s ease;
         }
-        
+
         .scrollbar-thin:hover::after {
             opacity: 1;
         }

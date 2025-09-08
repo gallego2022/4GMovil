@@ -7,8 +7,7 @@ use App\Http\Controllers\Cliente\EstadoPedidoController;
 use App\Http\Controllers\Cliente\PedidoController;
 
 Route::middleware(['auth', 'email.verified'])->group(function () {
-    // Rutas de logout para clientes
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    
     // Rutas de perfil para clientes
     Route::get('/perfil', [AuthController::class, 'perfil'])->name('perfil');
     Route::put('/perfil', [AuthController::class, 'actualizarPerfil'])->name('perfil.actualizar');
@@ -36,3 +35,6 @@ Route::middleware(['auth', 'email.verified'])->group(function () {
     // Rutas de estados de pedido para clientes
     Route::resource('estados-pedido', EstadoPedidoController::class);
 });
+
+// Rutas de logout para clientes
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

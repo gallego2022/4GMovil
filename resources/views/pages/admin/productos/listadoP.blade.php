@@ -31,10 +31,7 @@
                     'text' => 'text-green-700 dark:text-green-300',
                     'ring' => 'ring-green-600/20 dark:ring-green-600/30'
                 ];
-            case 'de exhibicion':
-            case 'de exhibición':
-            case 'exhibicion':
-            case 'exhibición':
+            case 'usado':
                 return [
                     'bg' => 'bg-blue-50 dark:bg-blue-900',
                     'text' => 'text-blue-700 dark:text-blue-300',
