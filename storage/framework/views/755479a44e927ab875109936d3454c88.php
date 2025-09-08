@@ -1,45 +1,43 @@
-@extends('layouts.app-new')
+<?php $__env->startSection('title', 'Categorías - 4GMovil'); ?>
 
-@section('title', 'Marcas - 4GMovil')
-
-@push('datatables-css')
+<?php $__env->startPush('datatables-css'); ?>
 <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
 <link href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css" rel="stylesheet">
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('jquery-script')
+<?php $__env->startPush('jquery-script'); ?>
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('datatables-script')
+<?php $__env->startPush('datatables-script'); ?>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="space-y-6">
     <!-- Vista móvil (cards) -->
     <div class="grid grid-cols-1 gap-4 sm:hidden" id="mobileCards">
         <!-- Encabezado móvil -->
         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
             <div class="mb-4">
-                <h2 class="text-xl font-bold text-gray-900 dark:text-white">Marcas Registradas</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-300">Gestiona las marcas de los productos</p>
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white">Categorías Registradas</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-300">Gestiona las categorías de los productos</p>
             </div>
             
             <!-- Botones de acción móvil -->
             <div class="flex flex-wrap items-center gap-2 mb-4">
-                <!-- Botón Crear Marca -->
-                <a href="{{ route('marcas.create') }}" 
+                <!-- Botón Crear Categoría -->
+                <a href="<?php echo e(route('categorias.create')); ?>" 
                    class="inline-flex items-center rounded-lg bg-gradient-to-r from-slate-600 to-gray-700 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:from-slate-700 hover:to-gray-800 transform hover:scale-105 transition-all duration-300 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600 hover:shadow-xl min-w-[180px] justify-center">
                     <svg class="-ml-0.5 mr-1.5 h-5 w-5 transition-transform duration-300 group-hover:rotate-180" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
-                    Crear Marca
+                    Crear Categoría
                 </a>
                 
                 <!-- Botones de exportación móvil -->
@@ -83,7 +81,7 @@
                 <input type="text" 
                        id="busquedaMovil" 
                        class="block w-full rounded-md border-0 py-1.5 pl-4 pr-10 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 dark:bg-gray-800 sm:text-sm sm:leading-6" 
-                       placeholder="Buscar marcas...">
+                       placeholder="Buscar categorías...">
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                     <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
@@ -92,42 +90,44 @@
             </div>
         </div>
 
-        @forelse($marcas as $marca)
-        <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden marca-card">
+        <?php $__empty_1 = true; $__currentLoopData = $categorias; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $categoria): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+        <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden categoria-card">
             <div class="p-4">
                 <div class="flex items-start space-x-4">
-                    <!-- Icono de marca -->
+                    <!-- Icono de categoría -->
                     <div class="flex-shrink-0">
                         <div class="h-16 w-16 rounded-lg bg-brand-100 dark:bg-brand-900 flex items-center justify-center">
                             <svg class="h-8 w-8 text-brand-600 dark:text-brand-400" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057A1 1 0 015 10h4a1 1 0 010 2H5a1 1 0 01-1-1v-.943z" clip-rule="evenodd"/>
+                                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
                             </svg>
                         </div>
                     </div>
-                    <!-- Información de la marca -->
+                    <!-- Información de la categoría -->
                     <div class="flex-1 min-w-0">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white truncate">
-                            {{ $marca->nombre }}
+                            <?php echo e($categoria->nombre); ?>
+
                         </h3>
                         <div class="mt-1 flex flex-col space-y-1">
                             <p class="text-sm text-gray-500 dark:text-gray-400">
-                                ID: {{ $marca->marca_id }}
+                                ID: <?php echo e($categoria->categoria_id); ?>
+
                             </p>
                         </div>
                     </div>
                 </div>
                 <!-- Botones de acción -->
                 <div class="mt-4 flex justify-end space-x-2">
-                    <a href="{{ route('marcas.edit', $marca) }}" 
+                    <a href="<?php echo e(route('categorias.edit', $categoria)); ?>" 
                        class="inline-flex items-center rounded-md bg-white dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600">
                         <svg class="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400 dark:text-gray-300" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z"/>
                         </svg>
                         Editar
                     </a>
-                    <form action="{{ route('marcas.destroy', $marca) }}" method="POST" class="form-eliminar inline">
-                        @csrf
-                        @method('DELETE')
+                    <form action="<?php echo e(route('categorias.destroy', $categoria)); ?>" method="POST" class="form-eliminar inline">
+                        <?php echo csrf_field(); ?>
+                        <?php echo method_field('DELETE'); ?>
                         <button type="submit" 
                                 class="inline-flex items-center rounded-md bg-red-50 dark:bg-red-950 px-3 py-2 text-sm font-semibold text-red-700 dark:text-red-300 shadow-sm ring-1 ring-inset ring-red-600/20 dark:ring-red-900/20 hover:bg-red-100 dark:hover:bg-red-900">
                             <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -139,11 +139,11 @@
                 </div>
             </div>
         </div>
-        @empty
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
         <div class="text-center py-4 text-sm text-gray-500 dark:text-gray-400">
-            No hay marcas registradas en el sistema
+            No hay categorías registradas en el sistema
         </div>
-        @endforelse
+        <?php endif; ?>
     </div>
 
     <!-- Vista escritorio (tabla) -->
@@ -153,28 +153,27 @@
             <div class="mb-6">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                     <div>
-                        <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">Marcas Registradas</h2>
-                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-300">Gestiona las marcas de los productos</p>
+                        <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">Categorías Registradas</h2>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-300">Gestiona las categorías de los productos</p>
                     </div>
                     
-                    <!-- Botón Crear Marca -->
-                    <a href="{{ route('marcas.create') }}" 
+                    <!-- Botón Crear Categoría -->
+                    <a href="<?php echo e(route('categorias.create')); ?>" 
                        class="group inline-flex items-center rounded-xl bg-gradient-to-r from-slate-600 to-gray-700 px-8 py-4 text-base font-semibold text-white shadow-lg hover:from-slate-700 hover:to-gray-800 transform hover:scale-105 transition-all duration-300 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600 hover:shadow-xl min-w-[180px] justify-center">
                         <svg class="-ml-0.5 mr-3 h-6 w-6 transition-transform duration-300 group-hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
-                        Crear Marca
+                        Crear Categoría
                     </a>
                 </div>
             </div>
-            
             <!-- Barra de herramientas con búsqueda y filtros -->
             <div class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-100 dark:border-gray-800 mb-6">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
                     <!-- Búsqueda personalizada -->
                     <div class="flex-1 max-w-md">
                         <label for="busquedaEscritorio" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Buscar marcas
+                            Buscar categorías
                         </label>
                         <div class="relative">
                             <input type="text" 
@@ -191,9 +190,10 @@
                     
                     <!-- Información de registros -->
                     <div class="text-sm text-gray-500 dark:text-gray-400">
-                        <span id="infoRegistros">Mostrando todas las marcas</span>
+                        <span id="infoRegistros">Mostrando todas las categorías</span>
                     </div>
                     
+                    <!-- Botones de Exportacion -->
                     <button id="exportExcelEscritorio"
                     class="group inline-flex items-center rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:from-green-600 hover:to-emerald-700 transform hover:scale-105 transition-all duration-300 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 hover:shadow-xl min-w-[120px] justify-center">
                     <svg class="mr-2 h-5 w-5 transition-transform duration-300 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -209,12 +209,13 @@
                 </svg>
                 PDF
             </button>
+
                 </div>
             </div>
             <!-- Tabla -->
             <div class="bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-100 dark:border-gray-800 overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table id="tablaMarcas"
+                    <table id="tablaCategorias"
                         class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <thead class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 text-gray-700 dark:text-gray-300 text-sm font-semibold">
                             <tr>
@@ -224,14 +225,14 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 text-sm">
-                            @forelse($marcas as $marca)
+                            <?php $__empty_1 = true; $__currentLoopData = $categorias; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $categoria): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 ease-in-out border-b border-gray-100 dark:border-gray-800">
-                                <td class="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">{{ $marca->marca_id }}</td>
-                                <td class="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">{{ $marca->nombre }}</td>
+                                <td class="px-6 py-4 font-medium text-gray-900 dark:text-gray-100"><?php echo e($categoria->categoria_id); ?></td>
+                                <td class="px-6 py-4 font-medium text-gray-900 dark:text-gray-100"><?php echo e($categoria->nombre); ?></td>
                                 <td class="px-6 py-4 flex items-center gap-3 justify-center">
                                 <!-- Botón Editar -->
                                 <div class="relative group">
-                                    <a href="{{ route('marcas.edit', $marca) }}" 
+                                    <a href="<?php echo e(route('categorias.edit', $categoria)); ?>" 
                                        class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/50 dark:hover:bg-blue-900 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-all duration-200 ease-in-out transform hover:scale-110">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
                                             stroke="currentColor">
@@ -247,9 +248,9 @@
 
                                 <!-- Botón Eliminar -->
                                 <div class="relative group">
-                                    <form action="{{ route('marcas.destroy', $marca) }}" method="POST" class="form-eliminar inline">
-                                        @csrf
-                                        @method('DELETE')
+                                    <form action="<?php echo e(route('categorias.destroy', $categoria)); ?>" method="POST" class="form-eliminar inline">
+                                        <?php echo csrf_field(); ?>
+                                        <?php echo method_field('DELETE'); ?>
                                         <button type="submit" 
                                             class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-red-50 hover:bg-red-100 dark:bg-red-900/50 dark:hover:bg-red-900 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-all duration-200 ease-in-out transform hover:scale-110">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
@@ -266,13 +267,13 @@
                                 </div>
                             </td>
                         </tr>
-                        @empty
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <tr>
                             <td colspan="3" class="px-4 py-2 text-center text-gray-500 dark:text-gray-400">
-                                No hay marcas registradas en el sistema
+                                No hay categorías registradas en el sistema
                             </td>
                         </tr>
-                        @endforelse
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
@@ -280,7 +281,31 @@
     </div>
 </div>
 
-@push('styles')
+<?php if(session('success')): ?>
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: '¡Éxito!',
+        text: "<?php echo e(session('success')); ?>",
+        timer: 2500,
+        showConfirmButton: false
+    });
+</script>
+<?php endif; ?>
+
+<?php if(session('eliminado') == 'ok'): ?>
+<script>
+    Swal.fire({
+        title: 'Eliminado',
+        text: 'La categoría ha sido eliminada correctamente.',
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+    });
+</script>
+<?php endif; ?>
+
+<?php $__env->startPush('styles'); ?>
 <style>
     /* Ocultar completamente los botones por defecto de DataTables */
     .dt-buttons {
@@ -345,50 +370,50 @@
     }
     
     /* Estilos para bordes de tabla en modo oscuro */
-    .dark #tablaMarcas {
+    .dark #tablaCategorias {
         border: 1px solid #374151 !important;
     }
     
-    .dark #tablaMarcas th {
+    .dark #tablaCategorias th {
         border-bottom: 1px solid #4b5563 !important;
         border-right: 1px solid #4b5563 !important;
     }
     
-    .dark #tablaMarcas td {
+    .dark #tablaCategorias td {
         border-bottom: 1px solid #374151 !important;
         border-right: 1px solid #374151 !important;
     }
     
-    .dark #tablaMarcas th:last-child,
-    .dark #tablaMarcas td:last-child {
+    .dark #tablaCategorias th:last-child,
+    .dark #tablaCategorias td:last-child {
         border-right: none !important;
     }
     
-    .dark #tablaMarcas tr:last-child td {
+    .dark #tablaCategorias tr:last-child td {
         border-bottom: none !important;
     }
     
     /* Estilos para bordes de tabla en modo claro */
-    #tablaMarcas {
+    #tablaCategorias {
         border: 1px solid #d1d5db !important;
     }
     
-    #tablaMarcas th {
+    #tablaCategorias th {
         border-bottom: 1px solid #e5e7eb !important;
         border-right: 1px solid #e5e7eb !important;
     }
     
-    #tablaMarcas td {
+    #tablaCategorias td {
         border-bottom: 1px solid #f3f4f6 !important;
         border-right: 1px solid #f3f4f6 !important;
     }
     
-    #tablaMarcas th:last-child,
-    #tablaMarcas td:last-child {
+    #tablaCategorias th:last-child,
+    #tablaCategorias td:last-child {
         border-right: none !important;
     }
     
-    #tablaMarcas tr:last-child td {
+    #tablaCategorias tr:last-child td {
         border-bottom: none !important;
     }
     
@@ -459,24 +484,24 @@
         transform: translateY(-1px) !important;
     }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
     $(document).ready(function() {
         // Verificar si hay datos antes de inicializar DataTables
-        var hasData = {{ $marcas->count() > 0 ? 'true' : 'false' }};
+        var hasData = <?php echo e($categorias->count() > 0 ? 'true' : 'false'); ?>;
         
         if (hasData) {
             // Inicializar DataTable solo si hay datos
-            var table = $('#tablaMarcas').DataTable({
+            var table = $('#tablaCategorias').DataTable({
                 dom: 'rtip', // Removido 'f' para ocultar el campo de búsqueda por defecto
                 buttons: [
                     {
                         extend: 'excelHtml5',
-                        title: 'Marcas - 4GMovil',
+                        title: 'Categorías - 4GMovil',
                         text: 'Exportar a Excel',
-                        className: 'buttons-excel', // Agregado 'hidden' para ocultar
+                        className: 'buttons-excel hidden', // Agregado 'hidden' para ocultar
                         exportOptions: {
                             columns: [0, 1]
                         },
@@ -487,9 +512,9 @@
                     },
                     {
                         extend: 'pdfHtml5',
-                        title: 'Marcas - 4GMovil',
+                        title: 'Categorías - 4GMovil',
                         text: 'Exportar a PDF',
-                        className: 'buttons-pdf', // Agregado 'hidden' para ocultar
+                        className: 'buttons-pdf hidden', // Agregado 'hidden' para ocultar
                         exportOptions: {
                             columns: [0, 1]
                         },
@@ -590,9 +615,9 @@
                      var endRecord = info.end;
                      
                      if (filteredRecords === totalRecords) {
-                         $('#infoRegistros').text(`Mostrando ${startRecord} a ${endRecord} de ${totalRecords} marcas`);
+                         $('#infoRegistros').text(`Mostrando ${startRecord} a ${endRecord} de ${totalRecords} categorías`);
                     } else {
-                         $('#infoRegistros').text(`Mostrando ${startRecord} a ${endRecord} de ${filteredRecords} marcas (filtrado de ${totalRecords} total)`);
+                         $('#infoRegistros').text(`Mostrando ${startRecord} a ${endRecord} de ${filteredRecords} categorías (filtrado de ${totalRecords} total)`);
                      }
                  } catch (error) {
                      console.error('Error al actualizar información de registros:', error);
@@ -667,10 +692,10 @@
             $('.dataTables_paginate').hide();
             $('.dataTables_length').hide();
             $('.dataTables_info').hide();
-            $('#infoRegistros').text('No hay marcas registradas');
+            $('#infoRegistros').text('No hay categorías registradas');
         }
 
-        // Confirmación para eliminar marca
+        // Confirmación para eliminar categoría
         $('.form-eliminar').submit(function(e) {
             e.preventDefault();
             Swal.fire({
@@ -694,7 +719,7 @@
             searchTerm = searchTerm.toLowerCase();
             var visibleCount = 0;
             
-            $('#mobileCards .marca-card').each(function() {
+            $('#mobileCards .categoria-card').each(function() {
                 const card = $(this);
                 
                 // Obtener todos los textos de la tarjeta
@@ -721,7 +746,7 @@
                 if (noResultsMsg.length === 0) {
                     $('#mobileCards').append(`
                         <div id="mobileNoResults" class="text-center py-4 text-sm text-gray-500 dark:text-gray-400">
-                            No se encontraron marcas que coincidan con la búsqueda
+                            No se encontraron categorías que coincidan con la búsqueda
                         </div>
                     `);
                 }
@@ -741,6 +766,7 @@
         });
     });
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app-new', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\usuario\Documents\GitHub\4GMovil\resources\views/pages/admin/categorias/index.blade.php ENDPATH**/ ?>

@@ -1,26 +1,24 @@
-@extends('layouts.app-new')
+<?php $__env->startSection('title', 'Marcas - 4GMovil'); ?>
 
-@section('title', 'Marcas - 4GMovil')
-
-@push('datatables-css')
+<?php $__env->startPush('datatables-css'); ?>
 <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
 <link href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css" rel="stylesheet">
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('jquery-script')
+<?php $__env->startPush('jquery-script'); ?>
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('datatables-script')
+<?php $__env->startPush('datatables-script'); ?>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="space-y-6">
     <!-- Vista móvil (cards) -->
     <div class="grid grid-cols-1 gap-4 sm:hidden" id="mobileCards">
@@ -34,7 +32,7 @@
             <!-- Botones de acción móvil -->
             <div class="flex flex-wrap items-center gap-2 mb-4">
                 <!-- Botón Crear Marca -->
-                <a href="{{ route('marcas.create') }}" 
+                <a href="<?php echo e(route('marcas.create')); ?>" 
                    class="inline-flex items-center rounded-lg bg-gradient-to-r from-slate-600 to-gray-700 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:from-slate-700 hover:to-gray-800 transform hover:scale-105 transition-all duration-300 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600 hover:shadow-xl min-w-[180px] justify-center">
                     <svg class="-ml-0.5 mr-1.5 h-5 w-5 transition-transform duration-300 group-hover:rotate-180" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" stroke-linecap="round" stroke-linejoin="round"/>
@@ -92,7 +90,7 @@
             </div>
         </div>
 
-        @forelse($marcas as $marca)
+        <?php $__empty_1 = true; $__currentLoopData = $marcas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $marca): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
         <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden marca-card">
             <div class="p-4">
                 <div class="flex items-start space-x-4">
@@ -107,27 +105,29 @@
                     <!-- Información de la marca -->
                     <div class="flex-1 min-w-0">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white truncate">
-                            {{ $marca->nombre }}
+                            <?php echo e($marca->nombre); ?>
+
                         </h3>
                         <div class="mt-1 flex flex-col space-y-1">
                             <p class="text-sm text-gray-500 dark:text-gray-400">
-                                ID: {{ $marca->marca_id }}
+                                ID: <?php echo e($marca->marca_id); ?>
+
                             </p>
                         </div>
                     </div>
                 </div>
                 <!-- Botones de acción -->
                 <div class="mt-4 flex justify-end space-x-2">
-                    <a href="{{ route('marcas.edit', $marca) }}" 
+                    <a href="<?php echo e(route('marcas.edit', $marca)); ?>" 
                        class="inline-flex items-center rounded-md bg-white dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600">
                         <svg class="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400 dark:text-gray-300" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z"/>
                         </svg>
                         Editar
                     </a>
-                    <form action="{{ route('marcas.destroy', $marca) }}" method="POST" class="form-eliminar inline">
-                        @csrf
-                        @method('DELETE')
+                    <form action="<?php echo e(route('marcas.destroy', $marca)); ?>" method="POST" class="form-eliminar inline">
+                        <?php echo csrf_field(); ?>
+                        <?php echo method_field('DELETE'); ?>
                         <button type="submit" 
                                 class="inline-flex items-center rounded-md bg-red-50 dark:bg-red-950 px-3 py-2 text-sm font-semibold text-red-700 dark:text-red-300 shadow-sm ring-1 ring-inset ring-red-600/20 dark:ring-red-900/20 hover:bg-red-100 dark:hover:bg-red-900">
                             <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -139,11 +139,11 @@
                 </div>
             </div>
         </div>
-        @empty
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
         <div class="text-center py-4 text-sm text-gray-500 dark:text-gray-400">
             No hay marcas registradas en el sistema
         </div>
-        @endforelse
+        <?php endif; ?>
     </div>
 
     <!-- Vista escritorio (tabla) -->
@@ -158,7 +158,7 @@
                     </div>
                     
                     <!-- Botón Crear Marca -->
-                    <a href="{{ route('marcas.create') }}" 
+                    <a href="<?php echo e(route('marcas.create')); ?>" 
                        class="group inline-flex items-center rounded-xl bg-gradient-to-r from-slate-600 to-gray-700 px-8 py-4 text-base font-semibold text-white shadow-lg hover:from-slate-700 hover:to-gray-800 transform hover:scale-105 transition-all duration-300 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600 hover:shadow-xl min-w-[180px] justify-center">
                         <svg class="-ml-0.5 mr-3 h-6 w-6 transition-transform duration-300 group-hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -224,14 +224,14 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 text-sm">
-                            @forelse($marcas as $marca)
+                            <?php $__empty_1 = true; $__currentLoopData = $marcas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $marca): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 ease-in-out border-b border-gray-100 dark:border-gray-800">
-                                <td class="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">{{ $marca->marca_id }}</td>
-                                <td class="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">{{ $marca->nombre }}</td>
+                                <td class="px-6 py-4 font-medium text-gray-900 dark:text-gray-100"><?php echo e($marca->marca_id); ?></td>
+                                <td class="px-6 py-4 font-medium text-gray-900 dark:text-gray-100"><?php echo e($marca->nombre); ?></td>
                                 <td class="px-6 py-4 flex items-center gap-3 justify-center">
                                 <!-- Botón Editar -->
                                 <div class="relative group">
-                                    <a href="{{ route('marcas.edit', $marca) }}" 
+                                    <a href="<?php echo e(route('marcas.edit', $marca)); ?>" 
                                        class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/50 dark:hover:bg-blue-900 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-all duration-200 ease-in-out transform hover:scale-110">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
                                             stroke="currentColor">
@@ -247,9 +247,9 @@
 
                                 <!-- Botón Eliminar -->
                                 <div class="relative group">
-                                    <form action="{{ route('marcas.destroy', $marca) }}" method="POST" class="form-eliminar inline">
-                                        @csrf
-                                        @method('DELETE')
+                                    <form action="<?php echo e(route('marcas.destroy', $marca)); ?>" method="POST" class="form-eliminar inline">
+                                        <?php echo csrf_field(); ?>
+                                        <?php echo method_field('DELETE'); ?>
                                         <button type="submit" 
                                             class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-red-50 hover:bg-red-100 dark:bg-red-900/50 dark:hover:bg-red-900 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-all duration-200 ease-in-out transform hover:scale-110">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
@@ -266,13 +266,13 @@
                                 </div>
                             </td>
                         </tr>
-                        @empty
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <tr>
                             <td colspan="3" class="px-4 py-2 text-center text-gray-500 dark:text-gray-400">
                                 No hay marcas registradas en el sistema
                             </td>
                         </tr>
-                        @endforelse
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
@@ -280,7 +280,7 @@
     </div>
 </div>
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
     /* Ocultar completamente los botones por defecto de DataTables */
     .dt-buttons {
@@ -459,13 +459,13 @@
         transform: translateY(-1px) !important;
     }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
     $(document).ready(function() {
         // Verificar si hay datos antes de inicializar DataTables
-        var hasData = {{ $marcas->count() > 0 ? 'true' : 'false' }};
+        var hasData = <?php echo e($marcas->count() > 0 ? 'true' : 'false'); ?>;
         
         if (hasData) {
             // Inicializar DataTable solo si hay datos
@@ -741,6 +741,8 @@
         });
     });
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app-new', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\usuario\Documents\GitHub\4GMovil\resources\views/pages/admin/marcas/index.blade.php ENDPATH**/ ?>

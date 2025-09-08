@@ -1,8 +1,6 @@
-@extends('layouts.app-new')
+<?php $__env->startSection('title', 'Editar Marca - 4GMovil'); ?>
 
-@section('title', 'Editar Marca - 4GMovil')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
     <div class="space-y-6">
         <!-- Encabezado -->
         <div>
@@ -13,9 +11,9 @@
         </div>
 
         <!-- Formulario -->
-        <form action="{{ route('marcas.update', $marca->marca_id) }}" method="POST" class="mt-6">
-            @csrf
-            @method('PUT')
+        <form action="<?php echo e(route('marcas.update', $marca->marca_id)); ?>" method="POST" class="mt-6">
+            <?php echo csrf_field(); ?>
+            <?php echo method_field('PUT'); ?>
 
             <div class="space-y-12">
                 <div
@@ -36,10 +34,21 @@
                             </label>
                             <div class="mt-2 relative rounded-md shadow-sm">
                                 <input type="text" name="nombre" id="nombre"
-                                    value="{{ old('nombre', $marca->nombre) }}"
-                                    class="block w-full px-4 py-3 rounded-md border-0 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-brand-600 dark:focus:ring-brand-500 dark:bg-gray-800 sm:text-sm sm:leading-6 transition-colors duration-200 @error('nombre') ring-red-300 dark:ring-red-600 focus:ring-red-500 dark:focus:ring-red-500 @enderror"
+                                    value="<?php echo e(old('nombre', $marca->nombre)); ?>"
+                                    class="block w-full px-4 py-3 rounded-md border-0 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-brand-600 dark:focus:ring-brand-500 dark:bg-gray-800 sm:text-sm sm:leading-6 transition-colors duration-200 <?php $__errorArgs = ['nombre'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> ring-red-300 dark:ring-red-600 focus:ring-red-500 dark:focus:ring-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                     placeholder="Nombre de la marca" required>
-                                @error('nombre')
+                                <?php $__errorArgs = ['nombre'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                         <svg class="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd"
@@ -47,18 +56,28 @@
                                                 clip-rule="evenodd" />
                                         </svg>
                                     </div>
-                                @enderror
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
-                            @error('nombre')
-                                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                            @enderror
+                            <?php $__errorArgs = ['nombre'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-400"><?php echo e($message); ?></p>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="mt-6 flex items-center justify-end gap-x-6">
-                <a href="{{ route('marcas.index') }}"
+                <a href="<?php echo e(route('marcas.index')); ?>"
                     class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100 transition-colors duration-200">
                     Cancelar
                 </a>
@@ -75,12 +94,12 @@
         </form>
     </div>
 
-    @if (session('success'))
+    <?php if(session('success')): ?>
         <script>
             Swal.fire({
                 icon: 'success',
                 title: '¡Éxito!',
-                text: "{{ session('success') }}",
+                text: "<?php echo e(session('success')); ?>",
                 timer: 3000,
                 timerProgressBar: true,
                 showConfirmButton: false,
@@ -90,14 +109,14 @@
                 color: document.documentElement.classList.contains('dark') ? '#fff' : '#000'
             });
         </script>
-    @endif
+    <?php endif; ?>
 
-    @if (session('error'))
+    <?php if(session('error')): ?>
         <script>
             Swal.fire({
                 icon: 'error',
                 title: '¡Error!',
-                text: "{{ session('error') }}",
+                text: "<?php echo e(session('error')); ?>",
                 timer: 3000,
                 timerProgressBar: true,
                 showConfirmButton: false,
@@ -107,6 +126,8 @@
                 color: document.documentElement.classList.contains('dark') ? '#fff' : '#000'
             });
         </script>
-    @endif
+    <?php endif; ?>
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app-new', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\usuario\Documents\GitHub\4GMovil\resources\views/pages/admin/marcas/edit.blade.php ENDPATH**/ ?>

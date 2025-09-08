@@ -41,7 +41,7 @@
         });
 
         // Formulario de cierre de sesión
-        const logoutForms = document.querySelectorAll('form[action="{{ route('logout')}}"]');
+        const logoutForms = document.querySelectorAll('form[action="<?php echo e(route('logout')); ?>"]');
         logoutForms.forEach(form => {
             const button = form.querySelector('button');
             if (button) {
@@ -85,12 +85,12 @@
 </script>
 
 <!-- Alertas de sesión -->
-@if(session('bienvenido'))
+<?php if(session('bienvenido')): ?>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         Swal.fire({
             title: '¡Bienvenido!',
-            text: @json(session('bienvenido')),
+            text: <?php echo json_encode(session('bienvenido'), 15, 512) ?>,
             icon: 'success',
             showConfirmButton: false,
             timer: 2500,
@@ -105,14 +105,14 @@
         });
     });
 </script>
-@endif
+<?php endif; ?>
 
-@if(session('success'))
+<?php if(session('success')): ?>
 <script>
     Swal.fire({
         icon: 'success',
         title: '¡Éxito!',
-        text: '{{ session('success')}}',
+        text: '<?php echo e(session('success')); ?>',
         showConfirmButton: false,
         timer: 2500,
         timerProgressBar: true,
@@ -125,15 +125,15 @@
         }
     });
 </script>
-@endif
+<?php endif; ?>
 
-@if(session('eliminado'))
+<?php if(session('eliminado')): ?>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         Swal.fire({
             icon: 'success',
             title: '¡Eliminado!',
-            text: @json(session('eliminado')),
+            text: <?php echo json_encode(session('eliminado'), 15, 512) ?>,
             showConfirmButton: false,
             timer: 2000,
             timerProgressBar: true,
@@ -142,14 +142,14 @@
         });
     });
 </script>
-@endif
+<?php endif; ?>
 
-@if(session('error'))
+<?php if(session('error')): ?>
 <script>
     Swal.fire({
         icon: 'error',
         title: '¡Error!',
-        text: '{{ session('error')}}',
+        text: '<?php echo e(session('error')); ?>',
         showConfirmButton: false,
         timer: 2500,
         timerProgressBar: true,
@@ -164,14 +164,14 @@
         }
     });
 </script>
-@endif 
+<?php endif; ?> 
 
-@if(session('logout'))
+<?php if(session('logout')): ?>
 <script>
     Swal.fire({
         icon: 'success',
         title: '¡Cierre de sesión!',
-        text: '{{ session('logout')}}',
+        text: '<?php echo e(session('logout')); ?>',
         showConfirmButton: false,
         timer: 2500,
         timerProgressBar: true,
@@ -184,4 +184,4 @@
         }
     });
 </script>
-@endif
+<?php endif; ?><?php /**PATH C:\Users\usuario\Documents\GitHub\4GMovil\resources\views/layouts/partials/sweet-alerts.blade.php ENDPATH**/ ?>
