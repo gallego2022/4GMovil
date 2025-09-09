@@ -127,6 +127,23 @@
 </script>
 <?php endif; ?>
 
+<?php if(session('eliminado')): ?>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            icon: 'success',
+            title: '¡Eliminado!',
+            text: <?php echo json_encode(session('eliminado'), 15, 512) ?>,
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+            toast: true,
+            position: 'top-end'
+        });
+    });
+</script>
+<?php endif; ?>
+
 <?php if(session('error')): ?>
 <script>
     Swal.fire({
