@@ -11,6 +11,22 @@ use Illuminate\Support\Facades\Redirect;
 abstract class WebController extends BaseController
 {
     /**
+     * Constructor para aplicar localización automáticamente
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
+     * Aplicar localización en cada método
+     */
+    protected function applyLocalization()
+    {
+        \App\Helpers\ViewHelper::applyLocalization();
+    }
+
+    /**
      * Valida la request y retorna los datos validados
      */
     protected function validateRequest(Request $request, array $rules, array $messages = []): array

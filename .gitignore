@@ -1,23 +1,51 @@
-/.phpunit.cache
+# Laravel & PHP
+/vendor
 /node_modules
 /public/build
 /public/hot
 /public/storage
 /storage/*.key
 /storage/pail
-/vendor
+/storage/framework/*
+/storage/logs/*
+/bootstrap/cache
+
+# Laravel environment
 .env
 .env.backup
 .env.production
-.phpactor.json
+.env.local
+.env.staging
+
+# PHPUnit
 .phpunit.result.cache
-Homestead.json
-Homestead.yaml
+/.phpunit.cache
+
+# PHP tools
+.phpactor.json
+
+# Composer & NPM logs
+composer.lock
 npm-debug.log
 yarn-error.log
-/auth.json
-/.fleet
+pnpm-debug.log
+
+# IDEs & Editors
 /.idea
 /.nova
 /.vscode
 /.zed
+/.fleet
+*.sublime-workspace
+*.sublime-project
+
+# Homestead
+Homestead.json
+Homestead.yaml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Cache files
+*.cache

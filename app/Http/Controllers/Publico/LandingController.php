@@ -22,6 +22,7 @@ class LandingController extends WebController
     public function index()
     {
         try {
+            $this->applyLocalization();
             $data = $this->landingService->getHomePageData();
             
             return view('pages.landing.index', $data);
@@ -46,6 +47,7 @@ class LandingController extends WebController
     public function catalogo(Request $request)
     {
         try {
+            $this->applyLocalization();
             $data = $this->landingService->getCatalogData($request);
             
             return view('pages.landing.productos', $data);

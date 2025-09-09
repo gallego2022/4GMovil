@@ -11,6 +11,7 @@ use App\Http\Controllers\Servicios\StripeController;
 use App\Http\Controllers\Admin\PedidoController;
 use App\Http\Controllers\Admin\ProductoController;
 use App\Http\Controllers\Publico\ContactoController;
+use App\Http\Controllers\LocalizationController;
 
 
 // Test de errores
@@ -210,3 +211,91 @@ Route::get('/api/productos/{producto}/variantes', function ($producto) {
         })
     ]);
 })->name('api.productos.variantes');
+
+// Rutas de localización
+Route::get('/localization/config', [LocalizationController::class, 'showConfigModal'])->name('localization.config');
+Route::post('/localization/save', [LocalizationController::class, 'saveConfig'])->name('localization.save');
+Route::get('/localization/change/{language}', [LocalizationController::class, 'changeLanguage'])->name('localization.change');
+Route::get('/localization/current', [LocalizationController::class, 'getCurrentConfig'])->name('localization.current');
+
+// Rutas de prueba
+Route::get('/test-locale', function() {
+    // Aplicar el locale de la sesión directamente
+    $locale = session('locale', 'es');
+    $currency = session('currency', 'COP');
+    $country = session('country', 'CO');
+    
+    app()->setLocale($locale);
+    
+    return response()->json([
+        'current_locale' => app()->getLocale(),
+        'session_locale' => session('locale'),
+        'session_currency' => session('currency'),
+        'welcome_message' => __('messages.messages.welcome'),
+        'formatted_price' => \App\Helpers\CurrencyHelper::formatPrice(150000)
+    ]);
+});
+
+Route::get('/change-lang/{locale}', function($locale) {
+    // Establecer en la sesión
+    session(['locale' => $locale]);
+    
+    if ($locale === 'en') {
+        session(['currency' => 'USD', 'country' => 'US']);
+    } elseif ($locale === 'pt') {
+        session(['currency' => 'BRL', 'country' => 'BR']);
+    } else {
+        session(['currency' => 'COP', 'country' => 'CO']);
+    }
+    
+    // Establecer el locale actual
+    app()->setLocale($locale);
+    
+    // Forzar guardar la sesión
+    session()->save();
+    
+    // Obtener la URL de referencia (la página donde estaba el usuario)
+    $referer = request()->header('referer', '/');
+    
+    // Retornar una página simple que recargue la página actual
+    return response('
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Cambiando idioma...</title>
+    </head>
+    <body>
+        <script>
+            // Recargar la página actual
+            window.location.href = "' . $referer . '";
+        </script>
+    </body>
+    </html>
+    ');
+})->middleware('web');
+
+// Ruta de prueba para verificar el cambio
+Route::get('/test-change/{locale}', function($locale) {
+    session(['locale' => $locale]);
+    
+    if ($locale === 'en') {
+        session(['currency' => 'USD', 'country' => 'US']);
+    } elseif ($locale === 'pt') {
+        session(['currency' => 'BRL', 'country' => 'BR']);
+    } else {
+        session(['currency' => 'COP', 'country' => 'CO']);
+    }
+    
+    app()->setLocale($locale);
+    session()->save();
+    
+    return response()->json([
+        'success' => true,
+        'locale' => app()->getLocale(),
+        'session_locale' => session('locale'),
+        'session_currency' => session('currency'),
+        'welcome' => __('messages.messages.welcome'),
+        'price' => \App\Helpers\CurrencyHelper::formatPrice(150000)
+    ]);
+})->middleware('web');

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Publico;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Base\WebController;
 use App\Services\ProductoService;
 use App\Models\Resena;
 use App\Models\Producto;
@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class ProductoPublicoController extends Controller
+class ProductoPublicoController extends WebController
 {
     protected $productoService;
 
@@ -25,6 +25,7 @@ class ProductoPublicoController extends Controller
     public function show($id)
     {
         try {
+            $this->applyLocalization();
             // Log para debug
             Log::info('Método show público llamado', [
                 'id_original' => $id,
