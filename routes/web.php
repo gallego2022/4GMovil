@@ -237,16 +237,27 @@ Route::get('/test-locale', function() {
 });
 
 Route::get('/change-lang/{locale}', function($locale) {
-    // Establecer en la sesión
-    session(['locale' => $locale]);
+    $allowedLanguages = ['es', 'en', 'pt'];
     
-    if ($locale === 'en') {
-        session(['currency' => 'USD', 'country' => 'US']);
-    } elseif ($locale === 'pt') {
-        session(['currency' => 'BRL', 'country' => 'BR']);
-    } else {
-        session(['currency' => 'COP', 'country' => 'CO']);
+    if (!in_array($locale, $allowedLanguages)) {
+        $locale = 'es';
     }
+    
+    // Configuraciones por idioma
+    $languageConfigs = [
+        'es' => ['country' => 'CO', 'currency' => 'COP'],
+        'en' => ['country' => 'US', 'currency' => 'USD'],
+        'pt' => ['country' => 'BR', 'currency' => 'BRL'],
+    ];
+    
+    $config = $languageConfigs[$locale] ?? $languageConfigs['es'];
+    
+    // Establecer en la sesión
+    session([
+        'locale' => $locale,
+        'currency' => $config['currency'],
+        'country' => $config['country']
+    ]);
     
     // Establecer el locale actual
     app()->setLocale($locale);
@@ -264,11 +275,21 @@ Route::get('/change-lang/{locale}', function($locale) {
     <head>
         <meta charset="UTF-8">
         <title>Cambiando idioma...</title>
+        <style>
+            body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+            .loading { color: #3B82F6; }
+        </style>
     </head>
     <body>
+        <div class="loading">
+            <h2>Cambiando idioma a ' . strtoupper($locale) . '...</h2>
+            <p>Redirigiendo...</p>
+        </div>
         <script>
-            // Recargar la página actual
-            window.location.href = "' . $referer . '";
+            // Recargar la página actual después de un breve delay
+            setTimeout(function() {
+                window.location.href = "' . $referer . '";
+            }, 1000);
         </script>
     </body>
     </html>
@@ -277,15 +298,26 @@ Route::get('/change-lang/{locale}', function($locale) {
 
 // Ruta de prueba para verificar el cambio
 Route::get('/test-change/{locale}', function($locale) {
-    session(['locale' => $locale]);
+    $allowedLanguages = ['es', 'en', 'pt'];
     
-    if ($locale === 'en') {
-        session(['currency' => 'USD', 'country' => 'US']);
-    } elseif ($locale === 'pt') {
-        session(['currency' => 'BRL', 'country' => 'BR']);
-    } else {
-        session(['currency' => 'COP', 'country' => 'CO']);
+    if (!in_array($locale, $allowedLanguages)) {
+        $locale = 'es';
     }
+    
+    // Configuraciones por idioma
+    $languageConfigs = [
+        'es' => ['country' => 'CO', 'currency' => 'COP'],
+        'en' => ['country' => 'US', 'currency' => 'USD'],
+        'pt' => ['country' => 'BR', 'currency' => 'BRL'],
+    ];
+    
+    $config = $languageConfigs[$locale] ?? $languageConfigs['es'];
+    
+    session([
+        'locale' => $locale,
+        'currency' => $config['currency'],
+        'country' => $config['country']
+    ]);
     
     app()->setLocale($locale);
     session()->save();
@@ -295,7 +327,15 @@ Route::get('/test-change/{locale}', function($locale) {
         'locale' => app()->getLocale(),
         'session_locale' => session('locale'),
         'session_currency' => session('currency'),
-        'welcome' => __('messages.messages.welcome'),
-        'price' => \App\Helpers\CurrencyHelper::formatPrice(150000)
+        'session_country' => session('country'),
+        'welcome' => __('messages.welcome'),
+        'price_cop' => \App\Helpers\CurrencyHelper::formatPrice(150000, 'COP'),
+        'price_current' => \App\Helpers\CurrencyHelper::formatPrice(150000),
+        'currency_symbol' => \App\Helpers\CurrencyHelper::getCurrencySymbol(),
+        'test_translations' => [
+            'product_show_warranty' => __('messages.product_show.warranty'),
+            'product_show_available' => __('messages.product_show.available'),
+            'product_show_add_to_cart' => __('messages.product_show.add_to_cart'),
+        ]
     ]);
 })->middleware('web');

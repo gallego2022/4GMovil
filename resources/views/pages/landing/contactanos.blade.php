@@ -275,7 +275,7 @@
                                     <!-- Overlay clickeable para abrir Google Maps -->
                                     <div class="absolute inset-0 bg-transparent hover:bg-black hover:bg-opacity-5 transition-all duration-300 cursor-pointer" 
                                          onclick="openGoogleMaps()" 
-                                         title="Haz clic para abrir en Google Maps">
+                                         title="{{ __('messages.contact.click_google_maps') }}">
                                     </div>
                                 </div>
                             </div>
@@ -285,7 +285,7 @@
                                         <div
                                             class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2">
                                         </div>
-                                        <p class="text-sm text-gray-600 dark:text-gray-300">Cargando mapa...</p>
+                                        <p class="text-sm text-gray-600 dark:text-gray-300">{{ __('messages.contact.loading_map') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -350,10 +350,10 @@
                         if (data.success) {
                             // Éxito
                             Swal.fire({
-                                title: '¡Mensaje Enviado!',
+                                title: '{{ __('messages.contact.message_sent') }}',
                                 text: data.message,
                                 icon: 'success',
-                                confirmButtonText: 'Entendido',
+                                confirmButtonText: '{{ __('messages.contact.understood') }}',
                                 confirmButtonColor: '#3B82F6'
                             });
                             
@@ -363,17 +363,17 @@
                             // Error de validación
                             let errorMessage = data.message;
                             if (data.errors) {
-                                errorMessage = 'Por favor, corrige los siguientes errores:\n';
+                                errorMessage = '{{ __('messages.contact.fix_errors') }}\n';
                                 Object.keys(data.errors).forEach(field => {
                                     errorMessage += `• ${data.errors[field][0]}\n`;
                                 });
                             }
                             
                             Swal.fire({
-                                title: 'Error',
+                                title: '{{ __('messages.contact.error') }}',
                                 text: errorMessage,
                                 icon: 'error',
-                                confirmButtonText: 'Entendido',
+                                confirmButtonText: '{{ __('messages.contact.understood') }}',
                                 confirmButtonColor: '#EF4444'
                             });
                         }
@@ -381,10 +381,10 @@
                     .catch(error => {
                         console.error('Error:', error);
                         Swal.fire({
-                            title: 'Error',
-                            text: 'Hubo un error al enviar el mensaje. Por favor, inténtalo de nuevo.',
+                            title: '{{ __('messages.contact.error') }}',
+                            text: '{{ __('messages.contact.send_error') }}',
                             icon: 'error',
-                            confirmButtonText: 'Entendido',
+                            confirmButtonText: '{{ __('messages.contact.understood') }}',
                             confirmButtonColor: '#EF4444'
                         });
                     })
@@ -531,8 +531,8 @@ document.addEventListener('fullscreenchange', function() {
             const address = 'Cra 52 #49-100, La Candelaria, Medellín, Colombia';
             navigator.clipboard.writeText(address).then(() => {
                 Swal.fire({
-                    title: '¡Dirección copiada!',
-                    text: 'La dirección ha sido copiada al portapapeles',
+                    title: '{{ __('messages.contact.address_copied') }}',
+                    text: '{{ __('messages.contact.address_copied_desc') }}',
                     icon: 'success',
                     timer: 2000,
                     showConfirmButton: false

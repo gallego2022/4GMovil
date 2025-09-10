@@ -268,19 +268,19 @@
                             <ul class="space-y-2 text-gray-600 dark:text-gray-300">
                                 <li class="flex items-center">
                                     <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                    <strong>Reparaciones simples:</strong> 1-2 horas
+                                    <strong>{{ __('messages.technical_service.simple_repairs') }}</strong>
                                 </li>
                                 <li class="flex items-center">
                                     <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                    <strong>Cambio de pantalla:</strong> 30-60 minutos
+                                    <strong>{{ __('messages.technical_service.screen_replacement') }}</strong>
                                 </li>
                                 <li class="flex items-center">
                                     <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                    <strong>Problemas de software:</strong> 1-3 horas
+                                    <strong>{{ __('messages.technical_service.software_issues') }}</strong>
                                 </li>
                                 <li class="flex items-center">
                                     <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                    <strong>Reparaciones complejas:</strong> 24-48 horas
+                                    <strong>{{ __('messages.technical_service.complex_repairs') }}</strong>
                                 </li>
                             </ul>
                         </div>
@@ -293,19 +293,19 @@
                             <ul class="space-y-2 text-gray-600 dark:text-gray-300">
                                 <li class="flex items-center">
                                     <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                    <strong>Garantía por escrito</strong> en todas las reparaciones
+                                    <strong>{{ __('messages.technical_service.written_warranty') }}</strong>
                                 </li>
                                 <li class="flex items-center">
                                     <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                    <strong>Repuestos originales</strong> o de alta calidad
+                                    <strong>{{ __('messages.technical_service.original_parts') }}</strong>
                                 </li>
                                 <li class="flex items-center">
                                     <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                    <strong>Pruebas de funcionamiento</strong> antes de entregar
+                                    <strong>{{ __('messages.technical_service.functionality_tests') }}</strong>
                                 </li>
                                 <li class="flex items-center">
                                     <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                    <strong>Soporte post-reparación</strong> por 30 días
+                                    <strong>{{ __('messages.technical_service.post_repair_support') }}</strong>
                                 </li>
                             </ul>
                         </div>
@@ -313,7 +313,7 @@
 
                     <!-- Formulario -->
                     <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-xl p-8 shadow-lg">
-                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Solicita tu diagnóstico</h3>
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">{{ __('messages.technical_service.request_diagnosis') }}</h3>
                         <form id="serviceForm" class="space-y-6">
                             <div class="grid sm:grid-cols-2 gap-4">
                                 <div>
@@ -322,7 +322,7 @@
                                     </label>
                                     <input id="name" name="name" type="text" required 
                                         class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
-                                        placeholder="Tu nombre completo">
+                                        placeholder="{{ __('messages.technical_service.name_placeholder') }}">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="phone">
@@ -354,11 +354,11 @@
                                     </label>
                                     <select id="device" name="device" required 
                                         class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-600 text-gray-900 dark:text-white">
-                                        <option value="">Selecciona...</option>
-                                        <option value="celular">Celular</option>
-                                        <option value="tablet">Tablet</option>
-                                        <option value="computadora">Computadora</option>
-                                        <option value="laptop">Laptop</option>
+                                        <option value="">{{ __('messages.technical_service.select_device') }}</option>
+                                        <option value="celular">{{ __('messages.technical_service.cellphone') }}</option>
+                                        <option value="tablet">{{ __('messages.technical_service.tablet') }}</option>
+                                        <option value="computadora">{{ __('messages.technical_service.computer') }}</option>
+                                        <option value="laptop">{{ __('messages.technical_service.laptop') }}</option>
                                     </select>
                                 </div>
                                 <div>
@@ -367,7 +367,7 @@
                                     </label>
                                     <input id="model" name="model" type="text" 
                                         class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
-                                        placeholder="Ej. iPhone 12 / Samsung A54">
+                                        placeholder="{{ __('messages.technical_service.device_model_placeholder') }}">
                                 </div>
                             </div>
                             
@@ -377,12 +377,12 @@
                                 </label>
                                 <textarea id="problem" name="problem" rows="4" 
                                     class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-600 text-gray-900 dark:text-white resize-none"
-                                    placeholder="Describe el problema que presenta tu dispositivo..."></textarea>
+                                    placeholder="{{ __('messages.technical_service.problem_placeholder') }}"></textarea>
                             </div>
                             
                             <button id="serviceSubmit" type="submit" 
                                 class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
-                                <i class="fas fa-paper-plane mr-2"></i>Enviar Solicitud
+                                <i class="fas fa-paper-plane mr-2"></i>{{ __('messages.technical_service.send_request') }}
                             </button>
                             
                             <p class="text-xs text-gray-500 dark:text-gray-400 text-center">
@@ -419,7 +419,7 @@
                             <i class="fas fa-clock"></i>
                         </div>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Contacto Inicial</h3>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">{{ __('messages.technical_service.initial_contact') }}</h3>
                     <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
                         Nos contactas por WhatsApp, formulario o llamada para describir el problema
                     </p>
@@ -432,7 +432,7 @@
                             <span class="text-white text-2xl font-bold">2</span>
                         </div>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Diagnóstico</h3>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">{{ __('messages.technical_service.diagnosis_step') }}</h3>
                     <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
                         Evaluamos tu dispositivo y te damos un diagnóstico detallado con cotización
                     </p>
@@ -445,7 +445,7 @@
                             <span class="text-white text-2xl font-bold">3</span>
                         </div>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Reparación</h3>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">{{ __('messages.technical_service.repair_step') }}</h3>
                     <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
                         Realizamos la reparación con repuestos de calidad y técnicas profesionales
                     </p>
@@ -458,7 +458,7 @@
                             <span class="text-white text-2xl font-bold">4</span>
                         </div>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Entrega</h3>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">{{ __('messages.technical_service.delivery_step') }}</h3>
                     <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
                         Probamos todo el funcionamiento y te entregamos con garantía por escrito
                     </p>
@@ -470,19 +470,19 @@
     <!-- CTA Section -->
     <section class="py-20 bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 text-white">
         <div class="container mx-auto px-4 text-center">
-            <h2 class="text-3xl md:text-4xl font-bold mb-6">¿Tu dispositivo necesita reparación?</h2>
+            <h2 class="text-3xl md:text-4xl font-bold mb-6">{{ __('messages.technical_service.device_needs_repair') }}</h2>
             <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-                No esperes más, contáctanos ahora y recupera la funcionalidad de tu dispositivo
+                {{ __('messages.technical_service.dont_wait') }}
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
                 <a href="https://wa.me/573025970220?text=Hola%20equipo%20de%204GMovil,%20necesito%20servicio%20técnico%20para%20mi%20dispositivo.%20¿Podrían%20ayudarme?"
                     target="_blank"
                     class="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg">
-                    <i class="fab fa-whatsapp mr-2"></i>Chat WhatsApp
+                    <i class="fab fa-whatsapp mr-2"></i>{{ __('messages.technical_service.chat_whatsapp') }}
                 </a>
                 <a href="{{ route('landing') }}"
                     class="border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-blue-600 transition-all duration-300 transform hover:scale-105">
-                    <i class="fas fa-home mr-2"></i>Volver al Inicio
+                    <i class="fas fa-home mr-2"></i>{{ __('messages.technical_service.back_home') }}
                 </a>
             </div>
         </div>
@@ -507,10 +507,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (!name || !phone || !device) {
                 Swal.fire({
-                    title: 'Campos Requeridos',
-                    text: 'Por favor, completa todos los campos obligatorios.',
+                    title: '{{ __('messages.technical_service.required_fields') }}',
+                    text: '{{ __('messages.technical_service.complete_fields') }}',
                     icon: 'warning',
-                    confirmButtonText: 'Entendido',
+                    confirmButtonText: '{{ __('messages.technical_service.understood') }}',
                     confirmButtonColor: '#3B82F6'
                 });
                 return;
@@ -545,10 +545,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.success) {
                     // Éxito
                     Swal.fire({
-                        title: '¡Solicitud Enviada!',
+                        title: '{{ __('messages.technical_service.request_sent') }}',
                         text: data.message,
                         icon: 'success',
-                        confirmButtonText: 'Entendido',
+                        confirmButtonText: '{{ __('messages.technical_service.understood') }}',
                         confirmButtonColor: '#3B82F6'
                     });
                     
@@ -558,17 +558,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Error de validación
                     let errorMessage = data.message;
                     if (data.errors) {
-                        errorMessage = 'Por favor, corrige los siguientes errores:\n';
+                        errorMessage = '{{ __('messages.technical_service.fix_errors') }}\n';
                         Object.keys(data.errors).forEach(field => {
                             errorMessage += `• ${data.errors[field][0]}\n`;
                         });
                     }
                     
                     Swal.fire({
-                        title: 'Error',
+                        title: '{{ __('messages.technical_service.error') }}',
                         text: errorMessage,
                         icon: 'error',
-                        confirmButtonText: 'Entendido',
+                        confirmButtonText: '{{ __('messages.technical_service.understood') }}',
                         confirmButtonColor: '#EF4444'
                     });
                 }
@@ -576,8 +576,8 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => {
                 console.error('Error:', error);
                 Swal.fire({
-                    title: 'Error',
-                    text: 'Hubo un error al enviar la solicitud. Por favor, inténtalo de nuevo.',
+                    title: '{{ __('messages.technical_service.error') }}',
+                    text: '{{ __('messages.technical_service.send_error') }}',
                     icon: 'error',
                     confirmButtonText: 'Entendido',
                     confirmButtonColor: '#EF4444'

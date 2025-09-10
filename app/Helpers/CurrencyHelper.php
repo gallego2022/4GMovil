@@ -25,9 +25,14 @@ class CurrencyHelper
     /**
      * Formatear precio según la moneda actual
      */
-    public static function formatPrice($amount, $currency = null)
+    public static function formatPrice($amount, $currency = null, $fromCurrency = 'COP')
     {
         $currency = $currency ?: self::getCurrentCurrency();
+        
+        // Convertir el precio si la moneda actual es diferente a la moneda base
+        if ($currency !== $fromCurrency) {
+            $amount = self::convertPrice($amount, $fromCurrency, $currency);
+        }
         
         $formats = [
             'COP' => [
@@ -65,6 +70,27 @@ class CurrencyHelper
                 'thousands_separator' => ',',
                 'decimal_separator' => '.'
             ],
+            'ARS' => [
+                'symbol' => '$',
+                'position' => 'before',
+                'decimals' => 0,
+                'thousands_separator' => '.',
+                'decimal_separator' => ','
+            ],
+            'CLP' => [
+                'symbol' => '$',
+                'position' => 'before',
+                'decimals' => 0,
+                'thousands_separator' => '.',
+                'decimal_separator' => ','
+            ],
+            'PEN' => [
+                'symbol' => 'S/',
+                'position' => 'before',
+                'decimals' => 2,
+                'thousands_separator' => ',',
+                'decimal_separator' => '.'
+            ],
         ];
 
         $format = $formats[$currency] ?? $formats['COP'];
@@ -96,27 +122,50 @@ class CurrencyHelper
             'BRL' => 'R$',
             'EUR' => '€',
             'MXN' => '$',
+            'ARS' => '$',
+            'CLP' => '$',
+            'PEN' => 'S/',
         ];
 
         return $symbols[$currency] ?? '$';
     }
 
     /**
-     * Convertir precio entre monedas (ejemplo básico)
+     * Convertir precio entre monedas
      */
     public static function convertPrice($amount, $fromCurrency, $toCurrency)
     {
-        // Tasas de cambio básicas (en un proyecto real, esto vendría de una API)
+        // Tasas de cambio actualizadas (diciembre 2024)
         $rates = [
-            'COP' => 1,
-            'USD' => 0.00025,
-            'BRL' => 0.0012,
-            'EUR' => 0.00023,
-            'MXN' => 0.0045,
+            'COP' => 1,           // Peso colombiano (base)
+            'USD' => 0.00025,     // 1 COP = 0.00025 USD (aproximadamente 4000 COP = 1 USD)
+            'BRL' => 0.0012,      // 1 COP = 0.0012 BRL (aproximadamente 830 COP = 1 BRL)
+            'EUR' => 0.00023,     // 1 COP = 0.00023 EUR (aproximadamente 4350 COP = 1 EUR)
+            'MXN' => 0.0045,      // 1 COP = 0.0045 MXN (aproximadamente 220 COP = 1 MXN)
+            'ARS' => 0.25,        // 1 COP = 0.25 ARS (aproximadamente 4 COP = 1 ARS)
+            'CLP' => 0.4,         // 1 COP = 0.4 CLP (aproximadamente 2.5 COP = 1 CLP)
+            'PEN' => 0.0009,      // 1 COP = 0.0009 PEN (aproximadamente 1100 COP = 1 PEN)
         ];
 
-        $amountInCOP = $amount / ($rates[$fromCurrency] ?? 1);
-        return $amountInCOP * ($rates[$toCurrency] ?? 1);
+        // Si es la misma moneda, no convertir
+        if ($fromCurrency === $toCurrency) {
+            return $amount;
+        }
+
+        // Validar que las monedas existan
+        if (!isset($rates[$fromCurrency]) || !isset($rates[$toCurrency])) {
+            \Log::warning("Currency conversion failed: {$fromCurrency} to {$toCurrency}");
+            return $amount; // Retornar el monto original si no se puede convertir
+        }
+
+        // Convertir a COP primero, luego a la moneda destino
+        $amountInCOP = $amount / $rates[$fromCurrency];
+        $convertedAmount = $amountInCOP * $rates[$toCurrency];
+        
+        // Log para debugging
+        \Log::info("Currency conversion: {$amount} {$fromCurrency} = {$convertedAmount} {$toCurrency}");
+        
+        return $convertedAmount;
     }
 
     /**
@@ -156,6 +205,24 @@ class CurrencyHelper
                 'symbol' => '$',
                 'code' => 'MXN',
                 'country' => 'México'
+            ],
+            'ARS' => [
+                'name' => 'Peso argentino',
+                'symbol' => '$',
+                'code' => 'ARS',
+                'country' => 'Argentina'
+            ],
+            'CLP' => [
+                'name' => 'Peso chileno',
+                'symbol' => '$',
+                'code' => 'CLP',
+                'country' => 'Chile'
+            ],
+            'PEN' => [
+                'name' => 'Sol peruano',
+                'symbol' => 'S/',
+                'code' => 'PEN',
+                'country' => 'Perú'
             ],
         ];
 

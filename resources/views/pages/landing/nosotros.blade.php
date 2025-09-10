@@ -16,7 +16,7 @@
             <li aria-current="page">
                 <div class="flex items-center">
                     <i class="fas fa-angle-right text-gray-400 mx-2"></i>
-                    <span class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ml-2">{{ __('messages.nav.about_us') }}</span>
+                    <span class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ml-2">{{ __('messages.nav.about') }}</span>
                 </div>
             </li>
         </ol>

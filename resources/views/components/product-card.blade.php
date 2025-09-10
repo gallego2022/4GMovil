@@ -121,7 +121,7 @@
                     @if ($showShipping)
                         <div class="text-right">
                             <span class="text-xs text-green-600 font-bold bg-green-100 px-2 py-1 rounded-full">
-                                <i class="fas fa-truck mr-1"></i>Envío gratis
+                                <i class="fas fa-truck mr-1"></i>{{ __('messages.product_show.free_shipping') }}
                             </span>
                         </div>
                     @endif
@@ -130,9 +130,9 @@
                 @if ($showFeatures)
                     <!-- Características -->
                     <div class="flex items-center justify-between text-xs text-gray-500 mb-4">
-                        <span><i class="fas fa-shield-alt mr-1"></i>Garantía 1 año</span>
-                        <span><i class="fas fa-credit-card mr-1"></i>Pago seguro</span>
-                        <span><i class="fas fa-undo mr-1"></i>30 días devolución</span>
+                        <span><i class="fas fa-shield-alt mr-1"></i>{{ __('messages.product_show.warranty_period') }}</span>
+                        <span><i class="fas fa-credit-card mr-1"></i>{{ __('messages.product_show.secure_payment') }}</span>
+                        <span><i class="fas fa-undo mr-1"></i>{{ __('messages.product_show.return_description') }}</span>
                     </div>
                 @endif
             </div>

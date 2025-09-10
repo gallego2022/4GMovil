@@ -888,7 +888,7 @@
                                     class="flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-4 mb-2">
                                     <div class="flex items-center">
                                         <i class="fas fa-shield-alt text-green-500 mr-1"></i>
-                                        <span>Pago seguro</span>
+                                        <span>{{ __('messages.product_show.secure_payment') }}</span>
                                     </div>
                                 </div>
                                 <p class="text-xs sm:text-sm">Protegido por encriptación SSL de 256 bits</p>

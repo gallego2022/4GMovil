@@ -18,7 +18,7 @@
                 <!-- Left Content -->
                 <div class="text-white">
                     <h1 class="text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                        {{ __('messages.messages.welcome') }}
+                        {{ __('messages.welcome') }}
                     </h1>
                     <p class="text-xl lg:text-2xl mb-8 text-gray-100 leading-relaxed">
                         {{ __('messages.products.featured') }} - {{ __('messages.home.subtitle') }}
@@ -42,10 +42,10 @@
 
                     <!-- Action Buttons -->
                     <div class="flex flex-col sm:flex-row gap-6">
-                        <button class="btn-primary text-lg px-4 py-2">
+                        <button class="inline-flex items-center justify-center text-lg px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800">
                             <i class="fas fa-rocket mr-2"></i>{{ __('messages.home.request_credit') }}
                         </button>
-                        <button class="btn-secondary text-lg px-4 py-2">
+                        <button class="inline-flex items-center justify-center text-lg px-8 py-4 bg-white hover:bg-gray-50 text-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200 font-semibold rounded-xl border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600">
                             <i class="fas fa-info-circle mr-2"></i>{{ __('messages.home.learn_more') }}
                         </button>
                     </div>
@@ -213,15 +213,23 @@
                     class="flex flex-wrap justify-center items-center gap-6 sm:gap-8 text-sm text-gray-600 dark:text-gray-400">
                     <div class="flex items-center">
                         <i class="fas fa-shield-alt text-green-500 mr-2 text-lg"></i>
-                        <span class="font-medium">{{ __('messages.home.quality_guarantee') }}</span>
+                        <span class="font-medium">{{ __('messages.featured_products.warranty_info') }}</span>
                     </div>
                     <div class="flex items-center">
-                        <i class="fas fa-truck text-blue-500 mr-2 text-lg"></i>
-                        <span class="font-medium">{{ __('messages.home.fast_shipping') }}</span>
+                        <i class="fas fa-credit-card text-blue-500 mr-2 text-lg"></i>
+                        <span class="font-medium">{{ __('messages.featured_products.payment_info') }}</span>
                     </div>
                     <div class="flex items-center">
-                        <i class="fas fa-headset text-purple-500 mr-2 text-lg"></i>
-                        <span class="font-medium">{{ __('messages.home.customer_support') }}</span>
+                        <i class="fas fa-undo text-orange-500 mr-2 text-lg"></i>
+                        <span class="font-medium">{{ __('messages.featured_products.return_info') }}</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-truck text-purple-500 mr-2 text-lg"></i>
+                        <span class="font-medium">{{ __('messages.featured_products.shipping_info') }}</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-headset text-indigo-500 mr-2 text-lg"></i>
+                        <span class="font-medium">{{ __('messages.featured_products.support_info') }}</span>
                     </div>
                 </div>
             </div>
@@ -322,9 +330,8 @@
                         <img src="https://yt3.googleusercontent.com/7oj-EkIyJE1hS06HKVpqz7Nzmg4wJEz3Lu9CD4JO39Mzf1k-1XYp-_KMlHJQYZocuBdRGKf7=s900-c-k-c0x00ffffff-no-rj"
                             alt="Alquería" class="w-full h-20 object-contain">
                     </div>
-                    <h3 class="text-xl font-bold mb-4 text-gray-900">Alquería</h3>
-                    <p class="text-gray-600 leading-relaxed">Productos lácteos de la más alta calidad para toda la familia
-                    </p>
+                    <h3 class="text-xl font-bold mb-4 text-gray-900">{{ __('messages.allies.alqueria.name') }}</h3>
+                    <p class="text-gray-600 leading-relaxed">{{ __('messages.allies.alqueria.description') }}</p>
                 </div>
 
                 <!-- Ally 2 - Grupo Forma Íntimas -->
@@ -335,8 +342,8 @@
                         <img src="{{ asset('img/gfi.png') }}" alt="Grupo Forma Íntimas"
                             class="w-full h-20 object-contain">
                     </div>
-                    <h3 class="text-xl font-bold mb-4 text-gray-900">Grupo Forma Íntimas</h3>
-                    <p class="text-gray-600 leading-relaxed">Ropa interior femenina con diseños innovadores y cómodos</p>
+                    <h3 class="text-xl font-bold mb-4 text-gray-900">{{ __('messages.allies.grupo_forma_intimas.name') }}</h3>
+                    <p class="text-gray-600 leading-relaxed">{{ __('messages.allies.grupo_forma_intimas.description') }}</p>
                 </div>
 
                 <!-- Ally 3 - Centro Colombo Americano -->
@@ -347,9 +354,8 @@
                         <img src="https://pbs.twimg.com/profile_images/827330867097980928/Rm4yC6YI_400x400.jpg"
                             alt="Centro Colombo Americano" class="w-full h-20 object-contain">
                     </div>
-                    <h3 class="text-xl font-bold mb-4 text-gray-900">Centro Colombo Americano</h3>
-                    <p class="text-gray-600 leading-relaxed">Educación y cultura para el desarrollo de habilidades
-                        bilingües</p>
+                    <h3 class="text-xl font-bold mb-4 text-gray-900">{{ __('messages.allies.centro_colombo_americano.name') }}</h3>
+                    <p class="text-gray-600 leading-relaxed">{{ __('messages.allies.centro_colombo_americano.description') }}</p>
                 </div>
 
                 <!-- Ally 4 - Aderezos -->
@@ -360,8 +366,8 @@
                         <img src="https://cdn.shopify.com/s/files/1/0559/1266/1155/files/Logo-aderezos-original_c6d4acd6-d8e7-4356-97f8-0f3eda5c0886.png?v=1625758391"
                             alt="Aderezos" class="w-full h-20 object-contain">
                     </div>
-                    <h3 class="text-xl font-bold mb-4 text-gray-900">Aderezos</h3>
-                    <p class="text-gray-600 leading-relaxed">Salsas y aderezos para realzar el sabor de tus comidas</p>
+                    <h3 class="text-xl font-bold mb-4 text-gray-900">{{ __('messages.allies.aderezos.name') }}</h3>
+                    <p class="text-gray-600 leading-relaxed">{{ __('messages.allies.aderezos.description') }}</p>
                 </div>
             </div>
         </div>
@@ -383,7 +389,7 @@
                         <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Cliente"
                             class="w-16 h-16 rounded-full mr-4 ring-4 ring-blue-200 shadow-lg">
                         <div>
-                            <h4 class="font-bold text-gray-900 text-lg">María González</h4>
+                            <h4 class="font-bold text-gray-900 text-lg">{{ __('messages.testimonials.maria_gonzalez.name') }}</h4>
                             <div class="text-yellow-400 text-sm">
                                 <i class="fas fa-star"></i>
                                 <i class="fas fa-star"></i>
@@ -393,8 +399,7 @@
                             </div>
                         </div>
                     </div>
-                    <p class="text-gray-700 leading-relaxed text-lg italic">"Excelente servicio, repararon mi celular en
-                        menos de una hora y quedó como nuevo. Muy recomendados!"</p>
+                    <p class="text-gray-700 leading-relaxed text-lg italic">"{{ __('messages.testimonials.maria_gonzalez.description') }}"</p>
                 </div>
 
                 <!-- Testimonial 2 -->
@@ -404,7 +409,7 @@
                         <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Cliente"
                             class="w-16 h-16 rounded-full mr-4 ring-4 ring-green-200 shadow-lg">
                         <div>
-                            <h4 class="font-bold text-gray-900 text-lg">Carlos Martínez</h4>
+                            <h4 class="font-bold text-gray-900 text-lg">{{ __('messages.testimonials.carlos_martinez.name') }}</h4>
                             <div class="text-yellow-400 text-sm">
                                 <i class="fas fa-star"></i>
                                 <i class="fas fa-star"></i>
@@ -414,8 +419,7 @@
                             </div>
                         </div>
                     </div>
-                    <p class="text-gray-700 leading-relaxed text-lg italic">"Compré un iPhone 14 Pro y el precio fue el
-                        mejor que encontré en el mercado. Además, la atención fue muy personalizada."</p>
+                    <p class="text-gray-700 leading-relaxed text-lg italic">"{{ __('messages.testimonials.carlos_martinez.description') }}"</p>
                 </div>
 
                 <!-- Testimonial 3 -->
@@ -425,7 +429,7 @@
                         <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Cliente"
                             class="w-16 h-16 rounded-full mr-4 ring-4 ring-purple-200 shadow-lg">
                         <div>
-                            <h4 class="font-bold text-gray-900 text-lg">Laura Rodríguez</h4>
+                            <h4 class="font-bold text-gray-900 text-lg">{{ __('messages.testimonials.laura_rodriguez.name') }}</h4>
                             <div class="text-yellow-400 text-sm">
                                 <i class="fas fa-star"></i>
                                 <i class="fas fa-star"></i>
@@ -435,8 +439,7 @@
                             </div>
                         </div>
                     </div>
-                    <p class="text-gray-700 leading-relaxed text-lg italic">"Recuperaron todas mis fotos de un celular que
-                        se mojó. Estoy muy agradecida con el equipo de 4GMovil."</p>
+                    <p class="text-gray-700 leading-relaxed text-lg italic">"{{ __('messages.testimonials.laura_rodriguez.description') }}"</p>
                 </div>
             </div>
         </div>
