@@ -63,13 +63,13 @@
                     </label>
                     <select id="currency_code" name="currency_code" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
                         <option value="COP">Peso colombiano (COP)</option>
+                        <option value="USD">Dólar estadounidense (USD)</option>
+                        <option value="BRL">Real brasileño (BRL)</option>
+                        <option value="EUR">Euro (EUR)</option>
                         <option value="MXN">Peso mexicano (MXN)</option>
                         <option value="ARS">Peso argentino (ARS)</option>
                         <option value="CLP">Peso chileno (CLP)</option>
                         <option value="PEN">Sol peruano (PEN)</option>
-                        <option value="VES">Bolívar venezolano (VES)</option>
-                        <option value="USD">Dólar estadounidense (USD)</option>
-                        <option value="EUR">Euro (EUR)</option>
                     </select>
                 </div>
 

@@ -24,12 +24,7 @@ class SetLocale
         $currency = Session::get('currency');
         $country = Session::get('country');
         
-        \Log::info('SetLocale Middleware - Valores de sesión:', [
-            'locale' => $locale,
-            'currency' => $currency,
-            'country' => $country
-        ]);
-        
+        // Si no hay configuración en sesión y el usuario está autenticado, cargar desde BD
         if (!$locale && auth()->check()) {
             $config = LocalizationConfig::where('user_id', auth()->id())->first();
             if ($config) {
@@ -58,11 +53,15 @@ class SetLocale
         // Asegurar que la sesión se guarde
         Session::save();
         
-        \Log::info('SetLocale Middleware - Locale establecido:', [
-            'final_locale' => App::getLocale(),
-            'session_locale' => Session::get('locale'),
-            'session_currency' => Session::get('currency')
-        ]);
+        // Log solo en desarrollo
+        if (config('app.debug')) {
+            \Log::info('SetLocale Middleware - Configuración aplicada:', [
+                'final_locale' => App::getLocale(),
+                'session_locale' => Session::get('locale'),
+                'session_currency' => Session::get('currency'),
+                'session_country' => Session::get('country')
+            ]);
+        }
 
         return $next($request);
     }

@@ -548,7 +548,7 @@
                                         </span>
                                         <span class="inline-flex items-center px-3 py-1 bg-green-100 dark:bg-green-700 text-green-700 dark:text-green-300 text-sm font-medium rounded-full border border-green-200 dark:border-green-600">
                                             <i class="fas fa-check-circle mr-2"></i>
-                                            Disponible
+                                            {{ __('messages.product_show.available') }}
                                         </span>
                                     </div>
                                 </div>
@@ -560,14 +560,14 @@
                                     <div class="flex items-baseline space-x-4">
                                         <div class="relative">
                                             <span class="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white">
-                                                ${{ number_format($producto->precio ?? 0, 0, ',', '.') }}
+                                                {{ \App\Helpers\CurrencyHelper::formatPrice($producto->precio ?? 0) }}
                                             </span>
                                             <div class="absolute -top-2 -right-2 w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                                         </div>
                                         @if (isset($producto->precio_anterior) && $producto->precio_anterior > $producto->precio)
                                             <div class="flex flex-col items-start space-y-2">
                                                 <span class="text-xl text-gray-500 line-through">
-                                                    ${{ number_format($producto->precio_anterior, 0, ',', '.') }}
+                                                    {{ \App\Helpers\CurrencyHelper::formatPrice($producto->precio_anterior) }}
                                                 </span>
                                                 <span
                                                     class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
@@ -584,8 +584,8 @@
                                             <span class="text-green-600 dark:text-green-400 font-semibold">GRATIS</span>
                                         </div>
                                         <div class="flex items-center justify-between text-sm">
-                                            <span class="text-gray-600 dark:text-gray-400">Garantía:</span>
-                                            <span class="text-gray-700 dark:text-gray-300 font-semibold">1 Año</span>
+                                            <span class="text-gray-600 dark:text-gray-400">{{ __('messages.product_show.warranty') }}:</span>
+                                            <span class="text-gray-700 dark:text-gray-300 font-semibold">{{ __('messages.product_show.warranty_period') }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -609,21 +609,21 @@
                                         <div class="flex items-center space-x-2 mb-2">
                                             <i class="fas fa-palette text-blue-500"></i>
                                             <p class="text-sm font-bold text-blue-900 dark:text-blue-100">
-                                                Color: <span
-                                                    id="selectedColorText" class="text-indigo-700 dark:text-indigo-300">{{ $producto->variantes->first() ? $producto->variantes->first()->nombre : 'No disponible' }}</span>
+                                                {{ __('messages.product_show.color') }}: <span
+                                                    id="selectedColorText" class="text-indigo-700 dark:text-indigo-300">{{ $producto->variantes->first() ? $producto->variantes->first()->nombre : __('messages.product_show.color_not_available') }}</span>
                                             </p>
                                         </div>
                                         <div class="flex items-center space-x-2 mb-2">
                                             <i class="fas fa-boxes text-green-500"></i>
                                             <p class="text-xs text-green-700 dark:text-green-300" id="selectedColorStock">
-                                                Stock: <span class="font-bold">{{ $producto->variantes->first() ? $producto->variantes->first()->stock : 0 }} unidades</span>
+                                                {{ __('messages.product_show.stock_available') }}: <span class="font-bold">{{ $producto->variantes->first() ? $producto->variantes->first()->stock : 0 }} {{ __('messages.product_show.stock_units') }}</span>
                                             </p>
                                         </div>
                                         <p class="text-xs text-purple-600 dark:text-purple-400 font-medium" id="selectedColorPrice"
                                             style="display: {{ $producto->variantes->first() && $producto->variantes->first()->precio_adicional > 0 ? 'block' : 'none' }};">
                                             <i class="fas fa-plus-circle mr-1"></i>
-                                            Precio adicional: <span
-                                                id="precioAdicional" class="font-bold">${{ number_format($producto->variantes->first() ? $producto->variantes->first()->precio_adicional : 0, 0, ',', '.') }}</span>
+                                            {{ __('messages.product_show.additional_price') }}: <span
+                                                id="precioAdicional" class="font-bold">{{ \App\Helpers\CurrencyHelper::formatPrice($producto->variantes->first() ? $producto->variantes->first()->precio_adicional : 0) }}</span>
                                         </p>
                                     </div>
                                 </div>
@@ -636,10 +636,10 @@
                                         <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
                                             <i class="fas fa-palette text-white text-sm"></i>
                                         </div>
-                                        <h3 class="text-xl font-bold bg-gradient-to-r from-gray-900 to-blue-800 dark:from-white dark:to-blue-200 bg-clip-text text-transparent">Selecciona tu Color</h3>
+                                        <h3 class="text-xl font-bold bg-gradient-to-r from-gray-900 to-blue-800 dark:from-white dark:to-blue-200 bg-clip-text text-transparent">{{ __('messages.product_show.select_color') }}</h3>
                                     </div>
                                     <span class="text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-3 py-1 rounded-full border border-blue-200 dark:border-blue-700/30"
-                                        id="selectedColorName">{{ $producto->variantes->first() ? $producto->variantes->first()->nombre : 'No disponible' }}</span>
+                                        id="selectedColorName">{{ $producto->variantes->first() ? $producto->variantes->first()->nombre : __('messages.product_show.color_not_available') }}</span>
                                 </div>
                                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                                     @if ($producto->variantes->count() > 0)
@@ -712,9 +712,9 @@
                                         <i class="fas fa-info-circle text-white text-sm"></i>
                                     </div>
                                     <div class="flex-1">
-                                        <h4 class="text-sm font-bold text-blue-900 dark:text-blue-100 mb-2">Descripción del Color</h4>
+                                        <h4 class="text-sm font-bold text-blue-900 dark:text-blue-100 mb-2">{{ __('messages.product_show.color_description') }}</h4>
                                         <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed" id="colorDescription">
-                                            {{ $producto->variantes->first() ? $producto->variantes->first()->descripcion ?? 'Color elegante y versátil que combina con cualquier estilo y se adapta perfectamente a tu personalidad.' : 'No hay descripción disponible para este color.' }}
+                                            {{ $producto->variantes->first() ? $producto->variantes->first()->descripcion ?? __('messages.product_show.color_default_description') : __('messages.product_show.color_no_description') }}
                                         </p>
                                     </div>
                                 </div>
@@ -741,7 +741,7 @@
                                             
                                             <div class="relative z-10 flex items-center justify-center">
                                                 <i class="fas fa-palette mr-3 text-xl group-hover:scale-110 transition-transform duration-300"></i>
-                                                <span>Seleccionar Variante</span>
+                                                <span>{{ __('messages.product_show.select_variant') }}</span>
                                                 <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform duration-300"></i>
                                             </div>
                                         </button>
@@ -758,7 +758,7 @@
                                             
                                             <div class="relative z-10 flex items-center justify-center">
                                                 <i class="fas fa-shopping-cart mr-3 text-xl group-hover:scale-110 transition-transform duration-300"></i>
-                                                <span>Agregar al Carrito</span>
+                                                <span>{{ __('messages.product_show.add_to_cart') }}</span>
                                                 <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform duration-300"></i>
                                             </div>
                                         </button>
@@ -767,7 +767,7 @@
                                     <button type="button"
                                         class="w-full bg-gradient-to-r from-gray-400 to-gray-500 text-white py-5 px-8 rounded-2xl font-bold text-lg cursor-not-allowed opacity-75" disabled>
                                         <i class="fas fa-times mr-3 text-xl"></i>
-                                        Sin stock disponible
+                                        {{ __('messages.product_show.out_of_stock') }}
                                     </button>
                                 @endif
                             </div>
@@ -777,7 +777,7 @@
                                 <a href="#reseñas"
                                     class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-yellow-100 via-orange-100 to-yellow-200 dark:from-yellow-900/30 dark:via-orange-900/30 dark:to-yellow-800/30 text-yellow-700 dark:text-yellow-300 rounded-xl hover:from-yellow-200 hover:via-orange-200 hover:to-yellow-300 dark:hover:from-yellow-800/30 dark:hover:via-orange-800/30 dark:hover:to-yellow-700/30 transition-all duration-300 border border-yellow-200 dark:border-yellow-700/30 shadow-lg hover:shadow-xl group">
                                     <i class="fas fa-star mr-3 text-yellow-500 group-hover:scale-110 transition-transform duration-300"></i>
-                                    <span class="font-semibold">Ver Reseñas ({{ $producto->resenas->count() }})</span>
+                                    <span class="font-semibold">{{ __('messages.product_show.view_reviews') }} ({{ $producto->resenas->count() }})</span>
                                     <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform duration-300"></i>
                                 </a>
                                 <button onclick="openReviewModal()"
@@ -815,8 +815,8 @@
                                             <i class="fas fa-check text-white text-lg"></i>
                                         </div>
                                         <div>
-                                            <span class="text-gray-700 dark:text-gray-300 font-semibold">Garantía Oficial</span>
-                                            <p class="text-sm text-gray-500 dark:text-gray-400">1 año completo</p>
+                                            <span class="text-gray-700 dark:text-gray-300 font-semibold">{{ __('messages.product_show.warranty_official') }}</span>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('messages.product_show.warranty_description') }}</p>
                                         </div>
                                     </div>
                                     <div class="flex items-center space-x-4 p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-600 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105">
@@ -825,8 +825,8 @@
                                             <i class="fas fa-undo text-white text-lg"></i>
                                         </div>
                                         <div>
-                                            <span class="text-gray-700 dark:text-gray-300 font-semibold">Devolución</span>
-                                            <p class="text-sm text-gray-500 dark:text-gray-400">30 días sin preguntas</p>
+                                            <span class="text-gray-700 dark:text-gray-300 font-semibold">{{ __('messages.product_show.return_policy') }}</span>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('messages.product_show.return_description') }}</p>
                                         </div>
                                     </div>
                                     <div class="flex items-center space-x-4 p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-600 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105">
@@ -858,7 +858,7 @@
                         <i class="fas fa-cogs mr-2"></i>Especificaciones Técnicas
                     </span>
                     <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-                        Características del Producto
+                        {{ __('messages.product_show.product_features') }}
                     </h2>
                     <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed">
                         Conoce todos los detalles técnicos y especificaciones de {{ $producto->nombre_producto }}
@@ -1042,8 +1042,8 @@
                                 </div>
                                 @endif
                                 <div class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-600">
-                                    <span class="font-medium text-gray-700 dark:text-gray-300">Stock Disponible</span>
-                                    <span class="text-gray-600 dark:text-gray-400">{{ $producto->stock }} unidades</span>
+                                    <span class="font-medium text-gray-700 dark:text-gray-300">{{ __('messages.product_show.stock_available') }}</span>
+                                    <span class="text-gray-600 dark:text-gray-400">{{ $producto->stock }} {{ __('messages.product_show.stock_units') }}</span>
                                 </div>
                             </div>
                         </div>
@@ -1060,7 +1060,7 @@
                 <div class="text-center mb-16">
                     <span
                         class="inline-flex items-center px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 rounded-full text-sm font-medium mb-4">
-                        <i class="fas fa-star mr-2"></i>Reseñas de Clientes
+                        <i class="fas fa-star mr-2"></i>{{ __('messages.product_show.customer_reviews') }}
                     </span>
                     <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
                         Lo que dicen nuestros clientes
@@ -1211,7 +1211,7 @@
                 <!-- Image Counter -->
                 <div
                     class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white px-4 py-2 rounded-full text-sm">
-                    <span id="zoomImageCounter">1</span> de <span id="zoomTotalImages">1</span>
+                    <span id="zoomImageCounter">1</span> {{ __('messages.product_show.zoom_image_counter') }} <span id="zoomTotalImages">1</span>
                 </div>
 
                 <!-- Zoom Level Indicator -->
@@ -1409,10 +1409,10 @@
                              
                              <div class="flex items-center space-x-2 mb-3">
                                  <span
-                                     class="text-lg font-bold text-blue-600 dark:text-blue-400">${{ number_format($productoRelacionado->precio ?? 0, 0, ',', '.') }}</span>
+                                     class="text-lg font-bold text-blue-600 dark:text-blue-400">{{ \App\Helpers\CurrencyHelper::formatPrice($productoRelacionado->precio ?? 0) }}</span>
                                  @if (isset($productoRelacionado->precio_anterior) && $productoRelacionado->precio_anterior > $productoRelacionado->precio)
                                      <span
-                                         class="text-sm text-gray-500 line-through">${{ number_format($productoRelacionado->precio_anterior, 0, ',', '.') }}</span>
+                                         class="text-sm text-gray-500 line-through">{{ \App\Helpers\CurrencyHelper::formatPrice($productoRelacionado->precio_anterior) }}</span>
                                  @endif
                              </div>
                              
@@ -1447,6 +1447,55 @@
 
 @push('scripts')
     <script>
+        // Función para formatear moneda según la configuración actual
+        function formatCurrency(amount, fromCurrency = 'COP') {
+            // Obtener la configuración de moneda desde el servidor
+            const currencySymbol = '{{ \App\Helpers\CurrencyHelper::getCurrencySymbol() }}';
+            const currentCurrency = '{{ \App\Helpers\CurrencyHelper::getCurrentCurrency() }}';
+            
+            // Tasas de cambio (deben coincidir con las del servidor)
+            const rates = {
+                'COP': 1,
+                'USD': 0.00025,
+                'BRL': 0.0012,
+                'EUR': 0.00023,
+                'MXN': 0.0045,
+                'ARS': 0.25,
+                'CLP': 0.4,
+                'PEN': 0.0009
+            };
+            
+            // Convertir moneda si es necesario
+            let convertedAmount = amount;
+            if (fromCurrency !== currentCurrency) {
+                const amountInCOP = amount / (rates[fromCurrency] || 1);
+                convertedAmount = amountInCOP * (rates[currentCurrency] || 1);
+            }
+            
+            // Configuraciones de formateo por moneda
+            const formats = {
+                'COP': { decimals: 0, separator: '.', decimal: ',' },
+                'USD': { decimals: 2, separator: ',', decimal: '.' },
+                'BRL': { decimals: 2, separator: '.', decimal: ',' },
+                'EUR': { decimals: 2, separator: '.', decimal: ',' },
+                'MXN': { decimals: 2, separator: ',', decimal: '.' },
+                'ARS': { decimals: 0, separator: '.', decimal: ',' },
+                'CLP': { decimals: 0, separator: '.', decimal: ',' },
+                'PEN': { decimals: 2, separator: ',', decimal: '.' }
+            };
+            
+            const format = formats[currentCurrency] || formats['COP'];
+            
+            // Formatear el número
+            const formattedAmount = new Intl.NumberFormat('es-CO', {
+                minimumFractionDigits: format.decimals,
+                maximumFractionDigits: format.decimals
+            }).format(convertedAmount);
+            
+            // Retornar con el símbolo de moneda
+            return currencySymbol + ' ' + formattedAmount;
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             console.log('=== DOM CONTENT LOADED - INITIALIZING ===');
             
@@ -1738,7 +1787,7 @@
                             title: '¡Producto Agregado!',
                             text: 'El producto se ha agregado al carrito exitosamente.',
                             icon: 'success',
-                            confirmButtonText: 'Continuar Comprando',
+                            confirmButtonText: '{{ __('messages.product_show.continue_shopping') }}',
                             confirmButtonColor: '#3B82F6'
                         });
                     } else {
@@ -1778,7 +1827,7 @@
                             text: icon.classList.contains('text-red-500') ?
                                 'Producto agregado a favoritos' : 'Producto removido de favoritos',
                             icon: 'success',
-                            confirmButtonText: 'Entendido',
+                            confirmButtonText: '{{ __('messages.product_show.understood') }}',
                             confirmButtonColor: '#3B82F6'
                         });
                     } else {
@@ -1820,7 +1869,7 @@
                     }
                     
                     colorData[colorName] = {
-                        description: variant.dataset.descripcion || 'Color elegante y versátil.',
+                        description: variant.dataset.descripcion || '{{ __('messages.product_show.color_default_description') }}',
                         code: variant.dataset.codigoColor || '#CCCCCC',
                         stock: parseInt(variant.dataset.stock) || 0,
                         precioAdicional: parseFloat(variant.dataset.precioAdicional) || 0,
@@ -1880,10 +1929,10 @@
                             console.log('Variant not available');
                             if (typeof Swal !== 'undefined') {
                                 Swal.fire({
-                                    title: 'Color No Disponible',
-                                    text: 'Este color no está disponible actualmente.',
+                                    title: '{{ __('messages.product_show.color_not_available_title') }}',
+                                    text: '{{ __('messages.product_show.color_not_available_text') }}',
                                     icon: 'warning',
-                                    confirmButtonText: 'Entendido',
+                                    confirmButtonText: '{{ __('messages.product_show.understood') }}',
                                     confirmButtonColor: '#3B82F6'
                                 });
                             } else {
@@ -1916,7 +1965,7 @@
                         }
                         if (selectedColorStock) {
                             selectedColorStock.textContent =
-                                `Stock disponible: ${colorInfo.stock} unidades`;
+                                `{{ __('messages.product_show.stock_available') }}: ${colorInfo.stock} {{ __('messages.product_show.stock_units') }}`;
                         }
 
                         // Update price additional info
@@ -1924,8 +1973,8 @@
                         const precioAdicional = document.getElementById('precioAdicional');
                         if (selectedColorPrice && precioAdicional) {
                             if (colorInfo.precioAdicional > 0) {
-                                precioAdicional.textContent =
-                                    `$${colorInfo.precioAdicional.toLocaleString('es-CO')}`;
+                                // Usar la función de formateo de moneda
+                                precioAdicional.textContent = formatCurrency(colorInfo.precioAdicional, 'COP');
                                 selectedColorPrice.style.display = 'block';
                             } else {
                                 selectedColorPrice.style.display = 'none';
@@ -1938,7 +1987,7 @@
                         if (priceElement) {
                             const basePrice = parseFloat('{{ $producto->precio ?? 0 }}');
                             const totalPrice = basePrice + colorInfo.precioAdicional;
-                            priceElement.textContent = `$${totalPrice.toLocaleString('es-CO')}`;
+                            priceElement.textContent = formatCurrency(totalPrice, 'COP');
                         }
 
                         // Update visual selection
@@ -2127,7 +2176,7 @@
                             title: '¡Reseña Enviada!',
                             text: data.message,
                             icon: 'success',
-                            confirmButtonText: 'Entendido',
+                            confirmButtonText: '{{ __('messages.product_show.understood') }}',
                             confirmButtonColor: '#3B82F6'
                         }).then(() => {
                             closeReviewModal();
