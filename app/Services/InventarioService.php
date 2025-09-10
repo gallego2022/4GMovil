@@ -454,7 +454,6 @@ class InventarioService
     public function getVariantesStockBajo(): Collection
     {
         return VarianteProducto::with(['producto', 'imagenes'])
-            ->where('disponible', true)
             ->whereRaw('stock_disponible <= stock')
             ->orderBy('stock_disponible')
             ->get();
@@ -466,7 +465,6 @@ class InventarioService
     public function getVariantesSinStock(): Collection
     {
         return VarianteProducto::with(['producto', 'imagenes'])
-            ->where('disponible', true)
             ->where('stock_disponible', 0)
             ->get();
     }
@@ -477,7 +475,6 @@ class InventarioService
     public function getVariantesNecesitanReposicion(): Collection
     {
         return VarianteProducto::with(['producto', 'imagenes'])
-            ->where('disponible', true)
             ->whereRaw('stock_disponible <= stock')
             ->get();
     }
@@ -564,6 +561,121 @@ class InventarioService
             ]);
             return false;
         }
+    }
+
+    /**
+     * Obtener datos para reporte de inventario
+     */
+    public function getReporteData(array $filtros = []): array
+    {
+        try {
+            $fechaInicio = $filtros['fecha_inicio'] ?? now()->subMonth();
+            $fechaFin = $filtros['fecha_fin'] ?? now();
+            $categoriaId = $filtros['categoria_id'] ?? null;
+            $marcaId = $filtros['marca_id'] ?? null;
+            $tipoReporte = $filtros['tipo_reporte'] ?? 'general';
+            $incluirVariantes = $filtros['incluir_variantes'] ?? true;
+
+            // Obtener productos con sus relaciones
+            $query = Producto::with(['categoria', 'marca', 'variantes']);
+
+            if ($categoriaId) {
+                $query->where('categoria_id', $categoriaId);
+            }
+
+            if ($marcaId) {
+                $query->where('marca_id', $marcaId);
+            }
+
+            $productos = $query->get();
+
+            // Obtener movimientos en el rango de fechas
+            $movimientos = MovimientoInventarioVariante::with(['variante.producto', 'usuario'])
+                ->whereBetween('created_at', [$fechaInicio, $fechaFin])
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            // Calcular estadísticas
+            $estadisticas = $this->calcularEstadisticasReporte($productos, $movimientos, $fechaInicio, $fechaFin);
+
+            // Obtener categorías y marcas para filtros
+            $categorias = \App\Models\Categoria::orderBy('nombre')->get();
+            $marcas = \App\Models\Marca::orderBy('nombre')->get();
+
+            return [
+                'productos' => $productos,
+                'movimientos' => $movimientos,
+                'estadisticas' => $estadisticas,
+                'categorias' => $categorias,
+                'marcas' => $marcas,
+                'filtros' => $filtros,
+                'fecha_inicio' => $fechaInicio,
+                'fecha_fin' => $fechaFin,
+                'tipo_reporte' => $tipoReporte,
+                'incluir_variantes' => $incluirVariantes
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('Error al obtener datos de reporte', [
+                'filtros' => $filtros,
+                'error' => $e->getMessage()
+            ]);
+            
+            return [
+                'productos' => collect(),
+                'movimientos' => collect(),
+                'estadisticas' => [],
+                'categorias' => collect(),
+                'marcas' => collect(),
+                'filtros' => $filtros,
+                'fecha_inicio' => now()->subMonth(),
+                'fecha_fin' => now(),
+                'tipo_reporte' => 'general',
+                'incluir_variantes' => true
+            ];
+        }
+    }
+
+    /**
+     * Calcular estadísticas para el reporte
+     */
+    private function calcularEstadisticasReporte($productos, $movimientos, $fechaInicio, $fechaFin): array
+    {
+        $totalProductos = $productos->count();
+        $totalVariantes = $productos->sum(function($producto) {
+            return $producto->variantes->count();
+        });
+        
+        $stockTotal = $productos->sum('stock');
+        $valorInventario = $productos->sum(function($producto) {
+            return $producto->stock * $producto->precio;
+        });
+
+        $movimientosEntrada = $movimientos->where('tipo', 'entrada')->sum('cantidad');
+        $movimientosSalida = $movimientos->where('tipo', 'salida')->sum('cantidad');
+
+        $productosStockBajo = $productos->filter(function($producto) {
+            $stockInicial = $producto->stock_inicial ?? 0;
+            $umbralBajo = $stockInicial > 0 ? (int) ceil(($stockInicial * 60) / 100) : 10;
+            return $producto->stock <= $umbralBajo;
+        })->count();
+
+        $productosSinStock = $productos->where('stock', 0)->count();
+
+        return [
+            'total_productos' => $totalProductos,
+            'total_variantes' => $totalVariantes,
+            'stock_total' => $stockTotal,
+            'valor_inventario' => $valorInventario,
+            'movimientos_entrada' => $movimientosEntrada,
+            'movimientos_salida' => $movimientosSalida,
+            'productos_stock_bajo' => $productosStockBajo,
+            'productos_sin_stock' => $productosSinStock,
+            'periodo' => [
+                'inicio' => $fechaInicio->format('d/m/Y'),
+                'fin' => $fechaFin->format('d/m/Y')
+            ]
+        ];
     }
 
     /**
@@ -670,7 +782,7 @@ class InventarioService
      */
     public function getStockTotalVariantes(): int
     {
-        return VarianteProducto::where('disponible', true)->sum('stock');
+        return VarianteProducto::sum('stock');
     }
 
     /**
@@ -678,8 +790,7 @@ class InventarioService
      */
     public function getValorTotalVariantes(): float
     {
-        return VarianteProducto::where('disponible', true)
-            ->get()
+        return VarianteProducto::get()
             ->sum(function($variante) {
                 return $variante->stock * $variante->precio_final;
             });
@@ -730,20 +841,48 @@ class InventarioService
         $fechaInicio = $filtros['fecha_inicio'] ?? now()->subMonth();
         $fechaFin = $filtros['fecha_fin'] ?? now();
         $productoId = $filtros['producto_id'] ?? null;
+        $tipo = $filtros['tipo'] ?? null;
+        $usuarioId = $filtros['usuario_id'] ?? null;
 
-        $producto = null;
-        $resumen = null;
+        // Obtener movimientos de variantes (que es lo que realmente usamos)
+        $query = MovimientoInventarioVariante::with(['variante.producto.categoria', 'variante.producto.marca', 'usuario'])
+            ->whereBetween('fecha_movimiento', [$fechaInicio, $fechaFin])
+            ->orderBy('fecha_movimiento', 'desc');
 
+        // Aplicar filtros
         if ($productoId) {
-            $movimientos = $this->getMovimientosProducto($productoId, $fechaInicio, $fechaFin);
-            $producto = Producto::findOrFail($productoId);
-        } else {
-            $reporte = $this->getReporteMovimientos($fechaInicio, $fechaFin);
-            $movimientos = $reporte['movimientos'];
-            $resumen = $reporte['resumen'];
+            $query->whereHas('variante', function($q) use ($productoId) {
+                $q->where('producto_id', $productoId);
+            });
         }
 
-        $productos = Producto::activos()->orderBy('nombre_producto')->get();
+        if ($tipo) {
+            $query->where('tipo', $tipo);
+        }
+
+        if ($usuarioId) {
+            $query->where('usuario_id', $usuarioId);
+        }
+
+        $movimientos = $query->get();
+
+        // Calcular resumen
+        $resumen = [
+            'total_entradas' => $movimientos->where('tipo', 'entrada')->sum('cantidad'),
+            'total_salidas' => $movimientos->where('tipo', 'salida')->sum('cantidad'),
+            'total_ajustes' => $movimientos->where('tipo', 'ajuste')->sum('cantidad'),
+            'variantes_afectadas' => $movimientos->unique('variante_id')->count(),
+            'productos_afectados' => $movimientos->unique(function($m) {
+                return $m->variante->producto_id;
+            })->count(),
+            'movimientos_totales' => $movimientos->count()
+        ];
+
+        // Obtener productos para filtros
+        $productos = Producto::orderBy('nombre_producto')->get();
+
+        // Obtener producto específico si se filtró
+        $producto = $productoId ? Producto::find($productoId) : null;
 
         return [
             'movimientos' => $movimientos,
@@ -752,7 +891,9 @@ class InventarioService
             'fechaFin' => $fechaFin,
             'productoId' => $productoId,
             'producto' => $producto,
-            'resumen' => $resumen
+            'resumen' => $resumen,
+            'tipo' => $tipo,
+            'usuarioId' => $usuarioId
         ];
     }
 

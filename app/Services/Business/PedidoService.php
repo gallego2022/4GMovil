@@ -487,11 +487,27 @@ class PedidoService extends BaseService
     {
         foreach ($items as $item) {
             if ($item->variante_id) {
+                // Para variantes, usar el método que registra movimientos
                 $variante = VarianteProducto::find($item->variante_id);
-                $variante->decrement('stock', $item->cantidad);
+                if ($variante) {
+                    $variante->registrarSalida(
+                        $item->cantidad,
+                        "Venta - Pedido desde carrito",
+                        \Illuminate\Support\Facades\Auth::id(),
+                        "carrito_venta"
+                    );
+                }
             } else {
+                // Para productos sin variantes, usar el método que registra movimientos
                 $producto = Producto::find($item->producto_id);
-                $producto->decrement('stock', $item->cantidad);
+                if ($producto) {
+                    $producto->registrarSalida(
+                        $item->cantidad,
+                        "Venta - Pedido desde carrito",
+                        \Illuminate\Support\Facades\Auth::id(),
+                        "carrito_venta"
+                    );
+                }
             }
         }
     }
@@ -503,11 +519,27 @@ class PedidoService extends BaseService
     {
         foreach ($items as $item) {
             if ($item->variante_id) {
+                // Para variantes, usar el método que registra movimientos
                 $variante = VarianteProducto::find($item->variante_id);
-                $variante->increment('stock', $item->cantidad);
+                if ($variante) {
+                    $variante->registrarEntrada(
+                        $item->cantidad,
+                        "Cancelación de pedido - Restauración de stock",
+                        \Illuminate\Support\Facades\Auth::id(),
+                        "cancelacion_pedido"
+                    );
+                }
             } else {
+                // Para productos sin variantes, usar el método que registra movimientos
                 $producto = Producto::find($item->producto_id);
-                $producto->increment('stock', $item->cantidad);
+                if ($producto) {
+                    $producto->registrarEntrada(
+                        $item->cantidad,
+                        "Cancelación de pedido - Restauración de stock",
+                        \Illuminate\Support\Facades\Auth::id(),
+                        "cancelacion_pedido"
+                    );
+                }
             }
         }
     }

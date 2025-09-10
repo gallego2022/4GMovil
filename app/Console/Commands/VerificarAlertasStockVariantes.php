@@ -78,7 +78,7 @@ class VerificarAlertasStockVariantes extends Command
     private function verificarStockAgotado(): int
     {
         $variantes = VarianteProducto::with('producto')
-            ->where('stock_disponible', '<=', 0)
+            ->where('stock', '<=', 0)
             ->where('disponible', true)
             ->get();
 
@@ -98,61 +98,69 @@ class VerificarAlertasStockVariantes extends Command
     }
 
     /**
-     * Verificar stock crítico (≤20% del mínimo)
+     * Verificar stock crítico (≤20% del stock inicial del producto)
      */
     private function verificarStockCritico(): int
     {
         $variantes = VarianteProducto::with('producto')
             ->where('disponible', true)
-            ->where('stock_disponible', '>', 0)
-            ->whereRaw('stock_disponible <= (stock_minimo * 0.2)')
+            ->where('stock', '>', 0)
             ->get();
 
         $contador = 0;
         foreach ($variantes as $variante) {
-            $porcentaje = $variante->stock_minimo > 0 
-                ? round(($variante->stock_disponible / $variante->stock_minimo) * 100, 1) 
-                : 0;
+            $stockInicial = $variante->producto->stock_inicial ?? 0;
+            $umbralCritico = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 5;
             
-            $this->info("⚠️ Stock crítico: {$variante->producto->nombre_producto} ({$variante->nombre}) - {$porcentaje}% del mínimo");
-            
-            dispatch(new ProcesarAlertaStockVariante(
-                $variante,
-                'critico'
-            ));
-            
-            $contador++;
+            if ($variante->stock <= $umbralCritico) {
+                $porcentaje = $stockInicial > 0 
+                    ? round(($variante->stock / $stockInicial) * 100, 1) 
+                    : 0;
+                
+                $this->info("⚠️ Stock crítico: {$variante->producto->nombre_producto} ({$variante->nombre}) - {$variante->stock} unidades ({$porcentaje}% del inicial)");
+                
+                dispatch(new ProcesarAlertaStockVariante(
+                    $variante,
+                    'critico'
+                ));
+                
+                $contador++;
+            }
         }
 
         return $contador;
     }
 
     /**
-     * Verificar stock bajo (≤60% del mínimo)
+     * Verificar stock bajo (≤60% del stock inicial del producto)
      */
     private function verificarStockBajo(): int
     {
         $variantes = VarianteProducto::with('producto')
             ->where('disponible', true)
-            ->where('stock_disponible', '>', 0)
-            ->whereRaw('stock_disponible <= (stock_minimo * 0.6)')
-            ->whereRaw('stock_disponible > (stock_minimo * 0.2)')
+            ->where('stock', '>', 0)
             ->get();
 
         $contador = 0;
         foreach ($variantes as $variante) {
-            $porcentaje = $variante->stock_minimo > 0 
-                ? round(($variante->stock_disponible / $variante->stock_minimo) * 100, 1) 
-                : 0;
+            $stockInicial = $variante->producto->stock_inicial ?? 0;
+            $umbralBajo = $stockInicial > 0 ? (int) ceil(($stockInicial * 60) / 100) : 10;
+            $umbralCritico = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 5;
             
-            $this->info("📉 Stock bajo: {$variante->producto->nombre_producto} ({$variante->nombre}) - {$porcentaje}% del mínimo");
-            
-            dispatch(new ProcesarAlertaStockVariante(
-                $variante,
-                'bajo'
-            ));
-            
-            $contador++;
+            if ($variante->stock <= $umbralBajo && $variante->stock > $umbralCritico) {
+                $porcentaje = $stockInicial > 0 
+                    ? round(($variante->stock / $stockInicial) * 100, 1) 
+                    : 0;
+                
+                $this->info("📉 Stock bajo: {$variante->producto->nombre_producto} ({$variante->nombre}) - {$variante->stock} unidades ({$porcentaje}% del inicial)");
+                
+                dispatch(new ProcesarAlertaStockVariante(
+                    $variante,
+                    'bajo'
+                ));
+                
+                $contador++;
+            }
         }
 
         return $contador;

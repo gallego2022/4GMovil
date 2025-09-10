@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // ===== AGREGAR COLUMNAS FALTANTES A VARIANTES_PRODUCTO =====
         Schema::table('variantes_producto', function (Blueprint $table) {
-            // Agregar columnas faltantes para funcionalidad completa
             $table->string('codigo_variante')->nullable()->after('nombre');
             $table->integer('stock_disponible')->default(0)->after('stock');
             $table->boolean('activo')->default(true)->after('disponible');
@@ -27,6 +27,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // ===== ELIMINAR COLUMNAS DE VARIANTES_PRODUCTO =====
         Schema::table('variantes_producto', function (Blueprint $table) {
             $table->dropColumn([
                 'codigo_variante',

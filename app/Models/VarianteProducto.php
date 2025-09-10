@@ -70,10 +70,8 @@ class VarianteProducto extends Model
             // Registrar movimiento
             MovimientoInventarioVariante::create([
                 'variante_id' => $this->variante_id,
-                'tipo_movimiento' => 'entrada',
+                'tipo' => 'entrada',
                 'cantidad' => $cantidad,
-                'stock_anterior' => $stockAnterior,
-                'stock_nuevo' => $stockNuevo,
                 'motivo' => $motivo,
                 'usuario_id' => $usuarioId,
                 'referencia' => $referencia,
@@ -117,7 +115,7 @@ class VarianteProducto extends Model
             // Registrar movimiento
             MovimientoInventarioVariante::create([
                 'variante_id' => $this->variante_id,
-                'tipo_movimiento' => 'salida',
+                'tipo' => 'salida',
                 'cantidad' => $cantidad,
                 'stock_anterior' => $stockAnterior,
                 'stock_nuevo' => $stockNuevo,
@@ -171,7 +169,7 @@ class VarianteProducto extends Model
             // Registrar movimiento de reserva
             MovimientoInventarioVariante::create([
                 'variante_id' => $this->variante_id,
-                'tipo_movimiento' => 'reserva',
+                'tipo' => 'reserva',
                 'cantidad' => $cantidad,
                 'stock_anterior' => $stockAnterior,
                 'stock_nuevo' => $stockNuevo,
@@ -203,7 +201,7 @@ class VarianteProducto extends Model
         return DB::transaction(function () use ($cantidad, $motivo, $usuarioId, $referencia) {
             MovimientoInventarioVariante::create([
                 'variante_id' => $this->variante_id,
-                'tipo_movimiento' => 'venta',
+                'tipo' => 'venta',
                 'cantidad' => $cantidad,
                 'stock_anterior' => $this->stock,
                 'stock_nuevo' => $this->stock, // No cambia porque ya se reservó
@@ -239,7 +237,7 @@ class VarianteProducto extends Model
             // Registrar movimiento de liberación
             MovimientoInventarioVariante::create([
                 'variante_id' => $this->variante_id,
-                'tipo_movimiento' => 'liberacion',
+                'tipo' => 'liberacion_reserva',
                 'cantidad' => $cantidad,
                 'stock_anterior' => $stockAnterior,
                 'stock_nuevo' => $stockNuevo,

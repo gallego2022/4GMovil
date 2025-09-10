@@ -33,7 +33,7 @@
                 </button>
                 <button onclick="cambiarTab('bajo')" 
                         class="tab-button border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
-                    Stock Bajo ({{ $productosStockBajo->count() }})
+                    Stock Bajo ({{ \App\Models\VarianteProducto::with('producto')->where('disponible', true)->where('stock', '>', 0)->get()->filter(function($variante) { $stockInicial = $variante->producto->stock_inicial ?? 0; $umbralBajo = $stockInicial > 0 ? (int) ceil(($stockInicial * 60) / 100) : 10; $umbralCritico = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 5; return $variante->stock <= $umbralBajo && $variante->stock > $umbralCritico; })->count() }})
                 </button>
                 <button onclick="cambiarTab('sin-stock')" 
                         class="tab-button border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
@@ -147,31 +147,50 @@
             <!-- Tab Stock Bajo -->
             <div id="tab-bajo" class="tab-content hidden">
                 <div class="mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Productos con Stock Bajo</h3>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Productos que están por debajo de su stock mínimo</p>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Variantes con Stock Bajo</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Variantes específicas que están por debajo del 60% de su stock inicial</p>
                 </div>
                 
-                @if($productosStockBajo->count() > 0)
+                @php
+                    // Obtener variantes con stock bajo
+                    $variantesStockBajo = \App\Models\VarianteProducto::with(['producto.categoria', 'producto.marca'])
+                        ->where('disponible', true)
+                        ->where('stock', '>', 0)
+                        ->get()
+                        ->filter(function($variante) {
+                            $stockInicial = $variante->producto->stock_inicial ?? 0;
+                            $umbralBajo = $stockInicial > 0 ? (int) ceil(($stockInicial * 60) / 100) : 10;
+                            $umbralCritico = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 5;
+                            return $variante->stock <= $umbralBajo && $variante->stock > $umbralCritico;
+                        });
+                @endphp
+                
+                @if($variantesStockBajo->count() > 0)
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <thead class="bg-gray-50 dark:bg-gray-800">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Producto</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Categoría</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Variante</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock Actual</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock Mínimo</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock Inicial</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Porcentaje</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-                                @foreach($productosStockBajo as $producto)
+                                @foreach($variantesStockBajo as $variante)
+                                    @php
+                                        $stockInicial = $variante->producto->stock_inicial ?? 0;
+                                        $porcentaje = $stockInicial > 0 ? round(($variante->stock / $stockInicial) * 100, 1) : 0;
+                                    @endphp
                                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center">
-                                                @if($producto->imagenes->isNotEmpty())
-                                                    <img src="{{ asset('storage/' . $producto->imagenes[0]->ruta_imagen) }}" 
+                                                @if($variante->producto->imagenes->isNotEmpty())
+                                                    <img src="{{ asset('storage/' . $variante->producto->imagenes[0]->ruta_imagen) }}" 
                                                          class="w-10 h-10 rounded-md object-cover" 
-                                                         alt="{{ $producto->nombre_producto }}">
+                                                         alt="{{ $variante->producto->nombre_producto }}">
                                                 @else
                                                     <div class="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-md flex items-center justify-center">
                                                         <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -180,48 +199,39 @@
                                                     </div>
                                                 @endif
                                                 <div class="ml-4">
-                                                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $producto->nombre_producto }}</div>
-                                                    <div class="text-sm text-gray-500 dark:text-gray-400">ID: {{ $producto->producto_id }}</div>
+                                                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $variante->producto->nombre_producto }}</div>
+                                                    <div class="text-sm text-gray-500 dark:text-gray-400">{{ $variante->producto->categoria->nombre ?? 'Sin categoría' }}</div>
                                                 </div>
                                             </div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                            {{ $producto->categoria->nombre ?? 'Sin categoría' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex flex-col space-y-1">
-                                                <!-- Stock Total -->
-                                                <div class="flex items-center space-x-2">
-                                                    <span class="text-xs text-gray-500 dark:text-gray-400">Total:</span>
-                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
-                                                        {{ $producto->stock }}
-                                                    </span>
-                                                </div>
-                                                
-                                                <!-- Stock Disponible -->
-                                                <div class="flex items-center space-x-2">
-                                                    <span class="text-xs text-gray-500 dark:text-gray-400">Disponible:</span>
-                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
-                                                        {{ $producto->stock_disponible }}
-                                                    </span>
-                                                </div>
-                                                
-                                                <!-- Stock Reservado (solo si hay) -->
-                                                @if($producto->stock_reservado > 0)
-                                                <div class="flex items-center space-x-2">
-                                                    <span class="text-xs text-gray-500 dark:text-gray-400">Reservado:</span>
-                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                                                        {{ $producto->stock_reservado }}
-                                                    </span>
-                                                </div>
+                                            <div class="flex items-center space-x-2">
+                                                @if($variante->codigo_color)
+                                                    <div class="w-4 h-4 rounded-full border border-gray-300" style="background-color: {{ $variante->codigo_color }}"></div>
                                                 @endif
+                                                <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $variante->nombre }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center space-x-2">
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                                                    {{ $variante->stock }} unidades
+                                                </span>
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                            {{ $producto->stock_minimo }} unidades
+                                            {{ $stockInicial }} unidades
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center space-x-2">
+                                                <div class="w-16 bg-gray-200 rounded-full h-2">
+                                                    <div class="bg-yellow-500 h-2 rounded-full" style="width: {{ min($porcentaje, 100) }}%"></div>
+                                                </div>
+                                                <span class="text-xs text-gray-500 dark:text-gray-400">{{ $porcentaje }}%</span>
+                                            </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <button onclick="abrirModalEntrada({{ $producto->producto_id }}, '{{ $producto->nombre_producto }}')" 
+                                            <button onclick="abrirModalEntradaVariante({{ $variante->variante_id }}, '{{ $variante->producto->nombre_producto }} - {{ $variante->nombre }}')" 
                                                     class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300">
                                                 Registrar Entrada
                                             </button>
@@ -236,7 +246,7 @@
                         <svg class="w-12 h-12 text-green-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        <p class="text-gray-500 dark:text-gray-400">No hay productos con stock bajo</p>
+                        <p class="text-gray-500 dark:text-gray-400">No hay variantes con stock bajo</p>
                     </div>
                 @endif
             </div>
@@ -520,9 +530,10 @@
             <form id="formEntrada" method="POST" action="{{ route('admin.inventario.registrar-entrada') }}">
                 @csrf
                 <input type="hidden" id="producto_id" name="producto_id">
+                <input type="hidden" id="tipo_entrada" name="tipo" value="producto">
                 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Producto</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Producto/Variante</label>
                     <input type="text" id="producto_nombre" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" readonly>
                 </div>
                 
@@ -613,6 +624,14 @@ function cerrarModalRecomendacion() {
 function abrirModalEntrada(productoId, nombreProducto) {
     document.getElementById('producto_id').value = productoId;
     document.getElementById('producto_nombre').value = nombreProducto;
+    document.getElementById('tipo_entrada').value = 'producto';
+    document.getElementById('modalEntrada').classList.remove('hidden');
+}
+
+function abrirModalEntradaVariante(varianteId, nombreVariante) {
+    document.getElementById('producto_id').value = varianteId;
+    document.getElementById('producto_nombre').value = nombreVariante;
+    document.getElementById('tipo_entrada').value = 'variante';
     document.getElementById('modalEntrada').classList.remove('hidden');
 }
 
