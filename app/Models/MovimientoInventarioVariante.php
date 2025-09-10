@@ -13,10 +13,8 @@ class MovimientoInventarioVariante extends Model
 
     protected $fillable = [
         'variante_id',
-        'tipo_movimiento',
+        'tipo',
         'cantidad',
-        'stock_anterior',
-        'stock_nuevo',
         'motivo',
         'usuario_id',
         'referencia',
@@ -25,8 +23,6 @@ class MovimientoInventarioVariante extends Model
 
     protected $casts = [
         'cantidad' => 'integer',
-        'stock_anterior' => 'integer',
-        'stock_nuevo' => 'integer',
         'fecha_movimiento' => 'datetime'
     ];
 
@@ -44,27 +40,27 @@ class MovimientoInventarioVariante extends Model
     // Scopes para consultas comunes
     public function scopeEntradas($query)
     {
-        return $query->where('tipo_movimiento', 'entrada');
+        return $query->where('tipo', 'entrada');
     }
 
     public function scopeSalidas($query)
     {
-        return $query->where('tipo_movimiento', 'salida');
+        return $query->where('tipo', 'salida');
     }
 
     public function scopeReservas($query)
     {
-        return $query->where('tipo_movimiento', 'reserva');
+        return $query->where('tipo', 'reserva');
     }
 
     public function scopeVentas($query)
     {
-        return $query->where('tipo_movimiento', 'venta');
+        return $query->where('tipo', 'venta');
     }
 
     public function scopeLiberaciones($query)
     {
-        return $query->where('tipo_movimiento', 'liberacion');
+        return $query->where('tipo', 'liberacion_reserva');
     }
 
     public function scopePorFecha($query, $fechaInicio, $fechaFin = null)
@@ -80,42 +76,38 @@ class MovimientoInventarioVariante extends Model
     // Métodos de utilidad
     public function getTipoMovimientoFormateadoAttribute(): string
     {
-        return match($this->tipo_movimiento) {
+        return match($this->tipo) {
             'entrada' => 'Entrada',
             'salida' => 'Salida',
             'reserva' => 'Reserva',
             'venta' => 'Venta',
-            'liberacion' => 'Liberación',
-            default => ucfirst($this->tipo_movimiento)
+            'liberacion_reserva' => 'Liberación',
+            'ajuste' => 'Ajuste',
+            'transferencia' => 'Transferencia',
+            'devolucion' => 'Devolución',
+            'merma' => 'Merma',
+            'inventario_fisico' => 'Inventario Físico',
+            default => ucfirst($this->tipo)
         };
     }
 
     public function getCantidadFormateadaAttribute(): string
     {
-        $signo = match($this->tipo_movimiento) {
-            'entrada', 'liberacion' => '+',
-            'salida', 'reserva', 'venta' => '-',
+        $signo = match($this->tipo) {
+            'entrada', 'liberacion_reserva', 'devolucion' => '+',
+            'salida', 'reserva', 'venta', 'merma' => '-',
             default => ''
         };
         return $signo . $this->cantidad;
     }
 
-    public function getStockAnteriorFormateadoAttribute(): string
-    {
-        return number_format($this->stock_anterior);
-    }
-
-    public function getStockNuevoFormateadoAttribute(): string
-    {
-        return number_format($this->stock_nuevo);
-    }
-
     public function getClaseColorTipoAttribute(): string
     {
-        return match($this->tipo_movimiento) {
-            'entrada', 'liberacion' => 'text-green-600 bg-green-100',
-            'salida', 'venta' => 'text-red-600 bg-red-100',
+        return match($this->tipo) {
+            'entrada', 'liberacion_reserva', 'devolucion' => 'text-green-600 bg-green-100',
+            'salida', 'venta', 'merma' => 'text-red-600 bg-red-100',
             'reserva' => 'text-blue-600 bg-blue-100',
+            'ajuste', 'transferencia', 'inventario_fisico' => 'text-yellow-600 bg-yellow-100',
             default => 'text-gray-600 bg-gray-100'
         };
     }
