@@ -36,8 +36,8 @@
 
 [![Laravel](https://img.shields.io/badge/Laravel-12.0-red.svg)](https://laravel.com)
 [![PHP](https://img.shields.io/badge/PHP-8.2+-blue.svg)](https://php.net)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.3.6-38B2AC.svg)](https://tailwindcss.com)
-[![Vite](https://img.shields.io/badge/Vite-5.0.0-646CFF.svg)](https://vitejs.dev)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4.17-38B2AC.svg)](https://tailwindcss.com)
+[![Vite](https://img.shields.io/badge/Vite-7.1.5-646CFF.svg)](https://vitejs.dev)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 **4GMovil** es una plataforma e-commerce moderna, robusta y completamente consolidada construida con Laravel 12, diseñada para ofrecer una experiencia de compra excepcional con gestión avanzada de inventario, integración de pagos con Stripe, autenticación social con Google y un sistema de especificaciones dinámicas para productos.
