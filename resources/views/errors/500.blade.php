@@ -37,13 +37,13 @@
         <h4>Estado del Servicio</h4>
         <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin: 1rem 0;">
             <div style="width: 12px; height: 12px; background: #10b981; border-radius: 50%; animation: pulse 2s infinite;"></div>
-            <span style="color: #10b981; font-weight: 600;">Servicios principales operativos</span>
+            <span style="font-weight: 600; color: var(--text-primary);">Servicios principales operativos</span>
         </div>
         <p>
             Si el problema persiste, puedes verificar el estado de nuestros servicios 
             o contactar soporte técnico.
         </p>
-        <div style="margin-top: 1rem; color: rgba(255, 255, 255, 0.9); font-size: 0.9rem;">
+        <div style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
             <i class="fas fa-clock"></i> Tiempo estimado de resolución: 15-30 minutos
         </div>
     </div>
@@ -51,15 +51,15 @@
     <!-- Servicios de estado -->
     <div class="error-services">
         <div class="error-service-card">
-            <div class="error-service-icon">
-                <i class="fas fa-tools" style="color: #f59e0b;"></i>
+            <div class="error-service-icon" style="color: #f59e0b;">
+                <i class="fas fa-tools"></i>
             </div>
             <h3 class="error-service-title">Mantenimiento</h3>
             <p class="error-service-description">Nuestro equipo está trabajando en una solución</p>
         </div>
         <div class="error-service-card">
-            <div class="error-service-icon">
-                <i class="fas fa-chart-line" style="color: #10b981;"></i>
+            <div class="error-service-icon" style="color: #10b981;">
+                <i class="fas fa-chart-line"></i>
             </div>
             <h3 class="error-service-title">Monitoreo</h3>
             <p class="error-service-description">Supervisamos constantemente nuestros sistemas</p>

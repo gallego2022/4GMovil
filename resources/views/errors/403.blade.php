@@ -40,11 +40,11 @@
             contacta con nuestro equipo de soporte.
         </p>
         <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem; align-items: center;">
-            <div style="color: rgba(255, 255, 255, 0.9); display: flex; align-items: center; gap: 0.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary);">
                 <i class="fas fa-envelope"></i> 
                 <span>soporte@4gmovil.com</span>
             </div>
-            <div style="color: rgba(255, 255, 255, 0.9); display: flex; align-items: center; gap: 0.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary);">
                 <i class="fas fa-phone"></i> 
                 <span>+57 300 123 4567</span>
             </div>
@@ -54,15 +54,15 @@
     <!-- Servicios de ayuda -->
     <div class="error-services">
         <div class="error-service-card">
-            <div class="error-service-icon">
-                <i class="fas fa-user-shield" style="color: #ef4444;"></i>
+            <div class="error-service-icon" style="color: #ef4444;">
+                <i class="fas fa-user-shield"></i>
             </div>
             <h3 class="error-service-title">Seguridad</h3>
             <p class="error-service-description">Tu cuenta está protegida por nuestros sistemas de seguridad</p>
         </div>
         <div class="error-service-card">
-            <div class="error-service-icon">
-                <i class="fas fa-key" style="color: #f59e0b;"></i>
+            <div class="error-service-icon" style="color: #f59e0b;">
+                <i class="fas fa-key"></i>
             </div>
             <h3 class="error-service-title">Permisos</h3>
             <p class="error-service-description">Verifica que tengas los permisos necesarios</p>

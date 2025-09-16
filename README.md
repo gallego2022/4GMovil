@@ -1,5 +1,39 @@
 # 🚀 4GMovil - Plataforma E-commerce Moderna y Consolidada
 
+[TOC]
+
+## Índice
+
+- [Estado Actual](#-estado-actual-del-proyecto)
+- [Características](#-características-principales)
+  - [E-commerce](#-e-commerce-completo-y-consolidado)
+  - [Autenticación](#-autenticación-y-seguridad)
+  - [Pagos](#-sistema-de-pagos-avanzado)
+  - [Inventario](#-gestión-de-inventario-avanzada-y-consolidada)
+  - [Interfaz / Modo Oscuro](#-interfaz-moderna-responsiva-y-unificada)
+  - [Rendimiento](#-rendimiento-optimizado-y-consolidado)
+  - [Especificaciones Dinámicas](#-sistema-de-especificaciones-dinámicas)
+  - [Búsqueda en Tiempo Real](#-búsqueda-unificada-y-en-tiempo-real)
+- [Stack Tecnológico](#-stack-tecnológico-actualizado)
+- [Instalación](#-instalación-y-configuración)
+  - [Requisitos](#requisitos-del-sistema)
+  - [Guía de Instalación](#-guía-completa-de-instalación-en-nueva-pc)
+  - [Verificar Instalación](#-verificar-instalación)
+  - [Probar la Búsqueda](#probar-la-búsqueda)
+- [Configuración de Servicios](#-configuración-de-servicios)
+- [Estructura del Proyecto](#-estructura-del-proyecto-consolidado)
+- [Capturas de Pantalla](#-capturas-de-pantalla)
+- [Testing](#-testing-y-comandos-de-prueba)
+- [Despliegue](#-despliegue-en-producción)
+- [Monitoreo y Mantenimiento](#-monitoreo-y-mantenimiento)
+- [Contribución](#-contribución)
+- [Documentación Adicional](#-documentación-adicional)
+- [Solución de Problemas](#-solución-de-problemas)
+- [Licencia](#-licencia)
+- [Equipo](#-equipo-de-desarrollo)
+- [Soporte](#-soporte)
+- [Agradecimientos](#-agradecimientos)
+
 [![Laravel](https://img.shields.io/badge/Laravel-12.0-red.svg)](https://laravel.com)
 [![PHP](https://img.shields.io/badge/PHP-8.2+-blue.svg)](https://php.net)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.3.6-38B2AC.svg)](https://tailwindcss.com)
@@ -59,7 +93,7 @@
 
 ### 🎨 **Interfaz Moderna, Responsiva y Unificada**
 - **Tailwind CSS 3.3.6** con tema personalizado
-- **Modo oscuro completamente implementado**
+- **Modo oscuro completamente implementado** (incluye páginas de error, con botón flotante de alternancia y persistencia en `localStorage`)
 - Diseño mobile-first y responsive
 - **Vistas consolidadas y optimizadas**
 - Animaciones CSS personalizadas
@@ -80,6 +114,24 @@
 - **Formularios dinámicos en tiempo real**
 - **Filtros avanzados basados en especificaciones**
 - **API endpoints para especificaciones**
+
+### 🔎 **Búsqueda Unificada y en Tiempo Real**
+- Barra de búsqueda con autocompletado en tiempo real (Alpine.js + endpoint JSON)
+- Resultados combinados: productos y páginas estáticas del sitio
+- Atajo de teclado `/` para enfocar el buscador
+- Enlace "Ver todos los resultados" hacia la página de resultados completos
+
+Endpoints:
+
+```http
+GET /buscar                 # Página de resultados completos (param: q)
+GET /buscar/sugerencias     # JSON con sugerencias (param: q)
+```
+
+Detalles de implementación:
+- Productos: búsqueda por `nombre_producto` y por relaciones `categoria.nombre`, `marca.nombre`
+- Páginas: lista curada validada con `Route::has()` y keywords normalizadas (sin acentos, minúsculas)
+- Esquema de imágenes: se usa la imagen principal activa (scopes), con `url_completa` del modelo `ImagenProducto`
 - **Comandos Artisan para gestión**
 
 ## 🛠️ **Stack Tecnológico Actualizado**
@@ -91,6 +143,12 @@
 - **Eloquent ORM** - ORM robusto de Laravel
 - **Arquitectura Repository Pattern**
 - **Sistema de migraciones consolidado**
+
+Notas importantes de esquema (usadas por la búsqueda y otras vistas):
+- Tabla `productos` usa clave primaria `producto_id`
+- Tabla `categorias` usa clave primaria `categoria_id`
+- Tabla `marcas` usa clave primaria `marca_id`
+- Tabla `imagenes_productos` usa clave primaria `imagen_id` y columna de ruta `ruta_imagen`
 
 ### **Frontend**
 - **Vite 5.0.0** - Bundler moderno y rápido
@@ -187,13 +245,16 @@ php artisan key:generate
 # Ejecutar migraciones consolidadas
 php artisan migrate:fresh --seed
 
-# Ejecutar seeder de especificaciones dinámicas
-php artisan db:seed --class=EspecificacionesCategoriaSeeder
-```
 
 #### **6. Construir Assets Frontend**
 ```bash
 npm run build
+
+En desarrollo, para ver cambios de frontend en caliente:
+
+```bash
+npm run dev
+```
 ```
 
 #### **7. Iniciar Servidor de Desarrollo**
@@ -210,7 +271,7 @@ npm run dev
 Al ejecutar `php artisan migrate:fresh --seed`, se crearán automáticamente:
 
 #### **👤 Usuario Administrador**
-- **Email**: `admin@4gmovil.com`
+- **Email**: `4gmoviltest@gmail.com`
 - **Contraseña**: `Admin123!`
 - **Rol**: `admin`
 - **Estado**: Activo
@@ -278,11 +339,25 @@ php artisan tinker --execute="echo 'Estados de Pedido: ' . App\Models\EstadoPedi
 php artisan tinker --execute="echo 'Especificaciones: ' . App\Models\EspecificacionCategoria::count();"
 ```
 
+### **Probar la Búsqueda**
+
+```
+# Autocomplete (debe responder JSON 200)
+GET http://localhost:8000/buscar/sugerencias?q=iphone
+
+# Resultados completos
+GET http://localhost:8000/buscar?q=iphone
+```
+
+Si no aparecen sugerencias en el header:
+- Verifica en Network que `/buscar/sugerencias` responde 200 con `Content-Type: application/json`
+- Revisa consola por mensajes `Buscar.sugerencias HTTP ...` o `no JSON`
+
 ### **🌐 Acceso al Sistema**
 
 - **URL**: `http://localhost:8000`
 - **Admin Panel**: `http://localhost:8000/admin`
-- **Credenciales Admin**: `admin@4gmovil.com` / `Admin123!`
+- **Credenciales Admin**: `4gmoviltest@gmail.com` / `Admin123!`
 
 ## 🔧 **Configuración de Servicios**
 
@@ -331,6 +406,47 @@ php artisan tinker --execute="echo 'Especificaciones: ' . App\Models\Especificac
 ├── routes/                        # Rutas consolidadas
 └── storage/                       # Archivos y logs
 ```
+
+## 📸 **Capturas de Pantalla**
+
+> Coloca tus capturas en `docs/capturas/` (crea la carpeta si no existe) o en `public/img/`. Debajo hay ejemplos de cómo referenciarlas.
+
+### Landing (modo claro / modo oscuro)
+
+![Landing Light](docs/capturas/landing-light.gif)
+
+![Landing Dark](docs/capturas/landing-dark.gif)
+
+### Búsqueda en tiempo real (header)
+
+![Autocomplete](docs/capturas/busqueda-autocomplete.gif)
+
+### Resultados de búsqueda
+
+![Resultados](docs/capturas/busqueda-resultados.gif)
+
+### Páginas de error (con soporte modo oscuro)
+
+![Error 404](docs/capturas/error-404.gif)
+
+![Error 500](docs/capturas/error-500.gif)
+
+### Checkout y Carrito
+
+![Carrito](docs/capturas/carrito.gif)
+
+![Checkout](docs/capturas/checkout.gif)
+
+### Panel Admin / Gestión de productos
+
+![Admin Dashboard](docs/capturas/admin-dashboard.gif)
+
+![Admin Productos](docs/capturas/admin-productos.gif)
+
+### Nota
+
+- Si prefieres servir imágenes desde `public/img/`, usa rutas absolutas: `![Landing](public/img/landing.png)`.
+- Para GIFs de interacción (p. ej., alternar modo oscuro o autocomplete), colócalos como `docs/capturas/*.gif` y referéncialos igual.
 
 ## 🎯 **Funcionalidades Clave Implementadas**
 
@@ -510,7 +626,7 @@ php artisan inventario:exportar-reporte
 APP_NAME="4GMovil"
 APP_ENV=local
 APP_DEBUG=true
-APP_URL=http://localhost:8000
+APP_URL=http://127.0.0.1:8000
 
 # Base de datos
 DB_CONNECTION=mysql
@@ -610,6 +726,18 @@ npm run build
 
 # O en modo desarrollo
 npm run dev
+
+#### **Error 500 al buscar (sugerencias)**
+- Asegúrate de que los modelos usan claves primarias correctas:
+  - `Producto::$primaryKey = 'producto_id'`
+  - `Categoria::$primaryKey = 'categoria_id'`
+  - `Marca::$primaryKey = 'marca_id'`
+  - `ImagenProducto::$primaryKey = 'imagen_id'`, columna de ruta `ruta_imagen`
+- Si ves `Unknown column 'id'`: revisa selects y relaciones para que usen los nombres anteriores
+
+#### **No cargan imágenes en sugerencias**
+- Verifica que existan imágenes activas/principales en `imagenes_productos`
+- Las URLs se construyen con `ImagenProducto::url_completa` (usa `asset('storage/...')` cuando aplica)
 ```
 
 #### **Error: "Seeder not found"**
@@ -631,7 +759,7 @@ Después de la instalación, verifica que:
 - [ ] Las especificaciones dinámicas cargan: `php artisan tinker --execute="echo 'Especificaciones: ' . App\Models\EspecificacionCategoria::count();"`
 - [ ] Los assets se construyeron: `npm run build`
 - [ ] Puedes acceder al admin: `http://localhost:8000/admin`
-- [ ] Las credenciales admin funcionan: `admin@4gmovil.com` / `Admin123!`
+- [ ] Las credenciales admin funcionan: `4gmoviltest@gmail.com` / `Admin123!`
 - [ ] Las especificaciones dinámicas cargan: Crear un producto y seleccionar categoría
 
 ### **🚨 Problemas Críticos**

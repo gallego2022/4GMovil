@@ -1,6 +1,6 @@
 @extends('layouts.error')
 
-@section('title', 'Error - {{ $exception->getStatusCode() ?? 'Desconocido' }}') 
+@section('title', 'Error - ' . ($exception->getStatusCode() ?? 'Desconocido')) 
 @section('content')
     <!-- Código de error -->
     <div class="error-code">{{ $exception->getStatusCode() ?? '???' }}</div>
@@ -37,11 +37,11 @@
             Si el problema persiste, contacta con nuestro equipo de soporte.
         </p>
         <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem; align-items: center;">
-            <div style="color: rgba(255, 255, 255, 0.9); display: flex; align-items: center; gap: 0.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary);">
                 <i class="fas fa-envelope"></i> 
                 <span>soporte@4gmovil.com</span>
             </div>
-            <div style="color: rgba(255, 255, 255, 0.9); display: flex; align-items: center; gap: 0.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary);">
                 <i class="fas fa-phone"></i> 
                 <span>+57 300 123 4567</span>
             </div>
@@ -52,7 +52,7 @@
     @if(app()->environment('local') && isset($exception))
         <div class="error-info" style="text-align: left; font-family: monospace; font-size: 0.8rem;">
             <h4>Información Técnica</h4>
-            <div style="background: rgba(0, 0, 0, 0.3); padding: 1rem; border-radius: 8px; margin-top: 0.5rem;">
+            <div style="background: rgba(0, 0, 0, 0.06); padding: 1rem; border-radius: 8px; margin-top: 0.5rem; border: 1px solid var(--card-border); color: var(--text-secondary);">
                 <p><strong>Archivo:</strong> {{ $exception->getFile() ?? 'N/A' }}</p>
                 <p><strong>Línea:</strong> {{ $exception->getLine() ?? 'N/A' }}</p>
                 <p><strong>Código:</strong> {{ $exception->getCode() ?? 'N/A' }}</p>
@@ -63,15 +63,15 @@
     <!-- Servicios de ayuda -->
     <div class="error-services">
         <div class="error-service-card">
-            <div class="error-service-icon">
-                <i class="fas fa-life-ring" style="color: #ef4444;"></i>
+            <div class="error-service-icon" style="color: #ef4444;">
+                <i class="fas fa-life-ring"></i>
             </div>
             <h3 class="error-service-title">Soporte</h3>
             <p class="error-service-description">Nuestro equipo está disponible para ayudarte</p>
         </div>
         <div class="error-service-card">
-            <div class="error-service-icon">
-                <i class="fas fa-bug" style="color: #f59e0b;"></i>
+            <div class="error-service-icon" style="color: #f59e0b;">
+                <i class="fas fa-bug"></i>
             </div>
             <h3 class="error-service-title">Reportar</h3>
             <p class="error-service-description">Ayúdanos a mejorar reportando este error</p>

@@ -10,13 +10,7 @@ use Illuminate\Support\Facades\Redirect;
 
 abstract class WebController extends BaseController
 {
-    /**
-     * Constructor para aplicar localización automáticamente
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
+    // Nota: No definimos __construct para evitar "Cannot call constructor" cuando la clase padre no tiene constructor.
 
     /**
      * Aplicar localización en cada método

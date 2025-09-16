@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Publico\LandingController;
 use App\Http\Controllers\Publico\ProductoPublicoController;
+use App\Http\Controllers\Publico\SearchController;
 
 // Rutas públicas (accesibles para todos)
 
@@ -46,6 +47,11 @@ Route::get('/servicios', function () {
     \App\Helpers\ViewHelper::applyLocalization();
     return view('pages.landing.servicio-tecnico');
 })->name('servicios');
+
+// Búsqueda unificada (productos y páginas)
+Route::get('/buscar', [SearchController::class, 'index'])->name('buscar');
+// Sugerencias en tiempo real (JSON)
+Route::get('/buscar/sugerencias', [SearchController::class, 'sugerencias'])->name('buscar.sugerencias');
 
 // Rutas que solo son accesibles para invitados (no autenticados)
 Route::middleware('guest')->group(function () {
