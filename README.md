@@ -92,21 +92,21 @@
 - **Sincronización automática de stock con variantes**
 
 ### 🎨 **Interfaz Moderna, Responsiva y Unificada**
-- **Tailwind CSS 3.3.6** con tema personalizado
-- **Modo oscuro completamente implementado** (incluye páginas de error, con botón flotante de alternancia y persistencia en `localStorage`)
+- **Tailwind CSS 3.4.17** con tema personalizado y extensiones
+- **Modo oscuro completamente implementado** (persistente vía localStorage, incluyendo páginas de error y componentes UI)
 - Diseño mobile-first y responsive
 - **Vistas consolidadas y optimizadas**
-- Animaciones CSS personalizadas
-- Componentes UI reutilizables
-- Optimizado para dispositivos móviles
+- Animaciones CSS personalizadas (@keyframes, transiciones suaves, entrada/salida)
+- Componentes reutilizables con clases utilitarias (@apply) y diseño coherente
+- Adaptado y optimizado para dispositivos móviles
 
 ### ⚡ **Rendimiento Optimizado y Consolidado**
-- **Vite 5.0.0** para build y desarrollo
+- **Vite 7.1.5** como bundler ultrarrápido para desarrollo y producción
 - **Migraciones consolidadas (84% menos archivos)**
 - Lazy loading de imágenes
-- Code splitting automático
-- Compresión Gzip/Brotli
-- Caché optimizado del navegador
+- Code splitting automático con importación dinámica
+- Compresión Gzip/Brotli lista para producción (vite-plugin-compression)
+- Caché inteligente del navegador y recursos versionados
 - Middleware de optimización personalizado
 
 ### 🔧 **Sistema de Especificaciones Dinámicas**
@@ -151,10 +151,10 @@ Notas importantes de esquema (usadas por la búsqueda y otras vistas):
 - Tabla `imagenes_productos` usa clave primaria `imagen_id` y columna de ruta `ruta_imagen`
 
 ### **Frontend**
-- **Vite 5.0.0** - Bundler moderno y rápido
-- **Tailwind CSS 3.3.6** - Framework CSS utility-first
-- **Alpine.js 3.13.3** - Framework JavaScript ligero
-- **Axios 1.6.2** - Cliente HTTP optimizado
+- **Vite 7.1.5** - Bundler moderno y rápido  
+- **Tailwind CSS 3.4.17** - Framework CSS utility-first :contentReference[oaicite:0]{index=0}  
+- **Alpine.js 3.15.0** - Framework JavaScript ligero :contentReference[oaicite:1]{index=1}  
+- **Axios 1.12.2** - Cliente HTTP optimizado  
 
 ### **Integraciones**
 - **Stripe** - Pasarela de pagos completa
@@ -163,10 +163,12 @@ Notas importantes de esquema (usadas por la búsqueda y otras vistas):
 - **Postmark/AWS SES** - Email transaccional
 
 ### **Herramientas de Desarrollo**
-- **PHPUnit 11.5.3** - Testing robusto
-- **Laravel Pint** - Formateo de código
-- **ESLint + Prettier** - Calidad de código
-- **Composer + NPM** - Gestión de dependencias
+- **PHPUnit 11.5.3** — Testing robusto para Laravel
+- **Laravel Pint 1.13** — Formateo de código con estándares Laravel
+- **Laravel Pail 1.2.2** — Monitoreo en tiempo real de logs en consola
+- **Laravel Boost 1.0** — Optimización de autoload para desarrollo local
+- **ESLint + Prettier** — Calidad de código JS/CSS
+- **Composer + NPM** — Gestión eficiente de dependencias
 
 ## 🚀 **Instalación y Configuración**
 
@@ -204,7 +206,7 @@ cp .env.example .env
 APP_NAME="4GMovil"
 APP_ENV=local
 APP_KEY=
-APP_URL=http://localhost:8000
+APP_URL=http://127.0.0.1:8000
 
 # Base de Datos
 DB_CONNECTION=mysql
@@ -244,7 +246,6 @@ php artisan key:generate
 ```bash
 # Ejecutar migraciones consolidadas
 php artisan migrate:fresh --seed
-
 
 #### **6. Construir Assets Frontend**
 ```bash
@@ -355,8 +356,8 @@ Si no aparecen sugerencias en el header:
 
 ### **🌐 Acceso al Sistema**
 
-- **URL**: `http://localhost:8000`
-- **Admin Panel**: `http://localhost:8000/admin`
+- **URL**: `http://127.0.0.1:8000`
+- **Admin Panel**: `http://127.0.0.1:8000/admin`
 - **Credenciales Admin**: `4gmoviltest@gmail.com` / `Admin123!`
 
 ## 🔧 **Configuración de Servicios**
@@ -643,28 +644,54 @@ STRIPE_KEY=tu-stripe-key
 STRIPE_SECRET=tu-stripe-secret
 ```
 
-#### **`composer.json` - Dependencias PHP**
-```json
-{
-    "require": {
-        "php": "^8.2",
-        "laravel/framework": "^12.0",
-        "laravel/cashier": "^15.7",
-        "laravel/socialite": "^5.23"
-    }
-}
-```
+#### **`composer.json` – Dependencias PHP**
 
-#### **`package.json` - Dependencias JavaScript**
 ```json
 {
-    "devDependencies": {
-        "vite": "^5.0.0",
-        "tailwindcss": "^3.3.6",
-        "alpinejs": "^3.13.3"
-    }
+  "php": "^8.2",
+  "laravel/framework": "^12.0",
+  "laravel/cashier": "^15.7",
+  "laravel/socialite": "^5.23",
+  "intervention/image": "2.7",
+  "mcamara/laravel-localization": "^2.3"
 }
-```
+
+
+#### **`package.json` – Dependencias JavaScript**
+
+```json
+{
+  "devDependencies": {
+    "vite": "^7.1.5",
+    "tailwindcss": "^3.4.17",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.5.6",
+    "postcss-nested": "^6.2.0",
+    "postcss-import": "^16.0.0",
+    "postcss-preset-env": "^9.6.0",
+    "cssnano": "^7.1.1",
+    "laravel-vite-plugin": "^2.0.1",
+    "vite-plugin-compression": "^0.5.1",
+    "vite-plugin-pwa": "^1.0.3",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^9.1.2",
+    "eslint-plugin-prettier": "^5.0.1",
+    "prettier": "^3.1.1",
+    "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/typography": "^0.5.10"
+  },
+  "dependencies": {
+    "alpinejs": "^3.15.0",
+    "axios": "^1.12.2",
+    "chart.js": "^4.4.0",
+    "flatpickr": "^4.6.13",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4",
+    "sortablejs": "^1.15.0",
+    "sweetalert2": "^11.23.0"
+  }
+}
+
 
 ## 🐛 **Solución de Problemas**
 
