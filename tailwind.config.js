@@ -8,6 +8,14 @@ export default {
     "./app/**/*.blade.php",
   ],
   
+  safelist: [
+    'dark',
+    'flipped',
+    'animate-fade-in-down',
+    'animate-fade-out',
+    'animate-slide-in-down',
+  ],
+  
   // Modo oscuro por defecto
   darkMode: 'class',
   
@@ -268,23 +276,5 @@ export default {
     },
   ],
   
-  // Configuración de purga para optimización
-  purge: {
-    enabled: process.env.NODE_ENV === 'production',
-    content: [
-      './resources/**/*.blade.php',
-      './resources/**/*.js',
-      './resources/**/*.vue',
-      './app/**/*.php',
-    ],
-    options: {
-      safelist: [
-        'dark',
-        'flipped',
-        'animate-fade-in-down',
-        'animate-fade-out',
-        'animate-slide-in-down',
-      ],
-    },
-  },
+
 }; 

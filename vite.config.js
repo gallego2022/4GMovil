@@ -1,14 +1,16 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
+import path from 'path';
 
 export default defineConfig({
     plugins: [
         laravel({
-            input: [
-                'resources/css/app.css',
-                'resources/js/app.js',
-            ],
+            input: ['resources/css/app.css', 'resources/js/app.js'],
             refresh: true,
+            transformOnDemand: [
+                'resources/fonts/**/*.woff2',
+                'resources/images/**/*.svg',
+            ],
         }),
     ],
     build: {
@@ -35,16 +37,15 @@ export default defineConfig({
                 chunkFileNames: 'js/[name]-[hash].js',
                 entryFileNames: 'js/[name]-[hash].js',
                 assetFileNames: (assetInfo) => {
-                    const info = assetInfo.name.split('.');
-                    const ext = info[info.length - 1];
-                    if (/\.(css)$/.test(assetInfo.name)) {
-                        return `css/[name]-[hash].${ext}`;
+                    if (assetInfo.name.match(/\.(css)$/)) {
+                        return 'css/[name]-[hash][extname]';
                     }
-                    if (/\.(png|jpe?g|gif|svg|webp)$/.test(assetInfo.name)) {
-                        return `images/[name]-[hash].${ext}`;
+                    if (assetInfo.name.match(/\.(png|jpe?g|gif|svg|webp)$/)) {
+                        return 'images/[name]-[hash][extname]';
                     }
-                    return `assets/[name]-[hash].${ext}`;
+                    return 'assets/[name]-[hash][extname]';
                 },
+                
             },
         },
         
@@ -76,8 +77,8 @@ export default defineConfig({
     // Configuración de alias para mejor rendimiento
     resolve: {
         alias: {
-            '@': '/resources/js',
-            '~': '/resources/css',
+          '@': path.resolve(__dirname, 'resources/js'),
+          '~': path.resolve(__dirname, 'resources/css'),
         },
-    },
+      }
 });
