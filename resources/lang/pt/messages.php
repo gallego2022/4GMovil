@@ -15,11 +15,10 @@ return [
         'wishlist' => 'Lista de Desejos',
     ],
 
-    // Seletor de idioma/país/moeda
+    // Seletor de idioma/moeda
     'language_selector' => [
         'title' => 'Atualize sua configuração',
-        'subtitle' => 'Defina sua região preferida, idioma e moeda preferida.',
-        'region' => 'Região',
+        'subtitle' => 'Defina seu idioma e moeda preferida.',
         'language' => 'Idioma',
         'currency' => 'Moeda',
         'save' => 'Salvar',
@@ -29,27 +28,14 @@ return [
     // Países
     'countries' => [
         'colombia' => 'Colômbia',
-        'mexico' => 'México',
-        'argentina' => 'Argentina',
-        'chile' => 'Chile',
-        'peru' => 'Peru',
-        'venezuela' => 'Venezuela',
-        'ecuador' => 'Equador',
-        'bolivia' => 'Bolívia',
-        'uruguay' => 'Uruguai',
-        'paraguay' => 'Paraguai',
+        'brasil' => 'Brasil',
         'spain' => 'Espanha',
         'usa' => 'Estados Unidos',
     ],
 
     // Moedas
     'currencies' => [
-        'COP' => 'Peso colombiano (COP)',
-        'MXN' => 'Peso mexicano (MXN)',
-        'ARS' => 'Peso argentino (ARS)',
-        'CLP' => 'Peso chileno (CLP)',
-        'PEN' => 'Sol peruano (PEN)',
-        'VES' => 'Bolívar venezuelano (VES)',
+        'COP' => 'Peso colombiano (COP)',   
         'USD' => 'Dólar americano (USD)',
         'EUR' => 'Euro (EUR)',
         'BRL' => 'Real brasileiro (BRL)',
@@ -57,8 +43,7 @@ return [
 
     // Idiomas
     'languages' => [
-        'es' => 'Espanhol Latino-americano',
-        'es-ES' => 'Espanhol (Espanha)',
+        'es' => 'Espanhol',
         'en' => 'English',
         'pt' => 'Português',
     ],
