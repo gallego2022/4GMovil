@@ -74,6 +74,10 @@
             justify-content: center;
             padding: 2rem;
         }
+
+        .dark .error-container {
+            background-color: #1d2638 
+        }
         
         .error-card {
             background: var(--card-bg);

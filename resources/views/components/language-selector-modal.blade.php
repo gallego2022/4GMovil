@@ -22,26 +22,7 @@
             <form id="languageConfigForm">
                 @csrf
                 
-                <!-- Región -->
-                <div class="mb-4">
-                    <label for="country_code" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        {{ __('messages.language_selector.region') }}
-                    </label>
-                    <select id="country_code" name="country_code" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
-                        <option value="CO">🇨🇴 Colombia</option>
-                        <option value="MX">🇲🇽 México</option>
-                        <option value="AR">🇦🇷 Argentina</option>
-                        <option value="CL">🇨🇱 Chile</option>
-                        <option value="PE">🇵🇪 Perú</option>
-                        <option value="VE">🇻🇪 Venezuela</option>
-                        <option value="EC">🇪🇨 Ecuador</option>
-                        <option value="BO">🇧🇴 Bolivia</option>
-                        <option value="UY">🇺🇾 Uruguay</option>
-                        <option value="PY">🇵🇾 Paraguay</option>
-                        <option value="ES">🇪🇸 España</option>
-                        <option value="US">🇺🇸 Estados Unidos</option>
-                    </select>
-                </div>
+                
 
                 <!-- Idioma -->
                 <div class="mb-4">
@@ -49,8 +30,7 @@
                         {{ __('messages.language_selector.language') }}
                     </label>
                     <select id="language_code" name="language_code" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
-                        <option value="es">Español Latinoamericano</option>
-                        <option value="es-ES">Español (España)</option>
+                        <option value="es">Español</option>
                         <option value="en">English</option>
                         <option value="pt">Português</option>
                     </select>
@@ -66,10 +46,6 @@
                         <option value="USD">Dólar estadounidense (USD)</option>
                         <option value="BRL">Real brasileño (BRL)</option>
                         <option value="EUR">Euro (EUR)</option>
-                        <option value="MXN">Peso mexicano (MXN)</option>
-                        <option value="ARS">Peso argentino (ARS)</option>
-                        <option value="CLP">Peso chileno (CLP)</option>
-                        <option value="PEN">Sol peruano (PEN)</option>
                     </select>
                 </div>
 
@@ -131,7 +107,6 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.config) {
-                    document.getElementById('country_code').value = data.config.country_code || 'CO';
                     document.getElementById('language_code').value = data.config.language_code || 'es';
                     document.getElementById('currency_code').value = data.config.currency_code || 'COP';
                     updateCurrentDisplay(data.config);
@@ -144,20 +119,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Actualizar display actual
     function updateCurrentDisplay(config) {
-        const countryNames = {
-            'CO': 'Colombia', 'MX': 'México', 'AR': 'Argentina', 'CL': 'Chile',
-            'PE': 'Perú', 'VE': 'Venezuela', 'EC': 'Ecuador', 'BO': 'Bolivia',
-            'UY': 'Uruguay', 'PY': 'Paraguay', 'ES': 'España', 'US': 'Estados Unidos'
-        };
-        
         const languageNames = {
-            'es': 'Español Latinoamericano', 'es-ES': 'Español (España)',
+            'es': 'Español', 'es-ES': 'Español (España)',
             'en': 'English', 'pt': 'Português'
         };
 
-        const countryName = countryNames[config.country_code] || 'Colombia';
-        const languageName = languageNames[config.language_code] || 'Español Latinoamericano';
-        
+        const languageName = languageNames[config.language_code] || 'Español';
         currentDisplay.textContent = `${languageName} | ${config.currency_code}`;
     }
 
@@ -166,7 +133,6 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         
         const languageCode = document.getElementById('language_code').value;
-        const countryCode = document.getElementById('country_code').value;
         const currencyCode = document.getElementById('currency_code').value;
         
         console.log('Cambiando idioma a:', languageCode); // Debug

@@ -67,7 +67,7 @@
         x-transition:leave-start="opacity-100 scale-100"
         x-transition:leave-end="opacity-0 scale-95"
         class="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50"
-        style="display: none;"
+        style="right: 0; left: auto; min-width: 200px; display: none;"
     >
         <div class="py-1">
             @foreach($languageConfigs as $code => $config)
