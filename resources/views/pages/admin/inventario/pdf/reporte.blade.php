@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Reporte de Inventario - 4GMovil</title>
+    <title>Reporte de __('admin.inventory.title') - 4GMovil</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -89,15 +89,15 @@
         <h2>RESUMEN GENERAL</h2>
         <div class="summary-grid">
             <div class="summary-item">
-                <h3>Total Productos</h3>
+                <h3>__('admin.stats.total_products')</h3>
                 <p>{{ $reporte['resumen_general']['total_productos'] ?? 0 }}</p>
             </div>
             <div class="summary-item">
-                <h3>Productos Activos</h3>
+                <h3>Productos __('admin.status.active')s</h3>
                 <p>{{ $reporte['resumen_general']['productos_activos'] ?? 0 }}</p>
             </div>
             <div class="summary-item">
-                <h3>Valor Total</h3>
+                <h3>__('admin.fields.value') Total</h3>
                 <p>${{ number_format($reporte['resumen_general']['valor_total_inventario'] ?? 0, 2) }}</p>
             </div>
             <div class="summary-item">
@@ -114,7 +114,7 @@
         <table>
             <thead>
                 <tr>
-                    <th>Tipo de Alerta</th>
+                    <th>__('admin.fields.type') de Alerta</th>
                     <th>Cantidad</th>
                 </tr>
             </thead>
@@ -128,7 +128,7 @@
                     <td>{{ $reporte['alertas']['stock_bajo'] ?? 0 }}</td>
                 </tr>
                 <tr>
-                    <td>Sin Stock</td>
+                    <td>__('admin.inventory.out_of_stock')</td>
                     <td>{{ $reporte['alertas']['sin_stock'] ?? 0 }}</td>
                 </tr>
                 <tr>
@@ -147,11 +147,11 @@
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Nombre</th>
+                    <th>__('admin.fields.name')</th>
                     <th>Stock</th>
                     <th>Stock Mínimo</th>
-                    <th>Precio</th>
-                    <th>Categoría</th>
+                    <th>__('admin.fields.price')</th>
+                    <th>__('admin.fields.category')</th>
                 </tr>
             </thead>
             <tbody>
@@ -162,7 +162,7 @@
                     <td>{{ $producto->stock }}</td>
                     <td>{{ $producto->stock_minimo }}</td>
                     <td>${{ number_format($producto->precio, 2) }}</td>
-                    <td>{{ $producto->categoria->nombre ?? 'Sin categoría' }}</td>
+                    <td>{{ $producto->categoria->nombre ?? '__('admin.fields.without_category')' }}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -176,10 +176,10 @@
         <table>
             <thead>
                 <tr>
-                    <th>Categoría</th>
+                    <th>__('admin.fields.category')</th>
                     <th>Productos</th>
                     <th>Stock Total</th>
-                    <th>Valor Total</th>
+                    <th>__('admin.fields.value') Total</th>
                     <th>Porcentaje</th>
                 </tr>
             </thead>
@@ -190,7 +190,7 @@
                     $porcentaje = $valorTotal > 0 ? ($item['valor_total'] / $valorTotal) * 100 : 0;
                 @endphp
                 <tr>
-                    <td>{{ $item['categoria']->nombre ?? 'Sin categoría' }}</td>
+                    <td>{{ $item['categoria']->nombre ?? '__('admin.fields.without_category')' }}</td>
                     <td>{{ $item['productos_count'] ?? 0 }}</td>
                     <td>{{ $item['stock_total'] ?? 0 }}</td>
                     <td>${{ number_format($item['valor_total'], 2) }}</td>
@@ -204,7 +204,7 @@
 
     <div style="margin-top: 30px; text-align: center; font-size: 10px; color: #666;">
         <p>Reporte generado automáticamente por el sistema 4GMovil</p>
-        <p>Fecha de generación: {{ now()->format('d/m/Y H:i:s') }}</p>
+        <p>__('admin.webhooks.date') de generación: {{ now()->format('d/m/Y H:i:s') }}</p>
     </div>
 </body>
 </html> 

@@ -1,6 +1,6 @@
 @extends('layouts.app-new')
 
-@section('title', 'Usuarios - 4GMovil')
+@section('title', __('admin.users.title') . ' - 4GMovil')
 
 @push('datatables-css')
 <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
@@ -208,7 +208,7 @@
         <!-- Encabezado móvil -->
         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
             <div class="mb-4">
-                <h2 class="text-xl font-bold text-gray-900 dark:text-white">Usuarios Registrados</h2>
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white">{{ __('admin.users.title') }} Registrados</h2>
                 <p class="text-sm text-gray-500 dark:text-gray-300">Gestiona todos los usuarios del sistema</p>
             </div>
             
@@ -220,7 +220,7 @@
                     <svg class="-ml-0.5 mr-1.5 h-5 w-5 transition-transform duration-300 group-hover:rotate-180" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
-                    Crear Usuario
+                    {{ __('admin.actions.create') }} Usuario
                 </a>
                 
                 <!-- Botones de exportación móvil -->
@@ -263,10 +263,10 @@
             <div class="grid grid-cols-1 gap-3 mb-4">
                 <div>
                     <label for="filtroRolMovil" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Filtrar por rol
+                        {{ __('admin.actions.filter') }} por rol
                     </label>
                     <select id="filtroRolMovil" class="block w-full rounded-md border-0 py-2 pl-3 pr-10 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:ring-2 focus:ring-inset focus:ring-brand-600 dark:bg-gray-700 sm:text-sm">
-                        <option value="">Todos</option>
+                        <option value="">{{ __('admin.actions.all') }}</option>
                         <option value="admin">Administrador</option>
                         <option value="cliente">Cliente</option>
                         <option value="invitado">Invitado</option>
@@ -274,12 +274,12 @@
                 </div>
                 <div>
                     <label for="filtroEstadoMovil" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Filtrar por estado
+                        {{ __('admin.actions.filter') }} por estado
                     </label>
                     <select id="filtroEstadoMovil" class="block w-full rounded-md border-0 py-2 pl-3 pr-10 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:ring-2 focus:ring-inset focus:ring-brand-600 dark:bg-gray-700 sm:text-sm">
-                        <option value="">Todos</option>
-                        <option value="activo">Activo</option>
-                        <option value="inactivo">Inactivo</option>
+                        <option value="">{{ __('admin.actions.all') }}</option>
+                        <option value="activo">{{ __('admin.status.active') }}</option>
+                        <option value="inactivo">{{ __('admin.status.inactive') }}</option>
                     </select>
                 </div>
                 <div>
@@ -287,17 +287,17 @@
                         <svg class="-ml-1 mr-2 h-5 w-5 text-gray-400 dark:text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M6.28 5.22a.75.75 0 011.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
                         </svg>
-                        Limpiar Filtros
+                        {{ __('admin.actions.clear') }} {{ __('admin.webhooks.filters') }}
                     </button>
                 </div>
             </div>
 
-            <!-- Campo de búsqueda móvil -->
+            <!-- {{ __('admin.fields.field') }} de búsqueda móvil -->
             <div class="relative mt-2 rounded-md shadow-sm">
                 <input type="text" 
                        id="busquedaMovil" 
                        class="block w-full rounded-md border-0 py-1.5 pl-4 pr-10 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 dark:bg-gray-800 sm:text-sm sm:leading-6" 
-                       placeholder="Buscar usuarios...">
+                       placeholder="{{ __('admin.actions.search') }} usuarios...">
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                     <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
@@ -335,14 +335,14 @@
                     </div>
                 </div>
 
-                <!-- Información del usuario -->
+                <!-- {{ __('admin.messages.info') }} del usuario -->
                 <dl class="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Email</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('admin.fields.email') }}</dt>
                         <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $usuario->correo_electronico }}</dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Teléfono</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('admin.fields.phone') }}</dt>
                         <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $usuario->telefono }}</dd>
                     </div>
                     <div>
@@ -367,43 +367,43 @@
                         </dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Estado</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('admin.fields.status') }}</dt>
                         <dd class="mt-1">
                             @if($usuario->estado == 'activo')
                                 <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-900 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-300 ring-1 ring-inset ring-green-600/20 dark:ring-green-600/30">
-                                    Activo
+                                    {{ __('admin.status.active') }}
                                 </span>
                             @else
                                 <span class="inline-flex items-center rounded-md bg-red-50 dark:bg-red-900 px-2 py-1 text-xs font-medium text-red-700 dark:text-red-300 ring-1 ring-inset ring-red-600/20 dark:ring-red-600/30">
-                                    Inactivo
+                                    {{ __('admin.status.inactive') }}
                                 </span>
                             @endif
                         </dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Email Verificado</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('admin.fields.email') }} {{ __('admin.actions.view') }}ificado</dt>
                         <dd class="mt-1">
                             @if($usuario->email_verified_at)
                                 <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-900 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-300 ring-1 ring-inset ring-green-600/20 dark:ring-green-600/30">
-                                    Verificado
+                                    {{ __('admin.actions.view') }}ificado
                                 </span>
                             @else
                                 <span class="inline-flex items-center rounded-md bg-red-50 dark:bg-red-900 px-2 py-1 text-xs font-medium text-red-700 dark:text-red-300 ring-1 ring-inset ring-red-600/20 dark:ring-red-600/30">
-                                    No Verificado
+                                    {{ __('admin.status.no') }} {{ __('admin.actions.view') }}ificado
                                 </span>
                             @endif
                         </dd>
                     </div>
                 </dl>
 
-                <!-- Acciones -->
+                <!-- {{ __('admin.fields.actions') }} -->
                 <div class="mt-4 flex justify-end space-x-3">
                     <a href="{{ route('usuarios.edit', $usuario) }}" 
                        class="inline-flex items-center rounded-md bg-white dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600">
                         <svg class="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400 dark:text-gray-300" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z"/>
                         </svg>
-                        Editar
+                        {{ __('admin.actions.edit') }}
                     </a>
                     <form action="{{ route('usuarios.destroy', $usuario) }}" method="POST" class="form-eliminar inline">
                         @csrf
@@ -413,7 +413,7 @@
                             <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clip-rule="evenodd"/>
                             </svg>
-                            Eliminar
+                            {{ __('admin.actions.delete') }}
                         </button>
                     </form>
                 </div>
@@ -421,7 +421,7 @@
         </div>
         @empty
         <div class="text-center py-4 text-sm text-gray-500 dark:text-gray-400">
-            No hay usuarios registrados en el sistema
+            {{ __('admin.status.no') }} hay usuarios registrados en el sistema
         </div>
         @endforelse
     </div>
@@ -433,7 +433,7 @@
             <div class="mb-6">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                     <div>
-                        <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">Usuarios Registrados</h2>
+                        <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">{{ __('admin.users.title') }} Registrados</h2>
                         <p class="mt-1 text-sm text-gray-500 dark:text-gray-300">Gestiona todos los usuarios del sistema</p>
                     </div>
                     
@@ -443,7 +443,7 @@
                         <svg class="-ml-0.5 mr-3 h-6 w-6 transition-transform duration-300 group-hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
-                        Crear Usuario
+                        {{ __('admin.actions.create') }} Usuario
                     </a>
                 </div>
             </div>
@@ -452,12 +452,12 @@
             <div class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-100 dark:border-gray-800 mb-6">
                 <div class="flex flex-wrap items-center justify-center gap-6">
                     <div class="flex items-center gap-6">
-                       <!-- Filtros -->
+                       <!-- {{ __('admin.webhooks.filters') }} -->
                     <div class="flex flex-col sm:flex-row gap-4 flex-1">
                         <div class="space-y-6">
-                            <label for="filtroRol" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Filtrar por rol</label>
+                            <label for="filtroRol" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('admin.actions.filter') }} por rol</label>
                             <select id="filtroRol" class="block w-full rounded-md border-0 py-2 pl-3 pr-10 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-brand-600 dark:bg-gray-700 sm:text-sm">
-                                <option value="">Todos</option>
+                                <option value="">{{ __('admin.actions.all') }}</option>
                                 <option value="admin">Administrador</option>
                                 <option value="cliente">Cliente</option>
                                 <option value="invitado">Invitado</option>
@@ -465,11 +465,11 @@
                         </div>
 
                         <div class="space-y-6">
-                            <label for="filtroEstado" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Filtrar por estado</label>
+                            <label for="filtroEstado" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('admin.actions.filter') }} por estado</label>
                             <select id="filtroEstado" class="block w-full rounded-md border-0 py-2 pl-3 pr-10 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-brand-600 dark:bg-gray-700 sm:text-sm">
-                                <option value="">Todos</option>
-                                <option value="activo">Activo</option>
-                                <option value="inactivo">Inactivo</option>
+                                <option value="">{{ __('admin.actions.all') }}</option>
+                                <option value="activo">{{ __('admin.status.active') }}</option>
+                                <option value="inactivo">{{ __('admin.status.inactive') }}</option>
                             </select>
                         </div>
 
@@ -478,7 +478,7 @@
                                 <svg class="-ml-1 mr-2 h-5 w-5 text-gray-400 dark:text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M6.28 5.22a.75.75 0 011.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
                                 </svg>
-                                Limpiar Filtros
+                                {{ __('admin.actions.clear') }} {{ __('admin.webhooks.filters') }}
                             </button>
                         </div>
                     </div>
@@ -496,13 +496,13 @@
                     <!-- Búsqueda personalizada -->
                     <div class="flex-1 max-w-md">
                         <label for="busquedaEscritorio" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Buscar usuarios
+                            {{ __('admin.actions.search') }} usuarios
                         </label>
                         <div class="relative">
                             <input type="text" 
                                    id="busquedaEscritorio" 
                                    class="block w-full rounded-md border-0 py-2 pl-10 pr-4 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 dark:bg-gray-700 sm:text-sm" 
-                                   placeholder="Buscar por nombre, email, ID...">
+                                   placeholder="{{ __('admin.actions.search') }} por nombre, email, ID...">
                             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                 <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
@@ -511,7 +511,7 @@
                         </div>
                     </div>
                     
-                    <!-- Información de registros -->
+                    <!-- {{ __('admin.messages.info') }} de registros -->
                     <div class="text-sm text-gray-500 dark:text-gray-400">
                         <span id="infoRegistros">Mostrando todos los usuarios</span>
                     </div>
@@ -541,14 +541,14 @@
                     <thead class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-sm">
                         <tr>
                             <th class="px-4 py-2 text-left">#</th>
-                            <th class="px-4 py-2 text-left">Foto</th>
-                            <th class="px-4 py-2 text-left">Nombre</th>
-                            <th class="px-4 py-2 text-left">Email</th>
-                            <th class="px-4 py-2 text-left">Teléfono</th>
+                            <th class="px-4 py-2 text-left">{{ __('admin.fields.photo') }}</th>
+                            <th class="px-4 py-2 text-left">{{ __('admin.fields.name') }}</th>
+                            <th class="px-4 py-2 text-left">{{ __('admin.fields.email') }}</th>
+                            <th class="px-4 py-2 text-left">{{ __('admin.fields.phone') }}</th>
                             <th class="px-4 py-2 text-left">Rol</th>
-                            <th class="px-4 py-2 text-left">Estado</th>
-                            <th class="px-4 py-2 text-left">Email Verificado</th>
-                            <th class="px-4 py-2 text-center">Acciones</th>
+                            <th class="px-4 py-2 text-left">{{ __('admin.fields.status') }}</th>
+                            <th class="px-4 py-2 text-left">{{ __('admin.fields.email') }} {{ __('admin.actions.view') }}ificado</th>
+                            <th class="px-4 py-2 text-center">{{ __('admin.fields.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 text-sm">
@@ -595,28 +595,28 @@
                             <td class="px-4 py-2">
                                 @if($usuario->estado == 'activo')
                                     <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-900 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-300 ring-1 ring-inset ring-green-600/20 dark:ring-green-600/30">
-                                        Activo
+                                        {{ __('admin.status.active') }}
                                     </span>
                                 @else
                                     <span class="inline-flex items-center rounded-md bg-red-50 dark:bg-red-900 px-2 py-1 text-xs font-medium text-red-700 dark:text-red-300 ring-1 ring-inset ring-red-600/20 dark:ring-red-600/30">
-                                        Inactivo
+                                        {{ __('admin.status.inactive') }}
                                     </span>
                                 @endif
                             </td>
                             <td class="px-4 py-2">
                                 @if($usuario->email_verified_at)
                                     <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-900 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-300 ring-1 ring-inset ring-green-600/20 dark:ring-green-600/30">
-                                        Verificado
+                                        {{ __('admin.actions.view') }}ificado
                                     </span>
                                 @else
                                     <span class="inline-flex items-center rounded-md bg-red-50 dark:bg-red-900 px-2 py-1 text-xs font-medium text-red-700 dark:text-red-300 ring-1 ring-inset ring-red-600/20 dark:ring-red-600/30">
-                                        No Verificado
+                                        {{ __('admin.status.no') }} {{ __('admin.actions.view') }}ificado
                                     </span>
                                 @endif
                             </td>
                             <td class="px-6 py-4 text-center">
                                 <div class="flex items-center justify-center gap-3">
-                                    <!-- Botón Editar -->
+                                    <!-- Botón {{ __('admin.actions.edit') }} -->
                                     <div class="relative group">
                                         <a href="{{ route('usuarios.edit', $usuario) }}" 
                                            class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/50 dark:hover:bg-blue-900 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-all duration-200 ease-in-out transform hover:scale-110">
@@ -628,11 +628,11 @@
                                         </a>
                                         <div
                                             class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 text-white text-xs rounded-lg px-3 py-2 shadow-lg dark:bg-gray-700 z-10 whitespace-nowrap">
-                                            Editar
+                                            {{ __('admin.actions.edit') }}
                                         </div>
                                     </div>
 
-                                    <!-- Botón Eliminar -->
+                                    <!-- Botón {{ __('admin.actions.delete') }} -->
                                     <div class="relative group">
                                         <form action="{{ route('usuarios.destroy', $usuario) }}" method="POST" class="form-eliminar inline">
                                             @csrf
@@ -648,7 +648,7 @@
                                         </form>
                                         <div
                                             class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 text-white text-xs rounded-lg px-3 py-2 shadow-lg dark:bg-gray-700 z-10 whitespace-nowrap">
-                                            Eliminar
+                                            {{ __('admin.actions.delete') }}
                                         </div>
                                     </div>
                                 </div>
@@ -657,7 +657,7 @@
                         @empty
                         <tr>
                             <td colspan="9" class="px-4 py-2 text-center text-gray-500 dark:text-gray-400">
-                                No hay usuarios registrados en el sistema
+                                {{ __('admin.status.no') }} hay usuarios registrados en el sistema
                             </td>
                         </tr>
                         @endforelse
@@ -695,7 +695,7 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-        // Verificar si hay datos antes de inicializar DataTables
+        // {{ __('admin.actions.view') }}ificar si hay datos antes de inicializar DataTables
         var hasData = {{ $usuarios->count() > 0 ? 'true' : 'false' }};
         
         if (hasData) {
@@ -705,7 +705,7 @@
                 buttons: [
                     {
                         extend: 'excelHtml5',
-                        title: 'Usuarios - 4GMovil',
+                        title: '{{ __('admin.users.title') }} - 4GMovil',
                         text: 'Exportar a Excel',
                         className: 'buttons-excel', 
                         exportOptions: {
@@ -718,7 +718,7 @@
                     },
                     {
                         extend: 'pdfHtml5',
-                        title: 'Usuarios - 4GMovil',
+                        title: '{{ __('admin.users.title') }} - 4GMovil',
                         text: 'Exportar a PDF',
                         className: 'buttons-pdf', 
                         exportOptions: {
@@ -731,8 +731,8 @@
                 ],
                 language: {
                     "sProcessing": "Procesando...",
-                    "sLengthMenu": "Mostrar _MENU_ registros",
-                    "sZeroRecords": "No se encontraron resultados",
+                    "sLengthMenu": "{{ __('admin.actions.show') }} _MENU_ registros",
+                    "sZeroRecords": "{{ __('admin.status.no') }} se encontraron resultados",
                     "sEmptyTable": "Ningún dato disponible en esta tabla",
                     "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
                     "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
@@ -743,10 +743,10 @@
                     "sInfoThousands": ",",
                     "sLoadingRecords": "Cargando...",
                     "oPaginate": {
-                        "sFirst": "Primero",
-                        "sLast": "Último",
-                        "sNext": "Siguiente",
-                        "sPrevious": "Anterior"
+                        "sFirst": "{{ __('admin.actions.first') }}",
+                        "sLast": "{{ __('admin.actions.last') }}",
+                        "sNext": "{{ __('admin.actions.next') }}",
+                        "sPrevious": "{{ __('admin.actions.previous') }}"
                     },
                     "oAria": {
                         "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
@@ -764,7 +764,7 @@
                 order: [[0, 'asc']],
                 responsive: true,
                 pagingType: "simple_numbers",
-                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Todos"]],
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "{{ __('admin.actions.all') }}"]],
                 pageLength: 10,
                 // Configuración para manejar tablas vacías
                 deferRender: true,
@@ -787,9 +787,9 @@
                  },
                  // Configuración para manejar tablas vacías
                  initComplete: function(settings, json) {
-                     // Verificar si la tabla está vacía
+                     // {{ __('admin.actions.view') }}ificar si la tabla está vacía
                      if (this.api().data().length === 0) {
-                         // Ocultar elementos de DataTables cuando no hay datos
+                         // {{ __('admin.actions.hide') }} elementos de DataTables cuando no hay datos
                          $('.dataTables_paginate').hide();
                          $('.dataTables_length').hide();
                          $('.dataTables_info').hide();
@@ -827,7 +827,7 @@
                      }
                  } catch (error) {
                      console.error('Error al actualizar información de registros:', error);
-                     $('#infoRegistros').text('Información no disponible');
+                     $('#infoRegistros').text('{{ __('admin.messages.info') }} no disponible');
                  }
              }
              
@@ -898,7 +898,7 @@
             $('.dataTables_paginate').hide();
             $('.dataTables_length').hide();
             $('.dataTables_info').hide();
-            $('#infoRegistros').text('No hay usuarios registrados');
+            $('#infoRegistros').text('{{ __('admin.status.no') }} hay usuarios registrados');
         }
 
         // Función para filtrar tarjetas en vista móvil
@@ -914,10 +914,10 @@
             $('#mobileCards .usuario-card').each(function() {
                 const card = $(this);
                 const cardRol = card.attr('data-rol');
-                const cardEstado = card.attr('data-estado');
+                const card{{ __('admin.fields.status') }} = card.attr('data-estado');
                 
                 const matchRol = !rolValue || cardRol === rolValue;
-                const matchEstado = !estadoValue || cardEstado === estadoValue;
+                const match{{ __('admin.fields.status') }} = !estadoValue || card{{ __('admin.fields.status') }} === estadoValue;
                 
                 if (matchRol && matchEstado) {
                     card.show();
@@ -927,7 +927,7 @@
                 }
             });
 
-            // Mostrar mensaje si no hay resultados
+            // {{ __('admin.actions.show') }} mensaje si no hay resultados
             if (visibleCount === 0) {
                 $('#mobileCards').append(`
                     <div id="noResultsMobile" class="col-span-full p-4 text-center">
@@ -940,10 +940,10 @@
                                 </div>
                                 <div class="ml-3">
                                     <h3 class="text-sm font-medium text-gray-800 dark:text-gray-200">
-                                        No se encontraron resultados
+                                        {{ __('admin.status.no') }} se encontraron resultados
                                     </h3>
                                     <div class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                                        No hay usuarios que coincidan con los filtros seleccionados.
+                                        {{ __('admin.status.no') }} hay usuarios que coincidan con los filtros seleccionados.
                                     </div>
                                 </div>
                             </div>
@@ -958,35 +958,35 @@
             const rolValue = $('#filtroRol').val();
             const estadoValue = $('#filtroEstado').val();
 
-            // Filtrar tabla de escritorio
+            // {{ __('admin.actions.filter') }} tabla de escritorio
             if (table && typeof table.column === 'function') {
                 table.column(5).search(rolValue).column(6).search(estadoValue).draw();
             }
             
-            // Filtrar tarjetas móviles
+            // {{ __('admin.actions.filter') }} tarjetas móviles
             filterMobileCards();
         });
 
-        // Filtros móviles
+        // {{ __('admin.webhooks.filters') }} móviles
         $('#filtroRolMovil, #filtroEstadoMovil').on('change', function() {
             filterMobileCards();
         });
 
-        // Limpiar filtros en ambas vistas
+        // {{ __('admin.actions.clear') }} filtros en ambas vistas
         $('#limpiarFiltros').on('click', function() {
             $('#filtroRol, #filtroEstado').val('');
             
-            // Limpiar filtros en tabla de escritorio
+            // {{ __('admin.actions.clear') }} filtros en tabla de escritorio
             if (table && typeof table.columns === 'function') {
                 table.columns([5, 6]).search('').draw();
             }
             
-            // Mostrar todas las tarjetas en móvil
+            // {{ __('admin.actions.show') }} todas las tarjetas en móvil
             $('#mobileCards .usuario-card').show();
             $('#noResultsMobile').remove();
         });
 
-        // Limpiar filtros móviles
+        // {{ __('admin.actions.clear') }} filtros móviles
         $('#limpiarFiltrosMovil').on('click', function() {
             $('#filtroRolMovil, #filtroEstadoMovil').val('');
             $('#mobileCards .usuario-card').show();
@@ -1004,7 +1004,7 @@
                 confirmButtonColor: '#0088ff',
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar'
+                cancelButtonText: '{{ __('admin.actions.cancel') }}'
             }).then((result) => {
                 if (result.isConfirmed) {
                     this.submit();
@@ -1026,13 +1026,13 @@
                     return $(this).text().includes('ID:');
                 }).text().toLowerCase();
                 const email = card.find('dd').filter(function() {
-                    return $(this).prev('dt').text().includes('Email');
+                    return $(this).prev('dt').text().includes('{{ __('admin.fields.email') }}');
                 }).text().toLowerCase();
                 const telefono = card.find('dd').filter(function() {
-                    return $(this).prev('dt').text().includes('Teléfono');
+                    return $(this).prev('dt').text().includes('{{ __('admin.fields.phone') }}');
                 }).text().toLowerCase();
                 
-                // Verificar si el término de búsqueda coincide con algún campo
+                // {{ __('admin.actions.view') }}ificar si el término de búsqueda coincide con algún campo
                 const matchFound = nombre.includes(searchTerm) || 
                     id.includes(searchTerm) || 
                     email.includes(searchTerm) || 
@@ -1046,14 +1046,14 @@
                 }
             });
 
-            // Mostrar mensaje cuando no hay resultados
+            // {{ __('admin.actions.show') }} mensaje cuando no hay resultados
             const noResultsMsg = $('#mobileNoResults');
             
             if (visibleCount === 0 && searchTerm !== '') {
                 if (noResultsMsg.length === 0) {
                     $('#mobileCards').append(`
                         <div id="mobileNoResults" class="text-center py-4 text-sm text-gray-500 dark:text-gray-400">
-                            No se encontraron usuarios que coincidan con la búsqueda
+                            {{ __('admin.status.no') }} se encontraron usuarios que coincidan con la búsqueda
                         </div>
                     `);
                 }
@@ -1062,7 +1062,7 @@
             }
         }
 
-        // Evento de búsqueda en móvil
+        // {{ __('admin.webhooks.event') }} de búsqueda en móvil
         let searchTimeout;
         $('#busquedaMovil').on('input', function() {
             clearTimeout(searchTimeout);

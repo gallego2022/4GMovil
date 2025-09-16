@@ -1,17 +1,17 @@
 @extends('layouts.app-new')
 
-@section('title', 'Editar Especificación - 4GMovil')
+@section('title', '__('admin.actions.edit') Especificación - 4GMovil')
 
 @section('content')
 <div class="space-y-6">
     <!-- Encabezado -->
     <div>
-        <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">Editar Especificación</h2>
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">__('admin.actions.edit') Especificación</h2>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Modifica la especificación técnica: <span class="font-medium text-brand-600 dark:text-brand-400">{{ $especificacion->etiqueta }}</span>
+            __('admin.specifications.modify_specification'): <span class="font-medium text-brand-600 dark:text-brand-400">{{ $especificacion->etiqueta }}</span>
         </p>
         <div class="mt-2 flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-            <span>Categoría: <span class="font-medium">{{ $especificacion->categoria->nombre ?? 'Sin categoría' }}</span></span>
+            <span>Categoría: <span class="font-medium">{{ $especificacion->categoria->nombre ?? '__('admin.fields.without_category')' }}</span></span>
             <span>Campo: <span class="font-mono bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">{{ $especificacion->nombre_campo }}</span></span>
             <span>Tipo: <span class="font-medium">{{ ucfirst($especificacion->tipo_campo) }}</span></span>
         </div>
@@ -23,20 +23,20 @@
             @csrf
             @method('PUT')
             
-            <!-- Sección: Información Básica -->
+            <!-- Sección: __('admin.messages.info') Básica -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                     <svg class="w-5 h-5 mr-2 text-brand-600 dark:text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    Información Básica
+                    __('admin.messages.info') Básica
                 </h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Categoría -->
+                    <!-- __('admin.fields.category') -->
                     <div>
                         <label for="categoria_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Categoría <span class="text-red-500">*</span>
+                            __('admin.fields.category') <span class="text-red-500">*</span>
                         </label>
                         <select id="categoria_id" name="categoria_id" required
                                 class="block w-full px-4 py-3 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm transition-colors duration-200">
@@ -67,42 +67,42 @@
                 </div>
             </div>
 
-            <!-- Sección: Configuración del Campo -->
+            <!-- Sección: Configuración del __('admin.fields.field') -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                     <svg class="w-5 h-5 mr-2 text-brand-600 dark:text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                    Configuración del Campo
+                    Configuración del __('admin.fields.field')
                 </h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Nombre del Campo -->
+                    <!-- __('admin.status.no')mbre del __('admin.fields.field') -->
                     <div>
                         <label for="nombre_campo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Nombre del Campo <span class="text-red-500">*</span>
+                            __('admin.status.no')mbre del __('admin.fields.field') <span class="text-red-500">*</span>
                         </label>
                         <input type="text" id="nombre_campo" name="nombre_campo" value="{{ old('nombre_campo', $especificacion->nombre_campo) }}" required
                                class="block w-full px-4 py-3 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm transition-colors duration-200"
                                placeholder="ej: ram, almacenamiento, pantalla">
                         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                            Nombre técnico del campo (sin espacios, solo minúsculas)
+                            __('admin.status.no')mbre técnico del campo (sin espacios, solo minúsculas)
                         </p>
                         @error('nombre_campo')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
-                    <!-- Etiqueta -->
+                    <!-- __('admin.fields.label') -->
                     <div>
                         <label for="etiqueta" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Etiqueta <span class="text-red-500">*</span>
+                            __('admin.fields.label') <span class="text-red-500">*</span>
                         </label>
                         <input type="text" id="etiqueta" name="etiqueta" value="{{ old('etiqueta', $especificacion->etiqueta) }}" required
                                class="block w-full px-4 py-3 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm transition-colors duration-200"
                                placeholder="ej: Memoria RAM, Almacenamiento, Tamaño de Pantalla">
                         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                            Nombre visible para el usuario
+                            __('admin.status.no')mbre visible para el usuario
                         </p>
                         @error('etiqueta')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -111,10 +111,10 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                    <!-- Tipo de Campo -->
+                    <!-- __('admin.fields.type') de __('admin.fields.field') -->
                     <div>
                         <label for="tipo_campo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Tipo de Campo <span class="text-red-500">*</span>
+                            __('admin.fields.type') de __('admin.fields.field') <span class="text-red-500">*</span>
                         </label>
                         <select id="tipo_campo" name="tipo_campo" required
                                 class="block w-full px-4 py-3 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm transition-colors duration-200">
@@ -125,8 +125,8 @@
                             <option value="select" {{ old('tipo_campo', $especificacion->tipo_campo) == 'select' ? 'selected' : '' }}>Selector</option>
                             <option value="checkbox" {{ old('tipo_campo', $especificacion->tipo_campo) == 'checkbox' ? 'selected' : '' }}>Casilla de verificación</option>
                             <option value="radio" {{ old('tipo_campo', $especificacion->tipo_campo) == 'radio' ? 'selected' : '' }}>Botones de radio</option>
-                            <option value="date" {{ old('tipo_campo', $especificacion->tipo_campo) == 'date' ? 'selected' : '' }}>Fecha</option>
-                            <option value="email" {{ old('tipo_campo', $especificacion->tipo_campo) == 'email' ? 'selected' : '' }}>Email</option>
+                            <option value="date" {{ old('tipo_campo', $especificacion->tipo_campo) == 'date' ? 'selected' : '' }}>__('admin.webhooks.date')</option>
+                            <option value="email" {{ old('tipo_campo', $especificacion->tipo_campo) == 'email' ? 'selected' : '' }}>__('admin.fields.email')</option>
                             <option value="url" {{ old('tipo_campo', $especificacion->tipo_campo) == 'url' ? 'selected' : '' }}>URL</option>
                         </select>
                         @error('tipo_campo')
@@ -134,16 +134,16 @@
                         @enderror
                     </div>
 
-                    <!-- Unidad -->
+                    <!-- __('admin.fields.unit') -->
                     <div>
                         <label for="unidad" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Unidad de Medida
+                            __('admin.fields.unit') de Medida
                         </label>
                         <input type="text" id="unidad" name="unidad" value="{{ old('unidad', $especificacion->unidad) }}"
                                class="block w-full px-4 py-3 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm transition-colors duration-200"
                                placeholder="ej: GB, pulgadas, MP, mAh">
                         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                            Unidad de medida (opcional)
+                            __('admin.fields.unit') de medida (opcional)
                         </p>
                         @error('unidad')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -179,16 +179,16 @@
                 </h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Requerido -->
+                    <!-- __('admin.fields.required') -->
                     <div class="flex items-center">
                         <input type="checkbox" id="requerido" name="requerido" value="1" {{ old('requerido', $especificacion->requerido) ? 'checked' : '' }}
                                class="h-5 w-5 text-brand-600 focus:ring-brand-500 border-gray-300 rounded transition-colors duration-200">
                         <label for="requerido" class="ml-3 block text-sm text-gray-900 dark:text-gray-100">
-                            Campo requerido
+                            __('admin.fields.field') requerido
                         </label>
                     </div>
 
-                    <!-- Activo -->
+                    <!-- __('admin.status.active') -->
                     <div class="flex items-center">
                         <input type="checkbox" id="activo" name="activo" value="1" {{ old('activo', $especificacion->activo) ? 'checked' : '' }}
                                class="h-5 w-5 text-brand-600 focus:ring-brand-500 border-gray-300 rounded transition-colors duration-200">
@@ -198,14 +198,14 @@
                     </div>
                 </div>
 
-                <!-- Descripción -->
+                <!-- __('admin.fields.description') -->
                 <div class="mt-6">
                     <label for="descripcion" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Descripción
+                        __('admin.fields.description')
                     </label>
                     <textarea id="descripcion" name="descripcion" rows="3"
                               class="block w-full px-4 py-3 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm transition-colors duration-200"
-                              placeholder="Descripción opcional del campo">{{ old('descripcion', $especificacion->descripcion) }}</textarea>
+                              placeholder="__('admin.fields.description') opcional del campo">{{ old('descripcion', $especificacion->descripcion) }}</textarea>
                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                         Explica para qué sirve este campo
                     </p>
@@ -222,7 +222,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
-                    Vista Previa del Campo
+                    Vista Previa del __('admin.fields.field')
                 </h3>
                 
                 <div id="field_preview" class="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md p-4">
@@ -230,13 +230,13 @@
                 </div>
             </div>
 
-            <!-- Información del Sistema -->
+            <!-- __('admin.messages.info') del Sistema -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                     <svg class="w-5 h-5 mr-2 text-gray-600 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
-                    Información del Sistema
+                    __('admin.messages.info') del Sistema
                 </h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
@@ -246,11 +246,11 @@
                     </div>
                     <div>
                         <span class="font-medium text-gray-700 dark:text-gray-300">Creado:</span>
-                        <span class="ml-2 text-gray-900 dark:text-gray-100">{{ $especificacion->created_at ? $especificacion->created_at->format('d/m/Y H:i') : 'N/A' }}</span>
+                        <span class="ml-2 text-gray-900 dark:text-gray-100">{{ $especificacion->created_at ? $especificacion->created_at->format('d/m/Y H:i') : '__('admin.webhooks.not_available')' }}</span>
                     </div>
                     <div>
                         <span class="font-medium text-gray-700 dark:text-gray-300">Última actualización:</span>
-                        <span class="ml-2 text-gray-900 dark:text-gray-100">{{ $especificacion->updated_at ? $especificacion->updated_at->format('d/m/Y H:i') : 'N/A' }}</span>
+                        <span class="ml-2 text-gray-900 dark:text-gray-100">{{ $especificacion->updated_at ? $especificacion->updated_at->format('d/m/Y H:i') : '__('admin.webhooks.not_available')' }}</span>
                     </div>
                 </div>
             </div>
@@ -261,7 +261,7 @@
                 <div class="flex items-center space-x-3">
                     <a href="{{ route('admin.especificaciones.index') }}" 
                        class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200">
-                        Cancelar
+                        __('admin.actions.cancel')
                     </a>
                     
                     <button type="button" onclick="confirmarEliminacion()"
@@ -269,7 +269,7 @@
                         <svg class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
-                        Eliminar
+                        __('admin.actions.delete')
                     </button>
                 </div>
                 
@@ -299,7 +299,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const opcionesContainer = document.getElementById('opciones_container');
     const fieldPreview = document.getElementById('field_preview');
     
-    // Mostrar/ocultar opciones según el tipo de campo
+    // __('admin.actions.show')/ocultar opciones según el tipo de campo
     function toggleOpciones() {
         const tipo = tipoCampoSelect.value;
         const tiposConOpciones = ['select', 'radio', 'checkbox'];
@@ -470,7 +470,7 @@ function confirmarEliminacion() {
         confirmButtonColor: '#dc2626',
         cancelButtonColor: '#6b7280',
         confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar',
+        cancelButtonText: '__('admin.actions.cancel')',
         reverseButtons: true
     }).then((result) => {
         if (result.isConfirmed) {

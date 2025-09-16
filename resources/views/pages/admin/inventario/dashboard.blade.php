@@ -1,6 +1,6 @@
 @extends('layouts.app-new')
 
-@section('title', 'Dashboard de Inventario - 4GMovil')
+@section('title', '__('admin.dashboard.title') de __('admin.inventory.title') - 4GMovil')
 
 @section('content')
 <div class="space-y-6">
@@ -8,7 +8,7 @@
     <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Dashboard de Inventario</h1>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">__('admin.dashboard.title') de __('admin.inventory.title')</h1>
                 <p class="mt-2 text-sm text-gray-500 dark:text-gray-300">Gestión y control del inventario de productos</p>
             </div>
             <div class="flex items-center gap-3">
@@ -17,7 +17,7 @@
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
                     </svg>
-                    Ver Alertas
+                    __('admin.actions.view') Alertas
                 </a>
                 <a href="{{ route('admin.inventario.movimientos') }}" 
                    class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700">
@@ -32,7 +32,7 @@
 
     <!-- Tarjetas de estadísticas -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- Valor total del inventario -->
+        <!-- __('admin.fields.value') total del inventario -->
         <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
             <div class="flex items-center">
                 <div class="p-3 rounded-full bg-green-100 dark:bg-green-900">
@@ -41,7 +41,7 @@
                     </svg>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Valor Total</p>
+                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">__('admin.fields.value') Total</p>
                     <p class="text-2xl font-semibold text-gray-900 dark:text-white">${{ number_format($valorTotal, 0, ',', '.') }}</p>
                 </div>
             </div>
@@ -62,7 +62,7 @@
             </div>
         </div>
 
-        <!-- Productos con stock crítico -->
+        <!-- __('admin.products.product')s con stock crítico -->
         <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
             <div class="flex items-center">
                 <div class="p-3 rounded-full bg-red-100 dark:bg-red-900">
@@ -93,9 +93,9 @@
         </div>
     </div>
 
-    <!-- Productos con alertas -->
+    <!-- __('admin.products.product')s con alertas -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Productos con stock crítico -->
+        <!-- __('admin.products.product')s con stock crítico -->
         <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Stock Crítico</h3>
@@ -133,12 +133,12 @@
                 </div>
             @else
                 <div class="text-center py-4 text-sm text-gray-500 dark:text-gray-400">
-                    No hay productos con stock crítico
+                    __('admin.products.no_products') con stock crítico
                 </div>
             @endif
         </div>
 
-        <!-- Productos con stock bajo -->
+        <!-- __('admin.products.product')s con stock bajo -->
         <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Stock Bajo</h3>
@@ -176,13 +176,13 @@
                 </div>
             @else
                 <div class="text-center py-4 text-sm text-gray-500 dark:text-gray-400">
-                    No hay productos con stock bajo
+                    __('admin.products.no_products') con stock bajo
                 </div>
             @endif
         </div>
     </div>
 
-    <!-- Productos con stock reservado alto -->
+    <!-- __('admin.products.product')s con stock reservado alto -->
     <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Stock Reservado Alto</h3>
@@ -233,14 +233,14 @@
             </div>
         @else
             <div class="text-center py-4 text-sm text-gray-500 dark:text-gray-400">
-                No hay productos con alto stock reservado
+                __('admin.products.no_products') con alto stock reservado
             </div>
         @endif
     </div>
     
-    <!-- Acciones rápidas -->
+    <!-- __('admin.fields.actions') rápidas -->
     <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Acciones Rápidas</h3>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">__('admin.fields.actions') Rápidas</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <a href="{{ route('admin.inventario.movimientos') }}" 
                class="flex items-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
@@ -248,7 +248,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                 </svg>
                 <div>
-                    <p class="font-medium text-gray-900 dark:text-white">Ver Movimientos</p>
+                    <p class="font-medium text-gray-900 dark:text-white">__('admin.actions.view') Movimientos</p>
                     <p class="text-sm text-gray-500 dark:text-gray-400">Historial de entradas y salidas</p>
                 </div>
             </a>
@@ -259,8 +259,8 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
                 <div>
-                    <p class="font-medium text-gray-900 dark:text-white">Generar Reporte</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Reportes detallados de inventario</p>
+                    <p class="font-medium text-gray-900 dark:text-white">__('admin.reports.generate_report')</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">__('admin.reports.title') detallados de inventario</p>
                 </div>
             </a>
 
@@ -270,7 +270,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
                 </svg>
                 <div>
-                    <p class="font-medium text-gray-900 dark:text-white">Ver Alertas</p>
+                    <p class="font-medium text-gray-900 dark:text-white">__('admin.actions.view') Alertas</p>
                     <p class="text-sm text-gray-500 dark:text-gray-400">Productos que requieren atención</p>
                 </div>
             </a>

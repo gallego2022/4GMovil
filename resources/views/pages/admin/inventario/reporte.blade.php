@@ -1,6 +1,6 @@
 @extends('layouts.app-new')
 
-@section('title', 'Reporte de Inventario - 4GMovil')
+@section('title', 'Reporte de __('admin.inventory.title') - 4GMovil')
 
 @section('content')
 <div class="space-y-6">
@@ -8,7 +8,7 @@
     <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Reporte de Inventario</h1>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Reporte de __('admin.inventory.title')</h1>
                 <p class="mt-2 text-sm text-gray-500 dark:text-gray-300">Análisis completo del estado del inventario</p>
                 <p class="text-xs text-gray-400 dark:text-gray-500">Generado el: {{ now()->format('d/m/Y H:i:s') }}</p>
                 @if(isset($estadisticas['periodo']))
@@ -37,13 +37,13 @@
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
-                    Volver al Dashboard
+                    __('admin.actions.back') al __('admin.dashboard.title')
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- Información de Exportación -->
+    <!-- __('admin.messages.info') de Exportación -->
     <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
         <div class="flex items-start">
             <div class="flex-shrink-0">
@@ -52,37 +52,37 @@
                 </svg>
             </div>
             <div class="ml-3">
-                <h3 class="text-sm font-medium text-blue-800 dark:text-blue-200">Información sobre las Exportaciones</h3>
+                <h3 class="text-sm font-medium text-blue-800 dark:text-blue-200">__('admin.messages.info') sobre las Exportaciones</h3>
                 <div class="mt-2 text-sm text-blue-700 dark:text-blue-300">
                     <ul class="list-disc list-inside space-y-1">
                         <li><strong>CSV:</strong> Archivo de texto separado por comas, compatible con Excel, Google Sheets y otros programas de hojas de cálculo.</li>
-                        <li><strong>Para Imprimir:</strong> Archivo HTML optimizado para impresión. Se abre en el navegador con instrucciones para convertir a PDF usando Ctrl+P → "Guardar como PDF".</li>
+                        <li><strong>Para Imprimir:</strong> Archivo HTML optimizado para impresión. Se abre en el navegador con instrucciones para convertir a PDF usando Ctrl+P → "__('admin.actions.save') como PDF".</li>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Filtros -->
+    <!-- __('admin.webhooks.filters') -->
     <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Filtros</h3>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">__('admin.webhooks.filters')</h3>
         <form method="GET" action="{{ route('admin.inventario.reporte') }}" id="filtrosForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <div>
-                <label for="fecha_inicio" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fecha Inicio</label>
+                <label for="fecha_inicio" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">__('admin.webhooks.date') Inicio</label>
                 <input type="date" id="fecha_inicio" name="fecha_inicio" 
                        value="{{ $fecha_inicio->format('Y-m-d') }}"
                        max="{{ now()->format('Y-m-d') }}"
                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
             </div>
             <div>
-                <label for="fecha_fin" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fecha Fin</label>
+                <label for="fecha_fin" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">__('admin.webhooks.date') Fin</label>
                 <input type="date" id="fecha_fin" name="fecha_fin" 
                        value="{{ $fecha_fin->format('Y-m-d') }}"
                        max="{{ now()->format('Y-m-d') }}"
                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
             </div>
             <div>
-                <label for="categoria_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Categoría</label>
+                <label for="categoria_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">__('admin.fields.category')</label>
                 <select id="categoria_id" name="categoria_id" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     <option value="">Todas las categorías</option>
                     @foreach($categorias as $categoria)
@@ -93,7 +93,7 @@
                 </select>
             </div>
             <div>
-                <label for="marca_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Marca</label>
+                <label for="marca_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">__('admin.fields.brand')</label>
                 <select id="marca_id" name="marca_id" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     <option value="">Todas las marcas</option>
                     @foreach($marcas as $marca)
@@ -108,7 +108,7 @@
                     <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
                     </svg>
-                    Filtrar
+                    __('admin.actions.filter')
                 </button>
                 <button type="button" id="limpiarFiltros" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -118,21 +118,21 @@
             </div>
         </form>
         
-        <!-- Filtros rápidos -->
+        <!-- __('admin.webhooks.filters') rápidos -->
         <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Filtros Rápidos</h4>
+            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">__('admin.webhooks.filters') Rápidos</h4>
             <div class="flex flex-wrap gap-2">
                 <button type="button" class="filtro-rapido px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors" data-dias="7">
-                    Últimos 7 días
+                    __('admin.actions.last')s 7 días
                 </button>
                 <button type="button" class="filtro-rapido px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors" data-dias="30">
-                    Últimos 30 días
+                    __('admin.actions.last')s 30 días
                 </button>
                 <button type="button" class="filtro-rapido px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors" data-dias="90">
-                    Últimos 90 días
+                    __('admin.actions.last')s 90 días
                 </button>
                 <button type="button" class="filtro-rapido px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors" data-dias="365">
-                    Último año
+                    __('admin.actions.last') año
                 </button>
                 <button type="button" class="filtro-rapido px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors" data-mes="actual">
                     Mes actual
@@ -156,7 +156,7 @@
                         </svg>
                     </div>
                     <div class="ml-3">
-                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Productos</p>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">__('admin.stats.total_products')</p>
                         <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ $estadisticas['total_productos'] ?? 0 }}</p>
                     </div>
                 </div>
@@ -184,7 +184,7 @@
                         </svg>
                     </div>
                     <div class="ml-3">
-                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Valor Total</p>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">__('admin.fields.value') Total</p>
                         <p class="text-lg font-semibold text-gray-900 dark:text-white">${{ number_format($estadisticas['valor_inventario'] ?? 0, 0, ',', '.') }}</p>
                     </div>
                 </div>
@@ -206,9 +206,9 @@
         </div>
     </div>
 
-    <!-- Alertas de Inventario -->
+    <!-- Alertas de __('admin.inventory.title') -->
     <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Alertas de Inventario</h3>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Alertas de __('admin.inventory.title')</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
                 <div class="flex items-center">
@@ -218,7 +218,7 @@
                         </svg>
                     </div>
                     <div class="ml-3">
-                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Sin Stock</p>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">__('admin.inventory.out_of_stock')</p>
                         <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ $estadisticas['productos_sin_stock'] ?? 0 }}</p>
                     </div>
                 </div>
@@ -268,20 +268,20 @@
         </div>
     </div>
 
-    <!-- Lista de Productos -->
+    <!-- Lista de __('admin.products.product')s -->
     <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Productos en Inventario</h3>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Productos en __('admin.inventory.title')</h3>
         @if($productos->count() > 0)
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead class="bg-gray-50 dark:bg-gray-800">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Producto</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Categoría</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Marca</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">__('admin.products.product')</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">__('admin.fields.category')</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">__('admin.fields.brand')</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Precio</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Valor Total</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">__('admin.fields.price')</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">__('admin.fields.value') Total</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
@@ -307,7 +307,7 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                    {{ $producto->categoria->nombre ?? 'Sin categoría' }}
+                                    {{ $producto->categoria->nombre ?? '__('admin.fields.without_category')' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                     {{ $producto->marca->nombre ?? 'Sin marca' }}
@@ -336,7 +336,7 @@
                 <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707-.293l-2.414-2.414a1 1 0 01-.707-.293H6.586a1 1 0 00-.707.293L3.707 12.707A1 1 0 004.586 13H2"/>
                 </svg>
-                <p class="text-gray-500 dark:text-gray-400">No hay productos que coincidan con los filtros seleccionados</p>
+                <p class="text-gray-500 dark:text-gray-400">__('admin.products.no_products') que coincidan con los filtros seleccionados</p>
             </div>
         @endif
     </div>
@@ -349,10 +349,10 @@
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-50 dark:bg-gray-800">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Fecha</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Producto</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">__('admin.webhooks.date')</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">__('admin.products.product')</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Variante</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tipo</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">__('admin.fields.type')</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Cantidad</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Motivo</th>
                     </tr>
@@ -364,10 +364,10 @@
                                 {{ $movimiento->created_at->format('d/m/Y H:i') }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                {{ $movimiento->variante->producto->nombre_producto ?? 'N/A' }}
+                                {{ $movimiento->variante->producto->nombre_producto ?? '__('admin.webhooks.not_available')' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                {{ $movimiento->variante->nombre ?? 'N/A' }}
+                                {{ $movimiento->variante->nombre ?? '__('admin.webhooks.not_available')' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium 
@@ -438,7 +438,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Limpiar filtros
+    // __('admin.actions.clear') filtros
     limpiarBtn.addEventListener('click', function() {
         form.reset();
         fechaInicio.value = '';
@@ -446,7 +446,7 @@ document.addEventListener('DOMContentLoaded', function() {
         form.submit();
     });
 
-    // Filtros rápidos
+    // __('admin.webhooks.filters') rápidos
     filtrosRapidos.forEach(btn => {
         btn.addEventListener('click', function() {
             const dias = this.dataset.dias;
@@ -472,8 +472,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (mes === 'anterior') {
                 const hoy = new Date();
-                const primerDiaAnterior = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1);
-                const ultimoDiaAnterior = new Date(hoy.getFullYear(), hoy.getMonth(), 0);
+                const primerDia__('admin.actions.previous') = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1);
+                const ultimoDia__('admin.actions.previous') = new Date(hoy.getFullYear(), hoy.getMonth(), 0);
                 
                 document.getElementById('fecha_inicio').value = primerDiaAnterior.toISOString().split('T')[0];
                 document.getElementById('fecha_fin').value = ultimoDiaAnterior.toISOString().split('T')[0];
@@ -494,7 +494,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Mostrar mensaje de validación personalizado
+    // __('admin.actions.show') mensaje de validación personalizado
     function mostrarMensaje(mensaje, tipo = 'error') {
         const alertDiv = document.createElement('div');
         alertDiv.className = `fixed top-4 right-4 p-4 rounded-md shadow-lg z-50 ${

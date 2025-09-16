@@ -1,12 +1,12 @@
 @extends('layouts.app-new')
 
-@section('title', 'Crear Especificación - 4GMovil')
+@section('title', '__('admin.actions.create') Especificación - 4GMovil')
 
 @section('content')
 <div class="space-y-6">
     <!-- Encabezado -->
     <div>
-        <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">Crear Nueva Especificación</h2>
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">__('admin.actions.create') Nueva Especificación</h2>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Define una nueva especificación técnica para una categoría de productos</p>
     </div>
 
@@ -15,20 +15,20 @@
         <form action="{{ route('admin.especificaciones.store') }}" method="POST" class="px-4 py-6 sm:p-8">
             @csrf
             
-            <!-- Sección: Información Básica -->
+            <!-- Sección: __('admin.messages.info') Básica -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                     <svg class="w-5 h-5 mr-2 text-brand-600 dark:text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    Información Básica
+                    __('admin.messages.info') Básica
                 </h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Categoría -->
+                    <!-- __('admin.fields.category') -->
                     <div>
                         <label for="categoria_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Categoría <span class="text-red-500">*</span>
+                            __('admin.fields.category') <span class="text-red-500">*</span>
                         </label>
                         <select id="categoria_id" name="categoria_id" required
                                 class="block w-full px-4 py-3 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm transition-colors duration-200">
@@ -59,42 +59,42 @@
                 </div>
             </div>
 
-            <!-- Sección: Configuración del Campo -->
+            <!-- Sección: Configuración del __('admin.fields.field') -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                     <svg class="w-5 h-5 mr-2 text-brand-600 dark:text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                    Configuración del Campo
+                    Configuración del __('admin.fields.field')
                 </h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Nombre del Campo -->
+                    <!-- __('admin.status.no')mbre del __('admin.fields.field') -->
                     <div>
                         <label for="nombre_campo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Nombre del Campo <span class="text-red-500">*</span>
+                            __('admin.status.no')mbre del __('admin.fields.field') <span class="text-red-500">*</span>
                         </label>
                         <input type="text" id="nombre_campo" name="nombre_campo" value="{{ old('nombre_campo') }}" required
                                class="block w-full px-4 py-3 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm transition-colors duration-200"
                                placeholder="ej: ram, almacenamiento, pantalla">
                         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                            Nombre técnico del campo (sin espacios, solo minúsculas)
+                            __('admin.status.no')mbre técnico del campo (sin espacios, solo minúsculas)
                         </p>
                         @error('nombre_campo')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
-                    <!-- Etiqueta -->
+                    <!-- __('admin.fields.label') -->
                     <div>
                         <label for="etiqueta" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Etiqueta <span class="text-red-500">*</span>
+                            __('admin.fields.label') <span class="text-red-500">*</span>
                         </label>
                         <input type="text" id="etiqueta" name="etiqueta" value="{{ old('etiqueta') }}" required
                                class="block w-full px-4 py-3 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm transition-colors duration-200"
                                placeholder="ej: Memoria RAM, Almacenamiento, Tamaño de Pantalla">
                         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                            Nombre visible para el usuario
+                            __('admin.status.no')mbre visible para el usuario
                         </p>
                         @error('etiqueta')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -103,10 +103,10 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                    <!-- Tipo de Campo -->
+                    <!-- __('admin.fields.type') de __('admin.fields.field') -->
                     <div>
                         <label for="tipo_campo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Tipo de Campo <span class="text-red-500">*</span>
+                            __('admin.fields.type') de __('admin.fields.field') <span class="text-red-500">*</span>
                         </label>
                         <select id="tipo_campo" name="tipo_campo" required
                                 class="block w-full px-4 py-3 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm transition-colors duration-200">
@@ -117,8 +117,8 @@
                             <option value="select" {{ old('tipo_campo') == 'select' ? 'selected' : '' }}>Selector</option>
                             <option value="checkbox" {{ old('tipo_campo') == 'checkbox' ? 'selected' : '' }}>Casilla de verificación</option>
                             <option value="radio" {{ old('tipo_campo') == 'radio' ? 'selected' : '' }}>Botones de radio</option>
-                            <option value="date" {{ old('tipo_campo') == 'date' ? 'selected' : '' }}>Fecha</option>
-                            <option value="email" {{ old('tipo_campo') == 'email' ? 'selected' : '' }}>Email</option>
+                            <option value="date" {{ old('tipo_campo') == 'date' ? 'selected' : '' }}>__('admin.webhooks.date')</option>
+                            <option value="email" {{ old('tipo_campo') == 'email' ? 'selected' : '' }}>__('admin.fields.email')</option>
                             <option value="url" {{ old('tipo_campo') == 'url' ? 'selected' : '' }}>URL</option>
                         </select>
                         @error('tipo_campo')
@@ -126,16 +126,16 @@
                         @enderror
                     </div>
 
-                    <!-- Unidad -->
+                    <!-- __('admin.fields.unit') -->
                     <div>
                         <label for="unidad" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Unidad de Medida
+                            __('admin.fields.unit') de Medida
                         </label>
                         <input type="text" id="unidad" name="unidad" value="{{ old('unidad') }}"
                                class="block w-full px-4 py-3 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm transition-colors duration-200"
                                placeholder="ej: GB, pulgadas, MP, mAh">
                         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                            Unidad de medida (opcional)
+                            __('admin.fields.unit') de medida (opcional)
                         </p>
                         @error('unidad')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -171,16 +171,16 @@
                 </h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Requerido -->
+                    <!-- __('admin.fields.required') -->
                     <div class="flex items-center">
                         <input type="checkbox" id="requerido" name="requerido" value="1" {{ old('requerido') ? 'checked' : '' }}
                                class="h-5 w-5 text-brand-600 focus:ring-brand-500 border-gray-300 rounded transition-colors duration-200">
                         <label for="requerido" class="ml-3 block text-sm text-gray-900 dark:text-gray-100">
-                            Campo requerido
+                            __('admin.fields.field') requerido
                         </label>
                     </div>
 
-                    <!-- Activo -->
+                    <!-- __('admin.status.active') -->
                     <div class="flex items-center">
                         <input type="checkbox" id="activo" name="activo" value="1" {{ old('activo', '1') ? 'checked' : '' }}
                                class="h-5 w-5 text-brand-600 focus:ring-brand-500 border-gray-300 rounded transition-colors duration-200">
@@ -190,14 +190,14 @@
                     </div>
                 </div>
 
-                <!-- Descripción -->
+                <!-- __('admin.fields.description') -->
                 <div class="mt-6">
                     <label for="descripcion" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Descripción
+                        __('admin.fields.description')
                     </label>
                     <textarea id="descripcion" name="descripcion" rows="3"
                               class="block w-full px-4 py-3 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm transition-colors duration-200"
-                              placeholder="Descripción opcional del campo">{{ old('descripcion') }}</textarea>
+                              placeholder="__('admin.fields.description') opcional del campo">{{ old('descripcion') }}</textarea>
                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                         Explica para qué sirve este campo
                     </p>
@@ -214,7 +214,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
-                    Vista Previa del Campo
+                    Vista Previa del __('admin.fields.field')
                 </h3>
                 
                 <div id="field_preview" class="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md p-4">
@@ -228,7 +228,7 @@
             <div class="mt-6 flex items-center justify-end gap-x-6">
                 <a href="{{ route('admin.especificaciones.index') }}" 
                    class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200">
-                    Cancelar
+                    __('admin.actions.cancel')
                 </a>
                 
                 <button type="submit" 
@@ -236,7 +236,7 @@
                     <svg class="w-5 h-5 mr-2 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
-                    Crear Especificación
+                    __('admin.actions.create') Especificación
                 </button>
             </div>
         </form>
@@ -250,7 +250,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const opcionesContainer = document.getElementById('opciones_container');
     const fieldPreview = document.getElementById('field_preview');
     
-    // Mostrar/ocultar opciones según el tipo de campo
+    // __('admin.actions.show')/ocultar opciones según el tipo de campo
     function toggleOpciones() {
         const tipo = tipoCampoSelect.value;
         const tiposConOpciones = ['select', 'radio', 'checkbox'];
@@ -269,7 +269,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Actualizar vista previa
     function updatePreview() {
         const tipo = tipoCampoSelect.value;
-        const etiqueta = document.getElementById('etiqueta').value || 'Etiqueta del Campo';
+        const etiqueta = document.getElementById('etiqueta').value || '__('admin.fields.label') del __('admin.fields.field')';
         const unidad = document.getElementById('unidad').value;
         const opciones = document.getElementById('opciones').value;
         const requerido = document.getElementById('requerido').checked;
