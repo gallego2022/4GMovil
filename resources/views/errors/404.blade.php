@@ -35,29 +35,22 @@
     <!-- Barra de búsqueda -->
     <div class="error-info">
         <h4>¿Qué estabas buscando?</h4>
-        <form action="{{ route('productos.lista') }}" method="GET" class="error-search-form">
-            <input type="text" 
-                   name="search" 
-                   placeholder="Buscar productos, servicios..."
-                   class="error-search-input">
-            <button type="submit" class="error-search-btn">
-                <i class="fas fa-search"></i>
-            </button>
-        </form>
+        <x-search-autocomplete context="error" />
     </div>
+
     
     <!-- Servicios destacados -->
     <div class="error-services">
         <div class="error-service-card">
-            <div class="error-service-icon">
-                <i class="fas fa-mobile-alt" style="color: #6366f1;"></i>
+            <div class="error-service-icon" style="color: #6366f1;">
+                <i class="fas fa-mobile-alt"></i>
             </div>
             <h3 class="error-service-title">Productos</h3>
             <p class="error-service-description">Encuentra los mejores dispositivos móviles</p>
         </div>
         <div class="error-service-card">
-            <div class="error-service-icon">
-                <i class="fas fa-headset" style="color: #10b981;"></i>
+            <div class="error-service-icon" style="color: #10b981;">
+                <i class="fas fa-headset"></i>
             </div>
             <h3 class="error-service-title">Soporte</h3>
             <p class="error-service-description">Estamos aquí para ayudarte 24/7</p>

@@ -432,9 +432,7 @@
                 <!-- Selector de idioma/país/moneda -->
                 @include('components.language-selector-modal')
 
-                <a href="#" data-no-loading
-                    class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300"><i
-                        class="fas fa-search"></i></a>
+                <x-search-autocomplete context="header" :placeholder="'Buscar...'" />
                 @auth
                     <div class="relative group" x-data="{ open: false }" @keydown.escape.window="open = false">
                         <button @click="open = !open"
@@ -532,31 +530,10 @@
                         <i class="fas fa-home mr-3"></i>Inicio
                     </a>
 
-                    <!-- Productos dropdown móvil -->
-                    <div x-data="{ productsOpen: false }">
-                        <button @click="productsOpen = !productsOpen"
-                            class="w-full text-left text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300 py-2 flex items-center justify-between">
-                            <span><i class="fas fa-mobile-alt mr-3"></i>Productos</span>
-                            <i class="fas fa-chevron-down transition-transform duration-300" :class="{ 'rotate-180': productsOpen }"></i>
-                        </button>
-                        <div x-show="productsOpen" 
-                             x-transition:enter="transition ease-out duration-200"
-                             x-transition:enter-start="opacity-0 transform -translate-y-2"
-                             x-transition:enter-end="opacity-100 transform translate-y-0"
-                             x-transition:leave="transition ease-in duration-150"
-                             x-transition:leave-start="opacity-100 transform translate-y-0"
-                             x-transition:leave-end="opacity-0 transform -translate-y-2"
-                             class="ml-6 mt-2 space-y-2">
-                            <a href="{{ route('productos.lista') }}" data-loading-message="Cargando productos..."
-                                class="block text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 py-1">
-                                <i class="fas fa-mobile mr-2"></i>Celulares
-                            </a>
-                            <a href="{{ route('productos.lista') }}" data-loading-message="Cargando productos..."
-                                class="block text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 py-1">
-                                <i class="fas fa-headphones mr-2"></i>Accesorios
-                            </a>
-                        </div>
-                    </div>
+                    <a href="{{ route('productos.lista') }}" data-loading-message="Cargando productos..."
+                    class="block text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300 py-2">
+                    <i class="fas fa-mobile-alt mr-3"></i>Productos
+                </a>
 
                     <a href="{{ route('servicios') }}" data-loading-message="Cargando servicio tecnico..."
                         class="block text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300 py-2">
@@ -577,6 +554,7 @@
 
                 <!-- Acciones móviles -->
                 <div class="space-y-3">
+                    @include('components.language-selector-modal')
                     <a href="#" data-no-loading
                         class="block text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 py-2">
                         <i class="fas fa-search mr-3"></i>Buscar

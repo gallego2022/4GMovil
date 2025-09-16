@@ -36,15 +36,15 @@
     <div class="error-info">
         <h4>Consejos de Seguridad</h4>
         <div style="text-align: left; margin-top: 1rem;">
-            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; color: var(--text-primary);">
                 <i class="fas fa-check" style="color: #10b981;"></i>
                 <span>Cierra sesión cuando termines de usar la aplicación</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; color: var(--text-primary);">
                 <i class="fas fa-check" style="color: #10b981;"></i>
                 <span>No compartas tu sesión con otros</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary);">
                 <i class="fas fa-check" style="color: #10b981;"></i>
                 <span>Usa contraseñas seguras y únicas</span>
             </div>
@@ -54,15 +54,15 @@
     <!-- Servicios de seguridad -->
     <div class="error-services">
         <div class="error-service-card">
-            <div class="error-service-icon">
-                <i class="fas fa-shield-alt" style="color: #3b82f6;"></i>
+            <div class="error-service-icon" style="color: #3b82f6;">
+                <i class="fas fa-shield-alt"></i>
             </div>
             <h3 class="error-service-title">Protección</h3>
             <p class="error-service-description">Tu cuenta está protegida con autenticación segura</p>
         </div>
         <div class="error-service-card">
-            <div class="error-service-icon">
-                <i class="fas fa-lock" style="color: #10b981;"></i>
+            <div class="error-service-icon" style="color: #10b981;">
+                <i class="fas fa-lock"></i>
             </div>
             <h3 class="error-service-title">Privacidad</h3>
             <p class="error-service-description">Tus datos están seguros con nosotros</p>

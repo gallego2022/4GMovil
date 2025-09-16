@@ -24,8 +24,8 @@
     <div class="error-info">
         <h4>Tiempo de Espera</h4>
         <div style="margin: 1rem 0; text-align: center;">
-            <div id="countdown" style="font-size: 3rem; font-weight: 800; color: #8b5cf6; margin-bottom: 0.5rem;">60</div>
-            <p style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem;">segundos restantes</p>
+            <div id="countdown" style="font-size: 3rem; font-weight: 800; color: var(--accent-via); margin-bottom: 0.5rem;">60</div>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">segundos restantes</p>
         </div>
     </div>
     
@@ -53,15 +53,15 @@
     <!-- Servicios de límite -->
     <div class="error-services">
         <div class="error-service-card">
-            <div class="error-service-icon">
-                <i class="fas fa-gauge-high" style="color: #8b5cf6;"></i>
+            <div class="error-service-icon" style="color: #8b5cf6;">
+                <i class="fas fa-gauge-high"></i>
             </div>
             <h3 class="error-service-title">Límites</h3>
             <p class="error-service-description">Controlamos el tráfico para mantener la calidad</p>
         </div>
         <div class="error-service-card">
-            <div class="error-service-icon">
-                <i class="fas fa-users" style="color: #06b6d4;"></i>
+            <div class="error-service-icon" style="color: #06b6d4;">
+                <i class="fas fa-users"></i>
             </div>
             <h3 class="error-service-title">Usuarios</h3>
             <p class="error-service-description">Garantizamos acceso equitativo para todos</p>
