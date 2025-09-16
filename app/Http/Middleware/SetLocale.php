@@ -37,11 +37,34 @@ class SetLocale
             }
         }
 
-        // Si no hay idioma configurado, usar el por defecto
+        // Si no hay idioma configurado, intentar auto-detectar por encabezados y región
         if (!$locale) {
-            $locale = 'es';
-            $currency = 'COP';
-            $country = 'CO';
+            // 1) Detectar por Accept-Language (solo permitir es, en, pt)
+            $preferred = $request->getPreferredLanguage(['es', 'en', 'pt']);
+            $detectedLocale = $preferred ?: 'es';
+
+            // 1.1) Si viene variante 'es-ES' en los encabezados, priorizar España/EUR
+            $acceptLanguage = (string) $request->header('Accept-Language', '');
+            $isSpainSpanish = stripos($acceptLanguage, 'es-es') !== false;
+
+            // 2) Mapear país/moneda por idioma cuando no tenemos IP/geo
+            // Nota: se permite solo COP, USD, BRL, EUR
+            $languageConfigs = [
+                'es' => ['country' => 'CO', 'currency' => 'COP'],
+                'en' => ['country' => 'US', 'currency' => 'USD'],
+                'pt' => ['country' => 'BR', 'currency' => 'BRL'],
+            ];
+
+            $locale = $detectedLocale;
+            // Si detectamos español de España, forzar ES/EUR
+            if ($isSpainSpanish) {
+                $country = 'ES';
+                $currency = 'EUR';
+            } else {
+                $country = $languageConfigs[$locale]['country'] ?? 'CO';
+                $currency = $languageConfigs[$locale]['currency'] ?? 'COP';
+            }
+
             Session::put('locale', $locale);
             Session::put('currency', $currency);
             Session::put('country', $country);
