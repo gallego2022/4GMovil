@@ -1,51 +1,51 @@
-# Laravel & PHP
-/vendor
-/node_modules
-/public/build
+# --- Laravel core ---
+
+/vendor/
+/node_modules/
+.env
+.env.*
+.phpunit.result.cache
+.phpunit.cache
 /public/hot
 /public/storage
 /storage/*.key
-/storage/pail
 /storage/framework/*
+!/storage/framework/.gitignore
 /storage/logs/*
-/bootstrap/cache
+!/storage/logs/.gitignore
+/bootstrap/cache/*
+!/bootstrap/cache/.gitignore
 
-# Laravel environment
-.env
-.env.backup
-.env.production
-.env.local
-.env.staging
-
-# PHPUnit
-.phpunit.result.cache
-/.phpunit.cache
-
-# PHP tools
-.phpactor.json
-
-# Composer & NPM logs
-composer.lock
-npm-debug.log
-yarn-error.log
-pnpm-debug.log
-
-# IDEs & Editors
-/.idea
-/.nova
-/.vscode
-/.zed
-/.fleet
-*.sublime-workspace
-*.sublime-project
-
-# Homestead
+# --- Laravel specific tools ---
+/.env.backup
 Homestead.json
 Homestead.yaml
 
-# OS files
+# --- IDEs & Editors ---
+.idea/
+.vscode/
+.nova/
+.fleet/
+.zed/
+*.sublime-workspace
+*.sublime-project
+
+# --- System files ---
 .DS_Store
 Thumbs.db
 
-# Cache files
+# --- Cache & log files ---
+*.log
 *.cache
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# --- PHP tools ---
+.phpactor.json
+
+# --- Build output ---
+/public/build
+
+# --- Composer lock file should be committed (important!) ---
+# composer.lock ❌ NO se debe ignorar
