@@ -57,20 +57,20 @@
 @endif
 
 <div class="space-y-8">
-    <!-- {{  }} Básica -->
+<!-- Información Básica -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
             <svg class="w-5 h-5 mr-2 text-brand-600 dark:text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            {{  }} Básica
+            Información Básica
         </h3>
         
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <!-- {{  }}mbre del producto -->
+            <!-- Nombre del producto -->
             <div>
                 <label for="nombre_producto" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {{  }}mbre del {{  }} <span class="text-red-500">*</span>
+                    Nombre del producto <span class="text-red-500">*</span>
                 </label>
                 <input type="text" 
                        name="nombre_producto" 
@@ -87,7 +87,7 @@
             <!-- SKU -->
             <div>
                 <label for="sku" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    SKU (Código de {{  }})
+                    SKU (Código de producto)
                 </label>
                 <input type="text" 
                        name="sku" 
@@ -101,10 +101,10 @@
             </div>
         </div>
 
-        <!-- {{  }} -->
+        <!-- Descripción -->
         <div class="mt-6">
             <label for="descripcion" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {{  }} <span class="text-red-500">*</span>
+                Descripción <span class="text-red-500">*</span>
             </label>
             <textarea name="descripcion" 
                       id="descripcion"
@@ -117,20 +117,20 @@
         </div>
     </div>
 
-    <!-- {{  }}s y Costos -->
+    <!-- Precios y Costos -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
             <svg class="w-5 h-5 mr-2 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
             </svg>
-            {{  }} de {{  }}s
+            Precios de artículos
         </h3>
         
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <!-- {{  }} de Venta -->
+            <!-- Precio de Venta -->
             <div>
                 <label for="precio" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {{  }} de Venta <span class="text-red-500">*</span>
+                Precio de Venta <span class="text-red-500">*</span>
                 </label>
                 <div class="relative rounded-lg shadow-sm">
                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -176,13 +176,13 @@
         </div>
     </div>
 
-    <!-- Gestión de {{  }} -->
+    <!-- Gestión de Stock -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
             <svg class="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707-.293l-2.414-2.414a1 1 0 01-.707-.293H6.586a1 1 0 00-.707.293L3.707 12.707A1 1 0 004.586 13H2" />
             </svg>
-            Gestión de {{  }}
+            Gestión de Stock
         </h3>
         
                  <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
@@ -272,10 +272,10 @@
                  @enderror
              </div>
 
-             <!-- {{  }} {{  }} -->
+            <!-- Estado activo -->
              <div>
                  <label for="activo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                     {{  }} {{  }}
+                    Estado
                  </label>
                  <div class="flex items-center h-12 px-4">
                      <input type="checkbox" 
@@ -285,7 +285,7 @@
                             {{ old('activo', $producto->activo ?? true) ? 'checked' : '' }}
                             class="h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300 rounded transition-colors duration-200">
                      <label for="activo" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
-                         {{  }} disponible para venta
+                         Producto disponible para venta
                      </label>
                  </div>
                  @error('activo')
@@ -305,10 +305,10 @@
         </h3>
         
         <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
-            <!-- {{  }} -->
+            <!-- Categoría -->
             <div>
                 <label for="categoria_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {{  }} <span class="text-red-500">*</span>
+                    Categoría <span class="text-red-500">*</span>
                 </label>
                 <select name="categoria_id" 
                         id="categoria_id"
@@ -327,10 +327,10 @@
                 @enderror
             </div>
 
-            <!-- {{  }} -->
+            <!-- Marca -->
             <div>
                 <label for="marca_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {{  }} <span class="text-red-500">*</span>
+                    Marca <span class="text-red-500">*</span>
                 </label>
                 <select name="marca_id" 
                         id="marca_id"
@@ -349,15 +349,15 @@
                 @enderror
             </div>
 
-            <!-- {{  }} del {{  }} -->
+            <!-- Estado del producto -->
             <div>
                 <label for="estado" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {{  }} del {{  }}
+                    Estado del producto
                 </label>
                 <select name="estado" 
                         id="estado" 
                         class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200">
-                    <option value="nuevo" {{ old('estado', $producto->estado ?? '') == 'nuevo' ? 'selected' : '' }}>{{  }}</option>
+                    <option value="nuevo" {{ old('estado', $producto->estado ?? '') == 'nuevo' ? 'selected' : '' }}>Nuevo</option>
                     <option value="usado" {{ old('estado', $producto->estado ?? '') == 'usado' ? 'selected' : '' }}>Usado</option>
                 </select>
                 @error('estado')
@@ -367,13 +367,13 @@
         </div>
     </div>
 
-    <!-- {{  }} Física -->
+    <!-- Información Física -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
             <svg class="w-5 h-5 mr-2 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
             </svg>
-            {{  }} Física
+            Información Física
         </h3>
         
         <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -429,13 +429,13 @@
         </div>
     </div>
 
-    <!-- {{  }} Técnicas -->
+    <!-- Especificaciones Técnicas -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
             <svg class="w-5 h-5 mr-2 text-teal-600 dark:text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
             </svg>
-            {{  }} Técnicas
+            Especificaciones Técnicas
         </h3>
         
         <div class="mb-4">
@@ -491,13 +491,13 @@
         </div>
     </div>
 
-    <!-- Imágenes del {{  }} -->
+    <!-- Imágenes del producto -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
             <svg class="w-5 h-5 mr-2 text-pink-600 dark:text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            Imágenes del {{  }}
+            Imágenes del producto
         </h3>
         
         <div class="space-y-4">
@@ -537,7 +537,7 @@
 <script>
     // Variables globales
     let especificacionesActuales = [];
-    let valores{{  }} = {};
+    let valoresEspecificaciones = window.valoresEspecificaciones || {};
 
     // Cálculo automático del costo unitario
     document.getElementById('precio').addEventListener('input', function() {
@@ -568,7 +568,7 @@
              }
              
              const especificaciones = await response.json();
-             console.log('{{  }} recibidas:', especificaciones);
+            console.log('Especificaciones recibidas:', especificaciones);
              
              // Log detallado de cada especificación
              especificaciones.forEach((espec, index) => {
@@ -594,7 +594,7 @@
     // Función para renderizar especificaciones
     function renderizarEspecificaciones(especificaciones) {
         const container = document.getElementById('especificaciones-container');
-        const no{{  }} = document.getElementById('no-especificaciones');
+        const noEspecificaciones = document.getElementById('no-especificaciones');
         
         if (especificaciones.length === 0) {
             container.innerHTML = '';
@@ -617,12 +617,12 @@
 
     // Función para crear un campo de especificación
     function crearCampoEspecificacion(espec, index) {
-        const valorActual = valoresEspecificaciones[espec.nombre_campo] || '';
+        const valorActual = (window.valoresEspecificaciones || {})[espec.nombre_campo] || '';
         const requerido = espec.requerido ? '<span class="text-red-500">*</span>' : '';
         const unidad = espec.unidad ? ` (${espec.unidad})` : '';
         
         // Debug: mostrar qué tipo de campo se está procesando
-        console.log(`Creando campo: ${espec.nombre_campo}, {{  }}: ${espec.tipo_campo}, {{  }}: ${espec.etiqueta}`);
+        console.log(`Creando campo: ${espec.nombre_campo}, tipo: ${espec.tipo_campo}, etiqueta: ${espec.etiqueta}`);
         
         let campo = '';
         
@@ -766,8 +766,8 @@
                 break;
                 
             default:
-                // {{  }} por defecto si el tipo no es reconocido
-                console.warn(`{{  }} de campo no reconocido: ${espec.tipo_campo} para ${espec.nombre_campo}`);
+                // Tipo por defecto si el tipo no es reconocido
+                console.warn(`Tipo de campo no reconocido: ${espec.tipo_campo} para ${espec.nombre_campo}`);
                 campo = `
                     <input type="text" 
                            name="especificaciones[${espec.nombre_campo}]" 
@@ -813,23 +813,24 @@
 
     // Función para guardar valor de especificación
     function guardarValorEspecificacion(nombreCampo, valor) {
-        valoresEspecificaciones[nombreCampo] = valor;
+        window.valoresEspecificaciones = window.valoresEspecificaciones || {};
+        window.valoresEspecificaciones[nombreCampo] = valor;
     }
 
     // Función para limpiar especificaciones
     function limpiarEspecificaciones() {
         const container = document.getElementById('especificaciones-container');
-        const no{{  }} = document.getElementById('no-especificaciones');
+        const noEspecificaciones = document.getElementById('no-especificaciones');
         
         container.innerHTML = '';
         noEspecificaciones.classList.remove('hidden');
         especificacionesActuales = [];
-        valores{{  }} = {};
+        window.valoresEspecificaciones = {};
     }
 
     // Función para mostrar errores
     function mostrarError(mensaje) {
-        // {{  }} notificación de error
+        // Mostrar notificación de error
         const notificacion = document.createElement('div');
         notificacion.className = 'fixed top-4 right-4 z-50 bg-red-500 text-white p-4 rounded-lg shadow-lg max-w-sm transform transition-all duration-300 translate-x-full';
         notificacion.innerHTML = `
@@ -900,7 +901,7 @@
     // Previsualización de imágenes mejorada
     document.getElementById('imagenes').addEventListener('change', function(e) {
         const container = document.getElementById('preview-container');
-        container.innerHTML = ''; // {{  }} previsualizaciones anteriores
+        container.innerHTML = ''; // Limpiar previsualizaciones anteriores
         
         Array.from(e.target.files).forEach((file, index) => {
             if (file.type.startsWith('image/')) {
@@ -996,10 +997,10 @@
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <!-- {{  }}mbre del color -->
+                    <!-- Nombre del color -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            {{  }}mbre del Color <span class="text-red-500">*</span>
+                            Nombre del Color <span class="text-red-500">*</span>
                         </label>
                         <input type="text" 
                                name="variantes[${varianteCounter-1}][nombre]" 
@@ -1038,10 +1039,10 @@
                                required>
                     </div>
                     
-                    <!-- {{  }} adicional -->
+                    <!-- Precio adicional -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            {{  }} Adicional
+                            Precio Adicional
                         </label>
                         <div class="relative">
                             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -1059,7 +1060,7 @@
                 
                 <div class="mt-4">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        {{  }} del Color
+                        Descripción del Color
                     </label>
                     <textarea name="variantes[${varianteCounter-1}][descripcion]" 
                               rows="2"
@@ -1156,10 +1157,10 @@
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <!-- {{  }}mbre del color -->
+                    <!-- Nombre del color -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            {{  }}mbre del Color <span class="text-red-500">*</span>
+                            Nombre del Color <span class="text-red-500">*</span>
                         </label>
                         <input type="text" 
                                name="variantes[${varianteCounter-1}][nombre]" 
@@ -1201,10 +1202,10 @@
                                required>
                     </div>
                     
-                    <!-- {{  }} adicional -->
+                    <!-- Precio adicional -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            {{  }} Adicional
+                            Precio Adicional
                         </label>
                         <div class="relative">
                             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -1223,7 +1224,7 @@
                 
                 <div class="mt-4">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        {{  }} del Color
+                        Descripción del Color
                     </label>
                     <textarea name="variantes[${varianteCounter-1}][descripcion]" 
                               rows="2"
@@ -1317,7 +1318,7 @@
          if (e.target.classList.contains('variante-imagenes')) {
              const varianteId = e.target.dataset.varianteId;
              const container = document.getElementById(`variante-imagenes-${varianteId}`);
-             container.innerHTML = ''; // {{  }} previsualizaciones anteriores
+             container.innerHTML = ''; // Limpiar previsualizaciones anteriores
              
              const files = Array.from(e.target.files);
              let validFiles = 0;
@@ -1351,7 +1352,7 @@
                  }
              });
              
-             // {{  }} alertas de éxito/error
+            // Mostrar alertas de éxito/error
              if (validFiles > 0) {
                  showAlert(`✅ Se seleccionaron ${validFiles} imagen(es) válida(s) para la variante`, 'success');
              }
@@ -1460,7 +1461,7 @@
               const varianteContainer = button.closest('.bg-gray-50, .bg-gray-700');
               varianteContainer.appendChild(hiddenInput);
               
-              // {{  }} la imagen del DOM
+              // Eliminar la imagen del DOM
               const imageContainer = button.closest('.relative.group');
               imageContainer.remove();
               
@@ -1510,25 +1511,25 @@
                 // Actualizar ejemplos en los labels
                 actualizarEjemplos(stockInicial, umbralBajo, umbralCritico);
                 
-                // {{  }} campos con colores apropiados
+                // Marcar campos con colores apropiados
                 stockMinimoInput.style.backgroundColor = '#dbeafe'; // bg-blue-50
                 stockMaximoInput.style.backgroundColor = '#fef3c7'; // bg-yellow-50
                 
-                // {{  }} información de que se actualizarán al guardar
+                // Mostrar información de que se actualizarán al guardar
                 mostrarInfoActualizacion();
             } else {
                 // Si no hay stock inicial, mostrar 0
                 stockMinimoInput.value = 0;
                 stockMaximoInput.value = 0;
                 
-                // {{  }} ejemplos
+                // Limpiar ejemplos
                 ocultarEjemplos();
                 
-                // {{  }}s en gris
+                // Colorear inputs en gris
                 stockMinimoInput.style.backgroundColor = '#f3f4f6'; // bg-gray-100
                 stockMaximoInput.style.backgroundColor = '#f3f4f6'; // bg-gray-100
                 
-                // {{  }} información de actualización
+                // Ocultar información de actualización
                 ocultarInfoActualizacion();
             }
         }
@@ -1609,7 +1610,7 @@
         // Calcular umbrales al cargar la página
         calcularUmbrales();
         
-        // {{  }} información adicional sobre la nueva lógica
+        // Información adicional sobre la nueva lógica
         const infoContainer = document.createElement('div');
         infoContainer.className = 'col-span-full p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 mb-6';
         infoContainer.innerHTML = `
@@ -1651,7 +1652,7 @@
                     return false;
                 }
                 
-                // {{  }} confirmación de actualización de umbrales
+                // Confirmación de actualización de umbrales
                 if (confirm('¿Estás seguro de que quieres actualizar el producto? Los umbrales de alerta se recalcularán automáticamente.')) {
                     return true;
                 } else {

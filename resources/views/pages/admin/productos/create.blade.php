@@ -1,12 +1,12 @@
 @extends('layouts.app-new')
 
-@section('title', '{{  }} {{  }} - 4GMovil')
+@section('title', __('admin.products.create_title') . ' - 4GMovil')
 
 @section('content')
 <div class="space-y-6">
     <!-- Encabezado -->
     <div>
-        <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">{{  }} {{  }} {{  }}</h2>
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">{{ __('admin.products.create_title') }}</h2>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Ingresa los detalles del nuevo producto</p>
     </div>
 
@@ -19,14 +19,14 @@
             <div class="mt-6 flex items-center justify-end gap-x-6">
                 <a href="{{ route('productos.listadoP') }}" 
                    class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200">
-                    {{  }}
+                    {{ __('admin.actions.cancel') }}
                 </a>
                 <button type="submit" 
                         class="inline-flex justify-center rounded-lg bg-gradient-to-r from-emerald-500 to-teal-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:from-emerald-600 hover:to-teal-700 transform hover:scale-105 transition-all duration-200 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 hover:shadow-xl">
                     <svg class="w-5 h-5 mr-2 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
-                    {{  }} {{  }}
+                    {{ __('admin.actions.create') }} {{ __('admin.fields.product') }}
                 </button>
             </div>
         </form>
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 `;
-                removeBtn.title = '{{  }} imagen';
+                removeBtn.title = '{{ __('admin.actions.delete') }} imagen';
                 removeBtn.onclick = () => {
                     filesArray.splice(index, 1);
                     updateInputFiles();

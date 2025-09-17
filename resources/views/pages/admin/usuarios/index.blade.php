@@ -1,6 +1,6 @@
 @extends('layouts.app-new')
 
-@section('title',{{ __('admin.users.title') }}. ' - 4GMovil')
+@section('title', __('admin.users.title') . ' - 4GMovil')
 
 @push('datatables-css')
 <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
@@ -208,7 +208,7 @@
         <!-- Encabezado móvil -->
         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
             <div class="mb-4">
-                <h2 class="text-xl font-bold text-gray-900 dark:text-white">{{{{ __('admin.users.title') }}}} Registrados</h2>
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white">{{ __('admin.users.title') }} Registrados</h2>
                 <p class="text-sm text-gray-500 dark:text-gray-300">Gestiona todos los usuarios del sistema</p>
             </div>
             
@@ -279,7 +279,7 @@
                     <select id="filtroEstadoMovil" class="block w-full rounded-md border-0 py-2 pl-3 pr-10 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:ring-2 focus:ring-inset focus:ring-brand-600 dark:bg-gray-700 sm:text-sm">
                         <option value="">{{ __('admin.actions.all') }}</option>
                         <option value="activo">{{ __('admin.status.active') }}</option>
-                        <option value="inactivo">{{ __('admin.actions.filter') }}</option>
+                        <option value="inactivo">{{ __('admin.status.inactive') }}</option>
                     </select>
                 </div>
                 <div>
@@ -338,11 +338,11 @@
                 <!-- {{ __('admin.actions.filter') }} del usuario -->
                 <dl class="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('admin.actions.filter') }}</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('admin.fields.email') }}</dt>
                         <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $usuario->correo_electronico }}</dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('admin.actions.filter') }}</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('admin.fields.phone') }}</dt>
                         <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $usuario->telefono }}</dd>
                     </div>
                     <div>
@@ -367,29 +367,29 @@
                         </dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('admin.actions.filter') }}</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Estado</dt>
                         <dd class="mt-1">
                             @if($usuario->estado == 'activo')
                                 <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-900 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-300 ring-1 ring-inset ring-green-600/20 dark:ring-green-600/30">
-                                    {{ __('admin.actions.filter') }}
+                                    {{ __('admin.status.active') }}
                                 </span>
                             @else
                                 <span class="inline-flex items-center rounded-md bg-red-50 dark:bg-red-900 px-2 py-1 text-xs font-medium text-red-700 dark:text-red-300 ring-1 ring-inset ring-red-600/20 dark:ring-red-600/30">
-                                    {{ __('admin.actions.filter') }}
+                                    {{ __('admin.status.inactive') }}
                                 </span>
                             @endif
                         </dd>
                     </div>
                     <div>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('admin.actions.filter') }} {{ __('admin.actions.filter') }}ificado</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('admin.fields.phone') }}</dt>
                         <dd class="mt-1">
                             @if($usuario->email_verified_at)
                                 <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-900 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-300 ring-1 ring-inset ring-green-600/20 dark:ring-green-600/30">
-                                    {{ __('admin.actions.filter') }}ificado
+                                    Verificado
                                 </span>
                             @else
                                 <span class="inline-flex items-center rounded-md bg-red-50 dark:bg-red-900 px-2 py-1 text-xs font-medium text-red-700 dark:text-red-300 ring-1 ring-inset ring-red-600/20 dark:ring-red-600/30">
-                                    {{ __('admin.actions.filter') }} {{ __('admin.actions.filter') }}ificado
+                                    No verificado
                                 </span>
                             @endif
                         </dd>
@@ -433,7 +433,7 @@
             <div class="mb-6">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                     <div>
-                        <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">{{{{ __('admin.users.title') }}}} Registrados</h2>
+                        <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">{{ __('admin.users.title') }} Registrados</h2>
                         <p class="mt-1 text-sm text-gray-500 dark:text-gray-300">Gestiona todos los usuarios del sistema</p>
                     </div>
                     
@@ -455,7 +455,7 @@
                        <!-- {{ __('admin.actions.filter') }} -->
                     <div class="flex flex-col sm:flex-row gap-4 flex-1">
                         <div class="space-y-6">
-                            <label for="filtroRol" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('admin.actions.filter') }} por rol</label>
+                            <label for="filtroRol" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Filtrar por rol</label>
                             <select id="filtroRol" class="block w-full rounded-md border-0 py-2 pl-3 pr-10 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-brand-600 dark:bg-gray-700 sm:text-sm">
                                 <option value="">{{ __('admin.actions.all') }}</option>
                                 <option value="admin">Administrador</option>
@@ -465,11 +465,11 @@
                         </div>
 
                         <div class="space-y-6">
-                            <label for="filtroEstado" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('admin.actions.filter') }} por estado</label>
+                            <label for="filtroEstado" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Filtrar por estado</label>
                             <select id="filtroEstado" class="block w-full rounded-md border-0 py-2 pl-3 pr-10 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-brand-600 dark:bg-gray-700 sm:text-sm">
                                 <option value="">{{ __('admin.actions.all') }}</option>
                                 <option value="activo">{{ __('admin.status.active') }}</option>
-                                <option value="inactivo">{{ __('admin.actions.filter') }}</option>
+                                <option value="inactivo">{{ __('admin.status.inactive') }}</option>
                             </select>
                         </div>
 
@@ -541,14 +541,14 @@
                     <thead class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-sm">
                         <tr>
                             <th class="px-4 py-2 text-left">#</th>
-                            <th class="px-4 py-2 text-left">{{ __('admin.actions.filter') }}</th>
-                            <th class="px-4 py-2 text-left">{{ __('admin.actions.filter') }}</th>
-                            <th class="px-4 py-2 text-left">{{ __('admin.actions.filter') }}</th>
-                            <th class="px-4 py-2 text-left">{{ __('admin.actions.filter') }}</th>
+                            <th class="px-4 py-2 text-left">Foto</th>
+                            <th class="px-4 py-2 text-left">{{ __('admin.fields.name') }}</th>
+                            <th class="px-4 py-2 text-left">{{ __('admin.fields.email') }}</th>
+                            <th class="px-4 py-2 text-left">{{ __('admin.fields.phone') }}</th>
                             <th class="px-4 py-2 text-left">Rol</th>
-                            <th class="px-4 py-2 text-left">{{ __('admin.actions.filter') }}</th>
-                            <th class="px-4 py-2 text-left">{{ __('admin.actions.filter') }} {{ __('admin.actions.filter') }}ificado</th>
-                            <th class="px-4 py-2 text-center">{{ __('admin.actions.filter') }}</th>
+                            <th class="px-4 py-2 text-left">Estado</th>
+                            <th class="px-4 py-2 text-left">Verificado</th>
+                            <th class="px-4 py-2 text-center">{{ __('admin.fields.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 text-sm">
@@ -595,28 +595,28 @@
                             <td class="px-4 py-2">
                                 @if($usuario->estado == 'activo')
                                     <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-900 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-300 ring-1 ring-inset ring-green-600/20 dark:ring-green-600/30">
-                                        {{ __('admin.actions.filter') }}
+                                        {{ __('admin.status.active') }}
                                     </span>
                                 @else
                                     <span class="inline-flex items-center rounded-md bg-red-50 dark:bg-red-900 px-2 py-1 text-xs font-medium text-red-700 dark:text-red-300 ring-1 ring-inset ring-red-600/20 dark:ring-red-600/30">
-                                        {{ __('admin.actions.filter') }}
+                                        {{ __('admin.status.inactive') }}
                                     </span>
                                 @endif
                             </td>
                             <td class="px-4 py-2">
                                 @if($usuario->email_verified_at)
                                     <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-900 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-300 ring-1 ring-inset ring-green-600/20 dark:ring-green-600/30">
-                                        {{ __('admin.actions.filter') }}ificado
+                                        Verificado
                                     </span>
                                 @else
                                     <span class="inline-flex items-center rounded-md bg-red-50 dark:bg-red-900 px-2 py-1 text-xs font-medium text-red-700 dark:text-red-300 ring-1 ring-inset ring-red-600/20 dark:ring-red-600/30">
-                                        {{ __('admin.actions.filter') }} {{ __('admin.actions.filter') }}ificado
+                                        No verificado
                                     </span>
                                 @endif
                             </td>
                             <td class="px-6 py-4 text-center">
                                 <div class="flex items-center justify-center gap-3">
-                                    <!-- Botón {{ __('admin.actions.filter') }} -->
+                                    <!-- Botón Editar -->
                                     <div class="relative group">
                                         <a href="{{ route('usuarios.edit', $usuario) }}" 
                                            class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/50 dark:hover:bg-blue-900 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-all duration-200 ease-in-out transform hover:scale-110">
@@ -628,11 +628,11 @@
                                         </a>
                                         <div
                                             class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 text-white text-xs rounded-lg px-3 py-2 shadow-lg dark:bg-gray-700 z-10 whitespace-nowrap">
-                                            {{ __('admin.actions.filter') }}
+                                            {{ __('admin.actions.edit') }}
                                         </div>
                                     </div>
 
-                                    <!-- Botón {{ __('admin.actions.filter') }} -->
+                                    <!-- Botón Eliminar -->
                                     <div class="relative group">
                                         <form action="{{ route('usuarios.destroy', $usuario) }}" method="POST" class="form-eliminar inline">
                                             @csrf
@@ -648,7 +648,7 @@
                                         </form>
                                         <div
                                             class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 text-white text-xs rounded-lg px-3 py-2 shadow-lg dark:bg-gray-700 z-10 whitespace-nowrap">
-                                            {{ __('admin.actions.filter') }}
+                                            {{ __('admin.actions.delete') }}
                                         </div>
                                     </div>
                                 </div>
@@ -657,7 +657,7 @@
                         @empty
                         <tr>
                             <td colspan="9" class="px-4 py-2 text-center text-gray-500 dark:text-gray-400">
-                                {{ __('admin.actions.filter') }} hay usuarios registrados en el sistema
+                                {{ __('admin.status.no') }} hay usuarios registrados en el sistema
                             </td>
                         </tr>
                         @endforelse
@@ -705,7 +705,7 @@
                 buttons: [
                     {
                         extend: 'excelHtml5',
-                        title: '{{{{ __('admin.users.title') }}}} - 4GMovil',
+                        title: '{{ __('admin.users.title') }} - 4GMovil',
                         text: 'Exportar a Excel',
                         className: 'buttons-excel', 
                         exportOptions: {
@@ -718,7 +718,7 @@
                     },
                     {
                         extend: 'pdfHtml5',
-                        title: '{{{{ __('admin.users.title') }}}} - 4GMovil',
+                        title: '{{ __('admin.users.title') }} - 4GMovil',
                         text: 'Exportar a PDF',
                         className: 'buttons-pdf', 
                         exportOptions: {
@@ -940,10 +940,10 @@
                                 </div>
                                 <div class="ml-3">
                                     <h3 class="text-sm font-medium text-gray-800 dark:text-gray-200">
-                                        {{ __('admin.actions.filter') }} se encontraron resultados
+                                        {{ __('admin.status.inactive') }} se encontraron resultados
                                     </h3>
                                     <div class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                                        {{ __('admin.actions.filter') }} hay usuarios que coincidan con los filtros seleccionados.
+                                        {{ __('admin.status.inactive') }} hay usuarios que coincidan con los filtros seleccionados.
                                     </div>
                                 </div>
                             </div>

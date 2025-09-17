@@ -549,7 +549,7 @@
                                 @endif
                             </td>
                             <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                <a href="{{ route('productos.edit', $producto->producto_id) }}" class="text-brand-600 hover:text-brand-900 dark:hover:text-brand-400">{{ __('admin.actions.edit') }}</a>
+                                <a href="{{ route('productos.edit', $producto->producto_id) }}" class="text-brand-600 dark:text-white hover:text-blue-900 dark:hover:text-blue-400">{{ __('admin.actions.edit') }}</a>
                             </td>
                         </tr>
                         @empty

@@ -1,6 +1,6 @@
 @extends('layouts.app-new')
 
-@section('title', {{ '{{ __('admin.reports.export_report') }} }}de{{ {{ __('admin.inventory.title') }} }}- 4GMovil')
+@section('title', 'Exportar Reporte de Inventario - 4GMovil')
 
 @push('jquery-script')
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>

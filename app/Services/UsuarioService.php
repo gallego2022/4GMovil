@@ -19,10 +19,9 @@ class UsuarioService
         return $this->usuarioRepository->getAll();
     }
 
-    public function getUserById(int $id): ?array
+    public function getUserById(int $id)
     {
-        $usuario = $this->usuarioRepository->findById($id);
-        return $usuario ? ['usuario' => $usuario] : null;
+        return $this->usuarioRepository->findById($id);
     }
 
     public function updateUser(int $id, array $data, $profileImage = null): array

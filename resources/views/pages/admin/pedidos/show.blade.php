@@ -1,6 +1,6 @@
 @extends('layouts.app-new')
 
-@section('title', 'Detalle de{{ {{ __('admin.webhooks.order') }} }}#' . $pedido->pedido_id . ' - 4GMovil')
+@section('title', 'Detalle de Pedido #' . $pedido->pedido_id . ' - 4GMovil')
 
 @section('content')
 <div class="space-y-6">
@@ -8,7 +8,7 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
             <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">
-               {{ {{ __('admin.webhooks.order') }} }}#{{ $pedido->pedido_id }}
+               Pedido #{{ $pedido->pedido_id }}
             </h2>
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 Detalle completo del pedido realizado el {{ $pedido->fecha_pedido instanceof \Carbon\Carbon ? $pedido->fecha_pedido->format('d/m/Y \a \l\a\s H:i') : \Carbon\Carbon::parse($pedido->fecha_pedido)->format('d/m/Y \a \l\a\s H:i') }}
@@ -20,7 +20,7 @@
             <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l7.158 7.158a.75.75 0 11-1.06 1.06l-8.5-8.5a.75.75 0 010-1.06l8.5-8.5a.75.75 0 111.06 1.06L5.612 9.25H16.25A.75.75 0 0117 10z" clip-rule="evenodd" />
             </svg>
-           {{ {{ __('admin.actions.back') }} }}a{{ {{ __('admin.webhooks.order') }}s }}
+           Volver a Pedidos
         </a>
     </div>
 
@@ -57,14 +57,14 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Columna principal -->
         <div class="lg:col-span-2 space-y-6">
-            <!--{{ {{ __('admin.fields.status') }} }}del{{ {{ __('admin.webhooks.order') }} }}-->
+            <!-- Estado del Pedido -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <div class="flex justify-between items-start">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                         <svg class="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                       {{ {{ __('admin.fields.status') }} }}del{{ {{ __('admin.webhooks.order') }} }}                    </h3>
+                       Estado del Pedido                    </h3>
                     <form action="{{ route('admin.pedidos.updateEstado', $pedido->pedido_id) }}" method="POST" class="flex items-center space-x-3">
                         @csrf
                         @method('PUT')
@@ -110,25 +110,25 @@
                 </div>
             </div>
 
-            <!-- Detalles del{{ {{ __('admin.webhooks.order') }} }}-->
+            <!-- Detalles del Pedido -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                     <svg class="w-5 h-5 mr-2 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                     </svg>
-                   {{ {{ __('admin.products.product') }}s }} del{{ {{ __('admin.webhooks.order') }} }}                </h3>
+                   Productos del Pedido                </h3>
                 
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <thead class="bg-gray-50 dark:bg-gray-700">
                             <tr>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                   {{ {{ __('admin.products.product') }} }}                                </th>
+                                   Producto                                </th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Cantidad
                                 </th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                   {{ {{ __('admin.fields.price') }} }}Unitario
+                                   Precio Unitario
                                 </th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Subtotal
@@ -155,10 +155,10 @@
                                             </div>
                                             <div class="ml-4">
                                                 <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                    {{ $detalle->producto->nombre_producto ?? {{ '{{ __('admin.products.product') }} }}no encontrado' }}
+                                                    {{ $detalle->producto->nombre_producto ?? 'Producto no encontrado' }}
                                                 </div>
                                                 <div class="text-sm text-gray-500 dark:text-gray-400">
-                                                    SKU: {{ $detalle->producto->sku ?? {{ '{{ __('admin.webhooks.not_available') }}' }} }}
+                                                    SKU: {{ $detalle->producto->sku ?? 'No disponible' }}
                                                 </div>
                                                 @if($detalle->variante)
                                                     <div class="text-xs text-blue-600 dark:text-blue-400">
@@ -182,7 +182,7 @@
                             @if($pedido->detalles->count() == 0)
                                 <tr>
                                     <td colspan="4" class="px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                                       {{ {{ __('admin.products.no_products') }} }}en este pedido
+                                       No hay productos en este pedido
                                     </td>
                                 </tr>
                             @endif
@@ -190,7 +190,7 @@
                         <tfoot class="bg-gray-50 dark:bg-gray-700">
                             <tr>
                                 <td colspan="3" class="px-4 py-4 text-right text-sm font-medium text-gray-900 dark:text-gray-100">
-                                    Total del{{ {{ __('admin.webhooks.order') }}: }}
+                                    Total del Pedido:
                                 </td>
                                 <td class="px-4 py-4 whitespace-nowrap">
                                     <div class="text-lg font-bold text-gray-900 dark:bg-gray-700 dark:text-gray-100">
@@ -202,7 +202,7 @@
                     </table>
                 </div>
             </div>
-            <!--{{ {{ __('admin.messages.info') }} }}de Envío -->
+            <!-- Información de Envío -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                     <svg class="w-5 h-5 mr-2 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -216,16 +216,16 @@
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Dirección</label>
-                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $pedido->direccion->direccion_completa ?? {{ '{{ __('admin.status.no') }} }}especificado' }}</p>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $pedido->direccion->direccion_completa ?? 'No especificado' }}</p>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Referencias</label>
-                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $pedido->direccion->referencias ?? {{ '{{ __('admin.status.no') }} }}especificado' }}</p>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $pedido->direccion->referencias ?? 'No especificado' }}</p>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Ciudad</label>
                             <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                                {{ $pedido->direccion->ciudad ?? {{ '{{ __('admin.status.no') }} }}especificado' }}{{ $pedido->direccion->departamento ? ', ' . $pedido->direccion->departamento : '' }}
+                                {{ $pedido->direccion->ciudad ?? 'No especificado' }}{{ $pedido->direccion->departamento ? ', ' . $pedido->direccion->departamento : '' }}
                             </p>
                         </div>
                         @if($pedido->direccion->codigo_postal)
@@ -242,34 +242,34 @@
                         @endif
                     </div>
                 @else
-                    <p class="text-sm text-gray-500 dark:text-gray-400"{{ >{{ __('admin.status.no') }} }}hay dirección de envío registrada</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">No hay dirección de envío registrada</p>
                 @endif
             </div>
         </div>
 
         <!-- Columna lateral -->
         <div class="space-y-6">
-            <!--{{ {{ __('admin.messages.info') }} }}del Cliente -->
+            <!-- Información del Cliente -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                     <svg class="w-5 h-5 mr-2 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
-                   {{ {{ __('admin.messages.info') }} }}del Cliente
+                   Información del Cliente
                 </h3>
                 
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400"{{ >{{ __('admin.fields.name') }}< }}/label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $pedido->usuario->nombre_usuario ?? {{ '{{ __('admin.status.no') }} }}especificado' }}</p>
+                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Nombre</label>
+                        <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $pedido->usuario->nombre_usuario ?? 'No especificado' }}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400"{{ >{{ __('admin.fields.email') }}< }}/label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $pedido->usuario->correo_electronico ?? {{ '{{ __('admin.status.no') }} }}especificado' }}</p>
+                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Email</label>
+                        <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $pedido->usuario->correo_electronico ?? 'No especificado' }}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400"{{ >{{ __('admin.fields.phone') }}< }}/label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $pedido->usuario->telefono ?? {{ '{{ __('admin.status.no') }} }}especificado' }}</p>
+                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Teléfono</label>
+                        <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $pedido->usuario->telefono ?? 'No especificado' }}</p>
                     </div>
                     @if($pedido->notas)
                         <div>
@@ -280,13 +280,13 @@
                 </div>
             </div>
 
-            <!--{{ {{ __('admin.messages.info') }} }}de Pago -->
+            <!-- Información de Pago -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                     <svg class="w-5 h-5 mr-2 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                     </svg>
-                   {{ {{ __('admin.messages.info') }} }}de Pago
+                   Información de Pago
                 </h3>
                 
                 <div class="space-y-4">
@@ -296,12 +296,12 @@
                             @if($pedido->pago && $pedido->pago->metodoPago)
                                 {{ $pedido->pago->metodoPago->nombre }}
                             @else
-                               {{ {{ __('admin.status.no') }} }}especificado
+                               No especificado
                             @endif
                         </p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400"{{ >{{ __('admin.fields.status') }} }}del pago</label>
+                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Estado del pago</label>
                         @if($pedido->pago)
                             @php
                                 $estadoPagoClasses = 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 ring-gray-600/20 dark:ring-gray-600/30';
@@ -320,7 +320,7 @@
                                 }
                             @endphp
                             <span class="inline-flex items-center rounded-md {{ $estadoPagoClasses }} px-2 py-1 text-xs font-medium ring-1 ring-inset">
-                                {{ ucfirst($pedido->pago->estado ?? {{ '{{ __('admin.status.no') }} }}especificado') }}
+                                {{ ucfirst($pedido->pago->estado ?? 'No especificado') }}
                             </span>
                         @else
                             <span class="text-sm text-gray-500 dark:text-gray-400">Sin pago registrado</span>
@@ -328,7 +328,7 @@
                     </div>
                     @if($pedido->pago && $pedido->pago->fecha_pago)
                         <div>
-                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400"{{ >{{ __('admin.webhooks.date') }} }}del pago</label>
+                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Fecha del pago</label>
                             <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
                                 {{ $pedido->pago->fecha_pago instanceof \Carbon\Carbon ? $pedido->pago->fecha_pago->format('d/m/Y H:i') : \Carbon\Carbon::parse($pedido->pago->fecha_pago)->format('d/m/Y H:i') }}
                             </p>

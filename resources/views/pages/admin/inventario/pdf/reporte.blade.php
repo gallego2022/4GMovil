@@ -162,7 +162,7 @@
                     <td>{{ $producto->stock }}</td>
                     <td>{{ $producto->stock_minimo }}</td>
                     <td>${{ number_format($producto->precio, 2) }}</td>
-                    <td>{{ $producto->categoria->nombre ?? '__('admin.fields.without_category')' }}</td>
+                    <td>{{ $producto->categoria->nombre ?? 'Sin categoría' }}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -190,7 +190,7 @@
                     $porcentaje = $valorTotal > 0 ? ($item['valor_total'] / $valorTotal) * 100 : 0;
                 @endphp
                 <tr>
-                    <td>{{ $item['categoria']->nombre ?? '__('admin.fields.without_category')' }}</td>
+                    <td>{{ $item['categoria']->nombre ?? 'Sin categoría' }}</td>
                     <td>{{ $item['productos_count'] ?? 0 }}</td>
                     <td>{{ $item['stock_total'] ?? 0 }}</td>
                     <td>${{ number_format($item['valor_total'], 2) }}</td>
@@ -204,7 +204,7 @@
 
     <div style="margin-top: 30px; text-align: center; font-size: 10px; color: #666;">
         <p>Reporte generado automáticamente por el sistema 4GMovil</p>
-        <p>__('admin.webhooks.date') de generación: {{ now()->format('d/m/Y H:i:s') }}</p>
+        <p>Fecha de generación: {{ now()->format('d/m/Y H:i:s') }}</p>
     </div>
 </body>
 </html> 

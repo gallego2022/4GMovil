@@ -74,6 +74,7 @@ return [
         'new_status' => 'New',
         'no_products' => 'No products',
         'no_products_message' => 'No products registered in the catalog.',
+        'create_title' => 'New Product',
     ],
     
     // Common actions

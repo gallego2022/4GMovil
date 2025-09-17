@@ -1,6 +1,6 @@
 @extends('layouts.app-new')
 
-@section('title', 'Alertas de{{ {{ __('admin.inventory.title') }} }}- 4GMovil')
+@section('title', 'Alertas de Inventario - 4GMovil')
 
 @section('content')
 <div class="space-y-6">
@@ -8,7 +8,7 @@
     <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Alertas de{{ {{ __('admin.inventory.title') }}< }}/h1>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Alertas de Inventario</h1>
                 <p class="mt-2 text-sm text-gray-500 dark:text-gray-300">Productos que requieren atención inmediata</p>
             </div>
             <div class="flex items-center gap-3">
@@ -17,7 +17,7 @@
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
-                   {{ {{ __('admin.actions.back') }} }}al{{ {{ __('admin.dashboard.title') }} }}                </a>
+                   Volver a Dashboard                </a>
             </div>
         </div>
     </div>
@@ -36,7 +36,7 @@
                 </button>
                 <button onclick="cambiarTab('sin-stock')" 
                         class="tab-button border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
-                   {{ {{ __('admin.inventory.out_of_stock') }} }}({{ $productosSinStock->count() }})
+                   Sin Stock ({{ $productosSinStock->count() }})
                 </button>
                 <button onclick="cambiarTab('excesivo')" 
                         class="tab-button border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
@@ -58,11 +58,11 @@
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <thead class="bg-gray-50 dark:bg-gray-800">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"{{ >{{ __('admin.products.product') }}< }}/th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"{{ >{{ __('admin.fields.category') }}< }}/th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Producto</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Categoría</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock Actual</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock Mínimo</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"{{ >{{ __('admin.fields.actions') }}< }}/th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
@@ -88,7 +88,7 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                            {{ $producto->categoria->nombre ?? {{ '{{ __('admin.fields.without_category') }}' }} }}
+                                            {{ $producto->categoria->nombre ?? 'Sin categoría' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex flex-col space-y-1">
@@ -138,7 +138,7 @@
                         <svg class="w-12 h-12 text-green-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        <p class="text-gray-500 dark:text-gray-400"{{ >{{ __('admin.products.no_products') }} }}con stock crítico</p>
+                        <p class="text-gray-500 dark:text-gray-400">No hay productos con stock crítico</p>
                     </div>
                 @endif
             </div>
@@ -169,12 +169,12 @@
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <thead class="bg-gray-50 dark:bg-gray-800">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"{{ >{{ __('admin.products.product') }}< }}/th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Producto</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Variante</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock Actual</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock Inicial</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Porcentaje</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"{{ >{{ __('admin.fields.actions') }}< }}/th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('admin.fields.actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
@@ -199,7 +199,7 @@
                                                 @endif
                                                 <div class="ml-4">
                                                     <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $variante->producto->nombre_producto }}</div>
-                                                    <div class="text-sm text-gray-500 dark:text-gray-400">{{ $variante->producto->categoria->nombre ?? {{ '{{ __('admin.fields.without_category') }}' }} }}</div>
+                                                    <div class="text-sm text-gray-500 dark:text-gray-400">{{ $variante->producto->categoria->nombre ?? __('admin.fields.without_category') }}</div>
                                                 </div>
                                             </div>
                                         </td>
@@ -245,15 +245,15 @@
                         <svg class="w-12 h-12 text-green-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        <p class="text-gray-500 dark:text-gray-400"{{ >{{ __('admin.status.no') }} }}hay variantes con stock bajo</p>
+                        <p class="text-gray-500 dark:text-gray-400">No hay variantes con stock bajo</p>
                     </div>
                 @endif
             </div>
 
-            <!-- Tab{{ {{ __('admin.inventory.out_of_stock') }} }}-->
+            <!-- Tab de Productos Sin Stock -->
             <div id="tab-sin-stock" class="tab-content hidden">
                 <div class="mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Productos{{ {{ __('admin.inventory.out_of_stock') }}< }}/h3>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Productos Sin Stock</h3>
                     <p class="text-sm text-gray-500 dark:text-gray-400">Productos que no tienen stock disponible</p>
                 </div>
                 
@@ -262,11 +262,11 @@
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <thead class="bg-gray-50 dark:bg-gray-800">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"{{ >{{ __('admin.products.product') }}< }}/th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"{{ >{{ __('admin.fields.category') }}< }}/th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('admin.products.product') }}</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('admin.fields.category') }}</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock Actual</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock Mínimo</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"{{ >{{ __('admin.fields.actions') }}< }}/th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('admin.fields.actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
@@ -292,7 +292,7 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                            {{ $producto->categoria->nombre ?? {{ '{{ __('admin.fields.without_category') }}' }} }}
+                                            {{ $producto->categoria->nombre ?? __('admin.fields.without_category') }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex flex-col space-y-1">
@@ -342,7 +342,7 @@
                         <svg class="w-12 h-12 text-green-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        <p class="text-gray-500 dark:text-gray-400"{{ >{{ __('admin.products.no_products') }} }}sin stock</p>
+                        <p class="text-gray-500 dark:text-gray-400">No hay productos sin stock</p>
                     </div>
                 @endif
             </div>
@@ -359,12 +359,12 @@
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <thead class="bg-gray-50 dark:bg-gray-800">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"{{ >{{ __('admin.products.product') }}< }}/th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"{{ >{{ __('admin.fields.category') }}< }}/th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('admin.products.product') }}</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('admin.fields.category') }}</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock Actual</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock Recomendado</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Demanda</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"{{ >{{ __('admin.fields.actions') }}< }}/th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('admin.fields.actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
@@ -395,7 +395,7 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                            {{ $producto->categoria->nombre ?? {{ '{{ __('admin.fields.without_category') }}' }} }}
+                                            {{ $producto->categoria->nombre ?? __('admin.fields.without_category') }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex flex-col space-y-1">
@@ -459,7 +459,7 @@
                                                     @endif
                                                 </div>
                                             @else
-                                                <span class="text-xs text-gray-500 dark:text-gray-400"{{ >{{ __('admin.fields.without_data') }}< }}/span>
+                                                <span class="text-xs text-gray-500 dark:text-gray-400">{{ __('admin.fields.without_data') }}</span>
                                             @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
@@ -498,7 +498,7 @@
                                                 @if(!empty($stockOptimo) && $producto->stock > $stockOptimo['stock_maximo_recomendado'])
                                                     <button onclick="mostrarRecomendacionStock({{ $producto->producto_id }}, '{{ $producto->nombre_producto }}', {{ $stockOptimo['stock_maximo_recomendado'] }})" 
                                                             class="text-orange-600 dark:text-orange-400 hover:text-orange-900 dark:hover:text-orange-300">
-                                                       {{ {{ __('admin.actions.view') }} }}Recomendación
+                                                       Ver Recomendación
                                                     </button>
                                                 @endif
                                             </div>
@@ -513,7 +513,7 @@
                         <svg class="w-12 h-12 text-green-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        <p class="text-gray-500 dark:text-gray-400"{{ >{{ __('admin.products.no_products') }} }}con stock excesivo</p>
+                        <p class="text-gray-500 dark:text-gray-400">No hay productos con stock excesivo</p>
                     </div>
                 @endif
             </div>
@@ -525,7 +525,7 @@
 <div id="modalEntrada" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
     <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
         <div class="mt-3">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Registrar Entrada de{{ {{ __('admin.inventory.title') }}< }}/h3>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Registrar Entrada de Inventario</h3>
             <form id="formEntrada" method="POST" action="{{ route('admin.inventario.registrar-entrada') }}">
                 @csrf
                 <input type="hidden" id="producto_id" name="producto_id">
@@ -559,7 +559,7 @@
                 <div class="flex justify-end space-x-3">
                     <button type="button" onclick="cerrarModalEntrada()" 
                             class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 dark:bg-gray-600 dark:text-gray-300 dark:hover:bg-gray-500">
-                       {{ {{ __('admin.actions.cancel') }} }}                    </button>
+                       Cancelar                    </button>
                     <button type="submit" 
                             class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
                         Registrar Entrada
@@ -577,7 +577,7 @@
             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Recomendación de Stock</h3>
             
             <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"{{ >{{ __('admin.products.product') }}< }}/label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ __('admin.products.product') }}</label>
                 <input type="text" id="recomendacion_producto_nombre" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" readonly>
             </div>
             
@@ -654,11 +654,11 @@ window.onclick = function(event) {
 
 // Función para cambiar entre tabs
 function cambiarTab(tabName) {
-    //{{ {{ __('admin.actions.hide') }} }}todos los tabs
+    // Ocultar todos los tabs
     const tabs = document.querySelectorAll('.tab-content');
     tabs.forEach(tab => tab.classList.add('hidden'));
     
-    //{{ {{ __('admin.actions.show') }} }}el tab seleccionado
+    // Mostrar el tab seleccionado
     const selectedTab = document.getElementById('tab-' + tabName);
     if (selectedTab) {
         selectedTab.classList.remove('hidden');

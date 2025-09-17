@@ -1,12 +1,12 @@
 @extends('layouts.app-new')
 
-@section('title', '{{  }} {{  }} - 4GMovil')
+@section('title', 'Editar producto - 4GMovil')
 
 @section('content')
 <div class="space-y-6">
     <!-- Encabezado -->
     <div>
-        <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">{{  }} {{  }}</h2>
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">Editar producto</h2>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Modifica los detalles del producto</p>
     </div>
 
@@ -42,7 +42,7 @@
             @csrf
             @method('PUT')
             
-            <!-- {{  }}s ocultos para debug -->
+            <!-- Campos ocultos para debug -->
             <input type="hidden" name="debug_id" value="{{ $producto->producto_id }}">
             
             @include('pages.admin.productos.form')
@@ -64,7 +64,7 @@
                                 <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clip-rule="evenodd" />
                                 </svg>
-                                {{  }}
+                                Eliminar
                             </button>
                         </div>
                     </div>
@@ -76,14 +76,14 @@
             <div class="mt-6 flex items-center justify-end gap-x-6">
                 <a href="{{ route('productos.listadoP') }}" 
                    class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200">
-                    {{  }}
+                    Cancelar
                 </a>
                 <button type="submit" 
                         class="inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:from-blue-600 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 hover:shadow-xl">
                     <svg class="w-5 h-5 mr-2 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
-                    Actualizar {{  }}
+                    Actualizar producto
                 </button>
             </div>
         </form>
@@ -96,7 +96,7 @@
     @method('DELETE')
 </form>
 
-<!-- {{  }}tificaciones -->
+<!-- Notificaciones -->
 @if(session('success'))
 <div class="fixed bottom-0 right-0 m-6 z-50">
     <div class="rounded-md bg-green-50 dark:bg-green-900/50 p-4 shadow-lg">
@@ -155,10 +155,10 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Debug info
-    console.log('{{  }} ID:', '{{ $producto->producto_id }}');
+    console.log('Producto ID:', '{{ $producto->producto_id }}');
     
     // Formulario principal
-    const formEditar{{  }} = document.getElementById('formEditarProducto');
+    const formEditarProducto = document.getElementById('formEditarProducto');
     formEditarProducto.addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 confirmButtonColor: '#0088ff',
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: '{{  }}',
+                cancelButtonText: 'Cancelar',
                 background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
                 color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
             }).then((result) => {

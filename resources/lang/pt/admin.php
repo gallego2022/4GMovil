@@ -74,6 +74,7 @@ return [
         'new_status' => 'Novo',
         'no_products' => 'Nenhum produto',
         'no_products_message' => 'Nenhum produto registrado no catálogo.',
+        'create_title' => 'Novo Produto',
     ],
     
     // Common actions
