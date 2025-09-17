@@ -1,14 +1,14 @@
 @extends('layouts.app-new')
 
-@section('title', '('.__('admin.dashboard.title').') - 4GMovil')
+@section('title', '(' . __('admin.dashboard.title') . ') - 4GMovil')
 
 @section('content')
 <div class="space-y-6">
     <!-- Encabezado -->
     <div class="sm:flex sm:items-center sm:justify-between">
         <div>
-            <h2 class="text-2xl font-bold leading-7 text-content sm:truncate sm:text-3xl sm:tracking-tight">__('admin.dashboard.title')</h2>
-            <p class="mt-1 text-sm text-content-secondary">__('admin.dashboard.welcome')</p>
+            <h2 class="text-2xl font-bold leading-7 text-content sm:truncate sm:text-3xl sm:tracking-tight">{{ __('admin.dashboard.title') }}</h2>
+            <p class="mt-1 text-sm text-content-secondary">{{ __('admin.dashboard.welcome') }}</p>
         </div>
         <div class="mt-4 flex sm:ml-4 sm:mt-0 space-x-3">
             <a href="{{ route('admin.inventario.dashboard') }}" 
@@ -16,21 +16,21 @@
                 <svg class="-ml-0.5 mr-1.5 h-5 w-5 transition-transform duration-200 group-hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                 </svg>
-                __('admin.inventory.title')
+                {{ __('admin.inventory.title') }}
             </a>
             <a href="{{ route('productos.create') }}" 
                class="inline-flex items-center rounded-lg bg-gradient-to-r from-slate-600 to-gray-700 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:from-slate-700 hover:to-gray-800 transform hover:scale-105 transition-all duration-200 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600 hover:shadow-xl">
                 <svg class="-ml-0.5 mr-1.5 h-5 w-5 transition-transform duration-200 group-hover:rotate-90" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 3a1 1 0 00-1 1v5H4a1 1 0 100 2h5v5a1 1 0 102 0v-5h5a1 1 0 100-2h-5V4a1 1 0 00-1-1z" clip-rule="evenodd" />
                 </svg>
-                __('admin.dashboard.new_product')
+                {{ __('admin.dashboard.new_product') }}
             </a>
         </div>
     </div>
 
     <!-- Tarjetas de estadísticas -->
     <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        <!-- __('admin.stats.total_products') -->
+        <!-- {{ __('admin.stats.total_products') }} -->
         <div class="relative overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 pb-12 pt-5 shadow sm:px-6 sm:pt-6">
             <dt>
                 <div class="absolute rounded-md bg-blue-600 p-3">
@@ -39,19 +39,19 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                     </svg>
                 </div>
-                <p class="ml-16 truncate text-sm font-medium text-content-secondary">__('admin.stats.total_products')</p>
+                <p class="ml-16 truncate text-sm font-medium text-content-secondary">{{ __('admin.stats.total_products') }}</p>
             </dt>
             <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
                 <p class="text-2xl font-semibold text-content">{{ $totalProductos }}</p>
                 <div class="absolute inset-x-0 bottom-0 bg-gray-50 dark:bg-gray-900 px-4 py-4 sm:px-6">
                     <div class="text-sm">
-                        <a href="{{ route('productos.listadoP') }}" class="font-medium text-gray-600 dark:text-brand-600 hover:text-blue-500">__('admin.stats.view_products')<span class="sr-only"> productos</span></a>
+                        <a href="{{ route('productos.listadoP') }}" class="font-medium text-gray-600 dark:text-brand-600 hover:text-blue-500">{{ __('admin.stats.view_products') }}<span class="sr-only"> productos</span></a>
                     </div>
                 </div>
             </dd>
         </div>
 
-        <!-- __('admin.stats.total_users') -->
+        <!-- {{ __('admin.stats.total_users') }} -->
         <div class="relative overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 pb-12 pt-5 shadow sm:px-6 sm:pt-6">
             <dt>
                 <div class="absolute rounded-md bg-green-500 p-3">
@@ -60,19 +60,19 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
                     </svg>
                 </div>
-                <p class="ml-16 truncate text-sm font-medium text-content-secondary">__('admin.stats.total_users')</p>
+                <p class="ml-16 truncate text-sm font-medium text-content-secondary">{{ __('admin.stats.total_users') }}</p>
             </dt>
             <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
                 <p class="text-2xl font-semibold text-content">{{ $usuarios }}</p>
                 <div class="absolute inset-x-0 bottom-0 bg-gray-50 dark:bg-gray-900 px-4 py-4 sm:px-6">
                     <div class="text-sm">
-                        <a href="{{ route('usuarios.index') }}" class="font-medium text-gray-600 dark:text-brand-600 hover:text-blue-500">__('admin.stats.view_users')<span class="sr-only"> usuarios</span></a>
+                        <a href="{{ route('usuarios.index') }}" class="font-medium text-gray-600 dark:text-brand-600 hover:text-blue-500">{{ __('admin.stats.view_users') }}<span class="sr-only"> usuarios</span></a>
                     </div>
                 </div>
             </dd>
         </div>
 
-        <!-- __('admin.stats.total_categories') -->
+        <!-- {{ __('admin.stats.total_categories') }} -->
         <div class="relative overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 pb-12 pt-5 shadow sm:px-6 sm:pt-6">
             <dt>
                 <!-- Icono de categorías -->
@@ -81,19 +81,19 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
                     </svg>
                 </div>
-                <p class="ml-16 truncate text-sm font-medium text-content-secondary">__('admin.stats.total_categories')</p>
+                <p class="ml-16 truncate text-sm font-medium text-content-secondary">{{ __('admin.stats.total_categories') }}</p>
             </dt>
             <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
                 <p class="text-2xl font-semibold text-content">{{ $totalCategorias }}</p>
                 <div class="absolute inset-x-0 bottom-0 bg-gray-50 dark:bg-gray-900 px-4 py-4 sm:px-6">
                     <div class="text-sm">
-                        <a href="{{ route('categorias.index') }}" class="font-medium text-gray-600 dark:text-brand-600 hover:text-blue-500">__('admin.stats.view_categories')<span class="sr-only"> categorías</span></a>
+                        <a href="{{ route('categorias.index') }}" class="font-medium text-gray-600 dark:text-brand-600 hover:text-blue-500">{{ __('admin.stats.view_categories') }}<span class="sr-only"> categorías</span></a>
                     </div>
                 </div>
             </dd>
         </div>
 
-        <!-- __('admin.stats.total_brands') -->
+        <!-- {{ __('admin.stats.total_brands') }} -->
         <div class="relative overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 pb-12 pt-5 shadow sm:px-6 sm:pt-6">
             <dt>
                 <!-- Icono de marcas -->
@@ -103,13 +103,13 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z" />
                     </svg>
                 </div>
-                <p class="ml-16 truncate text-sm font-medium text-content-secondary">__('admin.stats.total_brands')</p>
+                <p class="ml-16 truncate text-sm font-medium text-content-secondary">{{ __('admin.stats.total_brands') }}</p>
             </dt>
             <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
                 <p class="text-2xl font-semibold text-content">{{ $totalMarcas }}</p>
                 <div class="absolute inset-x-0 bottom-0 bg-gray-50 dark:bg-gray-900 px-4 py-4 sm:px-6">
                     <div class="text-sm">
-                            <a href="{{ route('marcas.index') }}" class="font-medium text-gray-600 dark:text-brand-600 hover:text-blue-500">__('admin.stats.view_brands')<span class="sr-only"> marcas</span></a>
+                            <a href="{{ route('marcas.index') }}" class="font-medium text-gray-600 dark:text-brand-600 hover:text-blue-500">{{ __('admin.stats.view_brands') }}<span class="sr-only"> marcas</span></a>
                     </div>
                 </div>
             </dd>
@@ -119,13 +119,13 @@
     <!-- Estadísticas de Webhooks y Pagos -->
     <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg">
         <div class="px-4 py-5 sm:px-6">
-            <h3 class="text-lg font-medium leading-6 text-content">__('admin.webhooks.title')</h3>
-            <p class="mt-1 max-w-2xl text-sm text-content-secondary">__('admin.webhooks.subtitle')</p>
+            <h3 class="text-lg font-medium leading-6 text-content">{{ __('admin.webhooks.title') }}</h3>
+            <p class="mt-1 max-w-2xl text-sm text-content-secondary">{{ __('admin.webhooks.subtitle') }}</p>
         </div>
         
         <div class="border-t border-gray-200 dark:border-gray-700">
             <dl class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 p-4">
-                <!-- __('admin.webhooks.total_events') Webhook -->
+                <!-- {{ __('admin.webhooks.total_events') }} Webhook -->
                 <div class="relative overflow-hidden rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-5 shadow sm:px-6">
                     <dt>
                         <div class="absolute rounded-md bg-blue-400 p-3">
@@ -133,14 +133,14 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                             </svg>
                         </div>
-                        <p class="ml-16 truncate text-sm font-medium text-blue-100">__('admin.webhooks.total_events')</p>
+                        <p class="ml-16 truncate text-sm font-medium text-blue-100">{{ __('admin.webhooks.total_events') }}</p>
                     </dt>
                     <dd class="ml-16 flex items-baseline">
                         <p class="text-2xl font-semibold text-white">{{ $webhookStats['total_events'] }}</p>
                     </dd>
                 </div>
 
-                <!-- __('admin.webhooks.event')s __('admin.webhooks.processed') -->
+                <!-- {{ __('admin.webhooks.event') }}s {{ __('admin.webhooks.processed') }} -->
                 <div class="relative overflow-hidden rounded-lg bg-gradient-to-r from-green-500 to-green-600 px-4 py-5 shadow sm:px-6">
                     <dt>
                         <div class="absolute rounded-md bg-green-400 p-3">
@@ -148,14 +148,14 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
                         </div>
-                        <p class="ml-16 truncate text-sm font-medium text-green-100">__('admin.webhooks.processed')</p>
+                        <p class="ml-16 truncate text-sm font-medium text-green-100">{{ __('admin.webhooks.processed') }}</p>
                     </dt>
                     <dd class="ml-16 flex items-baseline">
                         <p class="text-2xl font-semibold text-white">{{ $webhookStats['processed_events'] }}</p>
                     </dd>
                 </div>
 
-                <!-- __('admin.webhooks.event')s __('admin.webhooks.failed') -->
+                <!-- {{ __('admin.webhooks.event') }}s {{ __('admin.webhooks.failed') }} -->
                 <div class="relative overflow-hidden rounded-lg bg-gradient-to-r from-red-500 to-red-600 px-4 py-5 shadow sm:px-6">
                     <dt>
                         <div class="absolute rounded-md bg-red-400 p-3">
@@ -163,14 +163,14 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </div>
-                        <p class="ml-16 truncate text-sm font-medium text-red-100">__('admin.webhooks.failed')</p>
+                        <p class="ml-16 truncate text-sm font-medium text-red-100">{{ __('admin.webhooks.failed') }}</p>
                     </dt>
                     <dd class="ml-16 flex items-baseline">
                         <p class="text-2xl font-semibold text-white">{{ $webhookStats['failed_events'] }}</p>
                     </dd>
                 </div>
 
-                <!-- __('admin.webhooks.event')s __('admin.orders.pending_orders') -->
+                <!-- {{ __('admin.webhooks.event') }}s {{ __('admin.orders.pending_orders') }} -->
                 <div class="relative overflow-hidden rounded-lg bg-gradient-to-r from-yellow-500 to-yellow-600 px-4 py-5 shadow sm:px-6">
                     <dt>
                         <div class="absolute rounded-md bg-yellow-400 p-3">
@@ -178,7 +178,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
-                        <p class="ml-16 truncate text-sm font-medium text-yellow-100">__('admin.orders.pending_orders')</p>
+                        <p class="ml-16 truncate text-sm font-medium text-yellow-100">{{ __('admin.orders.pending_orders') }}</p>
                     </dt>
                     <dd class="ml-16 flex items-baseline">
                         <p class="text-2xl font-semibold text-white">{{ $webhookStats['pending_events'] }}</p>
@@ -188,16 +188,16 @@
         </div>
     </div>
 
-    <!-- Estadísticas de __('admin.webhooks.order')s -->
+    <!-- Estadísticas de {{ __('admin.webhooks.order') }}s -->
     <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg">
         <div class="px-4 py-5 sm:px-6">
-            <h3 class="text-lg font-medium leading-6 text-content">🛒 Estadísticas de __('admin.webhooks.order')s</h3>
-            <p class="mt-1 max-w-2xl text-sm text-content-secondary">__('admin.fields.status') actual de los pedidos en el sistema</p>
+            <h3 class="text-lg font-medium leading-6 text-content">🛒 Estadísticas de {{ __('admin.webhooks.order') }}s</h3>
+            <p class="mt-1 max-w-2xl text-sm text-content-secondary">{{ __('admin.fields.status') }} actual de los pedidos en el sistema</p>
         </div>
         
         <div class="border-t border-gray-200 dark:border-gray-700">
             <dl class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 p-4">
-                <!-- Total __('admin.webhooks.order')s -->
+                <!-- Total {{ __('admin.webhooks.order') }}s -->
                 <div class="relative overflow-hidden rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 px-4 py-5 shadow sm:px-6">
                     <dt>
                         <div class="absolute rounded-md bg-purple-400 p-3">
@@ -205,14 +205,14 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                             </svg>
                         </div>
-                        <p class="ml-16 truncate text-sm font-medium text-purple-100">Total __('admin.webhooks.order')s</p>
+                        <p class="ml-16 truncate text-sm font-medium text-purple-100">Total {{ __('admin.webhooks.order') }}s</p>
                     </dt>
                     <dd class="ml-16 flex items-baseline">
                         <p class="text-2xl font-semibold text-white">{{ $pedidoStats['total_pedidos'] }}</p>
                     </dd>
                 </div>
 
-                <!-- __('admin.webhooks.order')s __('admin.orders.pending_orders') -->
+                <!-- {{ __('admin.webhooks.order') }}s {{ __('admin.orders.pending_orders') }} -->
                 <div class="relative overflow-hidden rounded-lg bg-gradient-to-r from-yellow-500 to-yellow-600 px-4 py-5 shadow sm:px-6">
                     <dt>
                         <div class="absolute rounded-md bg-yellow-400 p-3">
@@ -220,14 +220,14 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
-                        <p class="ml-16 truncate text-sm font-medium text-yellow-100">__('admin.orders.pending_orders')</p>
+                        <p class="ml-16 truncate text-sm font-medium text-yellow-100">{{ __('admin.orders.pending_orders') }}</p>
                     </dt>
                     <dd class="ml-16 flex items-baseline">
                         <p class="text-2xl font-semibold text-white">{{ $pedidoStats['pedidos_pendientes'] }}</p>
                     </dd>
                 </div>
 
-                <!-- __('admin.webhooks.order')s __('admin.orders.confirmed_orders') -->
+                <!-- {{ __('admin.webhooks.order') }}s {{ __('admin.orders.confirmed_orders') }} -->
                 <div class="relative overflow-hidden rounded-lg bg-gradient-to-r from-green-500 to-green-600 px-4 py-5 shadow sm:px-6">
                     <dt>
                         <div class="absolute rounded-md bg-green-400 p-3">
@@ -235,14 +235,14 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
                         </div>
-                        <p class="ml-16 truncate text-sm font-medium text-green-100">__('admin.orders.confirmed_orders')</p>
+                        <p class="ml-16 truncate text-sm font-medium text-green-100">{{ __('admin.orders.confirmed_orders') }}</p>
                     </dt>
                     <dd class="ml-16 flex items-baseline">
                         <p class="text-2xl font-semibold text-white">{{ $pedidoStats['pedidos_confirmados'] }}</p>
                     </dd>
                 </div>
 
-                <!-- __('admin.webhooks.order')s __('admin.orders.cancelled_orders') -->
+                <!-- {{ __('admin.webhooks.order') }}s {{ __('admin.orders.cancelled_orders') }} -->
                 <div class="relative overflow-hidden rounded-lg bg-gradient-to-r from-red-500 to-red-600 px-4 py-5 shadow sm:px-6">
                     <dt>
                         <div class="absolute rounded-md bg-red-400 p-3">
@@ -250,7 +250,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </div>
-                        <p class="ml-16 truncate text-sm font-medium text-red-100">__('admin.orders.cancelled_orders')</p>
+                        <p class="ml-16 truncate text-sm font-medium text-red-100">{{ __('admin.orders.cancelled_orders') }}</p>
                     </dt>
                     <dd class="ml-16 flex items-baseline">
                         <p class="text-2xl font-semibold text-white">{{ $pedidoStats['pedidos_cancelados'] }}</p>
@@ -260,71 +260,71 @@
         </div>
     </div>
 
-    <!-- __('admin.webhooks.event')s Recientes de Webhooks -->
+    <!-- {{ __('admin.webhooks.event') }}s Recientes de Webhooks -->
     @if($recentWebhooks->isNotEmpty())
     <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg">
         <div class="px-4 py-5 sm:px-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <h3 class="text-lg font-medium leading-6 text-content">__('admin.webhooks.recent_events')</h3>
-                    <p class="mt-1 max-w-2xl text-sm text-content-secondary">__('admin.webhooks.recent_subtitle')</p>
+                    <h3 class="text-lg font-medium leading-6 text-content">{{ __('admin.webhooks.recent_events') }}</h3>
+                    <p class="mt-1 max-w-2xl text-sm text-content-secondary">{{ __('admin.webhooks.recent_subtitle') }}</p>
                 </div>
                 <button type="button" onclick="toggleFilters()" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     <svg class="-ml-0.5 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" />
                     </svg>
-                    __('admin.webhooks.filters')
+                    {{ __('admin.webhooks.filters') }}
                 </button>
             </div>
         </div>
         
-        <!-- __('admin.webhooks.filters') -->
+        <!-- {{ __('admin.webhooks.filters') }} -->
         <div id="filters" class="hidden border-t border-gray-200 dark:border-gray-700">
             <div class="px-4 py-4">
                 <form method="GET" action="{{ route('admin.index') }}" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <!-- Filtro por __('admin.fields.status') -->
+                    <!-- Filtro por {{ __('admin.fields.status') }} -->
                     <div>
-                        <label for="status" class="block text-sm font-medium text-content">__('admin.fields.status')</label>
+                        <label for="status" class="block text-sm font-medium text-content">{{ __('admin.fields.status') }}</label>
                         <select id="status" name="status" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                            <option value="">__('admin.webhooks.all_statuses')</option>
-                            <option value="processed" {{ $filters['status'] === 'processed' ? 'selected' : '' }}>__('admin.webhooks.processed')</option>
-                            <option value="failed" {{ $filters['status'] === 'failed' ? 'selected' : '' }}>__('admin.webhooks.failed')</option>
-                            <option value="pending" {{ $filters['status'] === 'pending' ? 'selected' : '' }}>__('admin.orders.pending_orders')</option>
+                            <option value="">{{ __('admin.webhooks.all_statuses') }}</option>
+                            <option value="processed" {{ $filters['status'] === 'processed' ? 'selected' : '' }}>{{ __('admin.webhooks.processed') }}</option>
+                            <option value="failed" {{ $filters['status'] === 'failed' ? 'selected' : '' }}>{{ __('admin.webhooks.failed') }}</option>
+                            <option value="pending" {{ $filters['status'] === 'pending' ? 'selected' : '' }}>{{ __('admin.orders.pending_orders') }}</option>
                         </select>
                     </div>
 
-                    <!-- Filtro por __('admin.webhooks.event_type') -->
+                    <!-- Filtro por {{ __('admin.webhooks.event_type') }} -->
                     <div>
-                        <label for="event_type" class="block text-sm font-medium text-content">__('admin.webhooks.event_type')</label>
+                        <label for="event_type" class="block text-sm font-medium text-content">{{ __('admin.webhooks.event_type') }}</label>
                         <select id="event_type" name="event_type" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                            <option value="">__('admin.webhooks.all_types')</option>
-                            <option value="payment_intent.succeeded" {{ $filters['event_type'] === 'payment_intent.succeeded' ? 'selected' : '' }}>__('admin.webhooks.payment_successful')</option>
-                            <option value="payment_intent.payment_failed" {{ $filters['event_type'] === 'payment_intent.payment_failed' ? 'selected' : '' }}>__('admin.webhooks.payment_failed')</option>
-                            <option value="payment_intent.canceled" {{ $filters['event_type'] === 'payment_intent.canceled' ? 'selected' : '' }}>__('admin.webhooks.payment_cancelled')</option>
+                            <option value="">{{ __('admin.webhooks.all_types') }}</option>
+                            <option value="payment_intent.succeeded" {{ $filters['event_type'] === 'payment_intent.succeeded' ? 'selected' : '' }}>{{ __('admin.webhooks.payment_successful') }}</option>
+                            <option value="payment_intent.payment_failed" {{ $filters['event_type'] === 'payment_intent.payment_failed' ? 'selected' : '' }}>{{ __('admin.webhooks.payment_failed') }}</option>
+                            <option value="payment_intent.canceled" {{ $filters['event_type'] === 'payment_intent.canceled' ? 'selected' : '' }}>{{ __('admin.webhooks.payment_cancelled') }}</option>
                         </select>
                     </div>
 
-                    <!-- Filtro por __('admin.webhooks.date_from') -->
+                    <!-- Filtro por {{ __('admin.webhooks.date_from') }} -->
                     <div>
-                        <label for="date_from" class="block text-sm font-medium text-content">__('admin.webhooks.date_from')</label>
+                        <label for="date_from" class="block text-sm font-medium text-content">{{ __('admin.webhooks.date_from') }}</label>
                         <input type="date" id="date_from" name="date_from" value="{{ $filters['date_from'] }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                     </div>
 
-                    <!-- Filtro por __('admin.webhooks.date_to') -->
+                    <!-- Filtro por {{ __('admin.webhooks.date_to') }} -->
                     <div>
-                        <label for="date_to" class="block text-sm font-medium text-content">__('admin.webhooks.date_to')</label>
+                        <label for="date_to" class="block text-sm font-medium text-content">{{ __('admin.webhooks.date_to') }}</label>
                         <input type="date" id="date_to" name="date_to" value="{{ $filters['date_to'] }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                     </div>
 
-                    <!-- Filtro por __('admin.webhooks.order') ID -->
+                    <!-- Filtro por {{ __('admin.webhooks.order') }} ID -->
                     <div>
-                        <label for="pedido_id" class="block text-sm font-medium text-content">__('admin.webhooks.order_id')</label>
-                        <input type="number" id="pedido_id" name="pedido_id" value="{{ $filters['pedido_id'] }}" placeholder="__('admin.webhooks.order_id_placeholder')" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        <label for="pedido_id" class="block text-sm font-medium text-content">{{ __('admin.webhooks.order_id') }}</label>
+                        <input type="number" id="pedido_id" name="pedido_id" value="{{ $filters['pedido_id'] }}" placeholder="{{ __('admin.webhooks.order_id_placeholder') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                     </div>
 
-                    <!-- __('admin.webhooks.results_limit') -->
+                    <!-- {{ __('admin.webhooks.results_limit') }} -->
                     <div>
-                        <label for="limit" class="block text-sm font-medium text-content">__('admin.webhooks.results_limit')</label>
+                        <label for="limit" class="block text-sm font-medium text-content">{{ __('admin.webhooks.results_limit') }}</label>
                         <select id="limit" name="limit" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                             <option value="5" {{ $filters['limit'] == 5 ? 'selected' : '' }}>5</option>
                             <option value="10" {{ $filters['limit'] == 10 ? 'selected' : '' }}>10</option>
@@ -339,10 +339,10 @@
                             <svg class="-ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
-                            __('admin.actions.filter')
+                            {{ __('admin.actions.filter') }}
                         </button>
                         <a href="{{ route('admin.index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            __('admin.actions.clear')
+                            {{ __('admin.actions.clear') }}
                         </a>
                     </div>
                 </form>
@@ -354,11 +354,11 @@
                 <table class="min-w-full divide-y divide-gray-300 dark:divide-gray-700">
                     <thead class="bg-gray-50 dark:bg-gray-900">
                         <tr>
-                            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-content sm:pl-6">__('admin.webhooks.event')</th>
-                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-content">__('admin.webhooks.order')</th>
-                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-content">__('admin.fields.status')</th>
-                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-content">__('admin.webhooks.date')</th>
-                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-content">__('admin.webhooks.attempts')</th>
+                            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-content sm:pl-6">{{ __('admin.webhooks.event') }}</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-content">{{ __('admin.webhooks.order') }}</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-content">{{ __('admin.fields.status') }}</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-content">{{ __('admin.webhooks.date') }}</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-content">{{ __('admin.webhooks.attempts') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
@@ -368,15 +368,15 @@
                                 <div class="flex items-center">
                                     @if($webhook->event_type === 'payment_intent.succeeded')
                                         <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-900 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-300 ring-1 ring-inset ring-green-600/20">
-                                            ✅ __('admin.webhooks.payment_successful')
+                                            ✅ {{ __('admin.webhooks.payment_successful') }}
                                         </span>
                                     @elseif($webhook->event_type === 'payment_intent.payment_failed')
                                         <span class="inline-flex items-center rounded-md bg-red-50 dark:bg-red-900 px-2 py-1 text-xs font-medium text-red-700 dark:text-red-300 ring-1 ring-inset ring-red-600/20">
-                                            ❌ __('admin.webhooks.payment_failed')
+                                            ❌ {{ __('admin.webhooks.payment_failed') }}
                                         </span>
                                     @elseif($webhook->event_type === 'payment_intent.canceled')
                                         <span class="inline-flex items-center rounded-md bg-yellow-50 dark:bg-yellow-900 px-2 py-1 text-xs font-medium text-yellow-700 dark:text-yellow-300 ring-1 ring-inset ring-yellow-600/20">
-                                            ⏹️ __('admin.webhooks.payment_cancelled')
+                                            ⏹️ {{ __('admin.webhooks.payment_cancelled') }}
                                         </span>
                                     @else
                                         <span class="inline-flex items-center rounded-md bg-gray-50 dark:bg-gray-900 px-2 py-1 text-xs font-medium text-gray-700 dark:text-gray-300 ring-1 ring-inset ring-gray-600/20">
@@ -391,21 +391,21 @@
                                         #{{ $webhook->pedido->pedido_id }}
                                     </a>
                                 @else
-                                    <span class="text-gray-500">__('admin.webhooks.not_available')</span>
+                                    <span class="text-gray-500">{{ __('admin.webhooks.not_available') }}</span>
                                 @endif
                             </td>
                             <td class="whitespace-nowrap px-3 py-4 text-sm text-content">
                                 @if($webhook->status === 'processed')
                                     <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-900 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-300 ring-1 ring-inset ring-green-600/20">
-                                        __('admin.webhooks.processed_status')
+                                        {{ __('admin.webhooks.processed_status') }}
                                     </span>
                                 @elseif($webhook->status === 'failed')
                                     <span class="inline-flex items-center rounded-md bg-red-50 dark:bg-red-900 px-2 py-1 text-xs font-medium text-red-700 dark:text-red-300 ring-1 ring-inset ring-red-600/20">
-                                        __('admin.webhooks.failed_status')
+                                        {{ __('admin.webhooks.failed_status') }}
                                     </span>
                                 @elseif($webhook->status === 'pending')
                                     <span class="inline-flex items-center rounded-md bg-yellow-50 dark:bg-yellow-900 px-2 py-1 text-xs font-medium text-yellow-700 dark:text-yellow-300 ring-1 ring-inset ring-yellow-600/20">
-                                        __('admin.status.pending')
+                                        {{ __('admin.status.pending') }}
                                     </span>
                                 @else
                                     <span class="inline-flex items-center rounded-md bg-gray-50 dark:bg-gray-900 px-2 py-1 text-xs font-medium text-gray-700 dark:text-gray-300 ring-1 ring-inset ring-gray-600/20">
@@ -428,11 +428,11 @@
     </div>
     @endif
 
-    <!-- __('admin.products.recent_title') -->
+    <!-- {{ __('admin.products.recent_title') }} -->
     <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg">
         <div class="px-4 py-5 sm:px-6">
-            <h3 class="text-lg font-medium leading-6 text-content">__('admin.products.recent_title')</h3>
-            <p class="mt-1 max-w-2xl text-sm text-content-secondary">__('admin.products.recent_subtitle')</p>
+            <h3 class="text-lg font-medium leading-6 text-content">{{ __('admin.products.recent_title') }}</h3>
+            <p class="mt-1 max-w-2xl text-sm text-content-secondary">{{ __('admin.products.recent_subtitle') }}</p>
         </div>
         
         <!-- Vista de tarjetas para móvil -->
@@ -462,7 +462,7 @@
                                 </div>
                                 <div class="text-right">
                                     <p class="text-sm font-medium text-gray-900 dark:text-white">${{ number_format($producto->precio, 0, ',', '.') }}</p>
-                                    @if($producto->estado == '__('.__('admin.products.new_status').')')
+                                    @if($producto->estado == 'Nuevo')
                                     <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-900 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-300 ring-1 ring-inset ring-green-600/20 dark:ring-green-600/30">
                                         {{ ucfirst($producto->estado) }}
                                     </span>
@@ -475,7 +475,7 @@
                             </div>
                             <div class="mt-2 flex items-center justify-between">
                                 <p class="text-sm text-gray-500 dark:text-gray-400">{{ $producto->categoria->nombre }}</p>
-                                <a href="{{ route('productos.edit', $producto->producto_id) }}" class="text-sm text-brand-600 hover:text-brand-900 dark:hover:text-brand-400 font-medium">__('admin.actions.edit')</a>
+                                <a href="{{ route('productos.edit', $producto->producto_id) }}" class="text-sm text-brand-600 hover:text-brand-900 dark:hover:text-brand-400 font-medium">{{ __('admin.actions.edit') }}</a>
                             </div>
                         </div>
                     </div>
@@ -485,8 +485,8 @@
                     <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                     </svg>
-                    <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">__('admin.products.no_products')</h3>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">__('admin.products.no_products') registrados en el catálogo.</p>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('admin.products.no_products') }}</h3>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('admin.products.no_products') }} registrados en el catálogo.</p>
                 </div>
                 @endforelse
             </div>
@@ -498,12 +498,12 @@
                 <table class="min-w-full divide-y divide-gray-300 dark:divide-gray-700">
                     <thead class="bg-gray-50 dark:bg-gray-900">
                         <tr>
-                            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-content sm:pl-6">__('admin.products.product')</th>
-                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-content">__('admin.fields.category')</th>
-                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-content">__('admin.fields.price')</th>
-                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-content">__('admin.fields.status')</th>
+                            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-content sm:pl-6">{{ __('admin.products.product') }}</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-content">{{ __('admin.fields.category') }}</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-content">{{ __('admin.fields.price') }}</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-content">{{ __('admin.fields.status') }}</th>
                             <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                                <span class="sr-only">__('admin.fields.actions')</span>
+                                <span class="sr-only">{{ __('admin.fields.actions') }}</span>
                             </th>
                         </tr>
                     </thead>
@@ -538,7 +538,7 @@
                                 ${{ number_format($producto->precio, 0, ',', '.') }}
                             </td>
                             <td class="whitespace-nowrap px-3 py-4 text-sm">
-                                @if($producto->estado == '__('.__('admin.products.new_status').')')
+                                @if($producto->estado == 'Nuevo')
                                 <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-900 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-300 ring-1 ring-inset ring-green-600/20 dark:ring-green-600/30">
                                     {{ ucfirst($producto->estado) }}
                                 </span>
@@ -549,13 +549,13 @@
                                 @endif
                             </td>
                             <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                <a href="{{ route('productos.edit', $producto->producto_id) }}" class="text-brand-600 hover:text-brand-900 dark:hover:text-brand-400">__('admin.actions.edit')</a>
+                                <a href="{{ route('productos.edit', $producto->producto_id) }}" class="text-brand-600 hover:text-brand-900 dark:hover:text-brand-400">{{ __('admin.actions.edit') }}</a>
                             </td>
                         </tr>
                         @empty
                         <tr>
                             <td colspan="5" class="px-3 py-4 text-sm text-gray-500 dark:text-gray-400 text-center">
-                                __('admin.products.no_products') registrados
+                                {{ __('admin.products.no_products') }} registrados
                             </td>
                         </tr>
                         @endforelse

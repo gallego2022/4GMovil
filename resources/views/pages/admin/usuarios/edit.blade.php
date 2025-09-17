@@ -1,12 +1,12 @@
 @extends('layouts.app-new')
 
-@section('title', '__('admin.actions.edit') Usuario - 4GMovil')
+@section('title', {{ '{{ __('admin.actions.edit') }} }}Usuario - 4GMovil')
 
 @section('content')
 <div class="space-y-6">
     <!-- Encabezado -->
     <div>
-        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">__('admin.actions.edit') Usuario</h2>
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight"{{ >{{ __('admin.actions.edit') }} }}Usuario</h2>
         <p class="mt-1 text-sm text-gray-500">Modifica los detalles del usuario</p>
     </div>
 
@@ -41,7 +41,7 @@
             <div class="space-y-6">
                 <!-- Datos del usuario -->
                 <div>
-                    <label for="nombre_usuario" class="block text-sm font-medium text-gray-700">__('admin.fields.name')</label>
+                    <label for="nombre_usuario" class="block text-sm font-medium text-gray-700"{{ >{{ __('admin.fields.name') }}< }}/label>
                     <div class="mt-1">
                         <input type="text" 
                                name="nombre_usuario" 
@@ -71,7 +71,7 @@
                 </div>
 
                 <div>
-                    <label for="telefono" class="block text-sm font-medium text-gray-700">__('admin.fields.phone')</label>
+                    <label for="telefono" class="block text-sm font-medium text-gray-700"{{ >{{ __('admin.fields.phone') }}< }}/label>
                     <div class="mt-1">
                         <input type="tel" 
                                name="telefono" 
@@ -84,9 +84,9 @@
                     @enderror
                 </div>
 
-                <!-- Permisos y __('admin.fields.status') -->
+                <!-- Permisos y{{  }}-->
                 <div class="border-t border-gray-200 pt-6">
-                    <h3 class="text-base font-semibold leading-7 text-gray-900">Permisos y __('admin.fields.status')</h3>
+                    <h3 class="text-base font-semibold leading-7 text-gray-900">Permisos y{{ {{ __('admin.fields.status') }}< }}/h3>
                     
                     <div class="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2">
                         <div>
@@ -101,12 +101,12 @@
                         </div>
 
                         <div>
-                            <label for="estado" class="block text-sm font-medium text-gray-700">__('admin.fields.status')</label>
+                            <label for="estado" class="block text-sm font-medium text-gray-700"{{ >{{ __('admin.fields.status') }}< }}/label>
                             <select name="estado" 
                                     id="estado"
                                         class="mt-1 block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200">
-                                <option value="1" {{ $usuario->estado ? 'selected' : '' }}>__('admin.status.active')</option>
-                                <option value="0" {{ !$usuario->estado ? 'selected' : '' }}>__('admin.status.inactive')</option>
+                                <option value="1" {{ $usuario->estado ? 'selected' : '' }}{{ >{{ __('admin.status.active') }}< }}/option>
+                                <option value="0" {{ !$usuario->estado ? 'selected' : '' }}{{ >{{ __('admin.status.inactive') }}< }}/option>
                             </select>
                         </div>
                     </div>
@@ -116,8 +116,7 @@
             <div class="mt-6 flex items-center justify-end gap-x-6">
                 <a href="{{ route('usuarios.index') }}" 
                    class="text-sm font-semibold leading-6 text-gray-900">
-                    __('admin.actions.cancel')
-                </a>
+                   {{  }}                </a>
                 <button type="submit" 
                 class="inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:from-blue-600 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 hover:shadow-xl">
                 <svg class="w-5 h-5 mr-2 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">

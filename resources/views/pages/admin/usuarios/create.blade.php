@@ -1,12 +1,12 @@
 @extends('layouts.app-new')
 
-@section('title', '__('.__('admin.actions.create').') Usuario - 4GMovil')
+@section('title', __('admin.actions.create') . ' Usuario - 4GMovil')
 
 @section('content')
 <div class="space-y-6">
     <!-- Encabezado -->
     <div>
-        <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-gray-100 sm:truncate sm:text-3xl sm:tracking-tight">__('admin.actions.create') __('admin.products.new_status') Usuario</h2>
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-gray-100 sm:truncate sm:text-3xl sm:tracking-tight">{{ __('admin.actions.create') }} {{ __('admin.products.new_status') }} Usuario</h2>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Ingresa los detalles del nuevo usuario</p>
     </div>
 
@@ -37,20 +37,20 @@
         @csrf
 
         <div class="space-y-8">
-            <!-- __('admin.messages.info') Personal -->
+            <!--{{ __('admin.messages.info') }}Personal -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                     <svg class="w-5 h-5 mr-2 text-brand-600 dark:text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
-                    __('admin.messages.info') Personal
+                   {{ __('admin.messages.info') }}Personal
                 </h3>
                 
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                    <!-- __('admin.status.no')mbre del usuario -->
+                    <!--{{ __('admin.fields.name') }}bre del usuario -->
                     <div>
                         <label for="nombre_usuario" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            __('admin.status.no')mbre Completo <span class="text-red-500">*</span>
+                           {{ __('admin.fields.name') }}bre Completo <span class="text-red-500">*</span>
                         </label>
                         <input type="text" 
                                name="nombre_usuario" 
@@ -64,10 +64,10 @@
                         @enderror
                     </div>
 
-                    <!-- __('admin.fields.phone') -->
+                    <!--{{ __('admin.fields.phone') }}-->
                     <div>
                         <label for="telefono" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            __('admin.fields.phone') <span class="text-red-500">*</span>
+                           {{ __('admin.fields.phone') }}<span class="text-red-500">*</span>
                         </label>
                         <input type="tel" 
                                name="telefono" 
@@ -83,13 +83,13 @@
                 </div>
             </div>
 
-            <!-- __('admin.messages.info') de Acceso -->
+            <!--{{ __('admin.messages.info') }}de Acceso -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                     <svg class="w-5 h-5 mr-2 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
-                    __('admin.messages.info') de Acceso
+                   {{ __('admin.messages.info') }}de Acceso
                 </h3>
                 
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -144,14 +144,13 @@
                 </div>
             </div>
 
-            <!-- Permisos y __('admin.fields.status') -->
+            <!-- Permisos y{{ __('admin.fields.status') }}-->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                     <svg class="w-5 h-5 mr-2 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
-                    Permisos y __('admin.fields.status')
-                </h3>
+                    Permisos y{{ __('admin.fields.status') }}                </h3>
                 
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                     <div>
@@ -172,13 +171,13 @@
 
                     <div>
                         <label for="estado" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            __('admin.fields.status') del Usuario
+                           {{ __('admin.fields.status') }}del Usuario
                         </label>
                         <select name="estado" 
                                 id="estado"
                                 class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200">
-                            <option value="1" selected>__('admin.status.active')</option>
-                            <option value="0">__('admin.status.inactive')</option>
+                            <option value="1" selected{{ >{{ __('admin.status.active') }}< }}/option>
+                            <option value="0"{{ >{{ __('admin.status.inactive') }}< }}/option>
                         </select>
                         @error('estado')
                             <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -191,14 +190,13 @@
         <div class="mt-6 flex items-center justify-end gap-x-6">
             <a href="{{ route('usuarios.index') }}" 
                class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100 transition-colors duration-200">
-                __('admin.actions.cancel')
-            </a>
+               {{ __('admin.actions.cancel') }}            </a>
             <button type="submit" 
             class="inline-flex justify-center rounded-lg bg-gradient-to-r from-emerald-500 to-teal-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:from-emerald-600 hover:to-teal-700 transform hover:scale-105 transition-all duration-200 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 hover:shadow-xl">
             <svg class="w-5 h-5 mr-2 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
             </svg>
-                __('admin.actions.create') Usuario
+               {{ __('admin.actions.create') }}Usuario
             </button>
         </div>
     </form>

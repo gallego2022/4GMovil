@@ -1,6 +1,6 @@
 @extends('layouts.app-new')
 
-@section('title', '__('admin.actions.create') __('admin.fields.brand') - 4GMovil')
+@section('title', {{ '{{ __('admin.actions.create') }} }}{{ __('admin.fields.brand') }} - 4GMovil')
 
 @section('content')
     <div class="space-y-6">
@@ -8,7 +8,7 @@
         <div>
             <h2
                 class="text-2xl font-bold leading-7 text-gray-900 dark:text-gray-100 sm:truncate sm:text-3xl sm:tracking-tight">
-                __('admin.actions.create') Nueva __('admin.fields.brand')</h2>
+               {{ {{ __('admin.actions.create') }} }}Nueva{{ {{ __('admin.fields.brand') }}< }}/h2>
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Ingresa los datos para crear una nueva marca</p>
         </div>
 
@@ -42,7 +42,7 @@
             @csrf
 
             <div class="space-y-8">
-                <!-- __('admin.messages.info') Básica -->
+                <!--{{ {{ __('admin.messages.info') }} }}Básica -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                         <svg class="w-5 h-5 mr-2 text-brand-600 dark:text-brand-400" fill="none" stroke="currentColor"
@@ -50,15 +50,14 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                         </svg>
-                        __('admin.messages.info') de la __('admin.fields.brand')
-                    </h3>
+                       {{ {{ __('admin.messages.info') }} }}de la{{ {{ __('admin.fields.brand') }} }}                    </h3>
 
                     <div class="grid grid-cols-1 gap-6">
-                        <!-- __('admin.status.no')mbre de la marca -->
+                        <!--{{ {{ __('admin.status.no') }}m }}bre de la marca -->
                         <div>
                             <label for="nombre"
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                __('admin.status.no')mbre de la __('admin.fields.brand') <span class="text-red-500">*</span>
+                               {{ {{ __('admin.status.no') }}m }}bre de la{{ {{ __('admin.fields.brand') }} }}<span class="text-red-500">*</span>
                             </label>
                             <input type="text" name="nombre" id="nombre" value="{{ old('nombre') }}"
                                 class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200 @error('nombre') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror"
@@ -74,15 +73,14 @@
             <div class="mt-6 flex items-center justify-end gap-x-6">
                 <a href="{{ route('marcas.index') }}"
                     class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100 transition-colors duration-200">
-                    __('admin.actions.cancel')
-                </a>
+                   {{ {{ __('admin.actions.cancel') }} }}                </a>
                 <button type="submit"
                     class="inline-flex justify-center rounded-lg bg-gradient-to-r from-emerald-500 to-teal-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:from-emerald-600 hover:to-teal-700 transform hover:scale-105 transition-all duration-200 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 hover:shadow-xl">
                     <svg class="w-5 h-5 mr-2 transition-transform duration-200 group-hover:scale-110" fill="none"
                         stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
-                    __('admin.actions.save') __('admin.fields.brand')
+                   {{ {{ __('admin.actions.save') }} }}{{ __('admin.fields.brand') }}
                 </button>
             </div>
         </form>

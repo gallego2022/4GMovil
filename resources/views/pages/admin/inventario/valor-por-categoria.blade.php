@@ -1,6 +1,6 @@
 @extends('layouts.app-new')
 
-@section('title', '__('admin.fields.value') del __('admin.inventory.title') por __('admin.fields.category') - 4GMovil')
+@section('title', {{ '{{ __('admin.fields.value') }} }}del{{ {{ __('admin.inventory.title') }} }}por{{ {{ __('admin.fields.category') }} }}- 4GMovil')
 
 @section('content')
 <div class="space-y-6">
@@ -8,7 +8,7 @@
     <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">__('admin.fields.value') del __('admin.inventory.title') por __('admin.fields.category')</h1>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white"{{ >{{ __('admin.fields.value') }} }}del{{ {{ __('admin.inventory.title') }} }}por{{ {{ __('admin.fields.category') }}< }}/h1>
                 <p class="mt-2 text-sm text-gray-500 dark:text-gray-300">Análisis del valor del inventario distribuido por categorías</p>
             </div>
             <div class="flex items-center gap-2">
@@ -17,8 +17,7 @@
                     <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 4.158a.75.75 0 11-1.06 1.06l-5.5-5.5a.75.75 0 010-1.06l5.5-5.5a.75.75 0 111.06 1.06L5.612 9.25H16.25A.75.75 0 0117 10z" clip-rule="evenodd" />
                     </svg>
-                    __('admin.actions.back')
-                </a>
+                   {{ {{ __('admin.actions.back') }} }}                </a>
             </div>
         </div>
     </div>
@@ -35,7 +34,7 @@
                         </svg>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-blue-600 dark:text-blue-400">__('admin.fields.value') Total</p>
+                        <p class="text-sm font-medium text-blue-600 dark:text-blue-400"{{ >{{ __('admin.fields.value') }} }}Total</p>
                         <p class="text-2xl font-semibold text-blue-900 dark:text-blue-100">
                             ${{ number_format($valorTotal, 0, ',', '.') }}
                         </p>
@@ -67,7 +66,7 @@
                         </svg>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-purple-600 dark:text-purple-400">Promedio por __('admin.fields.category')</p>
+                        <p class="text-sm font-medium text-purple-600 dark:text-purple-400">Promedio por{{ {{ __('admin.fields.category') }}< }}/p>
                         <p class="text-2xl font-semibold text-purple-900 dark:text-purple-100">
                             ${{ $valorPorCategoria->count() > 0 ? number_format($valorTotal / $valorPorCategoria->count(), 0, ',', '.') : '0.00' }}
                         </p>
@@ -92,17 +91,17 @@
                         </div>
                     </div>
                     
-                    <!-- __('admin.messages.info') de la categoría -->
+                    <!--{{ {{ __('admin.messages.info') }} }}de la categoría -->
                     <div class="flex-1 min-w-0">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white truncate">
-                            {{ $item['categoria']->nombre ?? '__('admin.fields.without_category')' }}
+                            {{ $item['categoria']->nombre ?? {{ '{{ __('admin.fields.without_category') }}' }} }}
                         </h3>
                         <div class="mt-1 flex flex-col space-y-1">
                             <p class="text-sm text-gray-500 dark:text-gray-400">
-                                __('admin.products.product')s: {{ $item['productos_count'] ?? 0 }}
+                               {{ {{ __('admin.products.product') }}s }}: {{ $item['productos_count'] ?? 0 }}
                             </p>
                             <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                __('admin.fields.value'): ${{ number_format($item['valor_total'], 0, ',', '.') }}
+                               {{ {{ __('admin.fields.value') }}: }} ${{ number_format($item['valor_total'], 0, ',', '.') }}
                             </p>
                             <p class="text-sm text-gray-500 dark:text-gray-400">
                                 Stock Total: {{ $item['stock_total'] ?? 0 }}
@@ -128,8 +127,8 @@
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
             </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">__('admin.status.no') hay categorías</h3>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">__('admin.status.no') se encontraron categorías con productos en inventario.</p>
+            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white"{{ >{{ __('admin.status.no') }} }}hay categorías</h3>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400"{{ >{{ __('admin.status.no') }} }}se encontraron categorías con productos en inventario.</p>
         </div>
         @endforelse
     </div>
@@ -140,7 +139,7 @@
             <!-- Tabla de categorías -->
             <div class="bg-white dark:bg-gray-900 rounded-lg shadow-md overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">__('admin.fields.value') por __('admin.fields.category')</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white"{{ >{{ __('admin.fields.value') }} }}por{{ {{ __('admin.fields.category') }}< }}/h3>
                     <p class="text-sm text-gray-500 dark:text-gray-400">Desglose detallado del inventario</p>
                 </div>
                 
@@ -148,10 +147,10 @@
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <thead class="bg-gray-50 dark:bg-gray-800">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">__('admin.fields.category')</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"{{ >{{ __('admin.fields.category') }}< }}/th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Productos</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Stock</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">__('admin.fields.value')</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"{{ >{{ __('admin.fields.value') }}< }}/th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">%</th>
                             </tr>
                         </thead>
@@ -169,7 +168,7 @@
                                         </div>
                                         <div class="ml-4">
                                             <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                                {{ $item['categoria']->nombre ?? '__('admin.fields.without_category')' }}
+                                                {{ $item['categoria']->nombre ?? {{ '{{ __('admin.fields.without_category') }}' }} }}
                                             </div>
                                         </div>
                                     </div>
@@ -201,7 +200,7 @@
                             @empty
                             <tr>
                                 <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                                    __('admin.status.no') hay categorías con productos en inventario
+                                   {{ {{ __('admin.status.no') }} }}hay categorías con productos en inventario
                                 </td>
                             </tr>
                             @endforelse
@@ -213,7 +212,7 @@
             <!-- Gráfico de dona -->
             <div class="bg-white dark:bg-gray-900 rounded-lg shadow-md overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Distribución del __('admin.fields.value')</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Distribución del{{ {{ __('admin.fields.value') }}< }}/h3>
                     <p class="text-sm text-gray-500 dark:text-gray-400">Gráfico de dona del inventario por categoría</p>
                 </div>
                 
@@ -229,7 +228,7 @@
                             <div class="flex items-center">
                                 <div class="w-3 h-3 rounded-full mr-2" style="background-color: {{ $index < 10 ? ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4', '#84CC16', '#F97316', '#EC4899', '#6366F1'][$index] : '#6B7280' }}"></div>
                                 <span class="text-sm text-gray-900 dark:text-white truncate">
-                                    {{ $item['categoria']->nombre ?? '__('admin.fields.without_category')' }}
+                                    {{ $item['categoria']->nombre ?? {{ '{{ __('admin.fields.without_category') }}' }} }}
                                 </span>
                             </div>
                             <span class="text-sm font-medium text-gray-900 dark:text-white">${{ number_format($item['valor_total'], 0, ',', '.') }}</span>
@@ -251,7 +250,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const data = {
         labels: [
             @foreach($valorPorCategoria as $item)
-                '{{ $item['categoria']->nombre ?? '__('admin.fields.without_category')' }}',
+                '{{ $item['categoria']->nombre ?? {{ '{{ __('admin.fields.without_category') }}' }} }}',
             @endforeach
         ],
         datasets: [{

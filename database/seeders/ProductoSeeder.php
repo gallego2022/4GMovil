@@ -14,6 +14,9 @@ class ProductoSeeder extends Seeder
      * 
      * NOTA: Los precios se almacenan directamente en pesos colombianos (sin decimales)
      * Ejemplo: $1,299,999 se almacena como 1299999
+     * 
+     * El costo unitario se calcula automáticamente como el 70% del precio de venta
+     * Ejemplo: Precio $1,000,000 → Costo unitario $700,000
      */
     public function run(): void
     {
@@ -468,11 +471,15 @@ class ProductoSeeder extends Seeder
         $umbralBajo = (int) ($stockInicial * 0.6); // 60% del stock inicial
         $umbralCritico = (int) ($stockInicial * 0.2); // 20% del stock inicial
         
+        // Calcular costo unitario basado en el precio (70% del precio de venta)
+        $costoUnitario = (int) ($datos['precio'] * 0.7);
+        
         // Crear el producto con los campos correctos
         $producto = Producto::create([
             'nombre_producto' => $datos['nombre_producto'],
             'descripcion' => $datos['descripcion'],
             'precio' => $datos['precio'],
+            'costo_unitario' => $costoUnitario, // Costo unitario calculado automáticamente
             'stock' => $stockInicial, // Stock inicial del producto
             'stock_inicial' => $stockInicial,
             'stock_disponible' => $stockInicial, // Stock disponible inicial

@@ -102,51 +102,49 @@
                     Detalles de Especificación
                 </h1>
                 <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                    __('admin.messages.info') completa de la especificación técnica
+                   {{ {{ __('admin.messages.info') }} }}completa de la especificación técnica
                 </p>
             </div>
             
             <!-- Botones de Acción -->
             <div class="flex items-center space-x-3">
-                <!-- Botón __('admin.actions.back') -->
+                <!-- Botón{{ {{ __('admin.actions.back') }} }}-->
                 <a href="{{ route('admin.especificaciones.index') }}" 
                    class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
                     <svg class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
-                    __('admin.actions.back') al Listado
+                   {{ {{ __('admin.actions.back') }} }}al Listado
                 </a>
                 
-                <!-- Botón __('admin.actions.edit') -->
+                <!-- Botón{{ {{ __('admin.actions.edit') }} }}-->
                 <a href="{{ route('admin.especificaciones.edit', $especificacion->especificacion_id) }}" 
                    class="inline-flex items-center px-4 py-2 border border-brand-300 dark:border-brand-600 rounded-md shadow-sm text-sm font-medium text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-brand-900/20 hover:bg-brand-100 dark:hover:bg-brand-900/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
                     <svg class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13l6-6m-3-3L6 18H3v-3L15.232 5.232z" />
                     </svg>
-                    __('admin.actions.edit')
-                </a>
+                   {{ {{ __('admin.actions.edit') }} }}                </a>
             </div>
         </div>
     </div>
 
-    <!-- __('admin.messages.info') Principal -->
+    <!--{{ {{ __('admin.messages.info') }} }}Principal -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Columna Principal -->
         <div class="lg:col-span-2 space-y-6">
-            <!-- __('admin.messages.info') Básica -->
+            <!--{{ {{ __('admin.messages.info') }} }}Básica -->
             <div class="info-section">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                     <svg class="w-5 h-5 mr-2 text-brand-600 dark:text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    __('admin.messages.info') Básica
+                   {{ {{ __('admin.messages.info') }} }}Básica
                 </h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            __('admin.fields.label')
-                        </label>
+                           {{ {{ __('admin.fields.label') }} }}                        </label>
                         <p class="text-lg font-semibold text-gray-900 dark:text-white">
                             {{ $especificacion->etiqueta }}
                         </p>
@@ -154,8 +152,7 @@
                     
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            __('admin.status.no')mbre del __('admin.fields.field')
-                        </label>
+                           {{ {{ __('admin.status.no') }}m }}bre del{{ {{ __('admin.fields.field') }} }}                        </label>
                         <p class="text-lg font-mono text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800 px-3 py-2 rounded">
                             {{ $especificacion->nombre_campo }}
                         </p>
@@ -163,17 +160,15 @@
                     
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            __('admin.fields.category')
-                        </label>
+                           {{ {{ __('admin.fields.category') }} }}                        </label>
                         <p class="text-lg text-gray-900 dark:text-white">
-                            {{ $especificacion->categoria->nombre ?? '__('admin.fields.without_category')' }}
+                            {{ $especificacion->categoria->nombre ?? {{ '{{ __('admin.fields.without_category') }}' }} }}
                         </p>
                     </div>
                     
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            __('admin.fields.type') de __('admin.fields.field')
-                        </label>
+                           {{ {{ __('admin.fields.type') }} }}de{{ {{ __('admin.fields.field') }} }}                        </label>
                         <p class="text-lg text-gray-900 dark:text-white">
                             {{ ucfirst($especificacion->tipo_campo) }}
                         </p>
@@ -181,22 +176,21 @@
                 </div>
             </div>
 
-            <!-- Configuración del __('admin.fields.field') -->
+            <!-- Configuración del{{ {{ __('admin.fields.field') }} }}-->
             <div class="info-section">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                     <svg class="w-5 h-5 mr-2 text-brand-600 dark:text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                    Configuración del __('admin.fields.field')
-                </h3>
+                    Configuración del{{ {{ __('admin.fields.field') }} }}                </h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            __('admin.fields.unit') de Medida
+                           {{ {{ __('admin.fields.unit') }} }}de Medida
                         </label>
                         <p class="text-lg text-gray-900 dark:text-white">
-                            {{ $especificacion->unidad ?: '__('admin.status.no') especificada' }}
+                            {{ $especificacion->unidad ?: {{ '{{ __('admin.status.no') }} }}especificada' }}
                         </p>
                     </div>
                     
@@ -228,7 +222,7 @@
                 @if($especificacion->descripcion)
                 <div class="mt-6">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        __('admin.fields.description')
+                        {{ __('admin.fields.description') }}
                     </label>
                     <p class="text-gray-900 dark:text-white">
                         {{ $especificacion->descripcion }}
@@ -237,15 +231,14 @@
                 @endif
             </div>
 
-            <!-- Vista Previa del __('admin.fields.field') -->
+            <!-- Vista Previa del{{ {{ __('admin.fields.field') }} }}-->
             <div class="info-section">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                     <svg class="w-5 h-5 mr-2 text-brand-600 dark:text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
-                    Vista Previa del __('admin.fields.field')
-                </h3>
+                    Vista Previa del{{ {{ __('admin.fields.field') }} }}                </h3>
                 
                 <div class="field-preview">
                     @include('components.especificacion-field-preview', ['especificacion' => $especificacion])
@@ -255,21 +248,20 @@
 
         <!-- Barra Lateral -->
         <div class="space-y-6">
-            <!-- __('admin.fields.status') y Configuración -->
+            <!--{{ {{ __('admin.fields.status') }} }}y Configuración -->
             <div class="info-section">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                     <svg class="w-5 h-5 mr-2 text-brand-600 dark:text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    __('admin.fields.status') y Configuración
+                   {{ {{ __('admin.fields.status') }} }}y Configuración
                 </h3>
                 
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            __('admin.fields.status')
-                        </label>
+                           {{ {{ __('admin.fields.status') }} }}                        </label>
                         <span class="status-badge {{ $especificacion->activo ? 'status-active' : 'status-inactive' }}">
                             {{ $especificacion->activo ? 'Activa' : 'Inactiva' }}
                         </span>
@@ -277,22 +269,21 @@
                     
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            __('admin.fields.required')
-                        </label>
+                           {{ {{ __('admin.fields.required') }} }}                        </label>
                         <span class="required-badge {{ $especificacion->requerido ? 'required-yes' : 'required-no' }}">
-                            {{ $especificacion->requerido ? '__('admin.status.yes')' : '__('admin.status.no')' }}
+                            {{ $especificacion->requerido ? {{ '{{ __('admin.status.yes') }}' }} : {{ '{{ __('admin.status.no') }}' }} }}
                         </span>
                     </div>
                 </div>
             </div>
 
-            <!-- __('admin.messages.info') del Sistema -->
+            <!--{{ {{ __('admin.messages.info') }} }}del Sistema -->
             <div class="info-section">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                     <svg class="w-5 h-5 mr-2 text-gray-600 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
-                    __('admin.messages.info') del Sistema
+                   {{ {{ __('admin.messages.info') }} }}del Sistema
                 </h3>
                 
                 <div class="space-y-3 text-sm">
@@ -302,22 +293,22 @@
                     </div>
                     <div>
                         <span class="font-medium text-gray-700 dark:text-gray-300">Creado:</span>
-                        <span class="ml-2 text-gray-900 dark:text-gray-100">{{ $especificacion->created_at ? $especificacion->created_at->format('d/m/Y H:i') : '__('admin.webhooks.not_available')' }}</span>
+                        <span class="ml-2 text-gray-900 dark:text-gray-100">{{ $especificacion->created_at ? $especificacion->created_at->format('d/m/Y H:i') : {{ '{{ __('admin.webhooks.not_available') }}' }} }}</span>
                     </div>
                     <div>
                         <span class="font-medium text-gray-700 dark:text-gray-300">Actualizado:</span>
-                        <span class="ml-2 text-gray-900 dark:text-gray-100">{{ $especificacion->updated_at ? $especificacion->updated_at->format('d/m/Y H:i') : '__('admin.webhooks.not_available')' }}</span>
+                        <span class="ml-2 text-gray-900 dark:text-gray-100">{{ $especificacion->updated_at ? $especificacion->updated_at->format('d/m/Y H:i') : {{ '{{ __('admin.webhooks.not_available') }}' }} }}</span>
                     </div>
                 </div>
             </div>
 
-            <!-- __('admin.fields.actions') Rápidas -->
+            <!--{{ {{ __('admin.fields.actions') }} }}Rápidas -->
             <div class="info-section">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                     <svg class="w-5 h-5 mr-2 text-brand-600 dark:text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
-                    __('admin.fields.actions') Rápidas
+                   {{ {{ __('admin.fields.actions') }} }}Rápidas
                 </h3>
                 
                 <div class="space-y-3">
@@ -326,7 +317,7 @@
                         <svg class="-ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13l6-6m-3-3L6 18H3v-3L15.232 5.232z" />
                         </svg>
-                        __('admin.actions.edit') Especificación
+                       {{ {{ __('admin.actions.edit') }} }}Especificación
                     </a>
                     
                     <button onclick="toggleEstado()" 
@@ -346,8 +337,8 @@
 <script>
 function toggleEstado() {
     const especificacionId = {{ $especificacion->especificacion_id }};
-    const current__('admin.fields.status') = {{ $especificacion->activo ? 'true' : 'false' }};
-    const new__('admin.fields.status') = !currentEstado;
+    const curren{{ t{{ __('admin.fields.status') }} }}= {{ $especificacion->activo ? 'true' : 'false' }};
+    const ne{{ w{{ __('admin.fields.status') }} }}= !currentEstado;
     
     fetch(`/admin/especificaciones/${especificacionId}/toggle-estado`, {
         method: 'PATCH',
@@ -361,7 +352,7 @@ function toggleEstado() {
         if (data.success) {
             Swal.fire({
                 icon: 'success',
-                title: '__('admin.fields.status') Actualizado',
+                title: {{ '{{ __('admin.fields.status') }} }}Actualizado',
                 text: data.message,
                 timer: 2000,
                 showConfirmButton: false

@@ -54,19 +54,19 @@
          <!-- Encabezado móvil -->
          <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
              <div class="mb-4">
-                 <h2 class="text-xl font-bold text-gray-900 dark:text-white">Listado de {{ __('admin.products.product') }}s</h2>
+                 <h2 class="text-xl font-bold text-gray-900 dark:text-white">Listado de {{ __('admin.actions.edit') }}s</h2>
                  <p class="text-sm text-gray-500 dark:text-gray-300">Gestiona los productos de la tienda</p>
         </div>
              
              <!-- Botones de acción móvil -->
              <div class="flex flex-wrap items-center gap-2 mb-4">
-                 <!-- Botón {{ __('admin.actions.create') }} {{ __('admin.products.product') }} -->
+                 <!-- Botón {{ __('admin.actions.edit') }} {{ __('admin.actions.edit') }} -->
             <a href="{{ route('productos.create') }}" 
                class="inline-flex items-center rounded-lg bg-gradient-to-r from-slate-600 to-gray-700 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:from-slate-700 hover:to-gray-800 transform hover:scale-105 transition-all duration-300 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600 hover:shadow-xl min-w-[180px] justify-center">
                 <svg class="-ml-0.5 mr-1.5 h-5 w-5 transition-transform duration-200 group-hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
-                {{ __('admin.actions.create') }} {{ __('admin.products.product') }}
+                {{ __('admin.actions.edit') }} {{ __('admin.actions.edit') }}
             </a>
                  
                  <!-- Botones de exportación móvil -->
@@ -105,12 +105,12 @@
         </div>
     </div>
 
-        <!-- {{ __('admin.fields.field') }} de búsqueda móvil -->
+        <!-- {{ __('admin.actions.edit') }} de búsqueda móvil -->
             <div class="relative mt-2 rounded-md shadow-sm">
                 <input type="text" 
                        id="busquedaMovil" 
                        class="block w-full rounded-md border-0 py-1.5 pl-4 pr-10 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 dark:bg-gray-800 sm:text-sm sm:leading-6" 
-                       placeholder="{{ __('admin.actions.search') }} productos...">
+                       placeholder="{{ __('admin.actions.edit') }} productos...">
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                     <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
@@ -135,7 +135,7 @@
                              alt="Sin imagen">
                         @endif
                     </div>
-                    <!-- {{ __('admin.messages.info') }} del producto -->
+                    <!-- {{ __('admin.actions.edit') }} del producto -->
                     <div class="flex-1 min-w-0">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white truncate">
                             {{ $producto->nombre_producto }}
@@ -148,7 +148,7 @@
                                 ${{ number_format($producto->precio, 2) }}
                             </p>
                             
-                            <!-- {{ __('admin.messages.info') }} de Stock Mejorada -->
+                            <!-- {{ __('admin.actions.edit') }} de Stock Mejorada -->
                             <div class="space-y-1">
                                 <!-- Stock Total -->
                                 <div class="flex items-center justify-between">
@@ -190,10 +190,10 @@
                                 @endif
                             </div>
                             <p class="text-sm text-gray-500 dark:text-gray-400">
-                                {{ __('admin.fields.category') }}: {{ $producto->categoria->nombre ?? '{{ __('admin.fields.without_category') }}' }}
+                                {{ __('admin.actions.edit') }}: {{ $producto->categoria->nombre ??{{ __('admin.actions.edit') }}}}
                             </p>
                             <p class="text-sm text-gray-500 dark:text-gray-400">
-                                {{ __('admin.fields.brand') }}: {{ $producto->marca->nombre ?? 'Sin marca' }}
+                                {{ __('admin.actions.edit') }}: {{ $producto->marca->nombre ?? 'Sin marca' }}
                             </p>
                         </div>
                     </div>
@@ -215,7 +215,7 @@
                             <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clip-rule="evenodd"/>
                             </svg>
-                            {{ __('admin.actions.delete') }}
+                            {{ __('admin.actions.edit') }}
                         </button>
                     </form>
                 </div>
@@ -223,7 +223,7 @@
         </div>
         @empty
         <div class="text-center py-4 text-sm text-gray-500 dark:text-gray-400">
-            {{ __('admin.products.no_products') }} registrados en el sistema
+            {{ __('admin.actions.edit') }} registrados en el sistema
         </div>
         @endforelse
     </div>
@@ -235,17 +235,17 @@
              <div class="mb-6">
                  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                      <div>
-                         <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">Listado de {{ __('admin.products.product') }}s</h2>
+                         <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">Listado de {{ __('admin.actions.edit') }}s</h2>
                          <p class="mt-1 text-sm text-gray-500 dark:text-gray-300">Gestiona los productos de la tienda</p>
                      </div>
 
-                       <!-- Botón {{ __('admin.actions.create') }} {{ __('admin.products.product') }} -->
+                       <!-- Botón {{ __('admin.actions.edit') }} {{ __('admin.actions.edit') }} -->
                     <a href="{{ route('productos.create') }}" 
                     class="group inline-flex items-center rounded-xl bg-gradient-to-r from-slate-600 to-gray-700 px-8 py-4 text-base font-semibold text-white shadow-lg hover:from-slate-700 hover:to-gray-800 transform hover:scale-105 transition-all duration-300 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600 hover:shadow-xl min-w-[180px] justify-center">
                      <svg class="-ml-0.5 mr-3 h-6 w-6 transition-transform duration-300 group-hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                      </svg>
-                     {{ __('admin.actions.create') }} {{ __('admin.products.product') }}
+                     {{ __('admin.actions.edit') }} {{ __('admin.actions.edit') }}
                  </a>
 
                  </div>
@@ -257,13 +257,13 @@
                      <!-- Búsqueda personalizada -->
                      <div class="flex-1 max-w-md">
                          <label for="busquedaEscritorio" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                             {{ __('admin.actions.search') }} productos
+                             {{ __('admin.actions.edit') }} productos
                          </label>
                          <div class="relative">
                              <input type="text" 
                                     id="busquedaEscritorio" 
                                     class="block w-full rounded-md border-0 py-2 pl-10 pr-4 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 dark:bg-gray-700 sm:text-sm" 
-                                    placeholder="{{ __('admin.actions.search') }} por nombre, ID, categoría...">
+                                    placeholder="{{ __('admin.actions.edit') }} por nombre, ID, categoría...">
                              <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                  <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                                      <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
@@ -272,7 +272,7 @@
                          </div>
                      </div>
                      
-                     <!-- {{ __('admin.messages.info') }} de registros -->
+                     <!-- {{ __('admin.actions.edit') }} de registros -->
                      <div class="text-sm text-gray-500 dark:text-gray-400">
                          <span id="infoRegistros">Mostrando todos los productos</span>
                      </div>
@@ -303,13 +303,13 @@
                             <tr>
                                 <th class="px-6 py-4 text-left font-semibold">ID</th>
                                 <th class="px-6 py-4 text-left font-semibold">Imagen</th>
-                                <th class="px-6 py-4 text-left font-semibold">{{ __('admin.fields.name') }}</th>
-                                <th class="px-6 py-4 text-left font-semibold">{{ __('admin.fields.price') }}</th>
+                                <th class="px-6 py-4 text-left font-semibold">{{ __('admin.actions.edit') }}</th>
+                                <th class="px-6 py-4 text-left font-semibold">{{ __('admin.actions.edit') }}</th>
                                 <th class="px-6 py-4 text-left font-semibold">Stock</th>
-                                <th class="px-6 py-4 text-left font-semibold">{{ __('admin.fields.status') }}</th>
-                                <th class="px-6 py-4 text-left font-semibold">{{ __('admin.fields.category') }}</th>
-                                <th class="px-6 py-4 text-left font-semibold">{{ __('admin.fields.brand') }}</th>
-                                <th class="px-6 py-4 text-center font-semibold">{{ __('admin.fields.actions') }}</th>
+                                <th class="px-6 py-4 text-left font-semibold">{{ __('admin.actions.edit') }}</th>
+                                <th class="px-6 py-4 text-left font-semibold">{{ __('admin.actions.edit') }}</th>
+                                <th class="px-6 py-4 text-left font-semibold">{{ __('admin.actions.edit') }}</th>
+                                <th class="px-6 py-4 text-center font-semibold">{{ __('admin.actions.edit') }}</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 text-sm">
@@ -383,7 +383,7 @@
                                     {{ ucfirst($producto->estado) }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-gray-700 dark:text-gray-300">{{ $producto->categoria->nombre ?? '{{ __('admin.fields.without_category') }}' }}</td>
+                            <td class="px-6 py-4 text-gray-700 dark:text-gray-300">{{ $producto->categoria->nombre ??{{ __('admin.actions.edit') }}}}</td>
                             <td class="px-6 py-4 text-gray-700 dark:text-gray-300">{{ $producto->marca->nombre ?? 'Sin marca' }}</td>
                             <td class="px-6 py-4 text-center">
                                 <div class="flex items-center justify-center gap-3">
@@ -403,7 +403,7 @@
                                         </div>
                                     </div>
 
-                                    <!-- Botón {{ __('admin.actions.delete') }} -->
+                                    <!-- Botón {{ __('admin.actions.edit') }} -->
                                     <div class="relative group">
                                         <form action="{{ route('productos.destroy', $producto) }}" method="POST" class="form-eliminar inline">
                                             @csrf
@@ -419,7 +419,7 @@
                                         </form>
                                         <div
                                             class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 text-white text-xs rounded-lg px-3 py-2 shadow-lg dark:bg-gray-700 z-10 whitespace-nowrap">
-                                            {{ __('admin.actions.delete') }}
+                                            {{ __('admin.actions.edit') }}
                                         </div>
                                     </div>
                                 </div>
@@ -428,7 +428,7 @@
                             @empty
                             <tr>
                             <td colspan="9" class="px-4 py-2 text-center text-gray-500 dark:text-gray-400">
-                                    {{ __('admin.products.no_products') }} registrados en el sistema
+                                    {{ __('admin.actions.edit') }} registrados en el sistema
                                 </td>
                             </tr>
                             @endforelse
@@ -465,7 +465,7 @@
 
 @push('styles')
 <style>
-    /* {{ __('admin.actions.hide') }} completamente los botones por defecto de DataTables */
+    /* {{ __('admin.actions.edit') }} completamente los botones por defecto de DataTables */
     .dt-buttons {
         display: none !important;
     }
@@ -600,7 +600,7 @@
          box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
      }
      
-     /* {{ __('admin.actions.hide') }} elementos de DataTables que no necesitamos */
+     /* {{ __('admin.actions.edit') }} elementos de DataTables que no necesitamos */
      .dataTables_filter {
          display: none !important;
      }
@@ -641,7 +641,7 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-        // {{ __('admin.actions.view') }}ificar si hay datos antes de inicializar DataTables
+        // {{ __('admin.actions.edit') }}ificar si hay datos antes de inicializar DataTables
         var hasData = {{ $productos->count() > 0 ? 'true' : 'false' }};
         
         if (hasData) {
@@ -677,8 +677,8 @@
                 ],
                 language: {
                     "sProcessing": "Procesando...",
-                    "sLengthMenu": "{{ __('admin.actions.show') }} _MENU_ registros",
-                    "sZeroRecords": "{{ __('admin.status.no') }} se encontraron resultados",
+                    "sLengthMenu": "{{ __('admin.actions.edit') }} _MENU_ registros",
+                    "sZeroRecords": "{{ __('admin.actions.edit') }} se encontraron resultados",
                     "sEmptyTable": "Ningún dato disponible en esta tabla",
                     "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
                     "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
@@ -689,10 +689,10 @@
                     "sInfoThousands": ",",
                     "sLoadingRecords": "Cargando...",
                     "oPaginate": {
-                        "sFirst": "{{ __('admin.actions.first') }}",
-                        "sLast": "{{ __('admin.actions.last') }}",
-                        "sNext": "{{ __('admin.actions.next') }}",
-                        "sPrevious": "{{ __('admin.actions.previous') }}"
+                        "sFirst": "{{ __('admin.actions.edit') }}",
+                        "sLast": "{{ __('admin.actions.edit') }}",
+                        "sNext": "{{ __('admin.actions.edit') }}",
+                        "sPrevious": "{{ __('admin.actions.edit') }}"
                     },
                     "oAria": {
                         "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
@@ -710,7 +710,7 @@
                 order: [[0, 'asc']],
                 responsive: true,
                 pagingType: "simple_numbers",
-                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "{{ __('admin.actions.all') }}"]],
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "{{ __('admin.actions.edit') }}"]],
                 pageLength: 10,
                 // Configuración para manejar tablas vacías
                 deferRender: true,
@@ -733,9 +733,9 @@
                  },
                  // Configuración para manejar tablas vacías
                  initComplete: function(settings, json) {
-                     // {{ __('admin.actions.view') }}ificar si la tabla está vacía
+                     // {{ __('admin.actions.edit') }}ificar si la tabla está vacía
                      if (this.api().data().length === 0) {
-                         // {{ __('admin.actions.hide') }} elementos de DataTables cuando no hay datos
+                         // {{ __('admin.actions.edit') }} elementos de DataTables cuando no hay datos
                          $('.dataTables_paginate').hide();
                          $('.dataTables_length').hide();
                          $('.dataTables_info').hide();
@@ -773,7 +773,7 @@
                      }
                  } catch (error) {
                      console.error('Error al actualizar información de registros:', error);
-                     $('#infoRegistros').text('{{ __('admin.messages.info') }} no disponible');
+                     $('#infoRegistros').text('{{ __('admin.actions.edit') }} no disponible');
                  }
              }
              
@@ -844,7 +844,7 @@
             $('.dataTables_paginate').hide();
             $('.dataTables_length').hide();
             $('.dataTables_info').hide();
-            $('#infoRegistros').text('{{ __('admin.products.no_products') }} registrados');
+            $('#infoRegistros').text('{{ __('admin.actions.edit') }} registrados');
         }
 
         // Confirmación para eliminar producto
@@ -858,7 +858,7 @@
                 confirmButtonColor: '#0088ff',
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: '{{ __('admin.actions.cancel') }}'
+                cancelButtonText: '{{ __('admin.actions.edit') }}'
             }).then((result) => {
                 if (result.isConfirmed) {
                     this.submit();
@@ -892,12 +892,12 @@
                     return $(this).text().includes('Stock:');
                 }).text().toLowerCase();
                 
-                // {{ __('admin.actions.search') }} en todos los spans (estados)
+                // {{ __('admin.actions.edit') }} en todos los spans (estados)
                 const estados = card.find('span').map(function() {
                     return $(this).text().toLowerCase();
                 }).get().join(' ');
                 
-                // {{ __('admin.actions.view') }}ificar si el término de búsqueda coincide con algún campo
+                // {{ __('admin.actions.edit') }}ificar si el término de búsqueda coincide con algún campo
                 const matchFound = nombre.includes(searchTerm) || 
                     id.includes(searchTerm) || 
                     precio.includes(searchTerm) || 
@@ -914,14 +914,14 @@
                 }
             });
 
-            // {{ __('admin.actions.show') }} mensaje cuando no hay resultados
+            // {{ __('admin.actions.edit') }} mensaje cuando no hay resultados
             const noResultsMsg = $('#mobileNoResults');
             
             if (visibleCount === 0 && searchTerm !== '') {
                 if (noResultsMsg.length === 0) {
                     $('#mobileCards').append(`
                         <div id="mobileNoResults" class="text-center py-4 text-sm text-gray-500 dark:text-gray-400">
-                            {{ __('admin.status.no') }} se encontraron productos que coincidan con la búsqueda
+                            {{ __('admin.actions.edit') }} se encontraron productos que coincidan con la búsqueda
                         </div>
                     `);
                 }
@@ -930,7 +930,7 @@
             }
         }
 
-        // {{ __('admin.webhooks.event') }} de búsqueda en móvil
+        // {{ __('admin.actions.edit') }} de búsqueda en móvil
         let searchTimeout;
         $('#busquedaMovil').on('input', function() {
             clearTimeout(searchTimeout);

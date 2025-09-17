@@ -17,19 +17,18 @@
                     <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 4.158a.75.75 0 11-1.06 1.06l-5.5-5.5a.75.75 0 010-1.06l5.5-5.5a.75.75 0 111.06 1.06L5.612 9.25H16.25A.75.75 0 0117 10z" clip-rule="evenodd" />
                     </svg>
-                    __('admin.actions.back')
-                </a>
+                   {{ {{ __('admin.actions.back') }} }}                </a>
             </div>
         </div>
     </div>
 
-    <!-- __('admin.webhooks.filters') de fecha -->
+    <!--{{ {{ __('admin.webhooks.filters') }} }}de fecha -->
     <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">__('admin.webhooks.filters') de __('admin.webhooks.date')</h3>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4"{{ >{{ __('admin.webhooks.filters') }} }}de{{ {{ __('admin.webhooks.date') }}< }}/h3>
         <form method="GET" action="{{ route('admin.inventario.productos-mas-vendidos') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
                 <label for="fecha_inicio" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    __('admin.webhooks.date') de Inicio
+                   {{ {{ __('admin.webhooks.date') }} }}de Inicio
                 </label>
                 <input type="date" 
                        id="fecha_inicio" 
@@ -40,7 +39,7 @@
             
             <div>
                 <label for="fecha_fin" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    __('admin.webhooks.date') de Fin
+                   {{ {{ __('admin.webhooks.date') }} }}de Fin
                 </label>
                 <input type="date" 
                        id="fecha_fin" 
@@ -55,8 +54,7 @@
                     <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
                     </svg>
-                    __('admin.actions.filter')
-                </button>
+                   {{ {{ __('admin.actions.filter') }} }}                </button>
             </div>
         </form>
     </div>
@@ -87,7 +85,7 @@
                         @endif
                     </div>
                     
-                    <!-- __('admin.messages.info') del producto -->
+                    <!--{{ {{ __('admin.messages.info') }} }}del producto -->
                     <div class="flex-1 min-w-0">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white truncate">
                             {{ $producto->nombre_producto }}
@@ -106,7 +104,7 @@
                                 Vendidos: {{ $producto->total_vendido ?? 0 }}
                             </p>
                             <p class="text-sm text-gray-500 dark:text-gray-400">
-                                __('admin.fields.category'): {{ $producto->categoria->nombre ?? '__('admin.fields.without_category')' }}
+                               {{ {{ __('admin.fields.category') }}: }} {{ $producto->categoria->nombre ?? {{ '{{ __('admin.fields.without_category') }}' }} }}
                             </p>
                         </div>
                     </div>
@@ -118,8 +116,8 @@
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">__('admin.status.no') hay datos de ventas</h3>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">__('admin.status.no') se encontraron productos vendidos en el período seleccionado.</p>
+            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white"{{ >{{ __('admin.status.no') }} }}hay datos de ventas</h3>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400"{{ >{{ __('admin.status.no') }} }}se encontraron productos vendidos en el período seleccionado.</p>
         </div>
         @endforelse
     </div>
@@ -128,7 +126,7 @@
     <div class="hidden sm:block">
         <div class="bg-white dark:bg-gray-900 rounded-lg shadow-md overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Top 20 __('admin.products.product')s Más Vendidos</h3>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Top 20{{ {{ __('admin.products.product') }}s }} Más Vendidos</h3>
                 <p class="text-sm text-gray-500 dark:text-gray-400">Período: {{ $fechaInicio->format('d/m/Y') }} - {{ $fechaFin->format('d/m/Y') }}</p>
             </div>
             
@@ -137,12 +135,12 @@
                     <thead class="bg-gray-50 dark:bg-gray-800">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Posición</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">__('admin.products.product')</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">__('admin.fields.category')</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">__('admin.fields.price')</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"{{ >{{ __('admin.products.product') }}< }}/th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"{{ >{{ __('admin.fields.category') }}< }}/th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"{{ >{{ __('admin.fields.price') }}< }}/th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Stock</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Vendidos</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">__('admin.fields.value') Total</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"{{ >{{ __('admin.fields.value') }} }}Total</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
@@ -179,7 +177,7 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                {{ $producto->categoria->nombre ?? '__('admin.fields.without_category')' }}
+                                {{ $producto->categoria->nombre ?? {{ '{{ __('admin.fields.without_category') }}' }} }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                 ${{ number_format($producto->precio, 0, ',', '.') }}
@@ -203,8 +201,8 @@
                                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                     </svg>
-                                    <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">__('admin.status.no') hay datos de ventas</h3>
-                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">__('admin.status.no') se encontraron productos vendidos en el período seleccionado.</p>
+                                    <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white"{{ >{{ __('admin.status.no') }} }}hay datos de ventas</h3>
+                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400"{{ >{{ __('admin.status.no') }} }}se encontraron productos vendidos en el período seleccionado.</p>
                                 </div>
                             </td>
                         </tr>
@@ -244,7 +242,7 @@
                         </svg>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-green-600 dark:text-green-400">__('admin.fields.value') Total</p>
+                        <p class="text-sm font-medium text-green-600 dark:text-green-400"{{ >{{ __('admin.fields.value') }} }}Total</p>
                         <p class="text-2xl font-semibold text-green-900 dark:text-green-100">
                             ${{ number_format($productos->sum(function($p) { return ($p->total_vendido ?? 0) * $p->precio; }), 0, ',', '.') }}
                         </p>
@@ -260,7 +258,7 @@
                         </svg>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-purple-600 dark:text-purple-400">Promedio por __('admin.products.product')</p>
+                        <p class="text-sm font-medium text-purple-600 dark:text-purple-400">Promedio por{{ {{ __('admin.products.product') }}< }}/p>
                         <p class="text-2xl font-semibold text-purple-900 dark:text-purple-100">
                             {{ $productos->count() > 0 ? number_format($productos->sum('total_vendido') / $productos->count(), 0, ',', '.') : 0 }}
                         </p>
