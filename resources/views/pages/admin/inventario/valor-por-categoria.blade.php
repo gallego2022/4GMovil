@@ -8,7 +8,7 @@
     <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Valor del Inventario por Categoría</h1>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white"{{ >{{ __('admin.fields.value') }} }}del{{ {{ __('admin.inventory.title') }} }}por{{ {{ __('admin.fields.category') }}< }}/h1>
                 <p class="mt-2 text-sm text-gray-500 dark:text-gray-300">Análisis del valor del inventario distribuido por categorías</p>
             </div>
             <div class="flex items-center gap-2">
@@ -17,8 +17,7 @@
                     <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 4.158a.75.75 0 11-1.06 1.06l-5.5-5.5a.75.75 0 010-1.06l5.5-5.5a.75.75 0 111.06 1.06L5.612 9.25H16.25A.75.75 0 0117 10z" clip-rule="evenodd" />
                     </svg>
-                    Volver
-                </a>
+                   Volver a Dashboard                </a>
             </div>
         </div>
     </div>
@@ -35,7 +34,7 @@
                         </svg>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-blue-600 dark:text-blue-400">Valor Total</p>
+                        <p class="text-sm font-medium text-blue-600 dark:text-blue-400">Total</p>
                         <p class="text-2xl font-semibold text-blue-900 dark:text-blue-100">
                             ${{ number_format($valorTotal, 0, ',', '.') }}
                         </p>
@@ -99,10 +98,10 @@
                         </h3>
                         <div class="mt-1 flex flex-col space-y-1">
                             <p class="text-sm text-gray-500 dark:text-gray-400">
-                                Productos: {{ $item['productos_count'] ?? 0 }}
+                               Productos: {{ $item['productos_count'] ?? 0 }}
                             </p>
                             <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                Valor: ${{ number_format($item['valor_total'], 0, ',', '.') }}
+                               Valor: ${{ number_format($item['valor_total'], 0, ',', '.') }}
                             </p>
                             <p class="text-sm text-gray-500 dark:text-gray-400">
                                 Stock Total: {{ $item['stock_total'] ?? 0 }}
@@ -129,7 +128,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
             </svg>
             <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No hay categorías</h3>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">No se encontraron categorías con productos en inventario.</p>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400"{{ >{{ __('admin.status.no') }} }}se encontraron categorías con productos en inventario.</p>
         </div>
         @endforelse
     </div>
@@ -201,7 +200,7 @@
                             @empty
                             <tr>
                                 <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                                    No hay categorías con productos en inventario
+                                   No hay categorías con productos en inventario
                                 </td>
                             </tr>
                             @endforelse

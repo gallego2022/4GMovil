@@ -15,11 +15,10 @@ return [
         'wishlist' => 'Wishlist',
     ],
 
-    // Language/Country/Currency Selector
+    // Language/Currency Selector
     'language_selector' => [
         'title' => 'Update your configuration',
-        'subtitle' => 'Set your preferred region, language, and preferred currency.',
-        'region' => 'Region',
+        'subtitle' => 'Set your preferred language and currency.',
         'language' => 'Language',
         'currency' => 'Currency',
         'save' => 'Save',
@@ -29,15 +28,7 @@ return [
     // Countries
     'countries' => [
         'colombia' => 'Colombia',
-        'mexico' => 'Mexico',
-        'argentina' => 'Argentina',
-        'chile' => 'Chile',
-        'peru' => 'Peru',
-        'venezuela' => 'Venezuela',
-        'ecuador' => 'Ecuador',
-        'bolivia' => 'Bolivia',
-        'uruguay' => 'Uruguay',
-        'paraguay' => 'Paraguay',
+        'brasil' => 'Brazil',
         'spain' => 'Spain',
         'usa' => 'United States',
     ],
@@ -45,19 +36,13 @@ return [
     // Currencies
     'currencies' => [
         'COP' => 'Colombian Peso (COP)',
-        'MXN' => 'Mexican Peso (MXN)',
-        'ARS' => 'Argentine Peso (ARS)',
-        'CLP' => 'Chilean Peso (CLP)',
-        'PEN' => 'Peruvian Sol (PEN)',
-        'VES' => 'Venezuelan Bolivar (VES)',
         'USD' => 'US Dollar (USD)',
         'EUR' => 'Euro (EUR)',
     ],
 
     // Languages
     'languages' => [
-        'es' => 'Latin American Spanish',
-        'es-ES' => 'Spanish (Spain)',
+        'es' => 'Spanish',
         'en' => 'English',
         'pt' => 'Portuguese',
     ],
@@ -74,6 +59,7 @@ return [
         'stock' => 'Stock',
         'out_of_stock' => 'Out of Stock',
         'select_variant' => 'Select Variant',
+        'used'=> 'Used Products',
         'review' => 'review',
         'reviews' => 'reviews',
         'no_reviews' => 'No reviews',

@@ -1,6 +1,6 @@
 @extends('layouts.app-new')
 
-@section('title', 'Especificaciones por Categoría - 4GMovil')
+@section('title', __('admin.specifications.title') . ' por ' . __('admin.fields.category') . ' - 4GMovil')
 
 @push('datatables-css')
     <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
@@ -27,7 +27,7 @@
             <!-- Encabezado móvil -->
             <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
                 <div class="mb-4">
-                    <h2 class="text-xl font-bold text-gray-900 dark:text-white">Especificaciones por Categoría</h2>
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-white">{{ __('admin.specifications.title') }} por {{ __('admin.fields.category') }}</h2>
                     <p class="text-sm text-gray-500 dark:text-gray-300">Gestiona las especificaciones técnicas de cada
                         categoría</p>
                 </div>
@@ -43,7 +43,7 @@
                                 d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z"
                                 stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
-                        Crear Especificación
+                       Crear Especificación
                     </a>
                 </div>
 
@@ -51,7 +51,7 @@
                 <div class="relative mt-2 rounded-md shadow-sm">
                     <input type="text" id="busquedaMovil"
                         class="block w-full rounded-md border-0 py-1.5 pl-4 pr-10 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 dark:bg-gray-800 sm:text-sm sm:leading-6"
-                        placeholder="Buscar especificaciones...">
+                        placeholder="{{ __('admin.actions.search') }} especificaciones...">
                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                         <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd"
@@ -83,13 +83,13 @@
                                 </h3>
                                 <div class="mt-1 flex flex-col space-y-1">
                                     <p class="text-sm text-gray-500 dark:text-gray-400">
-                                        Categoría: {{ $especificacion->categoria->nombre ?? 'Sin categoría' }}
+                                       {{ __('admin.fields.category') }}: {{ $especificacion->categoria->nombre ?? __('admin.fields.without_category') }}
                                     </p>
                                     <p class="text-sm text-gray-500 dark:text-gray-400">
-                                        Tipo: {{ ucfirst($especificacion->tipo_campo) }}
+                                       {{ __('admin.fields.type') }}: {{ ucfirst($especificacion->tipo_campo) }}
                                     </p>
                                     <p class="text-sm text-gray-500 dark:text-gray-400">
-                                        Requerido: {{ $especificacion->requerido ? 'Sí' : 'No' }}
+                                       {{ __('admin.fields.required') }}: {{ $especificacion->requerido ? __('admin.status.yes') : __('admin.status.no') }}
                                     </p>
                                 </div>
                             </div>
@@ -103,8 +103,7 @@
                                     <path
                                         d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z" />
                                 </svg>
-                                Editar
-                            </a>
+                               {{ __('admin.actions.edit') }}                            </a>
                             <form action="{{ route('admin.especificaciones.destroy', $especificacion->especificacion_id) }}"
                                 method="POST" class="form-eliminar inline">
                                 @csrf
@@ -116,15 +115,14 @@
                                             d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z"
                                             clip-rule="evenodd" />
                                     </svg>
-                                    Eliminar
-                                </button>
+                                   {{ __('admin.actions.delete') }}                                </button>
                             </form>
                         </div>
                     </div>
                 </div>
             @empty
                 <div class="text-center py-4 text-sm text-gray-500 dark:text-gray-400">
-                    No hay especificaciones registradas en el sistema
+                   {{ __('admin.status.no') }} hay especificaciones registradas en el sistema
                 </div>
             @endforelse
         </div>
@@ -138,7 +136,7 @@
                         <div>
                             <h2
                                 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">
-                                Especificaciones por Categoría</h2>
+                               {{ __('admin.specifications.title') }} por {{ __('admin.fields.category') }}</h2>
                             <p class="mt-1 text-sm text-gray-500 dark:text-gray-300">Gestiona las especificaciones técnicas
                                 de cada categoría</p>
                         </div>
@@ -150,7 +148,7 @@
                                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                             </svg>
-                            Crear Especificación
+                           Crear Especificación
                         </a>
                     </div>
                 </div>
@@ -163,12 +161,12 @@
                         <div class="flex-1 max-w-md">
                             <label for="busquedaEscritorio"
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Buscar especificaciones
+                               {{ __('admin.actions.search') }} especificaciones
                             </label>
                             <div class="relative">
                                 <input type="text" id="busquedaEscritorio"
                                     class="block w-full rounded-md border-0 py-2 pl-10 pr-4 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 dark:bg-gray-700 sm:text-sm"
-                                    placeholder="Buscar por nombre, categoría...">
+                                    placeholder="{{ __('admin.actions.search') }} por nombre, categoría...">
                                 <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                     <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd"
@@ -195,11 +193,11 @@
                                 class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 text-gray-700 dark:text-gray-300 text-sm font-semibold">
                                 <tr>
                                     <th class="px-6 py-4 text-left font-semibold">ID</th>
-                                    <th class="px-6 py-4 text-left font-semibold">Nombre</th>
-                                    <th class="px-6 py-4 text-left font-semibold">Categoría</th>
-                                    <th class="px-6 py-4 text-left font-semibold">Tipo</th>
-                                    <th class="px-6 py-4 text-center font-semibold">Requerido</th>
-                                    <th class="px-6 py-4 text-center font-semibold">Acciones</th>
+                                    <th class="px-6 py-4 text-left font-semibold">{{ __('admin.fields.name') }}</th>
+                                    <th class="px-6 py-4 text-left font-semibold">{{ __('admin.fields.category') }}</th>
+                                    <th class="px-6 py-4 text-left font-semibold">{{ __('admin.fields.type') }}</th>
+                                    <th class="px-6 py-4 text-center font-semibold">{{ __('admin.fields.required') }}</th>
+                                    <th class="px-6 py-4 text-center font-semibold">{{ __('admin.fields.actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 text-sm">
@@ -211,20 +209,18 @@
                                         <td class="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">
                                             {{ $especificacion->etiqueta }}</td>
                                         <td class="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">
-                                            {{ $especificacion->categoria->nombre ?? 'Sin categoría' }}</td>
+                                            {{ $especificacion->categoria->nombre ?? __('admin.fields.without_category') }}</td>
                                         <td class="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">
                                             {{ ucfirst($especificacion->tipo_campo) }}</td>
                                         <td class="px-6 py-4 text-center">
                                             @if ($especificacion->requerido)
                                                 <span
                                                     class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                                                    Sí
-                                                </span>
+                                                   {{ __('admin.status.yes') }}                                                </span>
                                             @else
                                                 <span
                                                     class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
-                                                    No
-                                                </span>
+                                                   {{ __('admin.status.no') }}                                                </span>
                                             @endif
                                         </td>
                                         <td class="px-6 py-4 flex items-center gap-3 justify-center">
@@ -241,8 +237,7 @@
                                                 </a>
                                                 <div
                                                     class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 text-white text-xs rounded-lg px-3 py-2 shadow-lg dark:bg-gray-700 z-10 whitespace-nowrap">
-                                                    Editar
-                                                </div>
+                                                   {{ __('admin.actions.edit') }}                                                </div>
                                             </div>
 
                                             <!-- Botón Eliminar -->
@@ -263,15 +258,14 @@
                                                 </form>
                                                 <div
                                                     class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 text-white text-xs rounded-lg px-3 py-2 shadow-lg dark:bg-gray-700 z-10 whitespace-nowrap">
-                                                    Eliminar
-                                                </div>
+                                                   {{ __('admin.actions.delete') }}                                                </div>
                                             </div>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
                                         <td colspan="6" class="px-4 py-2 text-center text-gray-500 dark:text-gray-400">
-                                            No hay especificaciones registradas en el sistema
+                                           {{ __('admin.status.no') }} hay especificaciones registradas en el sistema
                                         </td>
                                     </tr>
                                 @endforelse
@@ -295,8 +289,8 @@
                         dom: 'rtip',
                         language: {
                             "sProcessing": "Procesando...",
-                            "sLengthMenu": "Mostrar _MENU_ registros",
-                            "sZeroRecords": "No se encontraron resultados",
+                            "sLengthMenu": "{{ __('admin.actions.show') }} _MENU_ registros",
+                            "sZeroRecords": "{{ __('admin.status.no') }} se encontraron resultados",
                             "sEmptyTable": "Ningún dato disponible en esta tabla",
                             "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
                             "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
@@ -307,10 +301,10 @@
                             "sInfoThousands": ",",
                             "sLoadingRecords": "Cargando...",
                             "oPaginate": {
-                                "sFirst": "Primero",
-                                "sLast": "Último",
-                                "sNext": "Siguiente",
-                                "sPrevious": "Anterior"
+                                "sFirst": "{{ __('admin.actions.first') }}",
+                                "sLast": "{{ __('admin.actions.last') }}",
+                                "sNext": "{{ __('admin.actions.next') }}",
+                                "sPrevious": "{{ __('admin.actions.previous') }}"
                             },
                             "oAria": {
                                 "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
@@ -337,7 +331,7 @@
                         pagingType: "simple_numbers",
                         lengthMenu: [
                             [10, 25, 50, -1],
-                            [10, 25, 50, "Todos"]
+                            [10, 25, 50, "{{ __('admin.actions.all') }}"]
                         ],
                         pageLength: 10,
                         deferRender: true,
@@ -407,7 +401,7 @@
                             }
                         } catch (error) {
                             console.error('Error al actualizar información de registros:', error);
-                            $('#infoRegistros').text('Información no disponible');
+                            $('#infoRegistros').text('{{ __('admin.messages.info') }} no disponible');
                         }
                     }
 
@@ -448,7 +442,7 @@
                     $('.dataTables_paginate').hide();
                     $('.dataTables_length').hide();
                     $('.dataTables_info').hide();
-                    $('#infoRegistros').text('No hay especificaciones registradas');
+                    $('#infoRegistros').text('{{ __('admin.status.no') }} hay especificaciones registradas');
                 }
 
                 // Confirmación para eliminar especificación
@@ -462,7 +456,7 @@
                         confirmButtonColor: '#0088ff',
                         cancelButtonColor: '#d33',
                         confirmButtonText: 'Sí, eliminar',
-                        cancelButtonText: 'Cancelar'
+                        cancelButtonText: '{{ __('admin.actions.cancel') }}'
                     }).then((result) => {
                         if (result.isConfirmed) {
                             this.submit();
@@ -506,7 +500,7 @@
                         if (noResultsMsg.length === 0) {
                             $('#mobileCards').append(`
                         <div id="mobileNoResults" class="text-center py-4 text-sm text-gray-500 dark:text-gray-400">
-                            No se encontraron especificaciones que coincidan con la búsqueda
+                           {{ __('admin.status.no') }} se encontraron especificaciones que coincidan con la búsqueda
                         </div>
                     `);
                         }

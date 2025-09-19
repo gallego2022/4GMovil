@@ -16,18 +16,32 @@ class RequireAdminRole
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Verificar si el usuario está autenticado
-        if (!Auth::check()) {
+        try {
+            // Verificar si el usuario está autenticado
+            if (!Auth::check()) {
+                return redirect()->route('login')
+                    ->with('error', 'Debes iniciar sesión para acceder a esta sección.');
+            }
+
+            // Obtener el usuario de forma segura
+            $user = Auth::user();
+            
+            if (!$user) {
+                return redirect()->route('login')
+                    ->with('error', 'Usuario no encontrado.');
+            }
+
+            // Verificar si el usuario tiene rol de admin
+            if ($user->rol !== 'admin') {
+                return redirect()->route('perfil')
+                    ->with('error', 'No tienes permisos de administrador para acceder a esta sección.');
+            }
+
+            return $next($request);
+        } catch (\Exception $e) {
+            \Log::error('Error en RequireAdminRole middleware: ' . $e->getMessage());
             return redirect()->route('login')
-                ->with('error', 'Debes iniciar sesión para acceder a esta sección.');
+                ->with('error', 'Error de autenticación. Por favor, inicia sesión nuevamente.');
         }
-
-        // Verificar si el usuario tiene rol de admin
-        if (Auth::user()->rol !== 'admin') {
-            return redirect()->route('perfil')
-                ->with('error', 'No tienes permisos de administrador para acceder a esta sección.');
-        }
-
-        return $next($request);
     }
 }

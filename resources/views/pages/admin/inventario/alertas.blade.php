@@ -17,8 +17,7 @@
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
-                    Volver al Dashboard
-                </a>
+                   Volver a Dashboard                </a>
             </div>
         </div>
     </div>
@@ -37,7 +36,7 @@
                 </button>
                 <button onclick="cambiarTab('sin-stock')" 
                         class="tab-button border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
-                    Sin Stock ({{ $productosSinStock->count() }})
+                   Sin Stock ({{ $productosSinStock->count() }})
                 </button>
                 <button onclick="cambiarTab('excesivo')" 
                         class="tab-button border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
@@ -175,7 +174,7 @@
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock Actual</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock Inicial</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Porcentaje</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('admin.fields.actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
@@ -200,7 +199,7 @@
                                                 @endif
                                                 <div class="ml-4">
                                                     <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $variante->producto->nombre_producto }}</div>
-                                                    <div class="text-sm text-gray-500 dark:text-gray-400">{{ $variante->producto->categoria->nombre ?? 'Sin categoría' }}</div>
+                                                    <div class="text-sm text-gray-500 dark:text-gray-400">{{ $variante->producto->categoria->nombre ?? __('admin.fields.without_category') }}</div>
                                                 </div>
                                             </div>
                                         </td>
@@ -251,7 +250,7 @@
                 @endif
             </div>
 
-            <!-- Tab Sin Stock -->
+            <!-- Tab de Productos Sin Stock -->
             <div id="tab-sin-stock" class="tab-content hidden">
                 <div class="mb-4">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Productos Sin Stock</h3>
@@ -263,11 +262,11 @@
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <thead class="bg-gray-50 dark:bg-gray-800">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Producto</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Categoría</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('admin.products.product') }}</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('admin.fields.category') }}</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock Actual</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock Mínimo</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('admin.fields.actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
@@ -293,7 +292,7 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                            {{ $producto->categoria->nombre ?? 'Sin categoría' }}
+                                            {{ $producto->categoria->nombre ?? __('admin.fields.without_category') }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex flex-col space-y-1">
@@ -360,12 +359,12 @@
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <thead class="bg-gray-50 dark:bg-gray-800">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Producto</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Categoría</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('admin.products.product') }}</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('admin.fields.category') }}</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock Actual</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock Recomendado</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Demanda</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('admin.fields.actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
@@ -396,7 +395,7 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                            {{ $producto->categoria->nombre ?? 'Sin categoría' }}
+                                            {{ $producto->categoria->nombre ?? __('admin.fields.without_category') }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex flex-col space-y-1">
@@ -460,7 +459,7 @@
                                                     @endif
                                                 </div>
                                             @else
-                                                <span class="text-xs text-gray-500 dark:text-gray-400">Sin datos</span>
+                                                <span class="text-xs text-gray-500 dark:text-gray-400">{{ __('admin.fields.without_data') }}</span>
                                             @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
@@ -499,7 +498,7 @@
                                                 @if(!empty($stockOptimo) && $producto->stock > $stockOptimo['stock_maximo_recomendado'])
                                                     <button onclick="mostrarRecomendacionStock({{ $producto->producto_id }}, '{{ $producto->nombre_producto }}', {{ $stockOptimo['stock_maximo_recomendado'] }})" 
                                                             class="text-orange-600 dark:text-orange-400 hover:text-orange-900 dark:hover:text-orange-300">
-                                                        Ver Recomendación
+                                                       Ver Recomendación
                                                     </button>
                                                 @endif
                                             </div>
@@ -560,8 +559,7 @@
                 <div class="flex justify-end space-x-3">
                     <button type="button" onclick="cerrarModalEntrada()" 
                             class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 dark:bg-gray-600 dark:text-gray-300 dark:hover:bg-gray-500">
-                        Cancelar
-                    </button>
+                       Cancelar                    </button>
                     <button type="submit" 
                             class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
                         Registrar Entrada
@@ -579,7 +577,7 @@
             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Recomendación de Stock</h3>
             
             <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Producto</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ __('admin.products.product') }}</label>
                 <input type="text" id="recomendacion_producto_nombre" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white" readonly>
             </div>
             

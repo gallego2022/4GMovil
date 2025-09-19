@@ -4,7 +4,7 @@
     'Descubre nuestros productos destacados en 4GMovil. Encuentra lo mejor en tecnología móvil
     y accesorios.')
 @section('content')
-
+@include('components.loading-screen')
     <!-- Hero Section -->
     <section id="inicio" class="min-h-screen flex items-center relative overflow-hidden pt-16">
         <div class="absolute inset-0">

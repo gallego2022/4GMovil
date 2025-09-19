@@ -382,7 +382,6 @@
 </head>
 
 <body class="bg-white dark:bg-gray-900 transition-colors duration-300">
-    @include('components.loading-screen')
     <!-- Scroll Progress Indicator -->
     <div class="scroll-indicator" id="scrollIndicator"></div>
     <!-- Navigation -->

@@ -9,8 +9,11 @@ class LocalizationConfig extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'id';
+    protected $table = 'localization_configs';
+
     protected $fillable = [
-        'user_id',
+        'usuario_id',
         'country_code',
         'language_code',
         'currency_code',
@@ -27,7 +30,7 @@ class LocalizationConfig extends Model
     // Relación con usuario
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'usuario_id', 'usuario_id');
     }
 
     // Configuraciones por defecto
@@ -47,7 +50,7 @@ class LocalizationConfig extends Model
     public static function getConfigForUser($userId = null)
     {
         if ($userId) {
-            $config = self::where('user_id', $userId)->first();
+            $config = self::where('usuario_id', $userId)->first();
             if ($config) {
                 return $config;
             }

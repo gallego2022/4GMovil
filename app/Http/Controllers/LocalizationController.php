@@ -18,34 +18,21 @@ class LocalizationController extends Controller
         
         $countries = [
             'CO' => ['name' => 'Colombia', 'flag' => '🇨🇴'],
-            'MX' => ['name' => 'México', 'flag' => '🇲🇽'],
-            'AR' => ['name' => 'Argentina', 'flag' => '🇦🇷'],
-            'CL' => ['name' => 'Chile', 'flag' => '🇨🇱'],
-            'PE' => ['name' => 'Perú', 'flag' => '🇵🇪'],
-            'VE' => ['name' => 'Venezuela', 'flag' => '🇻🇪'],
-            'EC' => ['name' => 'Ecuador', 'flag' => '🇪🇨'],
-            'BO' => ['name' => 'Bolivia', 'flag' => '🇧🇴'],
-            'UY' => ['name' => 'Uruguay', 'flag' => '🇺🇾'],
-            'PY' => ['name' => 'Paraguay', 'flag' => '🇵🇾'],
-            'ES' => ['name' => 'España', 'flag' => '🇪🇸'],
             'US' => ['name' => 'Estados Unidos', 'flag' => '🇺🇸'],
+            'BR' => ['name' => 'Brasil', 'flag' => '🇧🇷'],
+            'ES' => ['name' => 'España', 'flag' => '🇪🇸'],
         ];
 
         $languages = [
-            'es' => 'Español Latinoamericano',
-            'es-ES' => 'Español (España)',
+            'es' => 'Español',
             'en' => 'English',
             'pt' => 'Português',
         ];
 
         $currencies = [
             'COP' => 'Peso colombiano (COP)',
-            'MXN' => 'Peso mexicano (MXN)',
-            'ARS' => 'Peso argentino (ARS)',
-            'CLP' => 'Peso chileno (CLP)',
-            'PEN' => 'Sol peruano (PEN)',
-            'VES' => 'Bolívar venezolano (VES)',
             'USD' => 'Dólar estadounidense (USD)',
+            'BRL' => 'Real brasileño (BRL)',
             'EUR' => 'Euro (EUR)',
         ];
 
@@ -63,29 +50,42 @@ class LocalizationController extends Controller
     public function saveConfig(Request $request)
     {
         $request->validate([
-            'country_code' => 'required|string|max:2',
+            'country_code' => 'nullable|string|max:2',
             'language_code' => 'required|string|max:5',
             'currency_code' => 'required|string|max:3',
         ]);
 
         try {
+            // Inferir país si no llega y forzar EUR si es España
+            $languageConfigs = [
+                'es' => ['country' => 'CO', 'currency' => 'COP'],
+                'en' => ['country' => 'US', 'currency' => 'USD'],
+                'pt' => ['country' => 'BR', 'currency' => 'BRL'],
+            ];
+
+            $countryCode = strtoupper($request->country_code ?? Session::get('country') ?? ($languageConfigs[$request->language_code]['country'] ?? 'CO'));
+
+            if ($countryCode === 'ES') {
+                $request->merge(['currency_code' => 'EUR']);
+            }
+
             // Establecer locale en la sesión directamente
             App::setLocale($request->language_code);
             Session::put('locale', $request->language_code);
-            Session::put('country', $request->country_code);
+            Session::put('country', $countryCode);
             Session::put('currency', $request->currency_code);
 
             // Si el usuario está autenticado, guardar en la base de datos
             if (auth()->check()) {
                 $userId = auth()->id();
-                $config = LocalizationConfig::where('user_id', $userId)->first();
+                $config = LocalizationConfig::where('usuario_id', $userId)->first();
                 
                 if (!$config) {
                     $config = new LocalizationConfig();
-                    $config->user_id = $userId;
+                    $config->usuario_id = $userId;
                 }
 
-                $config->country_code = $request->country_code;
+                $config->country_code = $countryCode;
                 $config->language_code = $request->language_code;
                 $config->currency_code = $request->currency_code;
                 $config->save();
@@ -126,6 +126,12 @@ class LocalizationController extends Controller
             ];
             
             $config = $languageConfigs[$language] ?? $languageConfigs['es'];
+
+            // Si la sesión indica España, forzar EUR
+            $sessionCountry = Session::get('country');
+            if ($language === 'es' && $sessionCountry === 'ES') {
+                $config = ['country' => 'ES', 'currency' => 'EUR'];
+            }
             
             // Establecer locale
             App::setLocale($language);
@@ -135,10 +141,10 @@ class LocalizationController extends Controller
             
             // Actualizar configuración del usuario si está autenticado
             if (auth()->check()) {
-                $userConfig = LocalizationConfig::where('user_id', auth()->id())->first();
+                $userConfig = LocalizationConfig::where('usuario_id', auth()->id())->first();
                 if (!$userConfig) {
                     $userConfig = new LocalizationConfig();
-                    $userConfig->user_id = auth()->id();
+                    $userConfig->usuario_id = auth()->id();
                 }
                 
                 $userConfig->language_code = $language;

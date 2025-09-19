@@ -1,6 +1,6 @@
 @extends('layouts.app-new')
 
-@section('title', 'Administración de Pedidos - 4GMovil')
+@section('title', 'Administración de pedidos - 4GMovil')
 
 @php
     function getEstadoClasses($estado) {
@@ -42,7 +42,7 @@
         <!-- Encabezado móvil -->
         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
             <div class="mb-4">
-                <h2 class="text-xl font-bold text-gray-900 dark:text-white">Administración de Pedidos</h2>
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white">Administración de pedidos</h2>
                 <p class="text-sm text-gray-500 dark:text-gray-300">Gestiona todos los pedidos de la tienda</p>
             </div>
             
@@ -84,7 +84,7 @@
                 <input type="text" 
                        id="busquedaMovil" 
                        class="block w-full rounded-md border-0 py-1.5 pl-4 pr-10 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 dark:bg-gray-800 sm:text-sm sm:leading-6" 
-                       placeholder="Buscar pedidos...">
+                       placeholder="{{ __('admin.actions.search') }} pedidos...">
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                     <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
@@ -106,20 +106,20 @@
                     </div>
                     <div class="flex-1 min-w-0">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white truncate">
-                            Pedido #{{ $pedido->pedido_id }}
+                           Pedido #{{ $pedido->pedido_id }}
                         </h3>
                         <div class="mt-1 flex flex-col space-y-1">
                             <p class="text-sm text-gray-500 dark:text-gray-400">
                                 Cliente: {{ $pedido->usuario->nombre_usuario }}
                             </p>
                             <p class="text-sm text-gray-500 dark:text-gray-400">
-                                Email: {{ $pedido->usuario->correo_electronico }}
+                               {{ __('admin.fields.email') }}: {{ $pedido->usuario->correo_electronico }}
                             </p>
                             <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
                                 Total: ${{ number_format($pedido->detalles->sum(function($detalle) { return $detalle->cantidad * $detalle->precio_unitario; }), 0, ',', '.') }}
                             </p>
                             <p class="text-sm text-gray-500 dark:text-gray-400">
-                                Fecha: {{ \Carbon\Carbon::parse($pedido->fecha_pedido)->format('d/m/Y H:i') }}
+                               Fecha: {{ \Carbon\Carbon::parse($pedido->fecha_pedido)->format('d/m/Y H:i') }}
                             </p>
                             <p class="text-sm text-gray-500 dark:text-gray-400">
                                 Método: {{ \App\Helpers\PaymentHelper::getPaymentMethodName($pedido) }}
@@ -143,14 +143,14 @@
                             <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
                             <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
                         </svg>
-                        Ver Detalles
+                       Ver Detalles
                     </a>
                 </div>
             </div>
         </div>
         @empty
         <div class="text-center py-4 text-sm text-gray-500 dark:text-gray-400">
-            No hay pedidos registrados en el sistema
+           No hay pedidos registrados en el sistema
         </div>
         @endforelse
     </div>
@@ -162,7 +162,7 @@
             <div class="mb-6">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                     <div>
-                        <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">Administración de Pedidos</h2>
+                        <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">Administración de pedidos</h2>
                         <p class="mt-1 text-sm text-gray-500 dark:text-gray-300">Gestiona todos los pedidos de la tienda</p>
                     </div>
                     
@@ -174,13 +174,13 @@
                     <!-- Búsqueda personalizada -->
                     <div class="flex-1 max-w-md">
                         <label for="busquedaEscritorio" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Buscar pedidos
+                           {{ __('admin.actions.search') }} pedidos
                         </label>
                         <div class="relative">
                             <input type="text" 
                                    id="busquedaEscritorio" 
                                    class="block w-full rounded-md border-0 py-2 pl-10 pr-4 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 dark:bg-gray-700 sm:text-sm" 
-                                   placeholder="Buscar por ID, cliente, estado...">
+                                   placeholder="{{ __('admin.actions.search') }} por ID, cliente, estado...">
                             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                 <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
@@ -189,7 +189,7 @@
                         </div>
                     </div>
                     
-                    <!-- Información de registros -->
+                    <!-- Info de registros -->
                     <div class="text-sm text-gray-500 dark:text-gray-400">
                         <span id="infoRegistros">Mostrando todos los pedidos</span>
                     </div>
@@ -278,7 +278,7 @@
                                     </a>
                                     <div
                                         class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 text-white text-xs rounded px-2 py-1 shadow-lg dark:bg-gray-700 z-10">
-                                        Ver Detalles
+                                       Ver Detalles
                                     </div>
                                 </div>
                             </td>
@@ -286,7 +286,7 @@
                         @empty
                         <tr>
                             <td colspan="7" class="px-4 py-2 text-center text-gray-500 dark:text-gray-400">
-                                No hay pedidos registrados en el sistema
+                               No hay pedidos registrados en el sistema
                             </td>
                         </tr>
                         @endforelse
@@ -561,8 +561,8 @@
                 ],
                 language: {
                     "sProcessing": "Procesando...",
-                    "sLengthMenu": "Mostrar _MENU_ registros",
-                    "sZeroRecords": "No se encontraron resultados",
+                    "sLengthMenu": "{{ __('admin.actions.show') }} _MENU_ registros",
+                    "sZeroRecords": "{{ __('admin.status.no') }} se encontraron resultados",
                     "sEmptyTable": "Ningún dato disponible en esta tabla",
                     "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
                     "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
@@ -573,10 +573,10 @@
                     "sInfoThousands": ",",
                     "sLoadingRecords": "Cargando...",
                     "oPaginate": {
-                        "sFirst": "Primero",
-                        "sLast": "Último",
-                        "sNext": "Siguiente",
-                        "sPrevious": "Anterior"
+                        "sFirst": "{{ __('admin.actions.first') }}",
+                        "sLast": "{{ __('admin.actions.last') }}",
+                        "sNext": "{{ __('admin.actions.next') }}",
+                        "sPrevious": "{{ __('admin.actions.previous') }}"
                     },
                     "oAria": {
                         "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
@@ -594,7 +594,7 @@
                 order: [[0, 'desc']],
                 responsive: true,
                 pagingType: "simple_numbers",
-                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Todos"]],
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "{{ __('admin.actions.all') }}"]],
                 pageLength: 10,
                 // Configuración para manejar tablas vacías
                 deferRender: true,
@@ -657,7 +657,7 @@
                      }
                  } catch (error) {
                      console.error('Error al actualizar información de registros:', error);
-                     $('#infoRegistros').text('Información no disponible');
+                     $('#infoRegistros').text("{{ __('admin.messages.info') }} no disponible");
                  }
              }
              
@@ -703,7 +703,7 @@
             $('.dataTables_paginate').hide();
             $('.dataTables_length').hide();
             $('.dataTables_info').hide();
-            $('#infoRegistros').text('No hay pedidos registrados');
+            $('#infoRegistros').text("{{ __('admin.status.no') }} hay pedidos registrados");
         }
 
         // Función para buscar en las tarjetas móviles
@@ -761,7 +761,7 @@
                 if (noResultsMsg.length === 0) {
                     $('#mobileCards').append(`
                         <div id="mobileNoResults" class="text-center py-4 text-sm text-gray-500 dark:text-gray-400">
-                            No se encontraron pedidos que coincidan con la búsqueda
+                           {{ __('admin.status.no') }} se encontraron pedidos que coincidan con la búsqueda
                         </div>
                     `);
                 }

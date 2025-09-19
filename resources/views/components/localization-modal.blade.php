@@ -58,29 +58,7 @@
 
                 <!-- Form -->
                 <form @submit.prevent="saveConfig()" class="p-6 space-y-6">
-                    <!-- País/Región -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            {{ __('messages.language_selector.region') }}
-                        </label>
-                        <select 
-                            x-model="config.country_code"
-                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                            <option value="CO">🇨🇴 Colombia</option>
-                            <option value="MX">🇲🇽 México</option>
-                            <option value="AR">🇦🇷 Argentina</option>
-                            <option value="CL">🇨🇱 Chile</option>
-                            <option value="PE">🇵🇪 Perú</option>
-                            <option value="VE">🇻🇪 Venezuela</option>
-                            <option value="EC">🇪🇨 Ecuador</option>
-                            <option value="BO">🇧🇴 Bolivia</option>
-                            <option value="UY">🇺🇾 Uruguay</option>
-                            <option value="PY">🇵🇾 Paraguay</option>
-                            <option value="ES">🇪🇸 España</option>
-                            <option value="US">🇺🇸 Estados Unidos</option>
-                        </select>
-                    </div>
+                    
 
                     <!-- Idioma -->
                     <div>
@@ -91,8 +69,7 @@
                             x-model="config.language_code"
                             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         >
-                            <option value="es">🇨🇴 Español Latinoamericano</option>
-                            <option value="es-ES">🇪🇸 Español (España)</option>
+                            <option value="es">🇨🇴 Español</option>
                             <option value="en">🇺🇸 English</option>
                             <option value="pt">🇧🇷 Português</option>
                         </select>
@@ -108,12 +85,8 @@
                             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         >
                             <option value="COP">Peso colombiano (COP)</option>
-                            <option value="MXN">Peso mexicano (MXN)</option>
-                            <option value="ARS">Peso argentino (ARS)</option>
-                            <option value="CLP">Peso chileno (CLP)</option>
-                            <option value="PEN">Sol peruano (PEN)</option>
-                            <option value="VES">Bolívar venezolano (VES)</option>
                             <option value="USD">Dólar estadounidense (USD)</option>
+                            <option value="BRL">Real brasileño (BRL)</option>
                             <option value="EUR">Euro (EUR)</option>
                         </select>
                     </div>
@@ -175,7 +148,6 @@ function localizationModal() {
                 
                 if (data.config) {
                     this.config = {
-                        country_code: data.config.country_code || 'CO',
                         language_code: data.config.language_code || 'es',
                         currency_code: data.config.currency_code || 'COP'
                     };

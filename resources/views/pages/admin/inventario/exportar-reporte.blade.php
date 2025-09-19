@@ -14,7 +14,7 @@
     <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Exportar Reporte de Inventario</h1>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white"{{ >{{ __('admin.reports.export_report') }} }}de{{ {{ __('admin.inventory.title') }}< }}/h1>
                 <p class="mt-2 text-sm text-gray-500 dark:text-gray-300">Generar y descargar reportes del inventario</p>
             </div>
             <div class="flex items-center gap-2">
@@ -23,8 +23,7 @@
                     <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 4.158a.75.75 0 11-1.06 1.06l-5.5-5.5a.75.75 0 010-1.06l5.5-5.5a.75.75 0 111.06 1.06L5.612 9.25H16.25A.75.75 0 0117 10z" clip-rule="evenodd" />
                     </svg>
-                    Volver
-                </a>
+                   {{ {{ __('admin.actions.back') }} }}                </a>
             </div>
         </div>
     </div>
@@ -63,7 +62,7 @@
                     </div>
                     <div class="flex items-center">
                         <input type="checkbox" id="pdf_categorias" name="pdf_categorias" class="h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300 rounded" checked>
-                        <label for="pdf_categorias" class="ml-2 text-sm text-gray-700 dark:text-gray-300">Valor por categoría</label>
+                        <label for="pdf_categorias" class="ml-2 text-sm text-gray-700 dark:text-gray-300"{{ >{{ __('admin.fields.value') }} }}por categoría</label>
                     </div>
                 </div>
                 
@@ -104,7 +103,7 @@
                     </div>
                     <div class="flex items-center">
                         <input type="checkbox" id="excel_categorias" name="excel_categorias" class="h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300 rounded" checked>
-                        <label for="excel_categorias" class="ml-2 text-sm text-gray-700 dark:text-gray-300">Valor por categoría</label>
+                        <label for="excel_categorias" class="ml-2 text-sm text-gray-700 dark:text-gray-300"{{ >{{ __('admin.fields.value') }} }}por categoría</label>
                     </div>
                 </div>
                 
@@ -134,7 +133,7 @@
                             </svg>
                         </div>
                         <div class="ml-3">
-                            <p class="text-sm font-medium text-blue-600 dark:text-blue-400">Total Productos</p>
+                            <p class="text-sm font-medium text-blue-600 dark:text-blue-400"{{ >{{ __('admin.stats.total_products') }}< }}/p>
                             <p class="text-lg font-semibold text-blue-900 dark:text-blue-100">{{ $reporte['resumen_general']['total_productos'] ?? 0 }}</p>
                         </div>
                     </div>
@@ -148,7 +147,7 @@
                             </svg>
                         </div>
                         <div class="ml-3">
-                            <p class="text-sm font-medium text-green-600 dark:text-green-400">Valor Total</p>
+                            <p class="text-sm font-medium text-green-600 dark:text-green-400"{{ >{{ __('admin.fields.value') }} }}Total</p>
                             <p class="text-lg font-semibold text-green-900 dark:text-green-100">${{ number_format($reporte['resumen_general']['valor_total_inventario'] ?? 0, 2) }}</p>
                         </div>
                     </div>
@@ -176,7 +175,7 @@
                             </svg>
                         </div>
                         <div class="ml-3">
-                            <p class="text-sm font-medium text-red-600 dark:text-red-400">Sin Stock</p>
+                            <p class="text-sm font-medium text-red-600 dark:text-red-400"{{ >{{ __('admin.inventory.out_of_stock') }}< }}/p>
                             <p class="text-lg font-semibold text-red-900 dark:text-red-100">{{ $reporte['resumen_general']['productos_sin_stock'] ?? 0 }}</p>
                         </div>
                     </div>
@@ -187,7 +186,7 @@
         <!-- Alertas de inventario -->
         @if(isset($reporte['alertas']) && !empty($reporte['alertas']))
         <div class="mb-6">
-            <h4 class="text-md font-medium text-gray-900 dark:text-white mb-3">Alertas de Inventario</h4>
+            <h4 class="text-md font-medium text-gray-900 dark:text-white mb-3">Alertas de{{ {{ __('admin.inventory.title') }}< }}/h4>
             <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
                 <div class="flex">
                     <div class="flex-shrink-0">
@@ -210,25 +209,25 @@
         </div>
         @endif
 
-        <!-- Valor por categoría -->
+        <!--{{ {{ __('admin.fields.value') }} }}por categoría -->
         @if(isset($reporte['valor_por_categoria']) && !empty($reporte['valor_por_categoria']))
         <div class="mb-6">
-            <h4 class="text-md font-medium text-gray-900 dark:text-white mb-3">Valor por Categoría</h4>
+            <h4 class="text-md font-medium text-gray-900 dark:text-white mb-3"{{ >{{ __('admin.fields.value') }} }}por{{ {{ __('admin.fields.category') }}< }}/h4>
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead class="bg-gray-50 dark:bg-gray-800">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Categoría</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"{{ >{{ __('admin.fields.category') }}< }}/th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Productos</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Stock</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Valor</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"{{ >{{ __('admin.fields.value') }}< }}/th>
                         </tr>
                     </thead>
                     <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
                         @foreach($reporte['valor_por_categoria'] as $item)
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                {{ $item['categoria']->nombre ?? 'Sin categoría' }}
+                                {{ $item['categoria']->nombre ?? {{ '{{ __('admin.fields.without_category') }}' }} }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                 {{ $item['productos_count'] ?? 0 }}
@@ -248,7 +247,7 @@
         @endif
     </div>
 
-    <!-- Información adicional -->
+    <!--{{ {{ __('admin.messages.info') }} }}adicional -->
     <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
         <div class="flex">
             <div class="flex-shrink-0">
@@ -257,7 +256,7 @@
                 </svg>
             </div>
             <div class="ml-3">
-                <h3 class="text-sm font-medium text-blue-800 dark:text-blue-200">Información del Reporte</h3>
+                <h3 class="text-sm font-medium text-blue-800 dark:text-blue-200"{{ >{{ __('admin.messages.info') }} }}del Reporte</h3>
                 <div class="mt-2 text-sm text-blue-700 dark:text-blue-300">
                     <p>• El reporte incluirá todos los datos seleccionados en el formato elegido.</p>
                     <p>• Los archivos se generarán con la fecha y hora actual.</p>
@@ -311,7 +310,7 @@
                 },
                 success: function(response) {
                     if (response.success) {
-                        // Crear un elemento temporal para el HTML
+                        //{{ {{ __('admin.actions.create') }} }}un elemento temporal para el HTML
                         const tempDiv = document.createElement('div');
                         tempDiv.innerHTML = response.html;
                         tempDiv.style.position = 'absolute';
@@ -349,8 +348,7 @@
                             // Descargar el PDF
                             pdf.save(response.filename);
                             
-                            // Limpiar
-                            document.body.removeChild(tempDiv);
+                            //{{ {{ __('admin.actions.clear') }} }}                            document.body.removeChild(tempDiv);
                             
                             Swal.fire({
                                 icon: 'success',
@@ -435,7 +433,7 @@
                     responseType: 'blob'
                 },
                 success: function(data) {
-                    // Crear enlace de descarga
+                    //{{ {{ __('admin.actions.create') }} }}enlace de descarga
                     const blob = new Blob([data], { type: 'text/csv' });
                     const url = window.URL.createObjectURL(blob);
                     const a = document.createElement('a');

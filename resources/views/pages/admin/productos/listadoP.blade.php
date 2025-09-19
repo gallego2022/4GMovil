@@ -1,6 +1,6 @@
 @extends('layouts.app-new')
 
-@section('title', 'Listado de Productos - 4GMovil')
+@section('title', 'Listado de ' . __('admin.products.product') . 's - 4GMovil')
 
 @push('datatables-css')
 <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
@@ -54,19 +54,19 @@
          <!-- Encabezado móvil -->
          <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
              <div class="mb-4">
-                 <h2 class="text-xl font-bold text-gray-900 dark:text-white">Listado de Productos</h2>
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white">Listado de {{ __('admin.products.product') }}s</h2>
                  <p class="text-sm text-gray-500 dark:text-gray-300">Gestiona los productos de la tienda</p>
         </div>
              
              <!-- Botones de acción móvil -->
              <div class="flex flex-wrap items-center gap-2 mb-4">
-                 <!-- Botón Crear Producto -->
+                <!-- Botón crear producto -->
             <a href="{{ route('productos.create') }}" 
                class="inline-flex items-center rounded-lg bg-gradient-to-r from-slate-600 to-gray-700 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:from-slate-700 hover:to-gray-800 transform hover:scale-105 transition-all duration-300 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600 hover:shadow-xl min-w-[180px] justify-center">
                 <svg class="-ml-0.5 mr-1.5 h-5 w-5 transition-transform duration-200 group-hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
-                Crear Producto
+                {{ __('admin.actions.create') }} {{ __('admin.products.product') }}
             </a>
                  
                  <!-- Botones de exportación móvil -->
@@ -110,7 +110,7 @@
                 <input type="text" 
                        id="busquedaMovil" 
                        class="block w-full rounded-md border-0 py-1.5 pl-4 pr-10 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 dark:bg-gray-800 sm:text-sm sm:leading-6" 
-                       placeholder="Buscar productos...">
+                       placeholder="{{ __('admin.actions.search') }} productos...">
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                     <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
@@ -135,7 +135,7 @@
                              alt="Sin imagen">
                         @endif
                     </div>
-                    <!-- Información del producto -->
+                    <!-- Detalles del producto -->
                     <div class="flex-1 min-w-0">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white truncate">
                             {{ $producto->nombre_producto }}
@@ -148,7 +148,7 @@
                                 ${{ number_format($producto->precio, 2) }}
                             </p>
                             
-                            <!-- Información de Stock Mejorada -->
+                            <!-- Sección de Stock Mejorada -->
                             <div class="space-y-1">
                                 <!-- Stock Total -->
                                 <div class="flex items-center justify-between">
@@ -205,7 +205,7 @@
                         <svg class="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400 dark:text-gray-300" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z"/>
                         </svg>
-                        Editar
+                        {{ __('admin.actions.edit') }}
                     </a>
                     <form action="{{ route('productos.destroy', $producto) }}" method="POST" class="form-eliminar inline">
                         @csrf
@@ -215,7 +215,7 @@
                             <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clip-rule="evenodd"/>
                             </svg>
-                            Eliminar
+                            {{ __('admin.actions.edit') }}
                         </button>
                     </form>
                 </div>
@@ -223,7 +223,7 @@
         </div>
         @empty
         <div class="text-center py-4 text-sm text-gray-500 dark:text-gray-400">
-            No hay productos registrados en el sistema
+            {{ __('admin.actions.edit') }} registrados en el sistema
         </div>
         @endforelse
     </div>
@@ -235,17 +235,17 @@
              <div class="mb-6">
                  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                      <div>
-                         <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">Listado de Productos</h2>
+                         <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">Listado de {{ __('admin.products.product') }}s</h2>
                          <p class="mt-1 text-sm text-gray-500 dark:text-gray-300">Gestiona los productos de la tienda</p>
                      </div>
 
-                       <!-- Botón Crear Producto -->
+                      <!-- Botón crear producto -->
                     <a href="{{ route('productos.create') }}" 
                     class="group inline-flex items-center rounded-xl bg-gradient-to-r from-slate-600 to-gray-700 px-8 py-4 text-base font-semibold text-white shadow-lg hover:from-slate-700 hover:to-gray-800 transform hover:scale-105 transition-all duration-300 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600 hover:shadow-xl min-w-[180px] justify-center">
                      <svg class="-ml-0.5 mr-3 h-6 w-6 transition-transform duration-300 group-hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                      </svg>
-                     Crear Producto
+                     {{ __('admin.actions.create') }} {{ __('admin.products.product') }}
                  </a>
 
                  </div>
@@ -257,13 +257,13 @@
                      <!-- Búsqueda personalizada -->
                      <div class="flex-1 max-w-md">
                          <label for="busquedaEscritorio" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                             Buscar productos
+                             {{ __('admin.actions.search') }} productos
                          </label>
                          <div class="relative">
                              <input type="text" 
                                     id="busquedaEscritorio" 
                                     class="block w-full rounded-md border-0 py-2 pl-10 pr-4 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 dark:bg-gray-700 sm:text-sm" 
-                                    placeholder="Buscar por nombre, ID, categoría...">
+                                    placeholder="{{ __('admin.actions.search') }} por nombre, ID, categoría...">
                              <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                  <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                                      <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
@@ -272,7 +272,7 @@
                          </div>
                      </div>
                      
-                     <!-- Información de registros -->
+                     <!-- {{ __('admin.actions.edit') }} de registros -->
                      <div class="text-sm text-gray-500 dark:text-gray-400">
                          <span id="infoRegistros">Mostrando todos los productos</span>
                      </div>
@@ -387,7 +387,7 @@
                             <td class="px-6 py-4 text-gray-700 dark:text-gray-300">{{ $producto->marca->nombre ?? 'Sin marca' }}</td>
                             <td class="px-6 py-4 text-center">
                                 <div class="flex items-center justify-center gap-3">
-                                    <!-- Botón Editar -->
+                                    <!-- Botón {{ __('admin.actions.edit') }} -->
                                     <div class="relative group">
                                         <a href="{{ route('productos.edit', $producto) }}" 
                                            class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/50 dark:hover:bg-blue-900 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-all duration-200 ease-in-out transform hover:scale-110">
@@ -403,7 +403,7 @@
                                         </div>
                                     </div>
 
-                                    <!-- Botón Eliminar -->
+                                    <!-- Botón {{ __('admin.actions.edit') }} -->
                                     <div class="relative group">
                                         <form action="{{ route('productos.destroy', $producto) }}" method="POST" class="form-eliminar inline">
                                             @csrf
@@ -428,7 +428,7 @@
                             @empty
                             <tr>
                             <td colspan="9" class="px-4 py-2 text-center text-gray-500 dark:text-gray-400">
-                                    No hay productos registrados en el sistema
+            No hay productos registrados en el sistema
                                 </td>
                             </tr>
                             @endforelse
@@ -600,7 +600,7 @@
          box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
      }
      
-     /* Ocultar elementos de DataTables que no necesitamos */
+    /* Ocultar elementos de DataTables que no necesitamos */
      .dataTables_filter {
          display: none !important;
      }
@@ -892,7 +892,7 @@
                     return $(this).text().includes('Stock:');
                 }).text().toLowerCase();
                 
-                // Buscar en todos los spans (estados)
+                // Leer estados en todos los spans
                 const estados = card.find('span').map(function() {
                     return $(this).text().toLowerCase();
                 }).get().join(' ');
@@ -930,7 +930,7 @@
             }
         }
 
-        // Evento de búsqueda en móvil
+        // Debounce de búsqueda en móvil
         let searchTimeout;
         $('#busquedaMovil').on('input', function() {
             clearTimeout(searchTimeout);

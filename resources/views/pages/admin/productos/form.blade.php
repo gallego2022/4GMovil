@@ -57,7 +57,7 @@
 @endif
 
 <div class="space-y-8">
-    <!-- Información Básica -->
+<!-- Información Básica -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
             <svg class="w-5 h-5 mr-2 text-brand-600 dark:text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -70,7 +70,7 @@
             <!-- Nombre del producto -->
             <div>
                 <label for="nombre_producto" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Nombre del Producto <span class="text-red-500">*</span>
+                    Nombre del producto <span class="text-red-500">*</span>
                 </label>
                 <input type="text" 
                        name="nombre_producto" 
@@ -87,7 +87,7 @@
             <!-- SKU -->
             <div>
                 <label for="sku" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    SKU (Código de Producto)
+                    SKU (Código de producto)
                 </label>
                 <input type="text" 
                        name="sku" 
@@ -123,14 +123,14 @@
             <svg class="w-5 h-5 mr-2 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
             </svg>
-            Información de Precios
+            Precios de artículos
         </h3>
         
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
             <!-- Precio de Venta -->
             <div>
                 <label for="precio" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Precio de Venta <span class="text-red-500">*</span>
+                Precio de Venta <span class="text-red-500">*</span>
                 </label>
                 <div class="relative rounded-lg shadow-sm">
                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -176,13 +176,13 @@
         </div>
     </div>
 
-    <!-- Gestión de Inventario -->
+    <!-- Gestión de Stock -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
             <svg class="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707-.293l-2.414-2.414a1 1 0 01-.707-.293H6.586a1 1 0 00-.707.293L3.707 12.707A1 1 0 004.586 13H2" />
             </svg>
-            Gestión de Inventario
+            Gestión de Stock
         </h3>
         
                  <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
@@ -272,10 +272,10 @@
                  @enderror
              </div>
 
-             <!-- Estado Activo -->
+            <!-- Estado activo -->
              <div>
                  <label for="activo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                     Estado Activo
+                    Estado
                  </label>
                  <div class="flex items-center h-12 px-4">
                      <input type="checkbox" 
@@ -349,10 +349,10 @@
                 @enderror
             </div>
 
-            <!-- Estado del Producto -->
+            <!-- Estado del producto -->
             <div>
                 <label for="estado" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Estado del Producto
+                    Estado del producto
                 </label>
                 <select name="estado" 
                         id="estado" 
@@ -491,13 +491,13 @@
         </div>
     </div>
 
-    <!-- Imágenes del Producto -->
+    <!-- Imágenes del producto -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
             <svg class="w-5 h-5 mr-2 text-pink-600 dark:text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            Imágenes del Producto
+            Imágenes del producto
         </h3>
         
         <div class="space-y-4">
@@ -537,7 +537,7 @@
 <script>
     // Variables globales
     let especificacionesActuales = [];
-    let valoresEspecificaciones = {};
+    let valoresEspecificaciones = window.valoresEspecificaciones || {};
 
     // Cálculo automático del costo unitario
     document.getElementById('precio').addEventListener('input', function() {
@@ -568,7 +568,7 @@
              }
              
              const especificaciones = await response.json();
-             console.log('Especificaciones recibidas:', especificaciones);
+            console.log('Especificaciones recibidas:', especificaciones);
              
              // Log detallado de cada especificación
              especificaciones.forEach((espec, index) => {
@@ -617,12 +617,12 @@
 
     // Función para crear un campo de especificación
     function crearCampoEspecificacion(espec, index) {
-        const valorActual = valoresEspecificaciones[espec.nombre_campo] || '';
+        const valorActual = (window.valoresEspecificaciones || {})[espec.nombre_campo] || '';
         const requerido = espec.requerido ? '<span class="text-red-500">*</span>' : '';
         const unidad = espec.unidad ? ` (${espec.unidad})` : '';
         
         // Debug: mostrar qué tipo de campo se está procesando
-        console.log(`Creando campo: ${espec.nombre_campo}, Tipo: ${espec.tipo_campo}, Etiqueta: ${espec.etiqueta}`);
+        console.log(`Creando campo: ${espec.nombre_campo}, tipo: ${espec.tipo_campo}, etiqueta: ${espec.etiqueta}`);
         
         let campo = '';
         
@@ -766,7 +766,7 @@
                 break;
                 
             default:
-                // Campo por defecto si el tipo no es reconocido
+                // Tipo por defecto si el tipo no es reconocido
                 console.warn(`Tipo de campo no reconocido: ${espec.tipo_campo} para ${espec.nombre_campo}`);
                 campo = `
                     <input type="text" 
@@ -813,7 +813,8 @@
 
     // Función para guardar valor de especificación
     function guardarValorEspecificacion(nombreCampo, valor) {
-        valoresEspecificaciones[nombreCampo] = valor;
+        window.valoresEspecificaciones = window.valoresEspecificaciones || {};
+        window.valoresEspecificaciones[nombreCampo] = valor;
     }
 
     // Función para limpiar especificaciones
@@ -824,12 +825,12 @@
         container.innerHTML = '';
         noEspecificaciones.classList.remove('hidden');
         especificacionesActuales = [];
-        valoresEspecificaciones = {};
+        window.valoresEspecificaciones = {};
     }
 
     // Función para mostrar errores
     function mostrarError(mensaje) {
-        // Crear notificación de error
+        // Mostrar notificación de error
         const notificacion = document.createElement('div');
         notificacion.className = 'fixed top-4 right-4 z-50 bg-red-500 text-white p-4 rounded-lg shadow-lg max-w-sm transform transition-all duration-300 translate-x-full';
         notificacion.innerHTML = `
@@ -1351,7 +1352,7 @@
                  }
              });
              
-             // Mostrar alertas de éxito/error
+            // Mostrar alertas de éxito/error
              if (validFiles > 0) {
                  showAlert(`✅ Se seleccionaron ${validFiles} imagen(es) válida(s) para la variante`, 'success');
              }
@@ -1510,7 +1511,7 @@
                 // Actualizar ejemplos en los labels
                 actualizarEjemplos(stockInicial, umbralBajo, umbralCritico);
                 
-                // Mostrar campos con colores apropiados
+                // Marcar campos con colores apropiados
                 stockMinimoInput.style.backgroundColor = '#dbeafe'; // bg-blue-50
                 stockMaximoInput.style.backgroundColor = '#fef3c7'; // bg-yellow-50
                 
@@ -1521,10 +1522,10 @@
                 stockMinimoInput.value = 0;
                 stockMaximoInput.value = 0;
                 
-                // Ocultar ejemplos
+                // Limpiar ejemplos
                 ocultarEjemplos();
                 
-                // Campos en gris
+                // Colorear inputs en gris
                 stockMinimoInput.style.backgroundColor = '#f3f4f6'; // bg-gray-100
                 stockMaximoInput.style.backgroundColor = '#f3f4f6'; // bg-gray-100
                 
@@ -1609,7 +1610,7 @@
         // Calcular umbrales al cargar la página
         calcularUmbrales();
         
-        // Mostrar información adicional sobre la nueva lógica
+        // Información adicional sobre la nueva lógica
         const infoContainer = document.createElement('div');
         infoContainer.className = 'col-span-full p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 mb-6';
         infoContainer.innerHTML = `
@@ -1651,7 +1652,7 @@
                     return false;
                 }
                 
-                // Mostrar confirmación de actualización de umbrales
+                // Confirmación de actualización de umbrales
                 if (confirm('¿Estás seguro de que quieres actualizar el producto? Los umbrales de alerta se recalcularán automáticamente.')) {
                     return true;
                 } else {

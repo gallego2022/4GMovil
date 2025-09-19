@@ -974,7 +974,7 @@
         </div>
 
         <!-- Sidebar Desktop -->
-        <div class="sidebar-wrapper hidden lg:block" :class="{ 'dark': darkMode }">
+        <div class="sidebar-wrapper hidden lg:block flex flex-col" :class="{ 'dark': darkMode }">
             <!-- Logo -->
             <div class="sidebar-logo">
                 <a href="{{ route('admin.index') }}" class="text-2xl font-bold text-blue-600">
@@ -982,10 +982,8 @@
                 </a>
             </div>
 
-
-
             <!-- Navegación -->
-            <div class="flex-1 overflow-y-auto sidebar-nav" style="max-height: calc(100vh - 120px);">
+            <div class="flex-1 overflow-y-auto sidebar-nav" style="max-height: calc(100vh - 200px);">
                 @include('layouts.partials.sidebar-menu')
             </div>
         </div>
@@ -1139,6 +1137,9 @@
             lazyImages.forEach(img => imageObserver.observe(img));
         });
     </script>
+
+    <!-- Modal de configuración de idioma -->
+    <x-language-selector-modal />
 
 </body>
 

@@ -8,7 +8,7 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
             <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">
-                Pedido #{{ $pedido->pedido_id }}
+               Pedido #{{ $pedido->pedido_id }}
             </h2>
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 Detalle completo del pedido realizado el {{ $pedido->fecha_pedido instanceof \Carbon\Carbon ? $pedido->fecha_pedido->format('d/m/Y \a \l\a\s H:i') : \Carbon\Carbon::parse($pedido->fecha_pedido)->format('d/m/Y \a \l\a\s H:i') }}
@@ -20,7 +20,7 @@
             <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l7.158 7.158a.75.75 0 11-1.06 1.06l-8.5-8.5a.75.75 0 010-1.06l8.5-8.5a.75.75 0 111.06 1.06L5.612 9.25H16.25A.75.75 0 0117 10z" clip-rule="evenodd" />
             </svg>
-            Volver a Pedidos
+           Volver a Pedidos
         </a>
     </div>
 
@@ -64,8 +64,7 @@
                         <svg class="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        Estado del Pedido
-                    </h3>
+                       Estado del Pedido                    </h3>
                     <form action="{{ route('admin.pedidos.updateEstado', $pedido->pedido_id) }}" method="POST" class="flex items-center space-x-3">
                         @csrf
                         @method('PUT')
@@ -117,21 +116,19 @@
                     <svg class="w-5 h-5 mr-2 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                     </svg>
-                    Productos del Pedido
-                </h3>
+                   Productos del Pedido                </h3>
                 
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <thead class="bg-gray-50 dark:bg-gray-700">
                             <tr>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Producto
-                                </th>
+                                   Producto                                </th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Cantidad
                                 </th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Precio Unitario
+                                   Precio Unitario
                                 </th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Subtotal
@@ -161,7 +158,7 @@
                                                     {{ $detalle->producto->nombre_producto ?? 'Producto no encontrado' }}
                                                 </div>
                                                 <div class="text-sm text-gray-500 dark:text-gray-400">
-                                                    SKU: {{ $detalle->producto->sku ?? 'N/A' }}
+                                                    SKU: {{ $detalle->producto->sku ?? 'No disponible' }}
                                                 </div>
                                                 @if($detalle->variante)
                                                     <div class="text-xs text-blue-600 dark:text-blue-400">
@@ -185,7 +182,7 @@
                             @if($pedido->detalles->count() == 0)
                                 <tr>
                                     <td colspan="4" class="px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                                        No hay productos en este pedido
+                                       No hay productos en este pedido
                                     </td>
                                 </tr>
                             @endif
@@ -258,7 +255,7 @@
                     <svg class="w-5 h-5 mr-2 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
-                    Información del Cliente
+                   Información del Cliente
                 </h3>
                 
                 <div class="space-y-4">
@@ -289,7 +286,7 @@
                     <svg class="w-5 h-5 mr-2 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                     </svg>
-                    Información de Pago
+                   Información de Pago
                 </h3>
                 
                 <div class="space-y-4">
@@ -299,7 +296,7 @@
                             @if($pedido->pago && $pedido->pago->metodoPago)
                                 {{ $pedido->pago->metodoPago->nombre }}
                             @else
-                                No especificado
+                               No especificado
                             @endif
                         </p>
                     </div>

@@ -1,12 +1,12 @@
 @extends('layouts.app-new')
 
-@section('title', 'Editar Producto - 4GMovil')
+@section('title', 'Editar producto - 4GMovil')
 
 @section('content')
 <div class="space-y-6">
     <!-- Encabezado -->
     <div>
-        <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">Editar Producto</h2>
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">Editar producto</h2>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Modifica los detalles del producto</p>
     </div>
 
@@ -83,7 +83,7 @@
                     <svg class="w-5 h-5 mr-2 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
-                    Actualizar Producto
+                    Actualizar producto
                 </button>
             </div>
         </form>

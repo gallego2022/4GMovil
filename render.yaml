@@ -1,0 +1,41 @@
+services:
+  - type: web
+    name: 4gmovil
+    env: docker
+    plan: free
+    buildCommand: ""
+    startCommand: ""
+    autoDeploy: true
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_KEY
+        sync: false
+      - key: APP_DEBUG
+        value: false
+      - key: APP_URL
+        value: https://4gmovil.onrender.com
+      - key: DB_CONNECTION
+        value: mysql
+      - key: DB_HOST
+        fromDatabase:
+          name: 4gmovil-db
+          property: host
+      - key: DB_PORT
+        value: "3306"
+      - key: DB_DATABASE
+        fromDatabase:
+          name: 4gmovil-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: 4gmovil-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: 4gmovil-db
+          property: password
+
+databases:
+  - name: 4gmovil-db
+    plan: free

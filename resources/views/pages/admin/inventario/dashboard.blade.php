@@ -17,7 +17,7 @@
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
                     </svg>
-                    Ver Alertas
+                   Ver Alertas
                 </a>
                 <a href="{{ route('admin.inventario.movimientos') }}" 
                    class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700">
@@ -32,7 +32,7 @@
 
     <!-- Tarjetas de estadísticas -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- Valor total del inventario -->
+        <!-- Total del inventario -->
         <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
             <div class="flex items-center">
                 <div class="p-3 rounded-full bg-green-100 dark:bg-green-900">
@@ -41,7 +41,7 @@
                     </svg>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Valor Total</p>
+                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total</p>
                     <p class="text-2xl font-semibold text-gray-900 dark:text-white">${{ number_format($valorTotal, 0, ',', '.') }}</p>
                 </div>
             </div>
@@ -133,7 +133,7 @@
                 </div>
             @else
                 <div class="text-center py-4 text-sm text-gray-500 dark:text-gray-400">
-                    No hay productos con stock crítico
+                   No hay productos con stock crítico
                 </div>
             @endif
         </div>
@@ -176,7 +176,7 @@
                 </div>
             @else
                 <div class="text-center py-4 text-sm text-gray-500 dark:text-gray-400">
-                    No hay productos con stock bajo
+                   No hay productos con stock bajo
                 </div>
             @endif
         </div>
@@ -260,7 +260,7 @@
                 </svg>
                 <div>
                     <p class="font-medium text-gray-900 dark:text-white">Generar Reporte</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Reportes detallados de inventario</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Reporte detallado de inventario</p>
                 </div>
             </a>
 
