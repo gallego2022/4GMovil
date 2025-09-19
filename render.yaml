@@ -1,41 +1,39 @@
 services:
   - type: web
-    name: 4gmovil
+    name: laravel-app
     env: docker
-    plan: free
-    buildCommand: ""
-    startCommand: ""
+    plan: free   # o starter/pro según lo que uses en Render
     autoDeploy: true
+    healthCheckPath: /
     envVars:
       - key: APP_ENV
         value: production
-      - key: APP_KEY
-        sync: false
       - key: APP_DEBUG
         value: false
-      - key: APP_URL
-        value: https://4gmovil.onrender.com
+      - key: APP_KEY
+        sync: false   # ⚠️ genera el APP_KEY en tu máquina y lo copias en Render
       - key: DB_CONNECTION
         value: mysql
       - key: DB_HOST
         fromDatabase:
-          name: 4gmovil-db
+          name: laravel-db
           property: host
       - key: DB_PORT
-        value: "3306"
+        fromDatabase:
+          name: laravel-db
+          property: port
       - key: DB_DATABASE
         fromDatabase:
-          name: 4gmovil-db
+          name: laravel-db
           property: database
       - key: DB_USERNAME
         fromDatabase:
-          name: 4gmovil-db
+          name: laravel-db
           property: user
       - key: DB_PASSWORD
         fromDatabase:
-          name: 4gmovil-db
+          name: laravel-db
           property: password
-
 databases:
-  - name: 4gmovil-db
+  - name: laravel-db
     plan: free
