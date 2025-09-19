@@ -53,6 +53,7 @@ startCommand: |
 
 
 
+
 databases:
   - name: laravel-db
     plan: free
