@@ -13,7 +13,7 @@ services:
       - key: APP_KEY
         sync: false   # ⚠️ genera el APP_KEY en tu máquina y lo copias en Render
       - key: DB_CONNECTION
-        value: mysql
+        value: pgsql
       - key: DB_HOST
         fromDatabase:
           name: laravel-db
@@ -34,6 +34,9 @@ services:
         fromDatabase:
           name: laravel-db
           property: password
+
 databases:
   - name: laravel-db
     plan: free
+    databaseName: db_4gmovil
+    user: db_4gmovil_user
