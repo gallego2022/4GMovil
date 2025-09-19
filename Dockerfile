@@ -19,7 +19,7 @@ COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 
 # Copiar composer.json y composer.lock antes para aprovechar la caché de Docker
-COPY composer.json composer.lock ./ 
+COPY composer.json composer.lock ./
 
 # Instalar dependencias de Laravel (sin dev y optimizado)
 RUN composer install --no-dev --optimize-autoloader --no-scripts
@@ -35,8 +35,10 @@ RUN composer dump-autoload -o \
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Habilitar mod_rewrite para Laravel
-RUN a2enmod rewrite
+# Habilitar módulos de Apache necesarios para Laravel
+RUN a2enmod rewrite headers
+
+# Copiar configuración personalizada de Apache
 COPY ./docker/apache/laravel.conf /etc/apache2/sites-available/000-default.conf
 
 # Exponer puerto (Render usará $PORT automáticamente)
