@@ -40,14 +40,16 @@ services:
       npm install
       npm run build || echo "⚠️ Sin build de assets (si no usas Vite/React ignora este aviso)"
     
-    startCommand: |
-      php artisan config:clear
-      php artisan cache:clear
-      php artisan route:clear
-      php artisan view:clear
-      php artisan migrate --force
-      chmod -R 775 storage bootstrap/cache
-      apache2-foreground
+startCommand: |
+  mkdir -p storage/framework/{cache,sessions,views}
+  chmod -R 775 storage bootstrap/cache
+  php artisan config:clear
+  php artisan cache:clear
+  php artisan route:clear
+  php artisan view:clear
+  php artisan migrate --force
+  apache2-foreground
+
 
 databases:
   - name: laravel-db
