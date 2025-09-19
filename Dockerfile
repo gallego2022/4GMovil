@@ -19,22 +19,22 @@ COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 # Establecer el directorio de trabajo
 WORKDIR /var/www/html
 
-# Copiar composer.json y composer.lock antes para aprovechar caché
+# Copiar composer.json y composer.lock primero (para aprovechar la caché de dependencias)
 COPY composer.json composer.lock ./
 
 # Instalar dependencias de Laravel (sin dev y optimizado)
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-# Copiar el código de la aplicación
+# Copiar todo el código del proyecto
 COPY . .
 
-# Ejecutar scripts de Laravel después de copiar código
-RUN composer dump-autoload -o \
-    && php artisan package:discover --ansi || true
-
-# Dar permisos a storage y bootstrap/cache
+# 🔑 Ajustar permisos ANTES de ejecutar cualquier comando Artisan
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Ahora sí ejecutamos Artisan sin que falle
+RUN composer dump-autoload -o \
+    && php artisan package:discover --ansi || true
 
 # Habilitar módulos de Apache necesarios para Laravel
 RUN a2enmod rewrite headers
@@ -42,7 +42,7 @@ RUN a2enmod rewrite headers
 # Copiar configuración personalizada de Apache
 COPY ./docker/apache/laravel.conf /etc/apache2/sites-available/000-default.conf
 
-# Exponer puerto (Render usa $PORT automáticamente)
+# Exponer puerto (Render usará $PORT automáticamente)
 EXPOSE 80
 
 # Comando por defecto
