@@ -11,7 +11,7 @@ services:
       - key: APP_DEBUG
         value: false
       - key: APP_KEY
-        sync: false   # ⚠️ genera el APP_KEY en tu máquina y lo copias en Render
+        sync: false   # ⚠️ genera el APP_KEY en tu máquina con `php artisan key:generate --show` y cópialo en Render
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
@@ -34,6 +34,20 @@ services:
         fromDatabase:
           name: laravel-db
           property: password
+
+    buildCommand: |
+      composer install --no-dev --optimize-autoloader --no-scripts
+      npm install
+      npm run build || echo "⚠️ Sin build de assets (si no usas Vite/React ignora este aviso)"
+    
+    startCommand: |
+      php artisan config:clear
+      php artisan cache:clear
+      php artisan route:clear
+      php artisan view:clear
+      php artisan migrate --force
+      chmod -R 775 storage bootstrap/cache
+      apache2-foreground
 
 databases:
   - name: laravel-db
