@@ -42,13 +42,15 @@ services:
     
 startCommand: |
   mkdir -p storage/framework/{cache,sessions,views}
-  chmod -R 775 storage bootstrap/cache
+  touch storage/logs/laravel.log
+  chmod -R 777 storage bootstrap/cache
   php artisan config:clear
   php artisan cache:clear
   php artisan route:clear
   php artisan view:clear
   php artisan migrate --force
   apache2-foreground
+
 
 
 databases:

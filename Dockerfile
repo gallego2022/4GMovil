@@ -28,11 +28,11 @@ RUN composer install --no-dev --optimize-autoloader --no-scripts
 # Copiar todo el código del proyecto
 COPY . .
 
-# 🔑 Crear las carpetas necesarias y dar permisos ANTES de Artisan
+# Crear carpetas necesarias de Laravel y dar permisos ANTES de Artisan
 RUN mkdir -p /var/www/html/storage/framework/{cache,sessions,views} \
+    && touch /var/www/html/storage/logs/laravel.log \
     && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
-
+    && chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Ahora sí ejecutamos Artisan sin que falle
 RUN composer dump-autoload -o \
