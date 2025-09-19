@@ -1,7 +1,7 @@
 # Imagen base oficial de PHP con Apache
 FROM php:8.3-apache
 
-# Instalar dependencias del sistema y extensiones de PHP necesarias
+# Instalar dependencias del sistema y extensiones PHP necesarias
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
@@ -10,41 +10,41 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     curl \
-    libpq-dev \
-    && docker-php-ext-install pdo_pgsql pgsql mbstring exif pcntl bcmath gd
+    libzip-dev \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
 # Instalar Composer
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 
-# Establecer el directorio de trabajo
+# Directorio de trabajo
 WORKDIR /var/www/html
 
-# Copiar composer.json y composer.lock primero (para aprovechar la caché de dependencias)
+# Copiar composer.json y composer.lock para aprovechar caché
 COPY composer.json composer.lock ./
 
-# Instalar dependencias de Laravel (sin dev y optimizado)
+# Instalar dependencias de Laravel
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-# Copiar todo el código del proyecto
+# Copiar todo el proyecto
 COPY . .
 
-# ✅ Crear carpetas que Laravel necesita y dar permisos
+# Crear carpetas que Laravel necesita y dar permisos
 RUN mkdir -p /var/www/html/storage/framework/{cache,sessions,views} \
     && touch /var/www/html/storage/logs/laravel.log \
     && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Ejecutar Artisan después de preparar permisos
+# Ejecutar Artisan
 RUN composer dump-autoload -o \
     && php artisan package:discover --ansi || true
 
 # Habilitar módulos de Apache
 RUN a2enmod rewrite headers
 
-# Copiar configuración personalizada de Apache
+# Copiar configuración de Apache personalizada
 COPY ./docker/apache/laravel.conf /etc/apache2/sites-available/000-default.conf
 
-# Exponer puerto (Render usará $PORT automáticamente)
+# Exponer puerto
 EXPOSE 80
 
 # Comando por defecto
