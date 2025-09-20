@@ -210,58 +210,123 @@ class PedidoAdminController extends Controller
             
             // Si el pedido se confirma (pasa de pendiente a confirmado/enviado/entregado)
             if (in_array($estadoAnterior, $estadosPendientes) && in_array($nuevoEstado, $estadosConfirmados)) {
-                // Liberar stock reservado y registrar salida real
-                $producto->liberarStockReservado(
-                    $detalle->cantidad,
-                    "Confirmación de pedido #{$pedido->pedido_id}",
-                    \Illuminate\Support\Facades\Auth::id(),
-                    $pedido->pedido_id
-                );
-                
-                $producto->registrarSalida(
-                    $detalle->cantidad,
-                    "Venta confirmada - Pedido #{$pedido->pedido_id}",
-                    \Illuminate\Support\Facades\Auth::id(),
-                    $pedido->pedido_id
-                );
-                
-                Log::info('Stock confirmado y registrada salida', [
-                    'producto_id' => $producto->producto_id,
-                    'cantidad' => $detalle->cantidad,
-                    'pedido_id' => $pedido->pedido_id
-                ]);
+                // Verificar si el detalle tiene una variante específica
+                if ($detalle->variante_id) {
+                    // Registrar movimiento de confirmación de venta para la variante
+                    $variante = $detalle->variante;
+                    if ($variante) {
+                        $variante->confirmarVenta(
+                            $detalle->cantidad,
+                            "Confirmación de pedido #{$pedido->pedido_id}",
+                            \Illuminate\Support\Facades\Auth::id(),
+                            "Pedido #{$pedido->pedido_id}"
+                        );
+                        
+                        Log::info('Venta de variante confirmada', [
+                            'producto_id' => $producto->producto_id,
+                            'variante_id' => $variante->variante_id,
+                            'variante_nombre' => $variante->nombre,
+                            'cantidad' => $detalle->cantidad,
+                            'pedido_id' => $pedido->pedido_id
+                        ]);
+                    }
+                } else {
+                    // Registrar movimiento de confirmación de venta para el producto (sin descontar stock)
+                    \App\Models\MovimientoInventario::create([
+                        'producto_id' => $producto->producto_id,
+                        'tipo_movimiento' => 'venta_confirmada',
+                        'cantidad' => $detalle->cantidad,
+                        'stock_anterior' => $producto->stock,
+                        'stock_nuevo' => $producto->stock, // No cambia el stock físico
+                        'motivo' => "Confirmación de pedido #{$pedido->pedido_id}",
+                        'usuario_id' => \Illuminate\Support\Facades\Auth::id(),
+                        'pedido_id' => $pedido->pedido_id,
+                        'costo_unitario' => $producto->costo_unitario,
+                        'fecha_movimiento' => now()
+                    ]);
+                    
+                    Log::info('Venta de producto confirmada', [
+                        'producto_id' => $producto->producto_id,
+                        'cantidad' => $detalle->cantidad,
+                        'pedido_id' => $pedido->pedido_id
+                    ]);
+                }
             }
             // Si el pedido se cancela (pasa de pendiente a cancelado/rechazado)
             elseif (in_array($estadoAnterior, $estadosPendientes) && in_array($nuevoEstado, $estadosCancelados)) {
-                // Solo liberar stock reservado sin registrar salida
-                $producto->liberarStockReservado(
-                    $detalle->cantidad,
-                    "Cancelación de pedido #{$pedido->pedido_id}",
-                    \Illuminate\Support\Facades\Auth::id(),
-                    $pedido->pedido_id
-                );
-                
-                Log::info('Stock liberado por cancelación', [
-                    'producto_id' => $producto->producto_id,
-                    'cantidad' => $detalle->cantidad,
-                    'pedido_id' => $pedido->pedido_id
-                ]);
+                // Verificar si el detalle tiene una variante específica
+                if ($detalle->variante_id) {
+                    // Liberar stock reservado de la variante
+                    $variante = $detalle->variante;
+                    if ($variante) {
+                        $variante->liberarReserva(
+                            $detalle->cantidad,
+                            "Cancelación de pedido #{$pedido->pedido_id}",
+                            \Illuminate\Support\Facades\Auth::id(),
+                            "Pedido #{$pedido->pedido_id}"
+                        );
+                        
+                        Log::info('Stock de variante liberado por cancelación', [
+                            'producto_id' => $producto->producto_id,
+                            'variante_id' => $variante->variante_id,
+                            'variante_nombre' => $variante->nombre,
+                            'cantidad' => $detalle->cantidad,
+                            'pedido_id' => $pedido->pedido_id
+                        ]);
+                    }
+                } else {
+                    // Liberar stock reservado del producto padre
+                    $producto->liberarStockReservado(
+                        $detalle->cantidad,
+                        "Cancelación de pedido #{$pedido->pedido_id}",
+                        \Illuminate\Support\Facades\Auth::id(),
+                        $pedido->pedido_id
+                    );
+                    
+                    Log::info('Stock de producto liberado por cancelación', [
+                        'producto_id' => $producto->producto_id,
+                        'cantidad' => $detalle->cantidad,
+                        'pedido_id' => $pedido->pedido_id
+                    ]);
+                }
             }
             // Si el pedido se cancela después de estar confirmado
             elseif (in_array($estadoAnterior, $estadosConfirmados) && in_array($nuevoEstado, $estadosCancelados)) {
-                // Registrar entrada para compensar la salida ya registrada
-                $producto->registrarEntrada(
-                    $detalle->cantidad,
-                    "Devolución por cancelación - Pedido #{$pedido->pedido_id}",
-                    \Illuminate\Support\Facades\Auth::id(),
-                    "Pedido #{$pedido->pedido_id}"
-                );
-                
-                Log::info('Stock devuelto por cancelación post-confirmación', [
-                    'producto_id' => $producto->producto_id,
-                    'cantidad' => $detalle->cantidad,
-                    'pedido_id' => $pedido->pedido_id
-                ]);
+                // Verificar si el detalle tiene una variante específica
+                if ($detalle->variante_id) {
+                    // Registrar entrada de la variante para compensar la salida ya registrada
+                    $variante = $detalle->variante;
+                    if ($variante) {
+                        $variante->registrarEntrada(
+                            $detalle->cantidad,
+                            "Devolución por cancelación - Pedido #{$pedido->pedido_id}",
+                            \Illuminate\Support\Facades\Auth::id(),
+                            "Pedido #{$pedido->pedido_id}"
+                        );
+                        
+                        Log::info('Stock de variante devuelto por cancelación post-confirmación', [
+                            'producto_id' => $producto->producto_id,
+                            'variante_id' => $variante->variante_id,
+                            'variante_nombre' => $variante->nombre,
+                            'cantidad' => $detalle->cantidad,
+                            'pedido_id' => $pedido->pedido_id
+                        ]);
+                    }
+                } else {
+                    // Registrar entrada del producto padre para compensar la salida ya registrada
+                    $producto->registrarEntrada(
+                        $detalle->cantidad,
+                        "Devolución por cancelación - Pedido #{$pedido->pedido_id}",
+                        \Illuminate\Support\Facades\Auth::id(),
+                        "Pedido #{$pedido->pedido_id}"
+                    );
+                    
+                    Log::info('Stock de producto devuelto por cancelación post-confirmación', [
+                        'producto_id' => $producto->producto_id,
+                        'cantidad' => $detalle->cantidad,
+                        'pedido_id' => $pedido->pedido_id
+                    ]);
+                }
             }
         }
     }

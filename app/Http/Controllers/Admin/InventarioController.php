@@ -71,6 +71,22 @@ class InventarioController extends Controller
     }
 
     /**
+     * Inventario de variantes
+     */
+    public function variantes(Request $request)
+    {
+        try {
+            $filtros = $this->getFiltrosVariantes($request);
+            $data = $this->inventarioService->getVariantesData($filtros);
+            
+            return view('pages.admin.inventario.variantes', $data);
+        } catch (\Exception $e) {
+            Log::error('Error al cargar variantes', ['error' => $e->getMessage()]);
+            return redirect()->back()->with('error', 'Error al cargar el inventario de variantes');
+        }
+    }
+
+    /**
      * Registrar entrada de inventario
      */
     public function registrarEntrada(Request $request)
@@ -812,5 +828,17 @@ class InventarioController extends Controller
         $html = str_replace('</body>', $scriptImpresion . '</body>', $html);
         
         return $html;
+    }
+
+    /**
+     * Obtener filtros para variantes
+     */
+    private function getFiltrosVariantes(Request $request): array
+    {
+        return [
+            'producto_id' => $request->get('producto_id'),
+            'estado_stock' => $request->get('estado_stock'),
+            'disponible' => $request->get('disponible')
+        ];
     }
 }

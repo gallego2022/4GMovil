@@ -14,16 +14,23 @@ class MovimientoInventario extends Model
 
     protected $fillable = [
         'producto_id',
-        'tipo',
+        'tipo_movimiento',
         'cantidad',
+        'stock_anterior',
+        'stock_nuevo',
         'motivo',
         'usuario_id',
+        'pedido_id',
         'referencia',
+        'costo_unitario',
         'fecha_movimiento'
     ];
 
     protected $casts = [
         'cantidad' => 'integer',
+        'stock_anterior' => 'integer',
+        'stock_nuevo' => 'integer',
+        'costo_unitario' => 'decimal:2',
         'fecha_movimiento' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
@@ -43,32 +50,32 @@ class MovimientoInventario extends Model
     // Scopes para filtros
     public function scopeEntradas($query)
     {
-        return $query->where('tipo', 'entrada');
+        return $query->where('tipo_movimiento', 'entrada');
     }
 
     public function scopeSalidas($query)
     {
-        return $query->where('tipo', 'salida');
+        return $query->where('tipo_movimiento', 'salida');
     }
 
     public function scopeAjustes($query)
     {
-        return $query->where('tipo', 'ajuste');
+        return $query->where('tipo_movimiento', 'ajuste');
     }
 
     public function scopeDevoluciones($query)
     {
-        return $query->where('tipo', 'devolucion');
+        return $query->where('tipo_movimiento', 'devolucion');
     }
 
     public function scopeReservas($query)
     {
-        return $query->where('tipo', 'reserva');
+        return $query->where('tipo_movimiento', 'reserva');
     }
 
     public function scopeLiberaciones($query)
     {
-        return $query->where('tipo', 'liberacion');
+        return $query->where('tipo_movimiento', 'liberacion');
     }
 
     public function scopePorProducto($query, $productoId)
@@ -85,26 +92,32 @@ class MovimientoInventario extends Model
     // Métodos de utilidad
     public function getTipoMovimientoLabelAttribute(): string
     {
-        return match($this->tipo) {
+        return match($this->tipo_movimiento) {
             'entrada' => 'Entrada',
             'salida' => 'Salida',
             'ajuste' => 'Ajuste',
             'devolucion' => 'Devolución',
             'reserva' => 'Reserva',
             'liberacion' => 'Liberación',
+            'venta_confirmada' => 'Venta Confirmada',
+            'ajuste_positivo' => 'Ajuste Positivo',
+            'ajuste_negativo' => 'Ajuste Negativo',
             default => 'Desconocido'
         };
     }
 
     public function getClaseColorAttribute(): string
     {
-        return match($this->tipo) {
+        return match($this->tipo_movimiento) {
             'entrada' => 'text-green-600 bg-green-50',
             'salida' => 'text-red-600 bg-red-50',
             'ajuste' => 'text-yellow-600 bg-yellow-50',
             'devolucion' => 'text-blue-600 bg-blue-50',
             'reserva' => 'text-purple-600 bg-purple-50',
             'liberacion' => 'text-indigo-600 bg-indigo-50',
+            'venta_confirmada' => 'text-orange-600 bg-orange-50',
+            'ajuste_positivo' => 'text-green-600 bg-green-50',
+            'ajuste_negativo' => 'text-red-600 bg-red-50',
             default => 'text-gray-600 bg-gray-50'
         };
     }

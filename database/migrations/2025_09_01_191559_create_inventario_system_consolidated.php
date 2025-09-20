@@ -92,21 +92,26 @@ return new class extends Migration
         Schema::create('movimientos_inventario', function (Blueprint $table) {
             $table->id('movimiento_id');
             $table->unsignedBigInteger('producto_id');
-            $table->enum('tipo', [
+            $table->enum('tipo_movimiento', [
                 'entrada', 'salida', 'ajuste', 'reserva', 'liberacion_reserva',
                 'transferencia', 'devolucion', 'merma', 'inventario_fisico'
             ]);
             $table->integer('cantidad');
+            $table->integer('stock_anterior')->nullable();
+            $table->integer('stock_nuevo')->nullable();
             $table->string('motivo');
             $table->unsignedBigInteger('usuario_id')->nullable();
+            $table->unsignedBigInteger('pedido_id')->nullable();
             $table->string('referencia')->nullable();
+            $table->decimal('costo_unitario', 10, 2)->nullable();
             $table->timestamp('fecha_movimiento')->useCurrent();
             $table->timestamps();
             
             // Índices (las claves foráneas se agregan después)
-            $table->index(['producto_id', 'tipo']);
+            $table->index(['producto_id', 'tipo_movimiento']);
             $table->index('fecha_movimiento');
             $table->index('usuario_id');
+            $table->index('pedido_id');
         });
         
         // ===== TABLA DE MOVIMIENTOS DE INVENTARIO DE VARIANTES =====
@@ -118,6 +123,8 @@ return new class extends Migration
                 'transferencia', 'devolucion', 'merma', 'inventario_fisico', 'venta'
             ]);
             $table->integer('cantidad');
+            $table->integer('stock_anterior')->nullable();
+            $table->integer('stock_nuevo')->nullable();
             $table->string('motivo');
             $table->unsignedBigInteger('usuario_id')->nullable();
             $table->string('referencia')->nullable();

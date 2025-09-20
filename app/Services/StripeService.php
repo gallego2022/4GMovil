@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use App\Services\PedidoNotificationService;
 use Stripe\Stripe;
 use Stripe\PaymentIntent;
@@ -33,7 +34,7 @@ class StripeService
                 'amount' => 'required|integer|min:100'
             ]);
 
-            $pedido = Pedido::with(['usuario', 'detalles.producto'])->findOrFail($request->pedido_id);
+            $pedido = Pedido::with(['usuario', 'detalles.producto', 'detalles.variante'])->findOrFail($request->pedido_id);
 
             // Verificar que el pedido pertenece al usuario autenticado
             if ($pedido->usuario_id !== Auth::id()) {
@@ -117,7 +118,7 @@ class StripeService
                 'pedido_id' => 'required|exists:pedidos,pedido_id'
             ]);
 
-            $pedido = Pedido::with(['usuario', 'detalles.producto'])->findOrFail($request->pedido_id);
+            $pedido = Pedido::with(['usuario', 'detalles.producto', 'detalles.variante'])->findOrFail($request->pedido_id);
             $pago = Pago::where('referencia_externa', $request->payment_intent_id)->first();
 
             if (!$pago) {
@@ -270,20 +271,56 @@ class StripeService
     private function handleSuccessfulPayment(Pedido $pedido, Pago $pago, $paymentIntent): void
     {
         DB::transaction(function () use ($pedido, $pago, $paymentIntent) {
+            $estadoAnterior = $pedido->estado_id;
+            
             // Actualizar estado del pedido
             $pedido->update(['estado_id' => 2]); // Confirmado
+            
+            // Recargar el pedido para asegurar que tenemos los datos actualizados
+            $pedido->refresh();
 
             // Actualizar estado del pago
             $pago->update([
                 'estado' => 'completado', // Usar 'completado' en lugar de 'completed'
                 'fecha_pago' => now()
             ]);
+            
+            Log::info('Estado del pedido actualizado en StripeService', [
+                'pedido_id' => $pedido->pedido_id,
+                'estado_anterior' => $estadoAnterior,
+                'estado_nuevo' => $pedido->estado_id,
+                'estado_nombre' => $pedido->estado->nombre ?? 'No cargado'
+            ]);
+
+            // Manejar stock reservado (importante para variantes)
+            Log::info('Llamando a manejarStockReservado desde StripeService', [
+                'pedido_id' => $pedido->pedido_id,
+                'estado_anterior' => $estadoAnterior,
+                'nuevo_estado' => 2
+            ]);
+            
+            try {
+                $this->manejarStockReservado($pedido, $estadoAnterior, 2);
+                Log::info('manejarStockReservado ejecutado exitosamente');
+            } catch (\Exception $e) {
+                Log::error('Error en manejarStockReservado', [
+                    'pedido_id' => $pedido->pedido_id,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+                
+                // Intentar registrar movimientos directamente como fallback
+                $this->registrarMovimientosFallback($pedido);
+            }
 
             // Generar webhook local
             $this->generateLocalWebhook($pedido, $paymentIntent);
 
             // Enviar correo de confirmación del pedido
             $this->enviarCorreoConfirmacion($pedido);
+            
+            // Enviar correo específico de pago exitoso con Stripe
+            $this->enviarCorreoPagoExitoso($pedido, $paymentIntent);
 
             Log::info('Pago procesado exitosamente', [
                 'pedido_id' => $pedido->pedido_id,
@@ -303,6 +340,299 @@ class StripeService
             $notificationService->enviarCorreoConfirmacion($pedido);
         } catch (\Exception $e) {
             Log::error('Error enviando correo de confirmación', [
+                'pedido_id' => $pedido->pedido_id,
+                'error' => $e->getMessage()
+            ]);
+            // No lanzar excepción para no afectar el flujo del pago
+        }
+    }
+
+    /**
+     * Manejar stock reservado según el cambio de estado del pedido
+     */
+    private function manejarStockReservado(Pedido $pedido, int $estadoAnterior, int $nuevoEstado): void
+    {
+        // Estados que confirman la venta (liberan stock reservado y registran salida)
+        $estadosConfirmados = [2]; // Confirmado
+        
+        // Estados que cancelan la venta (liberan stock reservado sin registrar salida)
+        $estadosCancelados = [3]; // Cancelado
+        
+        // Estados pendientes (mantienen stock reservado)
+        $estadosPendientes = [1]; // Pendiente
+
+        Log::info('Manejando stock reservado desde StripeService', [
+            'pedido_id' => $pedido->pedido_id,
+            'estado_anterior' => $estadoAnterior,
+            'nuevo_estado' => $nuevoEstado
+        ]);
+
+        try {
+            Log::info('Iniciando manejo de stock reservado', [
+                'pedido_id' => $pedido->pedido_id,
+                'total_detalles' => $pedido->detalles->count(),
+                'detalles' => $pedido->detalles->map(function($detalle) {
+                    return [
+                        'detalle_id' => $detalle->detalle_id ?? 'N/A',
+                        'producto_id' => $detalle->producto_id,
+                        'variante_id' => $detalle->variante_id,
+                        'cantidad' => $detalle->cantidad
+                    ];
+                })
+            ]);
+
+        foreach ($pedido->detalles as $detalle) {
+            $producto = $detalle->producto;
+            
+            Log::info('Procesando detalle del pedido', [
+                'detalle_id' => $detalle->detalle_id ?? 'N/A',
+                'producto_id' => $detalle->producto_id,
+                'variante_id' => $detalle->variante_id,
+                'cantidad' => $detalle->cantidad,
+                'producto_cargado' => $producto ? 'Sí' : 'No'
+            ]);
+            
+            // Si el pedido se confirma (pasa de pendiente a confirmado/enviado/entregado)
+            if (in_array($estadoAnterior, $estadosPendientes) && in_array($nuevoEstado, $estadosConfirmados)) {
+                Log::info('Pedido se está confirmando - procesando stock', [
+                    'pedido_id' => $pedido->pedido_id,
+                    'detalle_id' => $detalle->detalle_id ?? 'N/A',
+                    'producto_id' => $detalle->producto_id,
+                    'variante_id' => $detalle->variante_id,
+                    'cantidad' => $detalle->cantidad
+                ]);
+                
+                // Verificar si el detalle tiene una variante específica
+                if ($detalle->variante_id) {
+                    // Registrar salida de stock para la variante (Stripe confirma automáticamente)
+                    $variante = $detalle->variante;
+                    if ($variante) {
+                        Log::info('Registrando salida de stock para variante', [
+                            'variante_id' => $variante->variante_id,
+                            'cantidad' => $detalle->cantidad,
+                            'pedido_id' => $pedido->pedido_id
+                        ]);
+                        
+                        $resultado = $variante->registrarSalida(
+                            $detalle->cantidad,
+                            "Venta confirmada - Pedido #{$pedido->pedido_id} - Stripe",
+                            \Illuminate\Support\Facades\Auth::id(),
+                            "Pedido #{$pedido->pedido_id}"
+                        );
+                        
+                        Log::info('Resultado de registrarSalida para variante', [
+                            'variante_id' => $variante->variante_id,
+                            'resultado' => $resultado ? 'Exitoso' : 'Falló'
+                        ]);
+                        
+                        Log::info('Venta de variante confirmada desde Stripe', [
+                            'producto_id' => $producto->producto_id,
+                            'variante_id' => $variante->variante_id,
+                            'variante_nombre' => $variante->nombre,
+                            'cantidad' => $detalle->cantidad,
+                            'pedido_id' => $pedido->pedido_id
+                        ]);
+                    }
+                } else {
+                    // Registrar salida de stock para el producto (Stripe confirma automáticamente)
+                    Log::info('Registrando salida de stock para producto', [
+                        'producto_id' => $producto->producto_id,
+                        'cantidad' => $detalle->cantidad,
+                        'pedido_id' => $pedido->pedido_id
+                    ]);
+                    
+                    $resultado = $producto->registrarSalida(
+                        $detalle->cantidad,
+                        "Venta confirmada - Pedido #{$pedido->pedido_id} - Stripe",
+                        \Illuminate\Support\Facades\Auth::id(),
+                        $pedido->pedido_id
+                    );
+                    
+                    Log::info('Resultado de registrarSalida para producto', [
+                        'producto_id' => $producto->producto_id,
+                        'resultado' => $resultado ? 'Exitoso' : 'Falló'
+                    ]);
+                    
+                    Log::info('Venta de producto confirmada desde Stripe', [
+                        'producto_id' => $producto->producto_id,
+                        'cantidad' => $detalle->cantidad,
+                        'pedido_id' => $pedido->pedido_id
+                    ]);
+                }
+            }
+            // Si el pedido se cancela (pasa de pendiente a cancelado/rechazado)
+            elseif (in_array($estadoAnterior, $estadosPendientes) && in_array($nuevoEstado, $estadosCancelados)) {
+                // Verificar si el detalle tiene una variante específica
+                if ($detalle->variante_id) {
+                    // Liberar stock reservado de la variante
+                    $variante = $detalle->variante;
+                    if ($variante) {
+                        $variante->liberarReserva(
+                            $detalle->cantidad,
+                            "Cancelación de pedido #{$pedido->pedido_id}",
+                            \Illuminate\Support\Facades\Auth::id(),
+                            "Pedido #{$pedido->pedido_id}"
+                        );
+                        
+                        Log::info('Stock de variante liberado por cancelación desde Stripe', [
+                            'producto_id' => $producto->producto_id,
+                            'variante_id' => $variante->variante_id,
+                            'variante_nombre' => $variante->nombre,
+                            'cantidad' => $detalle->cantidad,
+                            'pedido_id' => $pedido->pedido_id
+                        ]);
+                    }
+                } else {
+                    // Liberar stock reservado del producto padre
+                    $producto->liberarStockReservado(
+                        $detalle->cantidad,
+                        "Cancelación de pedido #{$pedido->pedido_id}",
+                        \Illuminate\Support\Facades\Auth::id(),
+                        $pedido->pedido_id
+                    );
+                    
+                    Log::info('Stock de producto liberado por cancelación desde Stripe', [
+                        'producto_id' => $producto->producto_id,
+                        'cantidad' => $detalle->cantidad,
+                        'pedido_id' => $pedido->pedido_id
+                    ]);
+                }
+            }
+            // Si el pedido se cancela después de estar confirmado
+            elseif (in_array($estadoAnterior, $estadosConfirmados) && in_array($nuevoEstado, $estadosCancelados)) {
+                // Verificar si el detalle tiene una variante específica
+                if ($detalle->variante_id) {
+                    // Registrar entrada de la variante para compensar la salida ya registrada
+                    $variante = $detalle->variante;
+                    if ($variante) {
+                        $variante->registrarEntrada(
+                            $detalle->cantidad,
+                            "Devolución por cancelación - Pedido #{$pedido->pedido_id}",
+                            \Illuminate\Support\Facades\Auth::id(),
+                            "Pedido #{$pedido->pedido_id}"
+                        );
+                        
+                        Log::info('Stock de variante devuelto por cancelación post-confirmación desde Stripe', [
+                            'producto_id' => $producto->producto_id,
+                            'variante_id' => $variante->variante_id,
+                            'variante_nombre' => $variante->nombre,
+                            'cantidad' => $detalle->cantidad,
+                            'pedido_id' => $pedido->pedido_id
+                        ]);
+                    }
+                } else {
+                    // Registrar entrada del producto padre para compensar la salida ya registrada
+                    $producto->registrarEntrada(
+                        $detalle->cantidad,
+                        "Devolución por cancelación - Pedido #{$pedido->pedido_id}",
+                        \Illuminate\Support\Facades\Auth::id(),
+                        "Pedido #{$pedido->pedido_id}"
+                    );
+                    
+                    Log::info('Stock de producto devuelto por cancelación post-confirmación desde Stripe', [
+                        'producto_id' => $producto->producto_id,
+                        'cantidad' => $detalle->cantidad,
+                        'pedido_id' => $pedido->pedido_id
+                    ]);
+                }
+            }
+        }
+        
+        } catch (\Exception $e) {
+            Log::error('Error en manejarStockReservado desde StripeService', [
+                'pedido_id' => $pedido->pedido_id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+        }
+    }
+
+    /**
+     * Método de respaldo para registrar movimientos de inventario
+     */
+    private function registrarMovimientosFallback(Pedido $pedido): void
+    {
+        try {
+            Log::info('Ejecutando fallback para registrar movimientos de inventario', [
+                'pedido_id' => $pedido->pedido_id
+            ]);
+
+            foreach ($pedido->detalles as $detalle) {
+                $producto = $detalle->producto;
+                
+                if ($detalle->variante_id) {
+                    // Registrar salida para variante
+                    $variante = $detalle->variante;
+                    if ($variante) {
+                        Log::info('Fallback: Registrando salida para variante', [
+                            'variante_id' => $variante->variante_id,
+                            'cantidad' => $detalle->cantidad
+                        ]);
+                        
+                        $variante->registrarSalida(
+                            $detalle->cantidad,
+                            "Venta confirmada - Pedido #{$pedido->pedido_id} - Stripe (Fallback)",
+                            \Illuminate\Support\Facades\Auth::id(),
+                            "Pedido #{$pedido->pedido_id}"
+                        );
+                    }
+                } else {
+                    // Registrar salida para producto
+                    Log::info('Fallback: Registrando salida para producto', [
+                        'producto_id' => $producto->producto_id,
+                        'cantidad' => $detalle->cantidad
+                    ]);
+                    
+                    $producto->registrarSalida(
+                        $detalle->cantidad,
+                        "Venta confirmada - Pedido #{$pedido->pedido_id} - Stripe (Fallback)",
+                        \Illuminate\Support\Facades\Auth::id(),
+                        $pedido->pedido_id
+                    );
+                }
+            }
+            
+            Log::info('Fallback ejecutado exitosamente');
+        } catch (\Exception $e) {
+            Log::error('Error en fallback de movimientos de inventario', [
+                'pedido_id' => $pedido->pedido_id,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Enviar correo específico de pago exitoso con Stripe
+     */
+    private function enviarCorreoPagoExitoso(Pedido $pedido, $paymentIntent): void
+    {
+        try {
+            // Cargar la relación del usuario si no está cargada
+            if (!$pedido->relationLoaded('usuario')) {
+                $pedido->load('usuario');
+            }
+
+            // Verificar que el pedido tenga usuario
+            if (!$pedido->usuario) {
+                Log::warning('Pedido sin usuario para enviar correo de pago exitoso', [
+                    'pedido_id' => $pedido->pedido_id
+                ]);
+                return;
+            }
+
+            // Enviar correo específico de pago exitoso con Stripe
+            \Illuminate\Support\Facades\Mail::to($pedido->usuario->correo_electronico)
+                ->send(new \App\Mail\StripePagoExitoso($pedido->usuario, $pedido, $paymentIntent));
+            
+            Log::info('Correo de pago exitoso con Stripe enviado', [
+                'pedido_id' => $pedido->pedido_id,
+                'usuario_id' => $pedido->usuario_id,
+                'email' => $pedido->usuario->correo_electronico,
+                'payment_intent_id' => $paymentIntent->id
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Error enviando correo de pago exitoso con Stripe', [
                 'pedido_id' => $pedido->pedido_id,
                 'error' => $e->getMessage()
             ]);

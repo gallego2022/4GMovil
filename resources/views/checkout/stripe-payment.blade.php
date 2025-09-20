@@ -304,8 +304,19 @@ form.addEventListener('submit', async (event) => {
         const confirmData = await confirmResponse.json();
         
         if (confirmData.success) {
-            // Redirigir a página de éxito
-            window.location.href = '{{ route("checkout.success", $pedido) }}';
+            // Mostrar mensaje de procesamiento
+            const messageContainer = document.getElementById('payment-messages');
+            const messageElement = document.getElementById('payment-message');
+            
+            messageElement.textContent = '¡Pago exitoso! Procesando tu pedido...';
+            messageContainer.classList.remove('hidden', 'bg-red-50', 'text-red-800');
+            messageContainer.classList.add('bg-green-50', 'text-green-800');
+            
+            // Pequeño retraso para asegurar que la base de datos se actualice
+            setTimeout(() => {
+                // Redirigir a página de éxito
+                window.location.href = '{{ route("checkout.success", $pedido) }}';
+            }, 1500);
         } else {
             throw new Error(confirmData.error || 'Error al confirmar el pago');
         }

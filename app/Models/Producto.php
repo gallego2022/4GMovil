@@ -231,7 +231,9 @@ class Producto extends Model
         // Evento después de crear una variante
         static::updated(function ($producto) {
             // Si el producto tiene variantes, sincronizar el stock
-            if ($producto->tieneVariantes()) {
+            // Solo sincronizar si no se está actualizando el stock directamente
+            // Verificar si la sincronización está deshabilitada
+            if ($producto->tieneVariantes() && !isset($producto->syncDisabled)) {
                 $producto->sincronizarStockConVariantes();
             }
         });
@@ -254,7 +256,8 @@ class Producto extends Model
             'motivo' => $motivo,
             'usuario_id' => $usuarioId,
             'referencia' => $referencia,
-            'costo_unitario' => $this->costo_unitario
+            'costo_unitario' => $this->costo_unitario,
+            'fecha_movimiento' => now()
         ]);
     }
 
@@ -267,7 +270,11 @@ class Producto extends Model
         $stockAnterior = $this->stock;
         $this->stock -= $cantidad;
         $this->ultima_actualizacion_stock = now();
+        
+        // Deshabilitar temporalmente la sincronización automática
+        $this->syncDisabled = true;
         $this->save();
+        $this->syncDisabled = false;
 
         MovimientoInventario::create([
             'producto_id' => $this->producto_id,
@@ -278,7 +285,8 @@ class Producto extends Model
             'motivo' => $motivo,
             'usuario_id' => $usuarioId,
             'pedido_id' => $pedidoId,
-            'costo_unitario' => $this->costo_unitario
+            'costo_unitario' => $this->costo_unitario,
+            'fecha_movimiento' => now()
         ]);
 
         return true;
@@ -301,7 +309,8 @@ class Producto extends Model
                 'stock_nuevo' => $this->stock,
                 'motivo' => $motivo,
                 'usuario_id' => $usuarioId,
-                'costo_unitario' => $this->costo_unitario
+                'costo_unitario' => $this->costo_unitario,
+                'fecha_movimiento' => now()
             ]);
         }
     }
@@ -381,7 +390,8 @@ class Producto extends Model
             'motivo' => $motivo,
             'usuario_id' => $usuarioId,
             'pedido_id' => $pedidoId,
-            'costo_unitario' => $this->costo_unitario
+            'costo_unitario' => $this->costo_unitario,
+            'fecha_movimiento' => now()
         ]);
 
         return true;
@@ -426,7 +436,8 @@ class Producto extends Model
             'motivo' => $motivo,
             'usuario_id' => $usuarioId,
             'pedido_id' => $pedidoId,
-            'costo_unitario' => $this->costo_unitario
+            'costo_unitario' => $this->costo_unitario,
+            'fecha_movimiento' => now()
         ]);
 
         return true;

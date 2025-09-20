@@ -101,6 +101,7 @@ class CheckoutService extends BaseService
             $metodoPago = MetodoPago::find($checkoutData['metodo_pago_id']);
             
             if ($metodoPago && strtolower($metodoPago->nombre) === 'stripe') {
+                // Para Stripe, NO actualizar stock hasta que se confirme el pago
                 // Para Stripe, solo crear el pedido y redirigir al pago
                 $this->logOperation('checkout_stripe_preparado', [
                     'pedido_id' => $pedido->pedido_id,
@@ -115,7 +116,8 @@ class CheckoutService extends BaseService
                     'message' => 'Pedido creado, redirigiendo a Stripe'
                 ];
             } else {
-                // Para métodos no-Stripe, procesar completamente y enviar correo
+                // Para métodos no-Stripe, actualizar stock y procesar completamente
+                $this->updateProductStock($cart);
                 $this->enviarCorreoConfirmacionSiEsNecesario($pedido, $checkoutData['metodo_pago_id']);
                 
                 $this->logOperation('checkout_procesado_exitosamente', [
@@ -497,6 +499,46 @@ class CheckoutService extends BaseService
                 'pedido_id' => $pedido->pedido_id,
                 'error' => $e->getMessage()
             ]);
+        }
+    }
+
+    /**
+     * Actualiza el stock de los productos
+     */
+    private function updateProductStock(array $cart): void
+    {
+        foreach ($cart as $item) {
+            // Manejar tanto 'id' como 'producto_id' para compatibilidad
+            $productoId = $item['producto_id'] ?? $item['id'] ?? null;
+            $cantidad = $item['cantidad'] ?? $item['quantity'] ?? 1;
+            
+            if (!$productoId) {
+                continue; // Saltar si no hay ID de producto
+            }
+
+            if (isset($item['variante_id'])) {
+                // Para variantes, usar el método que registra movimientos
+                $variante = \App\Models\VarianteProducto::find($item['variante_id']);
+                if ($variante) {
+                    $variante->registrarSalida(
+                        $cantidad,
+                        "Venta - Checkout",
+                        \Illuminate\Support\Facades\Auth::id(),
+                        "checkout_venta"
+                    );
+                }
+            } else {
+                // Para productos sin variantes, usar el método que registra movimientos
+                $producto = \App\Models\Producto::find($productoId);
+                if ($producto) {
+                    $producto->registrarSalida(
+                        $cantidad,
+                        "Venta - Checkout",
+                        \Illuminate\Support\Facades\Auth::id(),
+                        null // No hay pedido_id en este punto
+                    );
+                }
+            }
         }
     }
 }

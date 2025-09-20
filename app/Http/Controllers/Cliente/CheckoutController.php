@@ -131,7 +131,7 @@ class CheckoutController extends WebController
             // Limpiar el carrito después de confirmar que el usuario llegó a la página de éxito
             Session::forget('cart');
             
-            $pedido = \App\Models\Pedido::findOrFail($pedidoId);
+            $pedido = \App\Models\Pedido::with('estado')->findOrFail($pedidoId);
             
             return view('checkout.success', [
                 'pedido' => $pedido

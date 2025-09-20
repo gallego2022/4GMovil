@@ -182,6 +182,78 @@
         </div>
     </div>
 
+    <!-- Variantes con stock bajo -->
+    <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Variantes con Stock Bajo</h3>
+            <span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 rounded-full">
+                {{ $alertas['variantes_stock_bajo'] ?? 0 }} variantes
+            </span>
+        </div>
+        
+        @php
+            // Obtener variantes con stock bajo
+            $variantesStockBajo = \App\Models\VarianteProducto::with(['producto'])
+                ->where('disponible', true)
+                ->where('stock', '>', 0)
+                ->get()
+                ->filter(function($variante) {
+                    $stockInicial = $variante->producto->stock_inicial ?? 0;
+                    $umbralBajo = $stockInicial > 0 ? (int) ceil(($stockInicial * 60) / 100) : 10;
+                    $umbralCritico = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 5;
+                    return $variante->stock <= $umbralBajo && $variante->stock > $umbralCritico;
+                })
+                ->take(5);
+        @endphp
+        
+        @if($variantesStockBajo->count() > 0)
+            <div class="space-y-3">
+                @foreach($variantesStockBajo as $variante)
+                    @php
+                        $stockInicial = $variante->producto->stock_inicial ?? 0;
+                        $porcentaje = $stockInicial > 0 ? round(($variante->stock / $stockInicial) * 100, 1) : 0;
+                    @endphp
+                    <div class="flex items-center justify-between p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            @if($variante->producto->imagenes->isNotEmpty())
+                                <img src="{{ asset('storage/' . $variante->producto->imagenes[0]->ruta_imagen) }}" 
+                                     class="w-10 h-10 rounded-md object-cover" 
+                                     alt="{{ $variante->producto->nombre_producto }}">
+                            @else
+                                <div class="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-md flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                </div>
+                            @endif
+                            <div>
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $variante->producto->nombre_producto }}</div>
+                                <div class="flex items-center space-x-2">
+                                    @if($variante->codigo_color)
+                                        <div class="w-3 h-3 rounded-full border border-gray-300" style="background-color: {{ $variante->codigo_color }}"></div>
+                                    @endif
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">{{ $variante->nombre }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                Stock: {{ $variante->stock }}
+                            </div>
+                            <div class="text-xs text-yellow-600 dark:text-yellow-400">
+                                {{ $porcentaje }}% del inicial
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <div class="text-center py-4 text-sm text-gray-500 dark:text-gray-400">
+                No hay variantes con stock bajo
+            </div>
+        @endif
+    </div>
+
     <!-- Productos con stock reservado alto -->
     <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
         <div class="flex items-center justify-between mb-4">

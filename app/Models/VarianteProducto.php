@@ -383,4 +383,34 @@ class VarianteProducto extends Model
             $variante->sincronizarStockProducto();
         });
     }
+
+    /**
+     * Confirmar venta de una variante (registra movimiento de venta confirmada)
+     */
+    public function confirmarVenta(int $cantidad, string $motivo, int $usuarioId, ?string $referencia = null): bool
+    {
+        return DB::transaction(function () use ($cantidad, $motivo, $usuarioId, $referencia) {
+            // Registrar movimiento de venta confirmada
+            MovimientoInventarioVariante::create([
+                'variante_id' => $this->variante_id,
+                'tipo' => 'venta_confirmada',
+                'cantidad' => $cantidad,
+                'stock_anterior' => $this->stock,
+                'stock_nuevo' => $this->stock, // No cambia el stock físico
+                'motivo' => $motivo,
+                'usuario_id' => $usuarioId,
+                'referencia' => $referencia,
+                'fecha_movimiento' => now()
+            ]);
+
+            Log::info('Venta confirmada para variante', [
+                'variante_id' => $this->variante_id,
+                'color' => $this->nombre,
+                'cantidad' => $cantidad,
+                'motivo' => $motivo
+            ]);
+
+            return true;
+        });
+    }
 }

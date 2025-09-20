@@ -15,6 +15,8 @@ class MovimientoInventarioVariante extends Model
         'variante_id',
         'tipo',
         'cantidad',
+        'stock_anterior',
+        'stock_nuevo',
         'motivo',
         'usuario_id',
         'referencia',
@@ -23,6 +25,8 @@ class MovimientoInventarioVariante extends Model
 
     protected $casts = [
         'cantidad' => 'integer',
+        'stock_anterior' => 'integer',
+        'stock_nuevo' => 'integer',
         'fecha_movimiento' => 'datetime'
     ];
 
@@ -81,6 +85,7 @@ class MovimientoInventarioVariante extends Model
             'salida' => 'Salida',
             'reserva' => 'Reserva',
             'venta' => 'Venta',
+            'venta_confirmada' => 'Venta Confirmada',
             'liberacion_reserva' => 'Liberación',
             'ajuste' => 'Ajuste',
             'transferencia' => 'Transferencia',
@@ -95,7 +100,7 @@ class MovimientoInventarioVariante extends Model
     {
         $signo = match($this->tipo) {
             'entrada', 'liberacion_reserva', 'devolucion' => '+',
-            'salida', 'reserva', 'venta', 'merma' => '-',
+            'salida', 'reserva', 'venta', 'venta_confirmada', 'merma' => '-',
             default => ''
         };
         return $signo . $this->cantidad;
@@ -105,7 +110,7 @@ class MovimientoInventarioVariante extends Model
     {
         return match($this->tipo) {
             'entrada', 'liberacion_reserva', 'devolucion' => 'text-green-600 bg-green-100',
-            'salida', 'venta', 'merma' => 'text-red-600 bg-red-100',
+            'salida', 'venta', 'venta_confirmada', 'merma' => 'text-red-600 bg-red-100',
             'reserva' => 'text-blue-600 bg-blue-100',
             'ajuste', 'transferencia', 'inventario_fisico' => 'text-yellow-600 bg-yellow-100',
             default => 'text-gray-600 bg-gray-100'
