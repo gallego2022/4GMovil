@@ -270,9 +270,9 @@ class StripeService
      */
     private function handleSuccessfulPayment(Pedido $pedido, Pago $pago, $paymentIntent): void
     {
-        DB::transaction(function () use ($pedido, $pago, $paymentIntent) {
-            $estadoAnterior = $pedido->estado_id;
-            
+        $estadoAnterior = $pedido->estado_id;
+        
+        DB::transaction(function () use ($pedido, $pago, $paymentIntent, $estadoAnterior) {
             // Actualizar estado del pedido
             $pedido->update(['estado_id' => 2]); // Confirmado
             
@@ -292,27 +292,6 @@ class StripeService
                 'estado_nombre' => $pedido->estado->nombre ?? 'No cargado'
             ]);
 
-            // Manejar stock reservado (importante para variantes)
-            Log::info('Llamando a manejarStockReservado desde StripeService', [
-                'pedido_id' => $pedido->pedido_id,
-                'estado_anterior' => $estadoAnterior,
-                'nuevo_estado' => 2
-            ]);
-            
-            try {
-                $this->manejarStockReservado($pedido, $estadoAnterior, 2);
-                Log::info('manejarStockReservado ejecutado exitosamente');
-            } catch (\Exception $e) {
-                Log::error('Error en manejarStockReservado', [
-                    'pedido_id' => $pedido->pedido_id,
-                    'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString()
-                ]);
-                
-                // Intentar registrar movimientos directamente como fallback
-                $this->registrarMovimientosFallback($pedido);
-            }
-
             // Generar webhook local
             $this->generateLocalWebhook($pedido, $paymentIntent);
 
@@ -328,6 +307,28 @@ class StripeService
                 'payment_intent_id' => $paymentIntent->id
             ]);
         });
+        
+        // Manejar stock reservado FUERA de la transacción principal
+        Log::info('Llamando a manejarStockReservado desde StripeService', [
+            'pedido_id' => $pedido->pedido_id,
+            'estado_anterior' => $estadoAnterior,
+            'nuevo_estado' => 2
+        ]);
+        
+        try {
+            Log::info('Ejecutando manejo de stock fuera de transacción principal');
+            $this->manejarStockReservado($pedido, $estadoAnterior, 2);
+            Log::info('manejarStockReservado ejecutado exitosamente');
+        } catch (\Exception $e) {
+            Log::error('Error en manejarStockReservado', [
+                'pedido_id' => $pedido->pedido_id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            // Intentar registrar movimientos directamente como fallback
+            $this->registrarMovimientosFallback($pedido);
+        }
     }
 
     /**
