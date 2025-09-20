@@ -4,31 +4,27 @@
 
 echo "🚀 Iniciando 4GMovil..."
 
-# Esperar un momento para que la base de datos esté lista
+# Esperar a que la base de datos esté lista
 echo "⏳ Esperando que la base de datos esté lista..."
-sleep 10
-
-echo "✅ Iniciando aplicación..."
+until nc -z db 3306; do
+  echo "Esperando conexión a la base de datos..."
+  sleep 2
+done
+echo "✅ Base de datos conectada!"
 
 # Generar clave de aplicación si no existe
-if [ -z "$APP_KEY" ]; then
-    echo "🔑 Generando clave de aplicación..."
-    php artisan key:generate --force
-fi
+echo "🔑 Generando clave de aplicación..."
+php artisan key:generate --force
+
+# Limpiar caché
+echo "🧹 Limpiando caché..."
+php artisan config:clear
+php artisan cache:clear
+php artisan view:clear
 
 # Ejecutar migraciones
 echo "📊 Ejecutando migraciones..."
 php artisan migrate --force
-
-# Ejecutar seeders si es la primera vez
-echo "🌱 Ejecutando seeders..."
-php artisan db:seed --force
-
-# Limpiar y optimizar caché
-echo "🧹 Optimizando aplicación..."
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
 
 # Establecer permisos correctos
 echo "🔐 Estableciendo permisos..."

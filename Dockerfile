@@ -30,11 +30,17 @@ COPY composer.json composer.lock package.json package-lock.json ./
 # Instalar dependencias de PHP
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
+# Instalar dependencias de Node.js
+RUN npm install
+
 # Copiar el resto del proyecto
 COPY . .
 
 # Crear archivo .env desde el ejemplo
 RUN cp env.docker.example .env
+
+# Compilar assets de Vite
+RUN npm run build
 
 # Crear carpetas que Laravel necesita y dar permisos
 RUN mkdir -p /var/www/html/storage/framework/{cache,sessions,views} \
@@ -53,8 +59,8 @@ RUN a2enmod rewrite headers
 # Copiar configuración de Apache personalizada
 COPY ./docker/apache/laravel.conf /etc/apache2/sites-available/000-default.conf
 
-# Crear script de inicialización
-COPY docker/init.sh /usr/local/bin/init.sh
+# Copiar script de inicialización
+COPY ./docker/init.sh /usr/local/bin/init.sh
 RUN chmod +x /usr/local/bin/init.sh
 
 # Exponer puerto
