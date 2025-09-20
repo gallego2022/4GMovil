@@ -172,7 +172,76 @@ Notas importantes de esquema (usadas por la búsqueda y otras vistas):
 
 ## 🚀 **Instalación y Configuración**
 
+### **🐳 Opción 1: Docker (Recomendado)**
+- Docker Desktop
+- Git
+
+**Instalación automática:**
+```bash
+# Windows
+install-docker.bat
+
+# Linux/Mac
+chmod +x install-docker.sh
+./install-docker.sh
+```
+
+**Instalación manual:**
+```bash
+git clone https://github.com/tu-usuario/4gmovil.git
+cd 4gmovil
+cp env.docker.example .env
+docker-compose up --build -d
+```
+
+**Acceso:**
+- Aplicación: http://localhost:8000
+- Admin: http://localhost:8000/admin
+- phpMyAdmin: http://localhost:8080
+
+📖 **[Ver guía completa de Docker](DOCKER_DEPLOYMENT_GUIDE.md)**
+
+### **🛠️ Opción 2: Instalación Tradicional**
+
+**Instalación automática:**
+```bash
+# Windows
+install-traditional.bat
+
+# Linux/Mac
+chmod +x install-traditional.sh
+./install-traditional.sh
+```
+
+**Instalación manual:**
+```bash
+git clone https://github.com/tu-usuario/4gmovil.git
+cd 4gmovil
+cp .env.example .env
+composer install
+npm install
+php artisan key:generate
+php artisan migrate:fresh --seed
+npm run build
+php artisan serve
+```
+
+**Acceso:**
+- Aplicación: http://127.0.0.1:8000
+- Admin: http://127.0.0.1:8000/admin
+
+### **👥 Para Equipos Mixtos (Docker + Sin Docker)**
+
+Si tu equipo tiene desarrolladores con y sin Docker, consulta:
+📖 **[Guía de Sincronización para Equipos Mixtos](TEAM_SYNC_GUIDE.md)**
+
 ### **Requisitos del Sistema**
+
+#### **Para Docker:**
+- Docker Desktop
+- Git
+
+#### **Para Instalación Tradicional:**
 - PHP 8.2 o superior
 - Composer 2.0+
 - Node.js 18.0+
@@ -314,6 +383,29 @@ Al ejecutar `php artisan migrate:fresh --seed`, se crearán automáticamente:
 
 ### **⚡ Comandos Rápidos de Configuración**
 
+#### **Instalación Automática (Recomendada):**
+
+**Docker:**
+```bash
+# Windows
+install-docker.bat
+
+# Linux/Mac
+chmod +x install-docker.sh
+./install-docker.sh
+```
+
+**Instalación Tradicional:**
+```bash
+# Windows
+install-traditional.bat
+
+# Linux/Mac
+chmod +x install-traditional.sh
+./install-traditional.sh
+```
+
+#### **Instalación Manual:**
 ```bash
 # Configuración completa en un solo comando
 git clone https://github.com/tu-usuario/4gmovil.git && \
@@ -612,6 +704,8 @@ php artisan inventario:exportar-reporte
 - [Configuración de Google OAuth](GOOGLE_OAUTH_SETUP.md)
 - [Configuración de Webhooks de Stripe](STRIPE_WEBHOOK_SETUP.md)
 - [Sistema de Especificaciones Dinámicas](DYNAMIC_PRODUCT_SPECS.md)
+- [Guía de Despliegue Docker](DOCKER_DEPLOYMENT_GUIDE.md)
+- [Guía de Sincronización para Equipos Mixtos](TEAM_SYNC_GUIDE.md)
 
 ### **🔗 Recursos Externos**
 - [Documentación de Laravel](https://laravel.com/docs)
@@ -825,6 +919,103 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para
 
 - **Desarrollador Principal** - [Osman Gallego](https://github.com/gallego2022)
 - **Contribuidores** - [Lista de contribuidores](https://github.com/gallego2022/4gmovil/graphs/contributors)
+
+## 🔄 **Sincronización y Actualizaciones**
+
+### **🔄 Sincronización de Cambios**
+
+#### **Cuando alguien hace cambios:**
+
+1. **Obtener cambios:**
+```bash
+git pull origin main
+```
+
+2. **Aplicar cambios según tu entorno:**
+
+**Con Docker:**
+```bash
+# Si hay cambios en dependencias
+docker-compose down
+docker-compose up --build -d
+
+# Si hay cambios en base de datos
+docker exec 4gmovil_app php artisan migrate
+
+# Si hay cambios en assets
+docker exec 4gmovil_app npm run build
+```
+
+**Sin Docker:**
+```bash
+# Si hay cambios en dependencias
+composer install
+npm install
+
+# Si hay cambios en base de datos
+php artisan migrate
+
+# Si hay cambios en assets
+npm run build
+```
+
+### **📝 Scripts de Sincronización Automática**
+
+#### **Windows:**
+```bash
+# Crear sync-changes.bat
+git pull origin main
+if exist "docker-compose.yml" (
+    docker-compose down
+    docker-compose up --build -d
+    docker exec 4gmovil_app php artisan migrate
+    docker exec 4gmovil_app npm run build
+) else (
+    composer install
+    npm install
+    php artisan migrate
+    npm run build
+)
+```
+
+#### **Linux/Mac:**
+```bash
+# Crear sync-changes.sh
+chmod +x sync-changes.sh
+./sync-changes.sh
+```
+
+### **🔄 Actualizaciones**
+
+#### **Actualizar desde GitHub:**
+```bash
+# Obtener últimos cambios
+git pull origin main
+
+# Reconstruir contenedores (Docker)
+docker-compose down
+docker-compose up --build -d
+
+# Ejecutar migraciones (si las hay)
+docker exec 4gmovil_app php artisan migrate
+```
+
+#### **Actualizar Dependencias:**
+```bash
+# Actualizar dependencias PHP
+docker exec 4gmovil_app composer update
+
+# Actualizar dependencias Node.js
+docker exec 4gmovil_app npm update
+
+# Reconstruir assets
+docker exec 4gmovil_app npm run build
+```
+
+### **👥 Para Equipos Mixtos**
+
+Si tu equipo tiene desarrolladores con y sin Docker, consulta:
+📖 **[Guía de Sincronización para Equipos Mixtos](TEAM_SYNC_GUIDE.md)**
 
 ## 📞 **Soporte**
 
