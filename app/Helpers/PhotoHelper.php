@@ -38,6 +38,10 @@ class PhotoHelper
         
         // Si es una URL externa (Google, Facebook, etc.), devolver directamente
         if (self::isExternalUrl($photoPath)) {
+            // Si es una URL de Google, limpiarla para mejor compatibilidad
+            if (self::isGooglePhotoUrl($photoPath)) {
+                return self::cleanGooglePhotoUrl($photoPath);
+            }
             return $photoPath;
         }
         
@@ -88,7 +92,19 @@ class PhotoHelper
         }
         
         // Remover parámetros de tamaño para obtener la imagen original
-        $url = preg_replace('/\?.*$/', '', $url);
+        // Las URLs de Google pueden tener parámetros con = o ?
+        if (str_contains($url, '=')) {
+            $url = substr($url, 0, strpos($url, '='));
+        }
+        if (str_contains($url, '?')) {
+            $url = substr($url, 0, strpos($url, '?'));
+        }
+        
+        // Asegurar que la URL tenga el protocolo https
+        if (!str_starts_with($url, 'http')) {
+            $url = 'https://' . $url;
+        }
+        
         return $url;
     }
 }
