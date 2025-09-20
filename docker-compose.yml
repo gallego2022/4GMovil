@@ -5,18 +5,27 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: laravel_app
+    container_name: 4gmovil_app
     restart: unless-stopped
     ports:
       - "8000:80"
     volumes:
-      - ./:/var/www/html
+      - ./storage:/var/www/html/storage
+      - ./bootstrap/cache:/var/www/html/bootstrap/cache
+    environment:
+      - APP_ENV=production
+      - DB_HOST=db
+      - DB_DATABASE=4gmovil
+      - DB_USERNAME=laraveluser
+      - DB_PASSWORD=laravelpass
     depends_on:
       - db
+    networks:
+      - 4gmovil_network
 
   db:
     image: mysql:8.0
-    container_name: laravel_db
+    container_name: 4gmovil_db
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
@@ -27,18 +36,44 @@ services:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
+    # healthcheck:
+    #   test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "laraveluser", "-p", "laravelpass"]
+    #   timeout: 20s
+    #   retries: 10
+    networks:
+      - 4gmovil_network
 
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: laravel_phpmyadmin
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: 4gmovil_phpmyadmin
     restart: unless-stopped
     environment:
       PMA_HOST: db
+      PMA_USER: laraveluser
+      PMA_PASSWORD: laravelpass
       MYSQL_ROOT_PASSWORD: rootpassword
     ports:
       - "8080:80"
     depends_on:
       - db
+    networks:
+      - 4gmovil_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: 4gmovil_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - 4gmovil_network
 
 volumes:
   db_data:
+  redis_data:
+
+networks:
+  4gmovil_network:
+    driver: bridge

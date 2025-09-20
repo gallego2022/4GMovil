@@ -11,7 +11,12 @@ RUN apt-get update && apt-get install -y \
     git \
     curl \
     libzip-dev \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+    nodejs \
+    npm \
+    netcat-openbsd \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Instalar Composer
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
@@ -19,20 +24,24 @@ COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 # Directorio de trabajo
 WORKDIR /var/www/html
 
-# Copiar composer.json y composer.lock para aprovechar caché
-COPY composer.json composer.lock ./
+# Copiar archivos de configuración primero para aprovechar caché
+COPY composer.json composer.lock package.json package-lock.json ./
 
-# Instalar dependencias de Laravel
+# Instalar dependencias de PHP
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-# Copiar todo el proyecto
+# Copiar el resto del proyecto
 COPY . .
+
+# Crear archivo .env desde el ejemplo
+RUN cp env.docker.example .env
 
 # Crear carpetas que Laravel necesita y dar permisos
 RUN mkdir -p /var/www/html/storage/framework/{cache,sessions,views} \
+    && mkdir -p /var/www/html/storage/logs \
     && touch /var/www/html/storage/logs/laravel.log \
     && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
-    && chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Ejecutar Artisan
 RUN composer dump-autoload -o \
@@ -44,8 +53,12 @@ RUN a2enmod rewrite headers
 # Copiar configuración de Apache personalizada
 COPY ./docker/apache/laravel.conf /etc/apache2/sites-available/000-default.conf
 
+# Crear script de inicialización
+COPY docker/init.sh /usr/local/bin/init.sh
+RUN chmod +x /usr/local/bin/init.sh
+
 # Exponer puerto
 EXPOSE 80
 
 # Comando por defecto
-CMD ["apache2-foreground"]
+CMD ["/usr/local/bin/init.sh"]
