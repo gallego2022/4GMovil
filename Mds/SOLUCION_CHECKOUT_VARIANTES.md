@@ -10,9 +10,9 @@ El proceso de checkout no funciona correctamente cuando se intenta confirmar un 
 - **Problema**: El método `tieneStockSuficiente` no existía en el modelo `Producto`
 - **Solución**: ✅ **IMPLEMENTADA** - Se agregó el método al modelo `Producto`
 
-### **2. Error de Timestamps en Tabla de Movimientos**
-- **Problema**: La tabla `movimientos_inventario_variantes` no tenía las columnas `created_at` y `updated_at`
-- **Solución**: ✅ **IMPLEMENTADA** - Se agregaron las columnas mediante migración
+### **2. Tabla unificada de movimientos**
+- **Actual**: Se utiliza la tabla unificada `movimientos_inventario` (con columna `variante_id`) para registrar movimientos de productos y variantes.
+- **Notas**: Los reportes y vistas filtran por `variante_id` cuando corresponde.
 
 ### **3. Error de Tipo de Dato en Pedido ID**
 - **Problema**: El campo `pedido_id` en `movimientos_inventario` es de tipo integer pero se está pasando un string

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\InventarioService;
 use App\Models\Producto;
-use App\Models\MovimientoInventarioVariante;
+use App\Models\MovimientoInventario;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -512,10 +512,10 @@ class InventarioController extends Controller
         
         foreach ($movimientos->take(50) as $movimiento) {
             $html .= '<tr>
-                <td>' . $movimiento->created_at->format('d/m/Y H:i') . '</td>
+                <td>' . ($movimiento->fecha_movimiento ? $movimiento->fecha_movimiento->format('d/m/Y H:i') : '') . '</td>
                 <td>' . htmlspecialchars($movimiento->variante->producto->nombre_producto ?? 'N/A') . '</td>
                 <td>' . htmlspecialchars($movimiento->variante->nombre ?? 'N/A') . '</td>
-                <td>' . ucfirst($movimiento->tipo) . '</td>
+                <td>' . ucfirst($movimiento->tipo_movimiento ?? $movimiento->tipo ?? '') . '</td>
                 <td>' . $movimiento->cantidad . '</td>
                 <td>' . htmlspecialchars($movimiento->motivo) . '</td>
             </tr>';

@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   app:
     build:
@@ -33,7 +31,7 @@ services:
       MYSQL_USER: laraveluser
       MYSQL_PASSWORD: laravelpass
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
     # healthcheck:

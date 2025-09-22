@@ -88,14 +88,19 @@ return new class extends Migration
             $table->index('principal');
         });
         
-        // ===== TABLA DE MOVIMIENTOS DE INVENTARIO =====
+        // ===== TABLA ÚNICA DE MOVIMIENTOS DE INVENTARIO (PRODUCTOS Y VARIANTES) =====
         Schema::create('movimientos_inventario', function (Blueprint $table) {
             $table->id('movimiento_id');
-            $table->unsignedBigInteger('producto_id');
+            // Identificadores opcionales: uno u otro
+            $table->unsignedBigInteger('producto_id')->nullable();
+            $table->unsignedBigInteger('variante_id')->nullable();
+            
+            // Tipo estandarizado (mantener compatibilidad con código de productos)
             $table->enum('tipo_movimiento', [
                 'entrada', 'salida', 'ajuste', 'reserva', 'liberacion_reserva',
-                'transferencia', 'devolucion', 'merma', 'inventario_fisico'
+                'transferencia', 'devolucion', 'merma', 'inventario_fisico', 'venta'
             ]);
+            
             $table->integer('cantidad');
             $table->integer('stock_anterior')->nullable();
             $table->integer('stock_nuevo')->nullable();
@@ -106,36 +111,16 @@ return new class extends Migration
             $table->decimal('costo_unitario', 10, 2)->nullable();
             $table->timestamp('fecha_movimiento')->useCurrent();
             $table->timestamps();
-            
+
             // Índices (las claves foráneas se agregan después)
             $table->index(['producto_id', 'tipo_movimiento']);
+            $table->index(['variante_id', 'tipo_movimiento']);
             $table->index('fecha_movimiento');
             $table->index('usuario_id');
             $table->index('pedido_id');
         });
-        
-        // ===== TABLA DE MOVIMIENTOS DE INVENTARIO DE VARIANTES =====
-        Schema::create('movimientos_inventario_variantes', function (Blueprint $table) {
-            $table->id('movimiento_id');
-            $table->unsignedBigInteger('variante_id');
-            $table->enum('tipo', [
-                'entrada', 'salida', 'ajuste', 'reserva', 'liberacion_reserva',
-                'transferencia', 'devolucion', 'merma', 'inventario_fisico', 'venta'
-            ]);
-            $table->integer('cantidad');
-            $table->integer('stock_anterior')->nullable();
-            $table->integer('stock_nuevo')->nullable();
-            $table->string('motivo');
-            $table->unsignedBigInteger('usuario_id')->nullable();
-            $table->string('referencia')->nullable();
-            $table->timestamp('fecha_movimiento')->useCurrent();
-            $table->timestamps();
-            
-            // Índices (las claves foráneas se agregan después)
-            $table->index(['variante_id', 'tipo']);
-            $table->index('fecha_movimiento');
-            $table->index('usuario_id');
-        });
+
+        // Vista de compatibilidad eliminada: todo usa la tabla unificada
         
         // ===== TABLA DE RESERVAS DE STOCK DE VARIANTES =====
         Schema::create('reservas_stock_variantes', function (Blueprint $table) {
@@ -197,7 +182,6 @@ return new class extends Migration
         Schema::dropIfExists('especificaciones_producto');
         Schema::dropIfExists('especificaciones_categoria');
         Schema::dropIfExists('reservas_stock_variantes');
-        Schema::dropIfExists('movimientos_inventario_variantes');
         Schema::dropIfExists('movimientos_inventario');
         Schema::dropIfExists('imagenes_variantes');
         Schema::dropIfExists('variantes_producto');

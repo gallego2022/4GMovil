@@ -10,10 +10,11 @@ class MovimientoInventario extends Model
 {
     protected $table = 'movimientos_inventario';
     protected $primaryKey = 'movimiento_id';
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'producto_id',
+        'variante_id',
         'tipo_movimiento',
         'cantidad',
         'stock_anterior',
@@ -45,6 +46,11 @@ class MovimientoInventario extends Model
     public function usuario(): BelongsTo
     {
         return $this->belongsTo(Usuario::class, 'usuario_id');
+    }
+
+    public function variante(): BelongsTo
+    {
+        return $this->belongsTo(VarianteProducto::class, 'variante_id', 'variante_id');
     }
 
     // Scopes para filtros
@@ -104,6 +110,12 @@ class MovimientoInventario extends Model
             'ajuste_negativo' => 'Ajuste Negativo',
             default => 'Desconocido'
         };
+    }
+
+    // Compatibilidad con vistas/código que usan $movimiento->tipo
+    public function getTipoAttribute(): ?string
+    {
+        return $this->tipo_movimiento;
     }
 
     public function getClaseColorAttribute(): string

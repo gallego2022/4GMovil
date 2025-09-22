@@ -70,28 +70,13 @@ Usuario solicita reenvío → Timer de 60 segundos → Nuevo código generado �
 
 ### **Rutas Disponibles**
 
-```php
-// Verificación OTP
-GET  /otp/verify                    // Formulario de verificación
-POST /otp/send                      // Enviar código OTP
-POST /otp/verify                    // Verificar código OTP
-
-// OTP para restablecimiento de contraseña
-POST /otp/password-reset/send       // Enviar OTP para reset
-POST /otp/password-reset/verify     // Verificar OTP para reset
-
-// Mantenimiento
-POST /otp/cleanup                   // Limpiar códigos expirados
-```
+Consultar `routes/web.php` y `routes/api.php` para la lista actualizada. Flujos implementados en `App\Http\Controllers\Publico\OtpController` y `App\Http\Controllers\Auth\AuthController`.
 
 ### **Comandos de Artisan**
 
 ```bash
 # Limpiar códigos OTP expirados
-php artisan otp:cleanup
-
-# Modo dry-run (ver qué se eliminaría)
-php artisan otp:cleanup --dry-run
+php artisan otp:cleanup [--dry-run]
 ```
 
 ### **Configuración de Email**

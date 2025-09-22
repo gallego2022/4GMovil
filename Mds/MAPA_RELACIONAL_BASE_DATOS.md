@@ -35,7 +35,7 @@ categorias (PK: categoria_id)
 productos (PK: producto_id)
 ├── movimientos_inventario (PK: movimiento_id, FK: producto_id, FK: usuario_id)
 └── variantes_producto (PK: variante_id, FK: producto_id)
-    ├── movimientos_inventario_variantes (PK: movimiento_id, FK: variante_id, FK: usuario_id)
+    ├── movimientos_inventario (PK: movimiento_id, FK: variante_id, FK: usuario_id)
     └── reservas_stock_variantes (PK: reserva_id, FK: variante_id, FK: usuario_id)
 ```
 
@@ -82,7 +82,6 @@ usuarios (PK: usuario_id)
 ├── 1:N → subscriptions (usuario_id)
 ├── 1:N → sessions (usuario_id)
 ├── 1:N → movimientos_inventario (usuario_id)
-├── 1:N → movimientos_inventario_variantes (usuario_id)
 └── 1:N → reservas_stock_variantes (usuario_id)
 ```
 

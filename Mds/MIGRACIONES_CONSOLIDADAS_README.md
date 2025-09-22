@@ -101,8 +101,7 @@ Se han consolidado **+50 migraciones fragmentadas** en solo **8 migraciones prin
 **Tablas incluidas:**
 - `variantes_producto` - Variantes de productos
 - `imagenes_variantes` - Imágenes de variantes
-- `movimientos_inventario` - Movimientos de stock de productos
-- `movimientos_inventario_variantes` - Movimientos de stock de variantes
+- `movimientos_inventario` - Movimientos de stock unificados (productos y variantes)
 - `reservas_stock_variantes` - Reservas de stock
 - `especificaciones_categoria` - Especificaciones por categoría
 - `especificaciones_producto` - Valores de especificaciones

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\InventarioService;
 use App\Models\VarianteProducto;
-use App\Models\MovimientoInventarioVariante;
+use App\Models\MovimientoInventario;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -182,7 +182,8 @@ class InventarioVarianteController extends Controller
         $tipoMovimiento = $filtros['tipo_movimiento'];
         $productoId = $filtros['producto_id'];
 
-        $query = MovimientoInventarioVariante::with(['variante.producto', 'usuario'])
+        $query = MovimientoInventario::with(['variante.producto', 'usuario'])
+            ->whereNotNull('variante_id')
             ->whereBetween('fecha_movimiento', [$fechaInicio, $fechaFin]);
 
         if ($varianteId) {

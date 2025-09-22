@@ -3,14 +3,17 @@
 ## ✅ Configuración Completada
 
 ### 🔧 Webhook Configurado
-- **URL del webhook:** `https://ab91136f3e22.ngrok-free.app/stripe/webhook`
-- **ID del webhook:** `we_1RtZF9HvcviEWMI5QOiJMETl`
-- **Secret del webhook:** `whsec_4FhXMai8TF2ajbxxfx9h3v0ZVHDO44is`
+- **URL del webhook (desarrollo):** `http://localhost:8000/stripe/webhook`
+- **URL del webhook (túnel opcional):** `https://<subdominio>.ngrok-free.app/stripe/webhook`
+- **ID del webhook:** configurar desde el Dashboard de Stripe
+- **Secret del webhook:** mantener en `.env` (no documentar en texto plano)
 
 ### 📝 Variables de Entorno
-Agregar al archivo `.env`:
+Agregar al archivo `.env` (usar valores propios de tu entorno):
 ```env
-STRIPE_WEBHOOK_SECRET=whsec_4FhXMai8TF2ajbxxfx9h3v0ZVHDO44is
+STRIPE_KEY=pk_test_...
+STRIPE_SECRET=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
 ```
 
 ### 🎯 Eventos Configurados
@@ -44,7 +47,8 @@ php artisan check:estados-pedido
 ## 🔗 URLs Importantes
 
 ### Webhook de Stripe
-- **URL:** `https://ab91136f3e22.ngrok-free.app/stripe/webhook`
+- **URL (local):** `http://localhost:8000/stripe/webhook`
+- **URL (túnel):** `https://<subdominio>.ngrok-free.app/stripe/webhook`
 - **Método:** POST
 - **Autenticación:** Firma de Stripe
 

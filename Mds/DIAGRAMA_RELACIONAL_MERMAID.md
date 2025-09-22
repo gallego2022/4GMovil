@@ -34,12 +34,13 @@ erDiagram
 
     sessions {
         string id PK
-        bigint usuario_id FK
+        bigint user_id FK
         string ip_address
         text user_agent
         longtext payload
         integer last_activity
     }
+    %% FK: sessions.user_id -> usuarios.usuario_id
 
     %% SISTEMA DE CATALOGO
     categorias {
@@ -70,9 +71,20 @@ erDiagram
         text descripcion
         decimal precio
         integer stock
+        integer stock_inicial
         enum estado
+        boolean activo
         integer stock_reservado
         integer stock_disponible
+        integer stock_minimo
+        integer stock_maximo
+        string sku UK
+        decimal costo_unitario
+        decimal peso
+        string dimensiones
+        string codigo_barras
+        text notas_inventario
+        timestamp ultima_actualizacion_stock
         bigint categoria_id FK
         bigint marca_id FK
         string imagen_url
@@ -87,6 +99,7 @@ erDiagram
         text descripcion
         decimal precio_adicional
         integer stock
+        string codigo_color
         integer stock_reservado
         boolean disponible
         string sku UK
@@ -147,24 +160,16 @@ erDiagram
     movimientos_inventario {
         bigint movimiento_id PK
         bigint producto_id FK
-        enum tipo
-        integer cantidad
-        string motivo
-        bigint usuario_id FK
-        string referencia
-        timestamp fecha_movimiento
-        timestamp created_at
-        timestamp updated_at
-    }
-
-    movimientos_inventario_variantes {
-        bigint movimiento_id PK
         bigint variante_id FK
-        enum tipo
+        enum tipo_movimiento
         integer cantidad
+        integer stock_anterior
+        integer stock_nuevo
         string motivo
         bigint usuario_id FK
+        bigint pedido_id FK
         string referencia
+        decimal costo_unitario
         timestamp fecha_movimiento
         timestamp created_at
         timestamp updated_at
@@ -289,28 +294,20 @@ erDiagram
         timestamp updated_at
     }
 
-    %% SISTEMA DE PAGOS Y SUSCRIPCIONES
-    subscriptions {
-        bigint subscription_id PK
-        bigint usuario_id FK
-        string name
+    webhook_events {
+        bigint webhook_id PK
         string stripe_id UK
-        string stripe_status
-        string stripe_price
-        integer quantity
-        timestamp trial_ends_at
-        timestamp ends_at
-        timestamp created_at
-        timestamp updated_at
-    }
-
-    subscription_items {
-        bigint subscription_item_id PK
-        bigint subscription_id FK
-        string stripe_id UK
-        string stripe_product
-        string stripe_price
-        integer quantity
+        string type
+        string livemode
+        json data
+        string request_id
+        boolean processed
+        timestamp processed_at
+        string status
+        integer attempts
+        timestamp last_attempt_at
+        text error_message
+        bigint pedido_id FK
         timestamp created_at
         timestamp updated_at
     }
@@ -321,9 +318,8 @@ erDiagram
     usuarios ||--o{ resenas : "escribe"
     usuarios ||--o{ otp_codes : "genera"
     usuarios ||--o{ subscriptions : "tiene"
-    usuarios ||--o{ sessions : "mantiene"
+    usuarios ||--o{ sessions : "mantiene (FK: sessions.user_id)"
     usuarios ||--o{ movimientos_inventario : "registra"
-    usuarios ||--o{ movimientos_inventario_variantes : "registra"
     usuarios ||--o{ reservas_stock_variantes : "reserva"
 
     categorias ||--o{ productos : "contiene"
@@ -339,7 +335,7 @@ erDiagram
     productos ||--o{ movimientos_inventario : "registra"
 
     variantes_producto ||--o{ imagenes_variantes : "muestra"
-    variantes_producto ||--o{ movimientos_inventario_variantes : "registra"
+    variantes_producto ||--o{ movimientos_inventario : "registra"
     variantes_producto ||--o{ reservas_stock_variantes : "reserva"
     variantes_producto ||--o{ detalles_pedido : "incluye"
 
@@ -396,7 +392,7 @@ variantes_producto → imagenes_variantes
 ```
 productos → movimientos_inventario
     ↓
-variantes_producto → movimientos_inventario_variantes
+variantes_producto → movimientos_inventario
     ↓
 reservas_stock_variantes
 ```
@@ -419,5 +415,5 @@ pedidos → pagos → metodos_pago
 ---
 
 **Estado**: ✅ **DIAGRAMA ACTUALIZADO Y SINCRONIZADO**  
-**Fecha**: 2025-09-03  
+**Fecha**: 2025-09-22  
 **Base de Datos**: **4GMovil Consolidada** 🎯

@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\Pedido;
 use App\Models\MovimientoInventario;
-use App\Models\MovimientoInventarioVariante;
 
 class CheckInventoryMovements extends Command
 {
@@ -57,7 +56,7 @@ class CheckInventoryMovements extends Command
         }
         
         // Verificar movimientos de inventario de variantes
-        $movimientosVariante = MovimientoInventarioVariante::whereHas('variante', function($query) use ($pedidoId) {
+        $movimientosVariante = MovimientoInventario::whereNotNull('variante_id')->whereHas('variante', function($query) use ($pedidoId) {
             $query->whereHas('producto', function($q) use ($pedidoId) {
                 $q->whereHas('detallesPedido', function($dq) use ($pedidoId) {
                     $dq->where('pedido_id', $pedidoId);

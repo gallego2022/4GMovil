@@ -17,7 +17,7 @@ GOOGLE_REDIRECT_URI=http://tu-dominio.com/auth/callback/google
 
 1. Ve a [Google Cloud Console](https://console.cloud.google.com/)
 2. Crea un nuevo proyecto o selecciona uno existente
-3. Habilita la API de Google+ (si no está habilitada)
+3. Habilita la API de Google Identity (OAuth 2.0)
 
 ### 2. Configurar Credenciales OAuth 2.0
 
@@ -78,12 +78,15 @@ GOOGLE_REDIRECT_URI=https://tu-dominio.com/auth/callback/google
 3. **HTTPS**: En producción, usa siempre HTTPS
 4. **Logs**: Los errores se registran en `storage/logs/laravel.log`
 
-## Pruebas
+## Rutas y pruebas
 
-Para probar la funcionalidad:
+Rutas activas en la app:
 
-1. Ejecuta `php artisan serve`
-2. Ve a `http://localhost:8000/login`
-3. Haz clic en el botón "Google"
-4. Completa el flujo de autenticación de Google
-5. Verifica que seas redirigido correctamente
+- `GET /auth/redirect/google` (redirige a Google)
+- `GET /auth/callback/google` (callback)
+
+Para probar en local, con Docker:
+
+1. Levanta el stack: `docker compose up -d`
+2. Accede a `http://localhost:8000/login` y usa el botón "Google"
+3. Verifica el callback configurado: `http://localhost:8000/auth/callback/google`

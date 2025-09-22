@@ -51,7 +51,7 @@ class VarianteProducto extends Model
 
     public function movimientosInventario(): HasMany
     {
-        return $this->hasMany(MovimientoInventarioVariante::class, 'variante_id', 'variante_id');
+        return $this->hasMany(MovimientoInventario::class, 'variante_id', 'variante_id');
     }
 
     // Métodos para gestión de inventario
@@ -67,11 +67,13 @@ class VarianteProducto extends Model
             // Sincronizar stock del producto padre
             $this->sincronizarStockProducto();
 
-            // Registrar movimiento
-            MovimientoInventarioVariante::create([
+            // Registrar movimiento en tabla unificada
+            MovimientoInventario::create([
                 'variante_id' => $this->variante_id,
-                'tipo' => 'entrada',
+                'tipo_movimiento' => 'entrada',
                 'cantidad' => $cantidad,
+                'stock_anterior' => $stockAnterior,
+                'stock_nuevo' => $stockNuevo,
                 'motivo' => $motivo,
                 'usuario_id' => $usuarioId,
                 'referencia' => $referencia,
@@ -113,9 +115,9 @@ class VarianteProducto extends Model
             $this->sincronizarStockProducto();
 
             // Registrar movimiento
-            MovimientoInventarioVariante::create([
+            MovimientoInventario::create([
                 'variante_id' => $this->variante_id,
-                'tipo' => 'salida',
+                'tipo_movimiento' => 'salida',
                 'cantidad' => $cantidad,
                 'stock_anterior' => $stockAnterior,
                 'stock_nuevo' => $stockNuevo,
@@ -167,9 +169,9 @@ class VarianteProducto extends Model
             $this->sincronizarStockProducto();
 
             // Registrar movimiento de reserva
-            MovimientoInventarioVariante::create([
+            MovimientoInventario::create([
                 'variante_id' => $this->variante_id,
-                'tipo' => 'reserva',
+                'tipo_movimiento' => 'reserva',
                 'cantidad' => $cantidad,
                 'stock_anterior' => $stockAnterior,
                 'stock_nuevo' => $stockNuevo,
@@ -199,9 +201,9 @@ class VarianteProducto extends Model
     {
         // La reserva ya se hizo, solo registrar como venta confirmada
         return DB::transaction(function () use ($cantidad, $motivo, $usuarioId, $referencia) {
-            MovimientoInventarioVariante::create([
+            MovimientoInventario::create([
                 'variante_id' => $this->variante_id,
-                'tipo' => 'venta',
+                'tipo_movimiento' => 'venta',
                 'cantidad' => $cantidad,
                 'stock_anterior' => $this->stock,
                 'stock_nuevo' => $this->stock, // No cambia porque ya se reservó
@@ -235,9 +237,9 @@ class VarianteProducto extends Model
             $this->sincronizarStockProducto();
 
             // Registrar movimiento de liberación
-            MovimientoInventarioVariante::create([
+            MovimientoInventario::create([
                 'variante_id' => $this->variante_id,
-                'tipo' => 'liberacion_reserva',
+                'tipo_movimiento' => 'liberacion_reserva',
                 'cantidad' => $cantidad,
                 'stock_anterior' => $stockAnterior,
                 'stock_nuevo' => $stockNuevo,
@@ -391,9 +393,9 @@ class VarianteProducto extends Model
     {
         return DB::transaction(function () use ($cantidad, $motivo, $usuarioId, $referencia) {
             // Registrar movimiento de venta confirmada
-            MovimientoInventarioVariante::create([
+            MovimientoInventario::create([
                 'variante_id' => $this->variante_id,
-                'tipo' => 'venta_confirmada',
+                'tipo_movimiento' => 'venta_confirmada',
                 'cantidad' => $cantidad,
                 'stock_anterior' => $this->stock,
                 'stock_nuevo' => $this->stock, // No cambia el stock físico

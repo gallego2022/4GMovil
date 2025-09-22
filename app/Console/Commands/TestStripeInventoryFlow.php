@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\Pedido;
 use App\Models\MovimientoInventario;
-use App\Models\MovimientoInventarioVariante;
 use Illuminate\Support\Facades\Log;
 
 class TestStripeInventoryFlow extends Command
@@ -44,7 +43,7 @@ class TestStripeInventoryFlow extends Command
         
         // Verificar movimientos existentes
         $movimientosProducto = MovimientoInventario::where('pedido_id', $pedidoId)->get();
-        $movimientosVariante = MovimientoInventarioVariante::whereHas('variante', function($query) use ($pedidoId) {
+        $movimientosVariante = MovimientoInventario::whereNotNull('variante_id')->whereHas('variante', function($query) use ($pedidoId) {
             $query->whereHas('producto', function($q) use ($pedidoId) {
                 $q->whereHas('detallesPedido', function($dq) use ($pedidoId) {
                     $dq->where('pedido_id', $pedidoId);
@@ -116,7 +115,7 @@ class TestStripeInventoryFlow extends Command
             
             // Verificar movimientos después de la simulación
             $movimientosProductoDespues = MovimientoInventario::where('pedido_id', $pedidoId)->get();
-            $movimientosVarianteDespues = MovimientoInventarioVariante::whereHas('variante', function($query) use ($pedidoId) {
+            $movimientosVarianteDespues = MovimientoInventario::whereNotNull('variante_id')->whereHas('variante', function($query) use ($pedidoId) {
                 $query->whereHas('producto', function($q) use ($pedidoId) {
                     $q->whereHas('detallesPedido', function($dq) use ($pedidoId) {
                         $dq->where('pedido_id', $pedidoId);

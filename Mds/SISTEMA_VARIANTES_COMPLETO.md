@@ -56,20 +56,7 @@ $tieneVariantes = $productoObj->variantes && $productoObj->variantes->count() > 
 ```
 
 ### **2. API de Variantes**
-```php
-// GET /api/productos/{productoId}/variantes
-Route::get('/api/productos/{productoId}/variantes', function ($productoId) {
-    $variantes = VarianteProducto::where('producto_id', $productoId)
-        ->where('disponible', true)
-        ->orderBy('nombre', 'asc')
-        ->get();
-    
-    return response()->json([
-        'success' => true,
-        'variantes' => $variantes
-    ]);
-});
-```
+La API está implementada en los controladores y rutas actuales. Consulta `routes/web.php` y/o `routes/api.php` para los endpoints vigentes, y `App\Models\VarianteProducto` para el modelo.
 
 ### **3. Modal de Selección**
 ```javascript

@@ -61,7 +61,7 @@ class TestInventoryFlow extends Command
         
         // Verificar movimientos de inventario
         $movimientosInventario = \App\Models\MovimientoInventario::where('pedido_id', $pedidoId)->count();
-        $movimientosVariantes = \App\Models\MovimientoInventarioVariante::whereHas('variante', function($query) use ($pedidoId) {
+        $movimientosVariantes = \App\Models\MovimientoInventario::whereNotNull('variante_id')->whereHas('variante', function($query) use ($pedidoId) {
             $query->whereHas('detallesPedido', function($q) use ($pedidoId) {
                 $q->where('pedido_id', $pedidoId);
             });

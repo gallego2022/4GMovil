@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\Producto;
 use App\Models\MovimientoInventario;
 use App\Models\VarianteProducto;
-use App\Models\MovimientoInventarioVariante;
 use App\Models\Categoria;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as SupportCollection;
@@ -145,8 +144,8 @@ class InventarioService
     public function getReporteMovimientos(Carbon $fechaInicio, Carbon $fechaFin): array
     {
         $movimientos = MovimientoInventario::with(['producto', 'usuario'])
-            ->whereBetween('created_at', [$fechaInicio, $fechaFin])
-            ->orderBy('created_at', 'desc')
+            ->whereBetween('fecha_movimiento', [$fechaInicio, $fechaFin])
+            ->orderBy('fecha_movimiento', 'desc')
             ->get();
 
         $resumen = [
@@ -215,7 +214,7 @@ class InventarioService
             ->where('tipo_movimiento', 'salida');
 
         if ($fechaInicio && $fechaFin) {
-            $query->whereBetween('created_at', [$fechaInicio, $fechaFin]);
+            $query->whereBetween('fecha_movimiento', [$fechaInicio, $fechaFin]);
         }
 
         $resultados = $query->select('producto_id', DB::raw('SUM(cantidad) as total_vendido'))
@@ -424,7 +423,6 @@ class InventarioService
             'stock_actual' => $producto->stock,
             'stock_disponible' => $producto->stock_disponible,
             'stock_reservado' => $producto->stock_reservado,
-            'stock_actual' => $producto->stock,
             'stock_maximo_actual' => $producto->stock_maximo,
             'stock_optimo_recomendado' => round($stockOptimo),
             'stock_recomendado' => round($stockMinimoRecomendado),
@@ -589,10 +587,11 @@ class InventarioService
 
             $productos = $query->get();
 
-            // Obtener movimientos en el rango de fechas
-            $movimientos = MovimientoInventarioVariante::with(['variante.producto', 'usuario'])
-                ->whereBetween('created_at', [$fechaInicio, $fechaFin])
-                ->orderBy('created_at', 'desc')
+            // Obtener movimientos (tabla unificada) solo de variantes para el reporte
+            $movimientos = MovimientoInventario::with(['variante.producto', 'usuario'])
+                ->whereNotNull('variante_id')
+                ->whereBetween('fecha_movimiento', [$fechaInicio, $fechaFin])
+                ->orderBy('fecha_movimiento', 'desc')
                 ->get();
 
             // Calcular estadísticas
@@ -687,8 +686,8 @@ class InventarioService
             $query = VarianteProducto::with(['producto', 'imagenes'])
                 ->select([
                     'variantes_producto.*',
-                    DB::raw('(SELECT SUM(cantidad) FROM movimientos_inventario_variantes WHERE variante_id = variantes_producto.variante_id AND tipo = "entrada") as total_entradas'),
-                    DB::raw('(SELECT SUM(cantidad) FROM movimientos_inventario_variantes WHERE variante_id = variantes_producto.variante_id AND tipo = "salida") as total_salidas')
+                    DB::raw('(SELECT SUM(cantidad) FROM movimientos_inventario WHERE variante_id = variantes_producto.variante_id AND tipo_movimiento = "entrada") as total_entradas'),
+                    DB::raw('(SELECT SUM(cantidad) FROM movimientos_inventario WHERE variante_id = variantes_producto.variante_id AND tipo_movimiento = "salida") as total_salidas')
                 ]);
 
             if ($productoId) {
@@ -844,8 +843,9 @@ class InventarioService
         $tipo = $filtros['tipo'] ?? null;
         $usuarioId = $filtros['usuario_id'] ?? null;
 
-        // Obtener movimientos de variantes (que es lo que realmente usamos)
-        $query = MovimientoInventarioVariante::with(['variante.producto.categoria', 'variante.producto.marca', 'usuario'])
+        // Obtener movimientos desde la tabla unificada, restringiendo a variantes para esta vista
+        $query = MovimientoInventario::with(['variante.producto.categoria', 'variante.producto.marca', 'usuario'])
+            ->whereNotNull('variante_id')
             ->whereBetween('fecha_movimiento', [$fechaInicio, $fechaFin])
             ->orderBy('fecha_movimiento', 'desc');
 
@@ -857,7 +857,7 @@ class InventarioService
         }
 
         if ($tipo) {
-            $query->where('tipo', $tipo);
+            $query->where('tipo_movimiento', $tipo);
         }
 
         if ($usuarioId) {

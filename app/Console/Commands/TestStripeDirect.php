@@ -77,7 +77,7 @@ class TestStripeDirect extends Command
             
             // Verificar movimientos de inventario
             $movimientosProducto = \App\Models\MovimientoInventario::where('pedido_id', $pedidoId)->get();
-            $movimientosVariante = \App\Models\MovimientoInventarioVariante::whereHas('variante', function($query) use ($pedidoId) {
+            $movimientosVariante = \App\Models\MovimientoInventario::whereNotNull('variante_id')->whereHas('variante', function($query) use ($pedidoId) {
                 $query->whereHas('producto', function($q) use ($pedidoId) {
                     $q->whereHas('detallesPedido', function($dq) use ($pedidoId) {
                         $dq->where('pedido_id', $pedidoId);
