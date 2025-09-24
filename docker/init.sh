@@ -6,7 +6,10 @@ echo "🚀 Iniciando 4GMovil..."
 
 # Esperar a que la base de datos esté lista
 echo "⏳ Esperando que la base de datos esté lista..."
-until nc -z db 3306; do
+# Usar variables de entorno para host y puerto
+DB_HOST=${DB_HOST:-db}
+DB_PORT=${DB_PORT:-3306}
+until nc -z $DB_HOST $DB_PORT; do
   echo "Esperando conexión a la base de datos..."
   sleep 2
 done
