@@ -7,11 +7,16 @@ services:
     restart: unless-stopped
     ports:
       - "8000:80"
+      - "5173:5173"
     volumes:
+      - ./:/var/www/html
+      - /var/www/html/vendor
+      - /var/www/html/node_modules
       - ./storage:/var/www/html/storage
       - ./bootstrap/cache:/var/www/html/bootstrap/cache
     environment:
-      - APP_ENV=production
+      - APP_ENV=local
+      - APP_DEBUG=true
       - DB_HOST=db
       - DB_DATABASE=4gmovil
       - DB_USERNAME=laraveluser

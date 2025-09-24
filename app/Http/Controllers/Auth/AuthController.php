@@ -287,6 +287,8 @@ class AuthController extends WebController
      */
     public function showLinkRequestForm()
     {
+        // Al abrir el flujo de recuperación, limpiar correo persistido en sesión
+        session()->forget('email_sent');
         return view('auth.passwords.email-otp');
     }
 
@@ -659,6 +661,13 @@ class AuthController extends WebController
                     ->withErrors(['otp_code' => 'Código OTP inválido o expirado.']);
             }
 
+            // Validar que la nueva contraseña no sea igual a la anterior
+            if (!empty($usuario->contrasena) && \Illuminate\Support\Facades\Hash::check($request->password, $usuario->contrasena)) {
+                return back()
+                    ->withInput($request->only('email'))
+                    ->withErrors(['password' => 'Utiliza una contraseña diferente.']);
+            }
+
             // Actualizar contraseña
             $usuario->forceFill([
                 'contrasena' => \Illuminate\Support\Facades\Hash::make($request->password),
@@ -666,6 +675,9 @@ class AuthController extends WebController
             ])->save();
 
             \Illuminate\Support\Facades\Log::info("Contraseña restablecida exitosamente para: {$usuario->correo_electronico}");
+
+            // Limpiar el email almacenado en sesión para no prellenar futuros intentos
+            session()->forget('email_sent');
 
             return redirect()->route('login')
                 ->with('status', '¡Tu contraseña ha sido restablecida exitosamente! Ahora puedes iniciar sesión con tu nueva contraseña.')
