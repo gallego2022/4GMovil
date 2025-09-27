@@ -15,7 +15,7 @@
 - 🎨 Interfaz responsive + **modo oscuro persistente**  
 - 🔎 Búsqueda en tiempo real con autocompletado  
 
-📌 Proyecto académico desarrollado **de forma individual** como parte de mi formación en **Tecnología en Análisis y Desarrollo de Software (SENA)**.  
+📌 Proyecto académico desarrollado **de forma grupal** como parte de mi formación en **Tecnología en Análisis y Desarrollo de Software (SENA)**.  
 
 ---
 
