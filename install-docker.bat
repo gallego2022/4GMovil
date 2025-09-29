@@ -42,7 +42,7 @@ if exist "4gmovil" (
     git pull origin main
 ) else (
     echo Clonando proyecto desde GitHub...
-    git clone https://github.com/tu-usuario/4gmovil.git
+    git clone https://github.com/galllego2022/4gmovil.git
     cd 4gmovil
 )
 
