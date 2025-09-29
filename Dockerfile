@@ -49,8 +49,7 @@ RUN mkdir -p /var/www/html/storage/framework/{cache,sessions,views} \
     && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Crear enlace simbólico para storage (después de copiar archivos)
-RUN rm -f /var/www/html/public/storage && ln -s /var/www/html/storage/app/public /var/www/html/public/storage
+# El enlace simbólico se creará en el script de inicialización para evitar conflictos con volúmenes
 
 # Ejecutar Artisan
 RUN composer dump-autoload -o \

@@ -1141,6 +1141,31 @@
     <!-- Modal de configuración de idioma -->
     <x-language-selector-modal />
 
+    <!-- Modal para establecer contraseña de Google -->
+    @include('components.google-password-modal', [
+        'title' => __('profile.google_set_password'),
+        'description' => __('profile.google_set_password_description'),
+        'passwordLabel' => __('profile.google_password_label'),
+        'confirmPasswordLabel' => __('profile.google_confirm_password_label'),
+        'passwordPlaceholder' => __('profile.google_password_placeholder'),
+        'confirmPasswordPlaceholder' => __('profile.google_confirm_password_placeholder'),
+        'passwordRequirements' => __('profile.google_password_requirements'),
+        'cancelButtonText' => __('profile.google_cancel_button'),
+        'submitButtonText' => __('profile.google_submit_button'),
+        'submitRoute' => route('google.set-password')
+    ])
+
+    <!-- Script para mostrar el modal automáticamente -->
+    <script>
+        // Verificar si debe mostrar el modal al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar si el usuario no tiene contraseña (es usuario de Google) y es admin
+            @if (Auth::check() && !Auth::user()->contrasena && Auth::user()->rol === 'admin')
+                showGooglePasswordModal();
+            @endif
+        });
+    </script>
+
 </body>
 
 </html>

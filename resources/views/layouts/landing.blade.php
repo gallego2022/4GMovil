@@ -1381,129 +1381,21 @@
         });
     </script>
 
-    <!-- Modal para establecer contraseña de Google -->
-    <div id="googlePasswordModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
-        <div class="fixed inset-0 flex items-center justify-center p-4">
-            <div
-                class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4 transition-colors duration-300">
-                <div class="p-6">
-                    <div class="text-center">
-                        <div
-                            class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900 mb-4">
-                            <svg class="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
-                                </path>
-                            </svg>
-                        </div>
-                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Establecer Contraseña</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
-                            Para poder hacer login manual en el futuro, establece una contraseña para tu cuenta.
-                        </p>
-                    </div>
+    @include('components.google-password-modal', [
+        'title' => __('profile.google_set_password'),
+        'description' => __('profile.google_set_password_description'),
+        'passwordLabel' => __('profile.google_password_label'),
+        'confirmPasswordLabel' => __('profile.google_confirm_password_label'),
+        'passwordPlaceholder' => __('profile.google_password_placeholder'),
+        'confirmPasswordPlaceholder' => __('profile.google_confirm_password_placeholder'),
+        'passwordRequirements' => __('profile.google_password_requirements'),
+        'cancelButtonText' => __('profile.google_cancel_button'),
+        'submitButtonText' => __('profile.google_submit_button'),
+        'submitRoute' => route('google.set-password')
+    ])
 
-                    <form id="googlePasswordForm" class="space-y-4">
-                        @csrf
-                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                        <div>
-                            <label for="password"
-                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 text-left mb-2">Nueva
-                                Contraseña</label>
-                            <input type="password" id="password" name="password" required
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                placeholder="Mínimo 8 caracteres">
-                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 text-left">
-                                Debe contener mayúscula, minúscula, número y símbolo
-                            </p>
-                        </div>
-
-                        <div>
-                            <label for="password_confirmation"
-                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 text-left mb-2">Confirmar
-                                Contraseña</label>
-                            <input type="password" id="password_confirmation" name="password_confirmation" required
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                placeholder="Repite tu contraseña">
-                        </div>
-
-                        <div class="flex justify-end space-x-3 pt-4">
-                            <button type="button" onclick="closeGooglePasswordModal()"
-                                class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-md hover:bg-gray-400 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
-                                Más tarde
-                            </button>
-                            <button type="submit"
-                                class="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-700 dark:hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
-                                Establecer Contraseña
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Script para el modal de contraseña de Google -->
+    <!-- Script para mostrar el modal automáticamente -->
     <script>
-        function showGooglePasswordModal() {
-            document.getElementById('googlePasswordModal').classList.remove('hidden');
-        }
-
-        function closeGooglePasswordModal() {
-            document.getElementById('googlePasswordModal').classList.add('hidden');
-        }
-
-        // Manejar el formulario
-        const googlePasswordForm = document.getElementById('googlePasswordForm');
-        if (googlePasswordForm) {
-            googlePasswordForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-
-                const formData = new FormData(this);
-
-                fetch('{{ route('google.set-password') }}', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        closeGooglePasswordModal();
-                        Swal.fire({
-                            icon: 'success',
-                            title: '¡Éxito!',
-                            text: data.message,
-                            confirmButtonText: 'Continuar'
-                        }).then(() => {
-                            if (data.redirect) {
-                                window.location.href = data.redirect;
-                            }
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: data.error || 'Error al establecer la contraseña',
-                            confirmButtonText: 'Entendido'
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Error de conexión. Inténtalo de nuevo.',
-                        confirmButtonText: 'Entendido'
-                    });
-                });
-            });
-        }
-
         // Verificar si debe mostrar el modal al cargar la página
         document.addEventListener('DOMContentLoaded', function() {
             // Verificar si el usuario no tiene contraseña (es usuario de Google) y es cliente

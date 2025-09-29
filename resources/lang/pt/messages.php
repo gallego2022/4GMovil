@@ -92,11 +92,11 @@ return [
         'try_different_filters' => 'Tente filtros diferentes',
         'load_more' => 'Carregar mais produtos',
         'quick_view' => 'Visualização Rápida',
-        'add_to_cart' => 'Adicionar ao Carrinho',
+        
         'view_details' => 'Ver Detalhes',
         'in_stock' => 'Em Estoque',
         'limited_stock' => 'Estoque Limitado',
-        'out_of_stock' => 'Sem Estoque',
+       
         'free_shipping' => 'Frete Grátis',
         'warranty' => 'Garantia',
         'official_warranty' => 'Garantia Oficial',
@@ -115,6 +115,8 @@ return [
     'save_error' => 'Erro ao salvar a configuração',
     'language_changed' => 'Idioma alterado com sucesso',
     'currency_changed' => 'Moeda alterada com sucesso',
+    'registration_success' => 'Registro bem-sucedido! Sua conta foi criada com sucesso.',
+    'confirm' => 'Confirmar',
 
     // Formulários
     'forms' => [
@@ -281,10 +283,7 @@ return [
         'visit_us' => 'Visite-nos',
         'address' => 'Endereço',
         'business_hours' => 'Horários de Funcionamento',
-        'monday_friday' => 'Segunda a Sexta',
-        'saturday' => 'Sábados',
-        'sunday' => 'Domingos',
-        'closed' => 'Fechado',
+       
         'follow_us' => 'Siga-nos',
         'social_networks' => 'Mantenha-se conectado conosco em nossas redes sociais',
         'get_directions' => 'Obter Direções',
@@ -297,15 +296,7 @@ return [
         'form_success' => 'Mensagem enviada com sucesso!',
         'form_error' => 'Erro ao enviar mensagem. Tente novamente.',
         'required_fields' => 'Os campos marcados com * são obrigatórios',
-        'opening_hours' => 'Horários de Funcionamento',
-        'monday_friday' => 'Segunda - Sexta',
-        'saturday' => 'Sábados',
-        'sunday' => 'Domingos',
-        'closed' => 'Fechado',
-        'our_location' => 'Nossa Localização',
-        'address_line1' => '4G Móvel',
-        'address_line2' => 'La Candelaria',
-        'address_line3' => 'Cra 52 #49-100',
+       
     ],
 
     // Footer

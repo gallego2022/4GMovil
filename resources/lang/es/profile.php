@@ -21,6 +21,19 @@ return [
     'new_password' => 'Nueva Contraseña',
     'confirm_password' => 'Confirmar Contraseña',
 
+    // Modal de Google
+    'google_set_password' => 'Establecer Contraseña',
+    'google_set_password_description' => 'Para poder hacer login manual en el futuro, establece una contraseña para tu cuenta.',
+    'google_password_label' => 'Nueva Contraseña',
+    'google_confirm_password_label' => 'Confirmar Contraseña',
+    'google_password_placeholder' => 'Mínimo 8 caracteres',
+    'google_confirm_password_placeholder' => 'Repite tu contraseña',
+    'google_password_requirements' => 'Debe contener mayúscula, minúscula, número y símbolo',
+    'google_cancel_button' => 'Más tarde',
+    'google_submit_button' => 'Establecer Contraseña',
+    'google_success_message' => 'Contraseña establecida exitosamente.',
+    'google_error_message' => 'Error al establecer la contraseña.',
+
     // Mensajes de éxito
     'update_success' => 'Perfil actualizado exitosamente.',
     'photo_delete_success' => 'Foto de perfil eliminada exitosamente.',

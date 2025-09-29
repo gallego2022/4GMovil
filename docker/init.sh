@@ -29,6 +29,10 @@ php artisan view:clear
 echo "📊 Ejecutando migraciones..."
 php artisan migrate --force
 
+# Crear enlace simbólico para storage usando el comando Artisan
+echo "🔗 Verificando y corrigiendo enlace simbólico de storage..."
+php artisan storage:fix-link
+
 # Establecer permisos correctos
 echo "🔐 Estableciendo permisos..."
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache

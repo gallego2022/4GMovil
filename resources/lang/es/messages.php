@@ -93,11 +93,11 @@ return [
         'try_different_filters' => 'Intenta con diferentes filtros',
         'load_more' => 'Cargar más productos',
         'quick_view' => 'Vista Rápida',
-        'add_to_cart' => 'Agregar al Carrito',
+      
         'view_details' => 'Ver Detalles',
         'in_stock' => 'En Stock',
         'limited_stock' => 'Stock Limitado',
-        'out_of_stock' => 'Sin Stock',
+        
         'free_shipping' => 'Envío Gratis',
         'warranty' => 'Garantía',
         'official_warranty' => 'Garantía Oficial',
@@ -116,6 +116,8 @@ return [
     'save_error' => 'Error al guardar la configuración',
     'language_changed' => 'Idioma cambiado exitosamente',
     'currency_changed' => 'Moneda cambiada exitosamente',
+    'registration_success' => '¡Registro exitoso! Tu cuenta ha sido creada correctamente.',
+    'confirm' => 'Confirmar',
 
     // Formularios
     'forms' => [
@@ -468,15 +470,11 @@ return [
         'form_error' => 'Error al enviar el mensaje. Inténtalo de nuevo.',
         'required_fields' => 'Los campos marcados con * son obligatorios',
         'opening_hours' => 'Horarios de Atención',
-        'monday_friday' => 'Lunes - Viernes',
-        'saturday' => 'Sábados',
-        'sunday' => 'Domingos',
-        'closed' => 'Cerrado',
-        'our_location' => 'Nuestra Ubicación',
+        
         'address_line1' => '4G Móvil',
         'address_line2' => 'La Candelaria',
         'address_line3' => 'Cra 52 #49-100',
-        'opening_hours' => 'Horarios de Atención',
+       
         'understood' => 'Entendido',
         'fix_errors' => 'Por favor, corrige los siguientes errores:',
         'error' => 'Error',

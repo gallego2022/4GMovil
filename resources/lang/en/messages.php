@@ -92,11 +92,11 @@ return [
         'try_different_filters' => 'Try different filters',
         'load_more' => 'Load more products',
         'quick_view' => 'Quick View',
-        'add_to_cart' => 'Add to Cart',
+        
         'view_details' => 'View Details',
         'in_stock' => 'In Stock',
         'limited_stock' => 'Limited Stock',
-        'out_of_stock' => 'Out of Stock',
+       
         'free_shipping' => 'Free Shipping',
         'warranty' => 'Warranty',
         'official_warranty' => 'Official Warranty',
@@ -115,6 +115,8 @@ return [
     'save_error' => 'Error saving configuration',
     'language_changed' => 'Language changed successfully',
     'currency_changed' => 'Currency changed successfully',
+    'registration_success' => 'Registration successful! Your account has been created successfully.',
+    'confirm' => 'Confirm',
 
     // Forms
     'forms' => [
@@ -282,10 +284,7 @@ return [
         'visit_us' => 'Visit Us',
         'address' => 'Address',
         'business_hours' => 'Business Hours',
-        'monday_friday' => 'Monday to Friday',
-        'saturday' => 'Saturdays',
-        'sunday' => 'Sundays',
-        'closed' => 'Closed',
+        
         'follow_us' => 'Follow Us',
         'social_networks' => 'Stay connected with us on our social networks',
         'get_directions' => 'Get Directions',
@@ -298,15 +297,7 @@ return [
         'form_success' => 'Message sent successfully!',
         'form_error' => 'Error sending message. Please try again.',
         'required_fields' => 'Fields marked with * are required',
-        'opening_hours' => 'Business Hours',
-        'monday_friday' => 'Monday - Friday',
-        'saturday' => 'Saturdays',
-        'sunday' => 'Sundays',
-        'closed' => 'Closed',
-        'our_location' => 'Our Location',
-        'address_line1' => '4G Mobile',
-        'address_line2' => 'La Candelaria',
-        'address_line3' => 'Cra 52 #49-100',
+   
     ],
 
     // Footer

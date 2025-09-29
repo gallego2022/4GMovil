@@ -13,6 +13,9 @@ services:
       - ./resources:/var/www/html/resources
       - ./routes:/var/www/html/routes
       - ./public:/var/www/html/public
+      - ./database:/var/www/html/database
+      # Volumen específico para asegurar que el enlace simbólico persista
+      - storage_link:/var/www/html/public/storage
     environment:
       - APP_ENV=production
       - APP_DEBUG=false
@@ -75,6 +78,7 @@ services:
 volumes:
   db_data:
   redis_data:
+  storage_link:
 
 networks:
   4gmovil_network:
