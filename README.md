@@ -71,7 +71,7 @@
 
 ## 👨‍💻 Mi Rol y Aportes
 
-Este proyecto fue desarrollado **por mí** como trabajo académico y personal. Mis aportes principales:
+Este proyecto fue desarrollado **por mí** como trabajo académico y grupal. Mis aportes principales:
 
 - Diseño y desarrollo completo del backend en **Laravel 12** (Repository Pattern + Services).  
 - Implementación de **Google OAuth** y verificación de email.  

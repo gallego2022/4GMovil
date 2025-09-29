@@ -675,5 +675,91 @@ function cambiarTab(tabName) {
     event.target.classList.remove('border-transparent', 'text-gray-500', 'dark:text-gray-400');
     event.target.classList.add('border-red-500', 'text-red-600', 'dark:text-red-400');
 }
+
+// Manejar envío del formulario de entrada con AJAX
+document.addEventListener('DOMContentLoaded', function() {
+    const formEntrada = document.getElementById('formEntrada');
+    
+    if (formEntrada) {
+        formEntrada.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Mostrar loading
+            Swal.fire({
+                title: 'Registrando entrada...',
+                text: 'Por favor espera mientras procesamos la información',
+                icon: 'info',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            // Obtener datos del formulario
+            const formData = new FormData(formEntrada);
+            
+            // Enviar petición AJAX
+            fetch(formEntrada.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => {
+                if (response.redirected) {
+                    // Si hay redirección, significa que fue exitoso
+                    return { success: true, message: 'Entrada registrada correctamente' };
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Cerrar modal
+                    cerrarModalEntrada();
+                    
+                    // Mostrar mensaje de éxito
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Entrada Registrada!',
+                        text: data.message || 'La entrada de inventario se ha registrado correctamente',
+                        showConfirmButton: true,
+                        confirmButtonText: 'Continuar',
+                        confirmButtonColor: '#10b981',
+                        customClass: {
+                            popup: 'bg-white rounded-lg shadow-xl',
+                            title: 'text-lg font-medium text-gray-900',
+                            content: 'text-sm text-gray-500'
+                        }
+                    }).then(() => {
+                        // Recargar la página para mostrar los datos actualizados
+                        window.location.reload();
+                    });
+                } else {
+                    throw new Error(data.message || 'Error al registrar la entrada');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: '¡Error!',
+                    text: error.message || 'Ocurrió un error al registrar la entrada',
+                    showConfirmButton: true,
+                    confirmButtonText: 'Intentar de nuevo',
+                    confirmButtonColor: '#ef4444',
+                    customClass: {
+                        popup: 'bg-white rounded-lg shadow-xl border-l-4 border-red-500',
+                        title: 'text-lg font-medium text-gray-900',
+                        content: 'text-sm text-gray-500'
+                    }
+                });
+            });
+        });
+    }
+});
 </script>
 @endsection 

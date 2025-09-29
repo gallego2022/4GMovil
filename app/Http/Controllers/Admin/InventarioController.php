@@ -71,22 +71,6 @@ class InventarioController extends Controller
     }
 
     /**
-     * Inventario de variantes
-     */
-    public function variantes(Request $request)
-    {
-        try {
-            $filtros = $this->getFiltrosVariantes($request);
-            $data = $this->inventarioService->getVariantesData($filtros);
-            
-            return view('pages.admin.inventario.variantes', $data);
-        } catch (\Exception $e) {
-            Log::error('Error al cargar variantes', ['error' => $e->getMessage()]);
-            return redirect()->back()->with('error', 'Error al cargar el inventario de variantes');
-        }
-    }
-
-    /**
      * Registrar entrada de inventario
      */
     public function registrarEntrada(Request $request)
@@ -131,12 +115,30 @@ class InventarioController extends Controller
             }
 
             if ($success) {
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Entrada de inventario registrada correctamente.'
+                    ]);
+                }
                 return redirect()->back()->with('success', 'Entrada de inventario registrada correctamente.');
             }
 
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error al registrar la entrada de inventario.'
+                ], 400);
+            }
             return redirect()->back()->with('error', 'Error al registrar la entrada de inventario.');
         } catch (\Exception $e) {
             Log::error('Error al registrar entrada', ['error' => $e->getMessage()]);
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error interno del servidor: ' . $e->getMessage()
+                ], 500);
+            }
             return redirect()->back()->with('error', 'Error interno del servidor');
         }
     }

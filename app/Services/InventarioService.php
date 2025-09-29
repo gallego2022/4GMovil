@@ -383,7 +383,7 @@ class InventarioService
         $fechaInicio = now()->subDays($dias);
         
         $ventas = MovimientoInventario::where('producto_id', $productoId)
-            ->where('tipo', 'salida')
+            ->where('tipo_movimiento', 'salida')
             ->where('created_at', '>=', $fechaInicio)
             ->get();
 
@@ -650,8 +650,8 @@ class InventarioService
             return $producto->stock * $producto->precio;
         });
 
-        $movimientosEntrada = $movimientos->where('tipo', 'entrada')->sum('cantidad');
-        $movimientosSalida = $movimientos->where('tipo', 'salida')->sum('cantidad');
+        $movimientosEntrada = $movimientos->where('tipo_movimiento', 'entrada')->sum('cantidad');
+        $movimientosSalida = $movimientos->where('tipo_movimiento', 'salida')->sum('cantidad');
 
         $productosStockBajo = $productos->filter(function($producto) {
             $stockInicial = $producto->stock_inicial ?? 0;
@@ -868,9 +868,9 @@ class InventarioService
 
         // Calcular resumen
         $resumen = [
-            'total_entradas' => $movimientos->where('tipo', 'entrada')->sum('cantidad'),
-            'total_salidas' => $movimientos->where('tipo', 'salida')->sum('cantidad'),
-            'total_ajustes' => $movimientos->where('tipo', 'ajuste')->sum('cantidad'),
+            'total_entradas' => $movimientos->where('tipo_movimiento', 'entrada')->sum('cantidad'),
+            'total_salidas' => $movimientos->where('tipo_movimiento', 'salida')->sum('cantidad'),
+            'total_ajustes' => $movimientos->where('tipo_movimiento', 'ajuste')->sum('cantidad'),
             'variantes_afectadas' => $movimientos->unique('variante_id')->count(),
             'productos_afectados' => $movimientos->unique(function($m) {
                 return $m->variante->producto_id;
