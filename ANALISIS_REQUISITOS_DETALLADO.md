@@ -46,7 +46,7 @@ resources/views/modules/auth/
 - ✅ **Sistema de categorías** dinámico
 - ✅ **Sistema de marcas** independiente
 - ✅ **Especificaciones dinámicas** por categoría
-- ✅ **Sistema de variantes** (color, talla, etc.)
+- ✅ **Sistema de variantes** (color, capacidad, etc.)
 - ✅ **Gestión de imágenes** múltiples
 - ✅ **Búsqueda avanzada** en tiempo real
 - ✅ **Filtros por categoría/marca**
