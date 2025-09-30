@@ -15,7 +15,7 @@ return new class extends Migration
         if (!Schema::hasTable('carritos')) {
             Schema::create('carritos', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('usuario_id')->constrained('usuarios')->onDelete('cascade');
+                $table->foreignId('usuario_id')->references('usuario_id')->on('usuarios')->onDelete('cascade');
                 $table->timestamps();
                 
                 // Índices
