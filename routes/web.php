@@ -72,19 +72,36 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'index'])->name('checkout.submit');
     Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+    Route::get('/checkout/confirm/{pedido}', [CheckoutController::class, 'showConfirm'])->name('checkout.confirm');
     Route::get('/checkout/success/{pedido}', [CheckoutController::class, 'success'])->name('checkout.success');
     Route::get('/checkout/cancel/{pedido}', [CheckoutController::class, 'cancel'])->name('checkout.cancel');
     Route::post('/checkout/verificar-stock', [CheckoutController::class, 'verificarStock'])->name('checkout.verificar-stock');
+    Route::post('/checkout/confirmar/{pedido}', [CheckoutController::class, 'confirmarPedido'])->name('checkout.confirmar');
 });
 
 // Rutas del carrito
 Route::middleware(['auth'])->group(function () {
-    Route::post('/carrito/agregar', [App\Http\Controllers\Cliente\CarritoController::class, 'agregar'])->name('carrito.agregar');
-    Route::post('/carrito/actualizar', [App\Http\Controllers\Cliente\CarritoController::class, 'actualizar'])->name('carrito.actualizar');
-    Route::post('/carrito/eliminar', [App\Http\Controllers\Cliente\CarritoController::class, 'eliminar'])->name('carrito.eliminar');
-    Route::post('/carrito/limpiar', [App\Http\Controllers\Cliente\CarritoController::class, 'limpiar'])->name('carrito.limpiar');
-    Route::get('/carrito/obtener', [App\Http\Controllers\Cliente\CarritoController::class, 'obtener'])->name('carrito.obtener');
+    Route::get('/carrito', [App\Http\Controllers\Cliente\CarritoController::class, 'index'])->name('carrito.index');
+    Route::post('/carrito/agregar', [App\Http\Controllers\Cliente\CarritoController::class, 'addToCart'])->name('carrito.agregar');
+    Route::post('/carrito/actualizar/{itemId}', [App\Http\Controllers\Cliente\CarritoController::class, 'updateItem'])->name('carrito.actualizar');
+    Route::delete('/carrito/eliminar/{itemId}', [App\Http\Controllers\Cliente\CarritoController::class, 'removeItem'])->name('carrito.eliminar');
+    Route::post('/carrito/limpiar', [App\Http\Controllers\Cliente\CarritoController::class, 'clear'])->name('carrito.limpiar');
+    Route::get('/carrito/resumen', [App\Http\Controllers\Cliente\CarritoController::class, 'summary'])->name('carrito.resumen');
+    Route::get('/carrito/json', [App\Http\Controllers\Cliente\CarritoController::class, 'getCartJson'])->name('carrito.json');
     Route::get('/carrito/verificar-stock', [App\Http\Controllers\Cliente\CarritoController::class, 'verificarStock'])->name('carrito.verificar-stock');
+    Route::post('/carrito/sincronizar', [App\Http\Controllers\Cliente\CarritoController::class, 'sync'])->name('carrito.sincronizar');
+    Route::get('/carrito/mini', [App\Http\Controllers\Cliente\CarritoController::class, 'mini'])->name('carrito.mini');
+    Route::get('/carrito/vacio', [App\Http\Controllers\Cliente\CarritoController::class, 'isEmpty'])->name('carrito.vacio');
+});
+
+// Rutas del carrito para usuarios no autenticados (solo sesión)
+Route::group(['prefix' => 'carrito', 'as' => 'carrito.'], function () {
+    Route::get('/obtener', [App\Http\Controllers\Cliente\CarritoController::class, 'getCartJson'])->name('obtener');
+    Route::post('/agregar', [App\Http\Controllers\Cliente\CarritoController::class, 'addToCart'])->name('agregar');
+    Route::post('/actualizar/{itemId}', [App\Http\Controllers\Cliente\CarritoController::class, 'updateItem'])->name('actualizar');
+    Route::delete('/eliminar/{itemId}', [App\Http\Controllers\Cliente\CarritoController::class, 'removeItem'])->name('eliminar');
+    Route::post('/limpiar', [App\Http\Controllers\Cliente\CarritoController::class, 'clear'])->name('limpiar');
+    Route::get('/verificar-stock', [App\Http\Controllers\Cliente\CarritoController::class, 'verificarStock'])->name('verificar-stock');
 });
 
 // Rutas de productos con variantes - Redirigidas a la vista principal

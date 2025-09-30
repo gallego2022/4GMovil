@@ -83,7 +83,6 @@ class ReservaStockVariante extends Model
                 'variante_id' => $varianteId,
                 'usuario_id' => $usuarioId,
                 'cantidad' => $cantidad,
-                'fecha_reserva' => now(),
                 'fecha_expiracion' => now()->addMinutes($minutosExpiracion),
                 'estado' => self::ESTADO_ACTIVA,
                 'referencia_pedido' => $referenciaPedido,

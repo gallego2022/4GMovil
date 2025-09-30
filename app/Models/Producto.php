@@ -271,10 +271,8 @@ class Producto extends Model
         $this->stock -= $cantidad;
         $this->ultima_actualizacion_stock = now();
         
-        // Deshabilitar temporalmente la sincronización automática
-        $this->syncDisabled = true;
+        // Guardar cambios
         $this->save();
-        $this->syncDisabled = false;
 
         MovimientoInventario::create([
             'producto_id' => $this->producto_id,

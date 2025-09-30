@@ -373,9 +373,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Verificar stock antes de procesar
         const stockData = await verificarStock();
         
-        if (!stockData.success) {
+        if (!stockData.success || !stockData.data.disponible) {
             Swal.close();
-            mostrarAlertaStock(stockData.errores);
+            mostrarAlertaStock(stockData.data?.errores || ['Error al verificar stock']);
             return;
         }
 
@@ -419,8 +419,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Verificar stock al cargar la página
     verificarStock().then(data => {
-        if (!data.success) {
-            mostrarAlertaStock(data.errores);
+        if (!data.success || !data.data.disponible) {
+            mostrarAlertaStock(data.data?.errores || ['Error al verificar stock']);
         }
     });
 });

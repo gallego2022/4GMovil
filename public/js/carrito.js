@@ -68,9 +68,9 @@ class CarritoController {
             const data = await response.json();
             
             if (data.success) {
-                this.cart = data.data.cart;
-                this.total = data.data.total_carrito;
-                this.cantidadItems = data.data.cantidad_items;
+                this.cart = data.data.items || [];
+                this.total = data.data.total_precio || 0;
+                this.cantidadItems = data.data.total_items || 0;
                 this.actualizarUI();
             }
         } catch (error) {
@@ -99,9 +99,9 @@ class CarritoController {
             const data = await response.json();
 
             if (data.success) {
-                this.cart = data.data.cart;
-                this.total = data.data.total_carrito;
-                this.cantidadItems = data.data.cantidad_items;
+                this.cart = data.data.items || [];
+                this.total = data.data.total_precio || 0;
+                this.cantidadItems = data.data.total_items || 0;
                 this.actualizarUI();
                 
                 // Mostrar mensaje de éxito
@@ -123,11 +123,11 @@ class CarritoController {
     }
 
     async actualizarCantidad(button) {
-        const itemKey = button.dataset.itemKey;
+        const itemId = button.dataset.itemId;
         const cantidad = parseInt(button.dataset.cantidad);
 
         try {
-            const response = await fetch('/carrito/actualizar', {
+            const response = await fetch(`/carrito/actualizar/${itemId}`, {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -135,7 +135,6 @@ class CarritoController {
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({
-                    item_key: itemKey,
                     cantidad: cantidad
                 })
             });
@@ -143,9 +142,9 @@ class CarritoController {
             const data = await response.json();
 
             if (data.success) {
-                this.cart = data.data.cart;
-                this.total = data.data.total_carrito;
-                this.cantidadItems = data.data.cantidad_items;
+                this.cart = data.data.items || [];
+                this.total = data.data.total_precio || 0;
+                this.cantidadItems = data.data.total_items || 0;
                 this.actualizarUI();
                 this.actualizarContadorCarrito();
             } else {
@@ -158,33 +157,26 @@ class CarritoController {
     }
 
     async eliminarItem(button) {
-        const itemKey = button.dataset.itemKey;
+        const itemId = button.dataset.itemId;
 
         if (!confirm('¿Estás seguro de que quieres eliminar este item del carrito?')) {
             return;
         }
 
         try {
-            const response = await fetch('/carrito/eliminar', {
-                method: 'POST',
+            const response = await fetch(`/carrito/eliminar/${itemId}`, {
+                method: 'DELETE',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Content-Type': 'application/json',
                     'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    item_key: itemKey
-                })
+                }
             });
 
             const data = await response.json();
 
             if (data.success) {
-                this.cart = data.data.cart;
-                this.total = data.data.total_carrito;
-                this.cantidadItems = data.data.cantidad_items;
-                this.actualizarUI();
-                this.actualizarContadorCarrito();
+                // Recargar el carrito completo después de eliminar
+                await this.cargarCarrito();
                 this.mostrarNotificacion('Item eliminado del carrito', 'success');
             } else {
                 this.mostrarNotificacion(data.message, 'error');
@@ -212,11 +204,8 @@ class CarritoController {
             const data = await response.json();
 
             if (data.success) {
-                this.cart = [];
-                this.total = 0;
-                this.cantidadItems = 0;
-                this.actualizarUI();
-                this.actualizarContadorCarrito();
+                // Recargar el carrito completo después de limpiar
+                await this.cargarCarrito();
                 this.mostrarNotificacion('Carrito limpiado', 'success');
             } else {
                 this.mostrarNotificacion(data.message, 'error');
@@ -279,16 +268,16 @@ class CarritoController {
             const itemElement = document.createElement('div');
             itemElement.className = 'carrito-item d-flex align-items-center mb-2';
             itemElement.innerHTML = `
-                <img src="${item.imagen || '/img/default-product.png'}" alt="${item.name}" class="carrito-item-img me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                <img src="${item.producto?.imagen_url || '/img/default-product.png'}" alt="${item.producto?.nombre_producto || 'Producto'}" class="carrito-item-img me-2" style="width: 40px; height: 40px; object-fit: cover;">
                 <div class="flex-grow-1">
-                    <h6 class="mb-0">${item.name}</h6>
-                    ${item.variante_nombre ? `<small class="text-muted">Color: ${item.variante_nombre}</small>` : ''}
+                    <h6 class="mb-0">${item.producto?.nombre_producto || 'Producto'}</h6>
+                    ${item.variante?.nombre_variante ? `<small class="text-muted">Variante: ${item.variante.nombre_variante}</small>` : ''}
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-muted">Cantidad: ${item.quantity}</span>
-                        <span class="fw-bold">$${this.formatearPrecio(item.price_total)}</span>
+                        <span class="text-muted">Cantidad: ${item.cantidad}</span>
+                        <span class="fw-bold">$${this.formatearPrecio(item.subtotal || 0)}</span>
                     </div>
                 </div>
-                <button class="btn btn-sm btn-outline-danger ms-2" onclick="carritoController.eliminarItem(this)" data-item-key="${key}">
+                <button class="btn btn-sm btn-outline-danger ms-2" onclick="carritoController.eliminarItem(this)" data-item-id="${item.id}">
                     <i class="fas fa-trash"></i>
                 </button>
             `;
@@ -321,30 +310,30 @@ class CarritoController {
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-md-2">
-                            <img src="${item.imagen || '/img/default-product.png'}" alt="${item.name}" class="img-fluid rounded">
+                            <img src="${item.producto?.imagen_url || '/img/default-product.png'}" alt="${item.producto?.nombre_producto || 'Producto'}" class="img-fluid rounded">
                         </div>
                         <div class="col-md-4">
-                            <h6 class="mb-1">${item.name}</h6>
-                            ${item.variante_nombre ? `
+                            <h6 class="mb-1">${item.producto?.nombre_producto || 'Producto'}</h6>
+                            ${item.variante?.nombre_variante ? `
                                 <div class="d-flex align-items-center mb-2">
-                                    <span class="badge me-2" style="background-color: ${item.codigo_color}; width: 20px; height: 20px; border-radius: 50%;"></span>
-                                    <small class="text-muted">Color: ${item.variante_nombre}</small>
+                                    <span class="badge me-2" style="background-color: ${item.variante.codigo_color || '#ccc'}; width: 20px; height: 20px; border-radius: 50%;"></span>
+                                    <small class="text-muted">Variante: ${item.variante.nombre_variante}</small>
                                 </div>
                             ` : ''}
-                            <p class="text-muted mb-0">Precio unitario: $${this.formatearPrecio(item.price)}</p>
+                            <p class="text-muted mb-0">Precio unitario: $${this.formatearPrecio(item.producto?.precio || 0)}</p>
                         </div>
                         <div class="col-md-2">
                             <div class="input-group">
-                                <button class="btn btn-outline-secondary btn-sm" type="button" onclick="carritoController.actualizarCantidad(this)" data-item-key="${key}" data-cantidad="${item.quantity - 1}">-</button>
-                                <input type="number" class="form-control form-control-sm text-center" value="${item.quantity}" min="1" max="100" readonly>
-                                <button class="btn btn-outline-secondary btn-sm" type="button" onclick="carritoController.actualizarCantidad(this)" data-item-key="${key}" data-cantidad="${item.quantity + 1}">+</button>
+                                <button class="btn btn-outline-secondary btn-sm" type="button" onclick="carritoController.actualizarCantidad(this)" data-item-id="${item.id}" data-cantidad="${item.cantidad - 1}">-</button>
+                                <input type="number" class="form-control form-control-sm text-center" value="${item.cantidad}" min="1" max="100" readonly>
+                                <button class="btn btn-outline-secondary btn-sm" type="button" onclick="carritoController.actualizarCantidad(this)" data-item-id="${item.id}" data-cantidad="${item.cantidad + 1}">+</button>
                             </div>
                         </div>
                         <div class="col-md-2 text-center">
-                            <span class="fw-bold">$${this.formatearPrecio(item.price_total)}</span>
+                            <span class="fw-bold">$${this.formatearPrecio(item.subtotal || 0)}</span>
                         </div>
                         <div class="col-md-2 text-end">
-                            <button class="btn btn-outline-danger btn-sm" onclick="carritoController.eliminarItem(this)" data-item-key="${key}">
+                            <button class="btn btn-outline-danger btn-sm" onclick="carritoController.eliminarItem(this)" data-item-id="${item.id}">
                                 <i class="fas fa-trash"></i> Eliminar
                             </button>
                         </div>

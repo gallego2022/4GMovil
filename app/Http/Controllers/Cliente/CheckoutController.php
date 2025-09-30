@@ -7,6 +7,7 @@ use App\Services\Business\CheckoutService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
 use Exception;
 
 class CheckoutController extends WebController
@@ -56,6 +57,13 @@ class CheckoutController extends WebController
                 // Redirigir a la página de pago de Stripe
                 return redirect()->route('stripe.payment', $result['pedido_id'])
                     ->with('info', 'Pedido creado. Completa el pago con Stripe.');
+            }
+            
+            // Verificar si requiere confirmación manual (pago en efectivo)
+            if (isset($result['redirect_to_confirm']) && $result['redirect_to_confirm']) {
+                // Redirigir a la página de confirmación de pago
+                return redirect()->route('checkout.confirm', $result['pedido_id'])
+                    ->with('info', $result['message']);
             }
             
             // Para métodos no-Stripe, redirigir a la página de éxito
@@ -193,6 +201,48 @@ class CheckoutController extends WebController
                 'success' => false,
                 'message' => 'Error al verificar stock: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * Muestra la página de confirmación de pago (para pago en efectivo)
+     */
+    public function showConfirm(string $pedidoId)
+    {
+        try {
+            $pedido = \App\Models\Pedido::with(['detalles.producto', 'pago.metodoPago', 'direccion', 'usuario'])
+                ->where('usuario_id', Auth::id())
+                ->findOrFail($pedidoId);
+            
+            // Verificar que el pedido está en estado pendiente
+            if ($pedido->estado_id !== 1) {
+                return $this->redirectError('landing', 'Este pedido ya ha sido procesado');
+            }
+            
+            return view('checkout.confirm', [
+                'pedido' => $pedido
+            ]);
+
+        } catch (Exception $e) {
+            return $this->handleException($e, 'landing');
+        }
+    }
+
+    /**
+     * Confirma un pedido (para métodos de pago que requieren confirmación manual)
+     */
+    public function confirmarPedido(Request $request, string $pedidoId)
+    {
+        try {
+            $result = $this->checkoutService->confirmarPedido($pedidoId);
+            
+            return $this->redirectSuccess('checkout.success', 
+                $result['message'], 
+                ['pedido' => $pedidoId]
+            );
+
+        } catch (Exception $e) {
+            return $this->handleException($e, 'landing');
         }
     }
 }
