@@ -4,6 +4,21 @@
 
 echo "🚀 Iniciando 4GMovil..."
 
+# Instalar dependencias de Node.js si no están instaladas
+echo "📦 Instalando dependencias de Node.js..."
+if [ ! -d "node_modules" ]; then
+    npm config set fetch-timeout 300000
+    npm config set fetch-retry-mintimeout 20000
+    npm config set fetch-retry-maxtimeout 120000
+    npm install --timeout=300000 || echo "⚠️ Error en npm install, continuando..."
+fi
+
+# Compilar assets si no existen
+echo "🎨 Compilando assets..."
+if [ ! -d "public/build" ]; then
+    npm run build || echo "⚠️ Error en npm build, continuando..."
+fi
+
 # Esperar a que la base de datos esté lista
 echo "⏳ Esperando que la base de datos esté lista..."
 # Usar variables de entorno para host y puerto

@@ -30,17 +30,11 @@ COPY composer.json composer.lock package.json package-lock.json ./
 # Instalar dependencias de PHP
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-# Instalar dependencias de Node.js
-RUN npm install
-
 # Copiar el resto del proyecto
 COPY . .
 
 # Crear archivo .env desde el ejemplo
 RUN cp env.docker.example .env
-
-# Compilar assets de Vite
-RUN npm run build
 
 # Crear carpetas que Laravel necesita y dar permisos
 RUN mkdir -p /var/www/html/storage/framework/{cache,sessions,views} \
