@@ -6,6 +6,10 @@ use App\Http\Controllers\Base\WebController;
 use App\Services\Business\CarritoService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\App;
 use Exception;
 
 class CarritoController extends WebController
@@ -25,7 +29,7 @@ class CarritoController extends WebController
         try {
             $result = $this->carritoService->getCart();
             
-            return view('pages.cliente.carrito.index', [
+            return View::make('pages.cliente.carrito.index', [
                 'carrito' => $result['data']
             ]);
 
@@ -43,14 +47,14 @@ class CarritoController extends WebController
             $result = $this->carritoService->addToCart($request);
             
             if ($request->ajax() || $request->wantsJson()) {
-                return response()->json($result);
+                return Response::json($result);
             }
             
             return $this->backSuccess('Producto agregado al carrito exitosamente');
 
         } catch (ValidationException $e) {
             if ($request->ajax() || $request->wantsJson()) {
-                return response()->json([
+                return Response::json([
                     'success' => false,
                     'message' => 'Datos inválidos',
                     'errors' => $e->errors()
@@ -60,7 +64,7 @@ class CarritoController extends WebController
             return $this->backWithInput('Por favor, corrige los errores en el formulario');
         } catch (Exception $e) {
             if ($request->ajax() || $request->wantsJson()) {
-                return response()->json([
+                return Response::json([
                     'success' => false,
                     'message' => $e->getMessage()
                 ], 400);
@@ -79,14 +83,14 @@ class CarritoController extends WebController
             $result = $this->carritoService->updateCartItem($itemId, $request);
             
             if ($request->ajax() || $request->wantsJson()) {
-                return response()->json($result);
+                return Response::json($result);
             }
             
             return $this->backSuccess('Carrito actualizado exitosamente');
 
         } catch (ValidationException $e) {
             if ($request->ajax() || $request->wantsJson()) {
-                return response()->json([
+                return Response::json([
                     'success' => false,
                     'message' => 'Datos inválidos',
                     'errors' => $e->errors()
@@ -96,7 +100,7 @@ class CarritoController extends WebController
             return $this->backWithInput('Por favor, corrige los errores en el formulario');
         } catch (Exception $e) {
             if ($request->ajax() || $request->wantsJson()) {
-                return response()->json([
+                return Response::json([
                     'success' => false,
                     'message' => $e->getMessage()
                 ], 400);
@@ -115,14 +119,14 @@ class CarritoController extends WebController
             $result = $this->carritoService->removeFromCart($itemId);
             
             if (request()->ajax() || request()->wantsJson()) {
-                return response()->json($result);
+                return Response::json($result);
             }
             
             return $this->backSuccess('Producto eliminado del carrito exitosamente');
 
         } catch (Exception $e) {
             if (request()->ajax() || request()->wantsJson()) {
-                return response()->json([
+                return Response::json([
                     'success' => false,
                     'message' => $e->getMessage()
                 ], 400);
@@ -141,14 +145,14 @@ class CarritoController extends WebController
             $result = $this->carritoService->clearCart();
             
             if (request()->ajax() || request()->wantsJson()) {
-                return response()->json($result);
+                return Response::json($result);
             }
             
             return $this->redirectSuccess('carrito.index', 'Carrito limpiado exitosamente');
 
         } catch (Exception $e) {
             if (request()->ajax() || request()->wantsJson()) {
-                return response()->json([
+                return Response::json([
                     'success' => false,
                     'message' => $e->getMessage()
                 ], 400);
@@ -166,10 +170,10 @@ class CarritoController extends WebController
         try {
             $result = $this->carritoService->getCartSummary();
             
-            return response()->json($result);
+            return Response::json($result);
 
         } catch (Exception $e) {
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => $e->getMessage()
             ], 400);
@@ -199,12 +203,12 @@ class CarritoController extends WebController
         try {
             $result = $this->carritoService->getCartSummary();
             
-            return view('components.mini-carrito', [
+            return View::make('components.mini-carrito', [
                 'summary' => $result['data']
             ]);
 
         } catch (Exception $e) {
-            return view('components.mini-carrito', [
+            return View::make('components.mini-carrito', [
                 'summary' => [
                     'total_items' => 0,
                     'total_precio' => 0,
@@ -222,10 +226,10 @@ class CarritoController extends WebController
         try {
             $result = $this->carritoService->getCart();
             
-            return response()->json($result);
+            return Response::json($result);
 
         } catch (Exception $e) {
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => $e->getMessage()
             ], 400);
@@ -247,7 +251,7 @@ class CarritoController extends WebController
             ]);
 
         } catch (Exception $e) {
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => $e->getMessage()
             ], 400);
@@ -260,26 +264,26 @@ class CarritoController extends WebController
     public function verificarStock()
     {
         try {
-            $cart = session('cart', []);
+            $cart = Session::get('cart', []);
             
             if (empty($cart)) {
-                return response()->json([
+                return Response::json([
                     'success' => false,
                     'message' => 'El carrito está vacío'
                 ]);
             }
 
             // Usar el ReservaStockService directamente
-            $reservaStockService = app(\App\Services\ReservaStockService::class);
+            $reservaStockService = App::make(\App\Services\ReservaStockService::class);
             $resultado = $reservaStockService->verificarStockCarrito($cart);
             
-            return response()->json([
+            return Response::json([
                 'success' => true,
                 'data' => $resultado
             ]);
 
         } catch (Exception $e) {
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => 'Error al verificar stock: ' . $e->getMessage()
             ], 500);

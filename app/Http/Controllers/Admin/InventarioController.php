@@ -2,16 +2,21 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Base\WebController;
 use App\Services\InventarioService;
 use App\Models\Producto;
 use App\Models\MovimientoInventario;
+use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Collection;
 
-class InventarioController extends Controller
+class InventarioController extends WebController
 {
     protected $inventarioService;
 
@@ -30,13 +35,13 @@ class InventarioController extends Controller
         try {
             $data = $this->inventarioService->getDashboardData();
             
-            return view('pages.admin.inventario.dashboard', $data);
+            return View::make('pages.admin.inventario.dashboard', $data);
         } catch (\Exception $e) {
             Log::error('Error en dashboard de inventario', ['error' => $e->getMessage()]);
             
             // Datos de fallback
             $data = $this->inventarioService->getDashboardDataFallback();
-            return view('pages.admin.inventario.dashboard', $data);
+            return View::make('pages.admin.inventario.dashboard', $data);
         }
     }
 
@@ -47,10 +52,10 @@ class InventarioController extends Controller
     {
         try {
             $data = $this->inventarioService->getAlertasData();
-            return view('pages.admin.inventario.alertas', $data);
+            return View::make('pages.admin.inventario.alertas', $data);
         } catch (\Exception $e) {
             Log::error('Error al cargar alertas', ['error' => $e->getMessage()]);
-            return redirect()->back()->with('error', 'Error al cargar las alertas de inventario');
+            return Redirect::back()->with('mensaje', 'Error al cargar las alertas de inventario')->with('tipo', 'error');
         }
     }
 
@@ -63,10 +68,10 @@ class InventarioController extends Controller
             $filtros = $this->getFiltrosMovimientos($request);
             $data = $this->inventarioService->getMovimientosData($filtros);
             
-            return view('pages.admin.inventario.movimientos', $data);
+            return View::make('pages.admin.inventario.movimientos', $data);
         } catch (\Exception $e) {
             Log::error('Error al cargar movimientos', ['error' => $e->getMessage()]);
-            return redirect()->back()->with('error', 'Error al cargar los movimientos de inventario');
+            return Redirect::back()->with('mensaje', 'Error al cargar los movimientos de inventario')->with('tipo', 'error');
         }
     }
 
@@ -116,30 +121,30 @@ class InventarioController extends Controller
 
             if ($success) {
                 if ($request->ajax()) {
-                    return response()->json([
+                    return Response::json([
                         'success' => true,
                         'message' => 'Entrada de inventario registrada correctamente.'
                     ]);
                 }
-                return redirect()->back()->with('success', 'Entrada de inventario registrada correctamente.');
+                return Redirect::back()->with('mensaje', 'Entrada de Inventario Registrada')->with('tipo', 'success');
             }
 
             if ($request->ajax()) {
-                return response()->json([
+                return Response::json([
                     'success' => false,
                     'message' => 'Error al registrar la entrada de inventario.'
                 ], 400);
             }
-            return redirect()->back()->with('error', 'Error al registrar la entrada de inventario.');
+            return Redirect::back()->with('mensaje', 'Error al registrar la entrada de inventario.')->with('tipo', 'error');
         } catch (\Exception $e) {
             Log::error('Error al registrar entrada', ['error' => $e->getMessage()]);
             if ($request->ajax()) {
-                return response()->json([
+                return Response::json([
                     'success' => false,
                     'message' => 'Error interno del servidor: ' . $e->getMessage()
                 ], 500);
             }
-            return redirect()->back()->with('error', 'Error interno del servidor');
+            return Redirect::back()->with('mensaje', 'Error interno del servidor')->with('tipo', 'error');
         }
     }
 
@@ -165,13 +170,13 @@ class InventarioController extends Controller
             );
 
             if ($success) {
-                return redirect()->back()->with('success', 'Salida de inventario registrada correctamente.');
+                return Redirect::back()->with('mensaje', 'Salida de Inventario Registrada')->with('tipo', 'success');
             }
 
-            return redirect()->back()->with('error', 'Error al registrar la salida de inventario. Verifique el stock disponible.');
+            return Redirect::back()->with('mensaje', 'Error al registrar la salida de inventario. Verifique el stock disponible.')->with('tipo', 'error');
         } catch (\Exception $e) {
             Log::error('Error al registrar salida', ['error' => $e->getMessage()]);
-            return redirect()->back()->with('error', 'Error interno del servidor');
+            return Redirect::back()->with('mensaje', 'Error interno del servidor')->with('tipo', 'error');
         }
     }
 
@@ -195,13 +200,13 @@ class InventarioController extends Controller
             );
 
             if ($success) {
-                return redirect()->back()->with('success', 'Stock ajustado correctamente.');
+                return Redirect::back()->with('mensaje', 'Stock Ajustado Correctamente')->with('tipo', 'success');
             }
 
-            return redirect()->back()->with('error', 'Error al ajustar el stock.');
+            return Redirect::back()->with('mensaje', 'Error al ajustar el stock.')->with('tipo', 'error');
         } catch (\Exception $e) {
             Log::error('Error al ajustar stock', ['error' => $e->getMessage()]);
-            return redirect()->back()->with('error', 'Error interno del servidor');
+            return Redirect::back()->with('mensaje', 'Error interno del servidor')->with('tipo', 'error');
         }
     }
 
@@ -214,10 +219,10 @@ class InventarioController extends Controller
             $filtros = $this->getFiltrosReporte($request);
             $data = $this->inventarioService->getReporteData($filtros);
             
-            return view('pages.admin.inventario.reporte', $data);
+            return View::make('pages.admin.inventario.reporte', $data);
         } catch (\Exception $e) {
             Log::error('Error al generar reporte', ['error' => $e->getMessage()]);
-            return redirect()->back()->with('error', 'Error al generar el reporte de inventario');
+            return Redirect::back()->with('mensaje', 'Error al generar el reporte de inventario')->with('tipo', 'error');
         }
     }
 
@@ -240,7 +245,7 @@ class InventarioController extends Controller
             }
         } catch (\Exception $e) {
             Log::error('Error al exportar reporte', ['error' => $e->getMessage()]);
-            return redirect()->back()->with('error', 'Error al exportar el reporte');
+            return Redirect::back()->with('mensaje', 'Error al exportar el reporte')->with('tipo', 'error');
         }
     }
 
@@ -301,10 +306,10 @@ class InventarioController extends Controller
         
         // Establecer valores por defecto si no se proporcionaron fechas válidas
         if (!$fechaInicio) {
-            $fechaInicio = now()->subMonth()->startOfDay();
+            $fechaInicio = Carbon::now()->subMonth()->startOfDay();
         }
         if (!$fechaFin) {
-            $fechaFin = now()->endOfDay();
+            $fechaFin = Carbon::now()->endOfDay();
         }
         
         // Validar producto_id
@@ -361,8 +366,8 @@ class InventarioController extends Controller
     private function getFiltrosReporte(Request $request): array
     {
         return [
-            'fecha_inicio' => $request->get('fecha_inicio') ? Carbon::parse($request->fecha_inicio) : now()->subMonth(),
-            'fecha_fin' => $request->get('fecha_fin') ? Carbon::parse($request->fecha_fin) : now(),
+            'fecha_inicio' => $request->get('fecha_inicio') ? Carbon::parse($request->fecha_inicio) : Carbon::now()->subMonth(),
+            'fecha_fin' => $request->get('fecha_fin') ? Carbon::parse($request->fecha_fin) : Carbon::now(),
             'categoria_id' => $request->get('categoria_id'),
             'marca_id' => $request->get('marca_id'),
             'tipo_reporte' => $request->get('tipo_reporte', 'general'),
@@ -382,7 +387,7 @@ class InventarioController extends Controller
         $secciones = ['resumen', 'alertas', 'productos', 'categorias']; // Secciones por defecto
         
         // Generar PDF usando la vista existente
-        $html = view('pages.admin.inventario.pdf.reporte', compact('reporte', 'secciones'))->render();
+        $html = View::make('pages.admin.inventario.pdf.reporte', compact('reporte', 'secciones'))->render();
         
         // Generar HTML optimizado para impresión (más confiable)
         $htmlOptimizado = $this->optimizarHTMLParaImpresion($html);
@@ -421,8 +426,8 @@ class InventarioController extends Controller
     private function generarHTMLReporte(array $data): string
     {
         $estadisticas = $data['estadisticas'] ?? [];
-        $productos = $data['productos'] ?? collect();
-        $movimientos = $data['movimientos'] ?? collect();
+        $productos = $data['productos'] ?? Collection::make();
+        $movimientos = $data['movimientos'] ?? Collection::make();
         
         $html = '<!DOCTYPE html>
 <html>
@@ -443,7 +448,7 @@ class InventarioController extends Controller
 <body>
     <div class="header">
         <h1>Reporte de Inventario - 4GMovil</h1>
-        <p>Generado el: ' . now()->format('d/m/Y H:i:s') . '</p>';
+        <p>Generado el: ' . Carbon::now()->format('d/m/Y H:i:s') . '</p>';
         
         if (isset($estadisticas['periodo'])) {
             $html .= '<p>Período: ' . $estadisticas['periodo']['inicio'] . ' - ' . $estadisticas['periodo']['fin'] . '</p>';
@@ -541,13 +546,13 @@ class InventarioController extends Controller
     private function generarCSVReporte(array $data): string
     {
         $estadisticas = $data['estadisticas'] ?? [];
-        $productos = $data['productos'] ?? collect();
-        $movimientos = $data['movimientos'] ?? collect();
+        $productos = $data['productos'] ?? Collection::make();
+        $movimientos = $data['movimientos'] ?? Collection::make();
         
         // Encabezado del reporte
         $csv = "REPORTE DE INVENTARIO - 4GMOVIL\n";
         $csv .= "=====================================\n";
-        $csv .= "Generado el: " . now()->format('d/m/Y H:i:s') . "\n";
+        $csv .= "Generado el: " . Carbon::now()->format('d/m/Y H:i:s') . "\n";
         
         if (isset($estadisticas['periodo'])) {
             $csv .= "Período: " . $estadisticas['periodo']['inicio'] . " - " . $estadisticas['periodo']['fin'] . "\n";
@@ -594,7 +599,7 @@ class InventarioController extends Controller
                 $csv .= ucfirst($movimiento->tipo) . ',';
                 $csv .= number_format($movimiento->cantidad) . ',';
                 $csv .= '"' . str_replace('"', '""', $movimiento->motivo) . '",';
-                $csv .= '"' . str_replace('"', '""', $movimiento->usuario->name ?? 'Sistema') . '"' . "\n";
+                $csv .= '"' . str_replace('"', '""', $movimiento->usuario->nombre_usuario ?? 'Sistema') . '"' . "\n";
             }
         }
         
@@ -645,8 +650,8 @@ class InventarioController extends Controller
     private function prepararDatosParaVista(array $data): array
     {
         $estadisticas = $data['estadisticas'] ?? [];
-        $productos = $data['productos'] ?? collect();
-        $movimientos = $data['movimientos'] ?? collect();
+        $productos = $data['productos'] ?? Collection::make();
+        $movimientos = $data['movimientos'] ?? Collection::make();
         
         // Preparar resumen general
         $resumenGeneral = [

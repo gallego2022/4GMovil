@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Models\MetodoPago;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Base\WebController;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Redirect;
 
-class MetodoPagoController extends Controller
+class MetodoPagoController extends WebController
 {
     public function __construct()
     {
@@ -18,16 +20,16 @@ class MetodoPagoController extends Controller
     {
         try {
             $metodos = MetodoPago::all();
-            return view('metodos_pago.index', compact('metodos'));
+            return View::make('metodos_pago.index', compact('metodos'));
         } catch (\Exception $e) {
             Log::error('Error al listar métodos de pago: ' . $e->getMessage());
-            return back()->with('error', 'Hubo un error al cargar los métodos de pago.');
+            return Redirect::back()->with('mensaje', 'Hubo un error al cargar los métodos de pago.')->with('tipo', 'error');
         }
     }
 
     public function create()
     {
-        return view('metodos_pago.create');
+        return View::make('metodos_pago.create');
     }
     // Crear metodo de pago
     public function store(Request $request)
@@ -51,11 +53,11 @@ class MetodoPagoController extends Controller
                 'estado' => $request->estado ? 1 : 0,
             ]);
 
-            return redirect()->route('metodos-pago.index')
+            return Redirect::route('metodos-pago.index')
                 ->with('success', 'Método de pago creado correctamente.');
         } catch (\Exception $e) {
             Log::error('Error al crear método de pago: ' . $e->getMessage());
-            return back()
+            return Redirect::back()
                 ->withInput()
                 ->with('error', 'Hubo un error al crear el método de pago.');
         }
@@ -66,10 +68,10 @@ class MetodoPagoController extends Controller
     {
         try {
             $metodo = MetodoPago::findOrFail($id);
-            return view('metodos_pago.edit', compact('metodo'));
+            return View::make('metodos_pago.edit', compact('metodo'));
         } catch (\Exception $e) {
             Log::error('Error al editar método de pago: ' . $e->getMessage());
-            return redirect()->route('metodos-pago.index')
+            return Redirect::route('metodos-pago.index')
                 ->with('error', 'No se encontró el método de pago.');
         }
     }
@@ -97,11 +99,11 @@ class MetodoPagoController extends Controller
                 'estado' => $request->estado ? 1 : 0,
             ]);
 
-            return redirect()->route('metodos-pago.index')
+            return Redirect::route('metodos-pago.index')
                 ->with('success', 'Método de pago actualizado correctamente.');
         } catch (\Exception $e) {
             Log::error('Error al actualizar método de pago: ' . $e->getMessage());
-            return back()
+            return Redirect::back()
                 ->withInput()
                 ->with('error', 'Hubo un error al actualizar el método de pago.');
         }
@@ -114,16 +116,16 @@ class MetodoPagoController extends Controller
 
             // Verificar si el método de pago está siendo usado
             if ($metodo->pagos()->exists()) {
-                return back()->with('error', 'No se puede eliminar este método de pago porque está siendo utilizado en pedidos.');
+                return Redirect::back()->with('mensaje', 'No se puede eliminar este método de pago porque está siendo utilizado en pedidos.')->with('tipo', 'error');
             }
 
             $metodo->delete();
 
-            return redirect()->route('metodos-pago.index')
-                ->with('success', 'Método de pago eliminado correctamente.');
+            return Redirect::route('metodos-pago.index')
+                ->with('mensaje', 'Método de Pago Eliminado')->with('tipo', 'success');
         } catch (\Exception $e) {
             Log::error('Error al eliminar método de pago: ' . $e->getMessage());
-            return back()->with('error', 'Hubo un error al eliminar el método de pago.');
+            return Redirect::back()->with('mensaje', 'Hubo un error al eliminar el método de pago.')->with('tipo', 'error');
         }
     }
 }

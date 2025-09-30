@@ -139,6 +139,101 @@ if %errorlevel% neq 0 (
 
 echo.
 echo ========================================
+echo   Instalando dependencias y configurando base de datos
+echo ========================================
+echo.
+
+REM Esperar un poco mas para asegurar que la base de datos este completamente lista
+echo Esperando que la base de datos este completamente lista...
+timeout /t 15 /nobreak >nul
+
+REM Crear carpetas necesarias para Laravel
+echo Creando carpetas necesarias para Laravel...
+docker compose exec -T app mkdir -p /var/www/html/storage/framework/cache
+docker compose exec -T app mkdir -p /var/www/html/storage/framework/sessions
+docker compose exec -T app mkdir -p /var/www/html/storage/framework/views
+docker compose exec -T app mkdir -p /var/www/html/storage/logs
+docker compose exec -T app mkdir -p /var/www/html/bootstrap/cache
+docker compose exec -T app touch /var/www/html/storage/logs/laravel.log
+
+REM Establecer permisos iniciales
+echo Estableciendo permisos iniciales...
+docker compose exec -T app chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+docker compose exec -T app chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+REM Instalar dependencias de Composer
+echo Instalando dependencias de PHP con Composer...
+docker compose exec -T app composer install --no-dev --optimize-autoloader
+if %errorlevel% neq 0 (
+    echo ADVERTENCIA: Error al instalar dependencias de Composer.
+    echo Continuando con la instalacion...
+    echo.
+)
+
+REM Generar clave de aplicacion
+echo Generando clave de aplicacion...
+docker compose exec -T app php artisan key:generate --force
+if %errorlevel% neq 0 (
+    echo ADVERTENCIA: Error al generar clave de aplicacion.
+    echo.
+)
+
+REM Limpiar cache
+echo Limpiando cache de la aplicacion...
+docker compose exec -T app php artisan config:clear
+docker compose exec -T app php artisan cache:clear
+docker compose exec -T app php artisan view:clear
+
+REM Ejecutar migraciones
+echo Ejecutando migraciones de base de datos...
+docker compose exec -T app php artisan migrate --force
+if %errorlevel% neq 0 (
+    echo ERROR: No se pudieron ejecutar las migraciones.
+    echo Revisa la conexion a la base de datos.
+    echo.
+)
+
+REM Ejecutar seeders
+echo Ejecutando seeders para poblar la base de datos...
+docker compose exec -T app php artisan db:seed --force
+if %errorlevel% neq 0 (
+    echo ADVERTENCIA: Error al ejecutar los seeders.
+    echo La aplicacion funcionara pero sin datos de prueba.
+    echo.
+)
+
+REM Crear enlace simbolico de storage
+echo Creando enlace simbolico de storage...
+docker compose exec -T app php artisan storage:link
+if %errorlevel% neq 0 (
+    echo ADVERTENCIA: Error al crear enlace simbolico de storage.
+    echo.
+)
+
+REM Sincronizar storage para evitar problemas de enlaces
+echo Sincronizando storage para evitar problemas de acceso a imagenes...
+docker compose exec -T app php artisan storage:sync --force
+if %errorlevel% neq 0 (
+    echo ADVERTENCIA: Error al sincronizar storage.
+    echo Continuando con la instalacion...
+    echo.
+)
+
+REM Verificar permisos finales
+echo Verificando permisos finales...
+docker compose exec -T app chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+docker compose exec -T app chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+echo.
+echo Verificando instalacion final...
+docker compose exec -T app php artisan --version
+if %errorlevel% neq 0 (
+    echo ADVERTENCIA: No se pudo verificar la instalacion de Laravel.
+    echo.
+)
+
+echo.
+echo ========================================
 echo   Instalacion completada!
 echo ========================================
 echo.

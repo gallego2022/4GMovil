@@ -51,10 +51,40 @@ rm -f /var/www/html/public/storage
 # Crear nuevo enlace simbólico
 php artisan storage:link
 
+# Sincronizar carpetas de storage al directorio público
+echo "📁 Sincronizando carpetas de storage..."
+# Crear directorio público de storage si no existe
+mkdir -p /var/www/html/public/storage
+
+# Sincronizar todas las carpetas de storage/app/public al directorio público
+if [ -d "/var/www/html/storage/app/public" ]; then
+    echo "🔄 Sincronizando contenido de storage/app/public..."
+    # Copiar todas las carpetas y archivos
+    cp -r /var/www/html/storage/app/public/* /var/www/html/public/storage/ 2>/dev/null || true
+    
+    # Asegurar que las carpetas principales existan
+    mkdir -p /var/www/html/public/storage/productos
+    mkdir -p /var/www/html/public/storage/fotos_perfil
+    mkdir -p /var/www/html/public/storage/perfiles
+    
+    # Sincronizar contenido específico
+    if [ -d "/var/www/html/storage/app/public/productos" ]; then
+        cp -r /var/www/html/storage/app/public/productos/* /var/www/html/public/storage/productos/ 2>/dev/null || true
+    fi
+    
+    if [ -d "/var/www/html/storage/app/public/fotos_perfil" ]; then
+        cp -r /var/www/html/storage/app/public/fotos_perfil/* /var/www/html/public/storage/fotos_perfil/ 2>/dev/null || true
+    fi
+    
+    if [ -d "/var/www/html/storage/app/public/perfiles" ]; then
+        cp -r /var/www/html/storage/app/public/perfiles/* /var/www/html/public/storage/perfiles/ 2>/dev/null || true
+    fi
+fi
+
 # Establecer permisos correctos
 echo "🔐 Estableciendo permisos..."
-chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public/storage
+chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public/storage
 
 echo "✅ Aplicación lista!"
 echo "🌐 Servidor iniciando en puerto 80..."

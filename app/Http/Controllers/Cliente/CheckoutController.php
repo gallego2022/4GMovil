@@ -8,6 +8,10 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Redirect;
+use App\Models\Pedido;
 use Exception;
 
 class CheckoutController extends WebController
@@ -28,7 +32,7 @@ class CheckoutController extends WebController
         try {
             $result = $this->checkoutService->prepareCheckout($request);
             
-            return view('checkout.index', [
+            return View::make('checkout.index', [
                 'cart' => $result['cart'],
                 'direcciones' => $result['direcciones'],
                 'metodosPago' => $result['metodosPago']
@@ -55,14 +59,14 @@ class CheckoutController extends WebController
             // Verificar si debe redirigir a Stripe
             if (isset($result['redirect_to_stripe']) && $result['redirect_to_stripe']) {
                 // Redirigir a la página de pago de Stripe
-                return redirect()->route('stripe.payment', $result['pedido_id'])
+                return Redirect::route('stripe.payment', $result['pedido_id'])
                     ->with('info', 'Pedido creado. Completa el pago con Stripe.');
             }
             
             // Verificar si requiere confirmación manual (pago en efectivo)
             if (isset($result['redirect_to_confirm']) && $result['redirect_to_confirm']) {
                 // Redirigir a la página de confirmación de pago
-                return redirect()->route('checkout.confirm', $result['pedido_id'])
+                return Redirect::route('checkout.confirm', $result['pedido_id'])
                     ->with('info', $result['message']);
             }
             
@@ -85,7 +89,7 @@ class CheckoutController extends WebController
     public function summary(Request $request)
     {
         try {
-            $cart = session('cart', []);
+            $cart = Session::get('cart', []);
             
             if (empty($cart)) {
                 return $this->redirectError('landing', 'Tu carrito está vacío');
@@ -93,7 +97,7 @@ class CheckoutController extends WebController
 
             $summary = $this->checkoutService->getCheckoutSummary($cart);
             
-            return view('checkout.summary', $summary);
+            return View::make('checkout.summary', $summary);
 
         } catch (Exception $e) {
             return $this->handleException($e, 'landing');
@@ -113,7 +117,7 @@ class CheckoutController extends WebController
             // Verificar si debe redirigir a Stripe
             if (isset($result['redirect_to_stripe']) && $result['redirect_to_stripe']) {
                 // Redirigir a la página de pago de Stripe
-                return redirect()->route('stripe.payment', $result['pedido_id'])
+                return Redirect::route('stripe.payment', $result['pedido_id'])
                     ->with('info', 'Pedido confirmado. Completa el pago con Stripe.');
             }
             
@@ -139,9 +143,9 @@ class CheckoutController extends WebController
             // Limpiar el carrito después de confirmar que el usuario llegó a la página de éxito
             Session::forget('cart');
             
-            $pedido = \App\Models\Pedido::with('estado')->findOrFail($pedidoId);
+            $pedido = Pedido::with('estado')->findOrFail($pedidoId);
             
-            return view('checkout.success', [
+            return View::make('checkout.success', [
                 'pedido' => $pedido
             ]);
             
@@ -183,7 +187,7 @@ class CheckoutController extends WebController
             }
             
             if (empty($cart)) {
-                return response()->json([
+                return Response::json([
                     'success' => false,
                     'message' => 'El carrito está vacío'
                 ]);
@@ -191,13 +195,13 @@ class CheckoutController extends WebController
 
             $resultado = $this->checkoutService->verificarStock($cart);
             
-            return response()->json([
+            return Response::json([
                 'success' => true,
                 'data' => $resultado
             ]);
 
         } catch (Exception $e) {
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => 'Error al verificar stock: ' . $e->getMessage()
             ], 500);
@@ -210,7 +214,7 @@ class CheckoutController extends WebController
     public function showConfirm(string $pedidoId)
     {
         try {
-            $pedido = \App\Models\Pedido::with(['detalles.producto', 'pago.metodoPago', 'direccion', 'usuario'])
+            $pedido = Pedido::with(['detalles.producto', 'pago.metodoPago', 'direccion', 'usuario'])
                 ->where('usuario_id', Auth::id())
                 ->findOrFail($pedidoId);
             
@@ -219,7 +223,7 @@ class CheckoutController extends WebController
                 return $this->redirectError('landing', 'Este pedido ya ha sido procesado');
             }
             
-            return view('checkout.confirm', [
+            return View::make('checkout.confirm', [
                 'pedido' => $pedido
             ]);
 

@@ -1574,6 +1574,12 @@
                 modal.classList.remove('flex');
                 document.body.style.overflow = 'auto';
                 
+                // Restaurar stock original si no se seleccionó variante
+                if (window.stockSync) {
+                    window.stockSync.resetStock();
+                    console.log('Stock restaurado al cerrar modal');
+                }
+                
                 // Limpiar contenido
                 document.getElementById('variantsList').innerHTML = '';
                 document.getElementById('loadingVariants').classList.add('hidden');
@@ -1678,6 +1684,24 @@
                     addButton.className = 'w-full bg-gray-400 text-white py-2 px-4 rounded-lg cursor-not-allowed font-medium text-sm';
                 }
                 
+                // Agregar evento de hover para sincronizar stock
+                const variantItem = clone.querySelector('.variant-item');
+                if (variantItem) {
+                    variantItem.addEventListener('mouseenter', function() {
+                        if (window.stockSync) {
+                            window.stockSync.updateStockTemporary(variante.stock_disponible);
+                            console.log('Stock sincronizado en hover:', variante.stock_disponible);
+                        }
+                    });
+                    
+                    variantItem.addEventListener('mouseleave', function() {
+                        // Restaurar stock original al salir del hover
+                        if (window.stockSync) {
+                            window.stockSync.resetStock();
+                        }
+                    });
+                }
+                
                 return clone;
             }
             
@@ -1691,6 +1715,12 @@
                     variante_nombre: variante.nombre,
                     precio_adicional: variante.precio_adicional
                 };
+                
+                // Sincronizar stock con la variante seleccionada
+                if (window.stockSync) {
+                    window.stockSync.updateStock(variante.stock_disponible);
+                    console.log('Stock sincronizado con variante:', variante.stock_disponible);
+                }
                 
                 // Llamar a la función global addToCart
                 if (typeof addToCart === 'function') {
@@ -1743,6 +1773,9 @@
             });
         });
     </script>
+    
+    <!-- Script de sincronización de stock -->
+    <script src="{{ asset('js/stock-sync.js') }}"></script>
 </body>
 
 </html>

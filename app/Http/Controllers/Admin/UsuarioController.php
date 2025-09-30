@@ -6,9 +6,11 @@ use App\Services\UsuarioService;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Base\WebController;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Redirect;
 
-class UsuarioController extends Controller
+class UsuarioController extends WebController
 {
     protected $usuarioService;
 
@@ -20,12 +22,12 @@ class UsuarioController extends Controller
     public function index()
     {
         $usuarios = $this->usuarioService->getAllUsers();
-        return view('pages.admin.usuarios.index', compact('usuarios'));
+        return View::make('pages.admin.usuarios.index', compact('usuarios'));
     }
 
     public function create()
     {
-        return view('pages.admin.usuarios.create');
+        return View::make('pages.admin.usuarios.create');
     }
 
     public function store(Request $request)
@@ -47,14 +49,10 @@ class UsuarioController extends Controller
         $result = $this->usuarioService->createUser($userData);
 
         if ($result['success']) {
-            return redirect()
-                ->route('usuarios.index')
-                ->with('success', 'Usuario creado exitosamente');
+            return Redirect::route('usuarios.index')->with('mensaje', 'Usuario Creado')->with('tipo', 'success');
         }
 
-        return back()
-            ->withInput()
-            ->with('error', $result['message']);
+        return Redirect::back()->withInput()->with('mensaje', $result['message'])->with('tipo', 'error');
     }
 
     public function show($id)
@@ -62,10 +60,10 @@ class UsuarioController extends Controller
         $data = $this->usuarioService->getUserById($id);
         
         if (!$data) {
-            return redirect()->route('usuarios.index')->with('error', 'Usuario no encontrado.');
+            return Redirect::route('usuarios.index')->with('error', 'Usuario no encontrado.');
         }
 
-        return view('pages.admin.usuarios.show', compact('data'));
+        return View::make('pages.admin.usuarios.show', compact('data'));
     }
 
     public function edit($id)
@@ -73,10 +71,10 @@ class UsuarioController extends Controller
         $data = $this->usuarioService->getUserById($id);
         
         if (!$data) {
-            return redirect()->route('usuarios.index')->with('error', 'Usuario no encontrado.');
+            return Redirect::route('usuarios.index')->with('error', 'Usuario no encontrado.');
         }
 
-        return view('pages.admin.usuarios.edit', compact('data'));
+        return View::make('pages.admin.usuarios.edit', compact('data'));
     }
 
     public function update(Request $request, $id)
@@ -97,27 +95,33 @@ class UsuarioController extends Controller
             $request->file('foto_perfil')
         );
 
-        return redirect()
-            ->route('usuarios.index')
-            ->with($result['success'] ? 'success' : 'error', $result['message']);
+        if ($result['success']) {
+            return Redirect::route('usuarios.index')->with('mensaje', 'Usuario Actualizado')->with('tipo', 'success');
+        }
+        
+        return Redirect::route('usuarios.index')->with('mensaje', $result['message'])->with('tipo', 'error');
     }
 
     public function destroy($id)
     {
         $result = $this->usuarioService->deleteUser($id);
 
-        return redirect()
-            ->route('usuarios.index')
-            ->with($result['success'] ? 'success' : 'error', $result['message']);
+        if ($result['success']) {
+            return Redirect::route('usuarios.index')->with('mensaje', 'Usuario Eliminado')->with('tipo', 'success');
+        }
+        
+        return Redirect::route('usuarios.index')->with('mensaje', $result['message'])->with('tipo', 'error');
     }
 
     public function cambiarEstado($id)
     {
         $result = $this->usuarioService->toggleUserStatus($id);
 
-        return redirect()
-            ->route('usuarios.index')
-            ->with($result['success'] ? 'success' : 'error', $result['message']);
+        if ($result['success']) {
+            return Redirect::route('usuarios.index')->with('mensaje', 'Estado de Usuario Actualizado')->with('tipo', 'success');
+        }
+        
+        return Redirect::route('usuarios.index')->with('mensaje', $result['message'])->with('tipo', 'error');
     }
 
     public function asignarRol(Request $request, $id)
@@ -128,8 +132,10 @@ class UsuarioController extends Controller
 
         $result = $this->usuarioService->updateRole($id, $request->rol);
 
-        return redirect()
-            ->route('usuarios.index')
-            ->with($result['success'] ? 'success' : 'error', $result['message']);
+        if ($result['success']) {
+            return Redirect::route('usuarios.index')->with('mensaje', 'Rol de Usuario Actualizado')->with('tipo', 'success');
+        }
+        
+        return Redirect::route('usuarios.index')->with('mensaje', $result['message'])->with('tipo', 'error');
     }
 }

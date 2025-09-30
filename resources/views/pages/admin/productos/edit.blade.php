@@ -3,6 +3,9 @@
 @section('title', 'Editar producto - 4GMovil')
 
 @section('content')
+<!-- Notificaciones -->
+<x-notifications />
+
 <div class="space-y-6">
     <!-- Encabezado -->
     <div>

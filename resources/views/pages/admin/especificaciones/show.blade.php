@@ -93,6 +93,9 @@
 @endpush
 
 @section('content')
+<!-- Notificaciones -->
+<x-notifications />
+
 <div class="space-y-6">
     <!-- Encabezado -->
     <div class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-100 dark:border-gray-800">

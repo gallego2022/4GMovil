@@ -3,6 +3,9 @@
 @section('title', 'Dashboard de Inventario - 4GMovil')
 
 @section('content')
+<!-- Notificaciones -->
+<x-notifications />
+
 <div class="space-y-6">
     <!-- Encabezado -->
     <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
@@ -138,51 +141,7 @@
             @endif
         </div>
 
-        <!-- Productos con stock bajo -->
-        <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Stock Bajo</h3>
-                <span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 rounded-full">
-                    {{ $productosStockBajo->count() }} productos
-                </span>
-            </div>
-            
-            @if($productosStockBajo->count() > 0)
-                <div class="space-y-3">
-                    @foreach($productosStockBajo->take(5) as $producto)
-                        <div class="flex items-center justify-between p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
-                            <div class="flex items-center space-x-3">
-                                @if($producto->imagenes->isNotEmpty())
-                                    <img src="{{ asset('storage/' . $producto->imagenes[0]->ruta_imagen) }}" 
-                                         class="w-10 h-10 rounded-md object-cover" 
-                                         alt="{{ $producto->nombre_producto }}">
-                                @else
-                                    <div class="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-md flex items-center justify-center">
-                                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                        </svg>
-                                    </div>
-                                @endif
-                                <div>
-                                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $producto->nombre_producto }}</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">ID: {{ $producto->producto_id }}</div>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <x-stock-indicator :producto="$producto" />
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            @else
-                <div class="text-center py-4 text-sm text-gray-500 dark:text-gray-400">
-                   No hay productos con stock bajo
-                </div>
-            @endif
-        </div>
-    </div>
-
-    <!-- Variantes con stock bajo -->
+        <!-- Variantes con stock bajo -->
     <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Variantes con Stock Bajo</h3>
@@ -253,6 +212,9 @@
             </div>
         @endif
     </div>
+    </div>
+
+    
 
     <!-- Productos con stock reservado alto -->
     <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">

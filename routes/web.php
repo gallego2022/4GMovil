@@ -49,7 +49,7 @@ Route::get('password/reset', [AuthController::class, 'showLinkRequestForm'])->na
 Route::post('password/email', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::get('password/reset/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
 Route::get('password/reset/otp', [AuthController::class, 'showResetForm'])->name('password.reset.otp');
-Route::post('password/reset/otp', [AuthController::class, 'showResetForm'])->name('password.reset.otp.post');
+Route::post('password/reset/otp', [AuthController::class, 'sendResetLinkEmail'])->name('password.reset.otp.post');
 Route::post('password/reset', [AuthController::class, 'reset'])->name('password.update');
 
 // Establecer contraseña para usuarios de Google

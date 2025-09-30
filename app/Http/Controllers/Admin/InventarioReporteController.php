@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Base\WebController;
 use App\Services\InventarioService;
 use App\Models\Producto;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Response;
 
-class InventarioReporteController extends Controller
+class InventarioReporteController extends WebController
 {
     protected $inventarioService;
 
@@ -27,8 +30,8 @@ class InventarioReporteController extends Controller
     public function general(Request $request)
     {
         try {
-            $fechaInicio = $request->get('fecha_inicio') ? Carbon::parse($request->fecha_inicio) : now()->subMonth();
-            $fechaFin = $request->get('fecha_fin') ? Carbon::parse($request->fecha_fin) : now();
+            $fechaInicio = $request->get('fecha_inicio') ? Carbon::parse($request->fecha_inicio) : Carbon::now()->subMonth();
+            $fechaFin = $request->get('fecha_fin') ? Carbon::parse($request->fecha_fin) : Carbon::now();
             
             $data = [
                 'fechaInicio' => $fechaInicio,
@@ -38,18 +41,18 @@ class InventarioReporteController extends Controller
             ];
 
             if ($request->wantsJson()) {
-                return response()->json($data);
+                return Response::json($data);
             }
 
-            return view('pages.admin.inventario.reportes.general', $data);
+            return View::make('pages.admin.inventario.reportes.general', $data);
         } catch (\Exception $e) {
             Log::error('Error en reporte general de inventario', ['error' => $e->getMessage()]);
             
             if ($request->wantsJson()) {
-                return response()->json(['error' => 'Error al generar reporte'], 500);
+                return Response::json(['error' => 'Error al generar reporte'], 500);
             }
 
-            return redirect()->back()->with('error', 'Error al generar el reporte');
+            return Redirect::back()->with('error', 'Error al generar el reporte');
         }
     }
 
@@ -67,18 +70,18 @@ class InventarioReporteController extends Controller
             ];
 
             if ($request->wantsJson()) {
-                return response()->json($data);
+                return Response::json($data);
             }
 
-            return view('pages.admin.inventario.reportes.valor', $data);
+            return View::make('pages.admin.inventario.reportes.valor', $data);
         } catch (\Exception $e) {
             Log::error('Error en reporte de valor de inventario', ['error' => $e->getMessage()]);
             
             if ($request->wantsJson()) {
-                return response()->json(['error' => 'Error al generar reporte'], 500);
+                return Response::json(['error' => 'Error al generar reporte'], 500);
             }
 
-            return redirect()->back()->with('error', 'Error al generar el reporte');
+            return Redirect::back()->with('error', 'Error al generar el reporte');
         }
     }
 
@@ -98,18 +101,18 @@ class InventarioReporteController extends Controller
             ];
 
             if ($request->wantsJson()) {
-                return response()->json($data);
+                return Response::json($data);
             }
 
-            return view('pages.admin.inventario.reportes.rotacion', $data);
+            return View::make('pages.admin.inventario.reportes.rotacion', $data);
         } catch (\Exception $e) {
             Log::error('Error en reporte de rotación de inventario', ['error' => $e->getMessage()]);
             
             if ($request->wantsJson()) {
-                return response()->json(['error' => 'Error al generar reporte'], 500);
+                return Response::json(['error' => 'Error al generar reporte'], 500);
             }
 
-            return redirect()->back()->with('error', 'Error al generar el reporte');
+            return Redirect::back()->with('error', 'Error al generar el reporte');
         }
     }
 
@@ -130,18 +133,18 @@ class InventarioReporteController extends Controller
             ];
 
             if ($request->wantsJson()) {
-                return response()->json($data);
+                return Response::json($data);
             }
 
-            return view('pages.admin.inventario.reportes.alertas', $data);
+            return View::make('pages.admin.inventario.reportes.alertas', $data);
         } catch (\Exception $e) {
             Log::error('Error en reporte de alertas de inventario', ['error' => $e->getMessage()]);
             
             if ($request->wantsJson()) {
-                return response()->json(['error' => 'Error al generar reporte'], 500);
+                return Response::json(['error' => 'Error al generar reporte'], 500);
             }
 
-            return redirect()->back()->with('error', 'Error al generar el reporte');
+            return Redirect::back()->with('error', 'Error al generar el reporte');
         }
     }
 
@@ -158,14 +161,14 @@ class InventarioReporteController extends Controller
             
             // Aquí se implementaría la lógica de exportación
             // Por ahora retornamos JSON como ejemplo
-            return response()->json([
+            return Response::json([
                 'success' => true,
                 'message' => 'Reporte exportado correctamente',
                 'data' => $data
             ]);
         } catch (\Exception $e) {
             Log::error('Error al exportar reporte', ['error' => $e->getMessage()]);
-            return response()->json(['error' => 'Error al exportar el reporte'], 500);
+            return Response::json(['error' => 'Error al exportar el reporte'], 500);
         }
     }
 
@@ -176,8 +179,8 @@ class InventarioReporteController extends Controller
     {
         switch ($tipo) {
             case 'general':
-                $fechaInicio = $request->get('fecha_inicio') ? Carbon::parse($request->fecha_inicio) : now()->subMonth();
-                $fechaFin = $request->get('fecha_fin') ? Carbon::parse($request->fecha_fin) : now();
+                $fechaInicio = $request->get('fecha_inicio') ? Carbon::parse($request->fecha_inicio) : Carbon::now()->subMonth();
+                $fechaFin = $request->get('fecha_fin') ? Carbon::parse($request->fecha_fin) : Carbon::now();
                 return $this->inventarioService->getResumenInventario($fechaInicio, $fechaFin);
                 
             case 'valor':

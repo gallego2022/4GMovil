@@ -1117,6 +1117,9 @@
     <!-- SweetAlert2 Scripts -->
     @include('layouts.partials.sweet-alerts')
 
+    <!-- Sistema de Validación -->
+    <script src="{{ asset('js/validation-system.js') }}" defer></script>
+    
     @stack('scripts')
 
     <!-- Lazy loading script -->

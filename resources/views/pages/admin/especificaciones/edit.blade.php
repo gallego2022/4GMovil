@@ -3,6 +3,9 @@
 @section('title', __('admin.actions.edit') . ' Especificación - 4GMovil')
 
 @section('content')
+<!-- Notificaciones -->
+<x-notifications />
+
 <div class="space-y-6">
     <!-- Encabezado -->
     <div>
@@ -77,61 +80,63 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Nombre del campo -->
-                    <div>
-                        <label for="nombre_campo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                           Nombre del campo <span class="text-red-500">*</span>
-                        </label>
-                        <input type="text" id="nombre_campo" name="nombre_campo" value="{{ old('nombre_campo', $especificacion->nombre_campo) }}" required
-                               class="block w-full px-4 py-3 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm transition-colors duration-200"
-                               placeholder="ej: ram, almacenamiento, pantalla">
-                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                           Nombre técnico del campo (sin espacios, solo minúsculas)
-                        </p>
-                        @error('nombre_campo')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    <x-validation-field 
+                        name="nombre_campo"
+                        label="Nombre del campo"
+                        type="text"
+                        placeholder="ej: ram, almacenamiento, pantalla"
+                        :required="true"
+                        :rules="['required', 'minLength:2', 'maxLength:50', 'uniqueFieldName']"
+                        :messages="[
+                            'required' => 'El nombre del campo es requerido',
+                            'minLength' => 'Mínimo 2 caracteres',
+                            'maxLength' => 'Máximo 50 caracteres',
+                            'uniqueFieldName' => 'Este nombre ya existe en esta categoría'
+                        ]"
+                        help-text="Nombre técnico del campo (sin espacios, solo minúsculas)"
+                        :value="old('nombre_campo', $especificacion->nombre_campo)"
+                    />
 
                     <!-- Etiqueta -->
-                    <div>
-                        <label for="etiqueta" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                           Etiqueta <span class="text-red-500">*</span>
-                        </label>
-                        <input type="text" id="etiqueta" name="etiqueta" value="{{ old('etiqueta', $especificacion->etiqueta) }}" required
-                               class="block w-full px-4 py-3 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm transition-colors duration-200"
-                               placeholder="ej: Memoria RAM, Almacenamiento, Tamaño de Pantalla">
-                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                           Nombre visible para el usuario
-                        </p>
-                        @error('etiqueta')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    <x-validation-field 
+                        name="etiqueta"
+                        label="Etiqueta"
+                        type="text"
+                        placeholder="ej: Memoria RAM, Almacenamiento, Tamaño de Pantalla"
+                        :required="true"
+                        :rules="['required', 'minLength:2', 'maxLength:100']"
+                        :messages="[
+                            'required' => 'La etiqueta es requerida',
+                            'minLength' => 'Mínimo 2 caracteres',
+                            'maxLength' => 'Máximo 100 caracteres'
+                        ]"
+                        help-text="Nombre visible para el usuario"
+                        :value="old('etiqueta', $especificacion->etiqueta)"
+                    />
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                     <!-- Tipo de campo -->
-                    <div>
-                        <label for="tipo_campo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                           Tipo de campo <span class="text-red-500">*</span>
-                        </label>
-                        <select id="tipo_campo" name="tipo_campo" required
-                                class="block w-full px-4 py-3 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm transition-colors duration-200">
-                            <option value="">Selecciona el tipo</option>
-                            <option value="text" {{ old('tipo_campo', $especificacion->tipo_campo) == 'text' ? 'selected' : '' }}>Texto</option>
-                            <option value="textarea" {{ old('tipo_campo', $especificacion->tipo_campo) == 'textarea' ? 'selected' : '' }}>Área de texto</option>
-                            <option value="number" {{ old('tipo_campo', $especificacion->tipo_campo) == 'number' ? 'selected' : '' }}>Número</option>
-                            <option value="select" {{ old('tipo_campo', $especificacion->tipo_campo) == 'select' ? 'selected' : '' }}>Selector</option>
-                            <option value="checkbox" {{ old('tipo_campo', $especificacion->tipo_campo) == 'checkbox' ? 'selected' : '' }}>Casilla de verificación</option>
-                            <option value="radio" {{ old('tipo_campo', $especificacion->tipo_campo) == 'radio' ? 'selected' : '' }}>Botones de radio</option>
-                            <option value="date" {{ old('tipo_campo', $especificacion->tipo_campo) == 'date' ? 'selected' : '' }}>Fecha</option>
-                            <option value="email" {{ old('tipo_campo', $especificacion->tipo_campo) == 'email' ? 'selected' : '' }}>Correo electrónico</option>
-                            <option value="url" {{ old('tipo_campo', $especificacion->tipo_campo) == 'url' ? 'selected' : '' }}>URL</option>
-                        </select>
-                        @error('tipo_campo')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    <x-validation-field 
+                        name="tipo_campo"
+                        label="Tipo de campo"
+                        type="select"
+                        placeholder="Selecciona el tipo"
+                        :required="true"
+                        :rules="['required']"
+                        :messages="[
+                            'required' => 'El tipo de campo es requerido'
+                        ]"
+                        help-text="Tipo de campo para la especificación"
+                        :options="[
+                            'texto' => 'Texto',
+                            'numero' => 'Número',
+                            'select' => 'Selector',
+                            'checkbox' => 'Casilla de verificación',
+                            'radio' => 'Botones de radio'
+                        ]"
+                        :value="old('tipo_campo', $especificacion->tipo_campo)"
+                    />
 
                     <!-- Unidad de Medida -->
                     <div>
@@ -328,21 +333,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const labelText = etiqueta + (requerido ? ' *' : '') + (unidad ? ` (${unidad})` : '');
         
         switch (tipo) {
-            case 'text':
+            case 'texto':
                 previewHTML = `
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">${labelText}</label>
                     <input type="text" class="block w-full px-4 py-3 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm transition-colors duration-200" placeholder="Ingresa ${etiqueta.toLowerCase()}">
                 `;
                 break;
                 
-            case 'textarea':
-                previewHTML = `
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">${labelText}</label>
-                    <textarea rows="3" class="block w-full px-4 py-3 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm transition-colors duration-200" placeholder="Ingresa ${etiqueta.toLowerCase()}"></textarea>
-                `;
-                break;
-                
-            case 'number':
+            case 'numero':
                 previewHTML = `
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">${labelText}</label>
                     <input type="number" class="block w-full px-4 py-3 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm transition-colors duration-200" placeholder="Ingresa un número">
@@ -420,26 +418,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 break;
                 
-            case 'date':
-                previewHTML = `
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">${labelText}</label>
-                    <input type="date" class="block w-full px-4 py-3 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm transition-colors duration-200">
-                `;
-                break;
-                
-            case 'email':
-                previewHTML = `
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">${labelText}</label>
-                    <input type="email" class="block w-full px-4 py-3 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm transition-colors duration-200" placeholder="ejemplo@correo.com">
-                `;
-                break;
-                
-            case 'url':
-                previewHTML = `
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">${labelText}</label>
-                    <input type="url" class="block w-full px-4 py-3 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm transition-colors duration-200" placeholder="https://ejemplo.com">
-                `;
-                break;
         }
         
         fieldPreview.innerHTML = previewHTML;

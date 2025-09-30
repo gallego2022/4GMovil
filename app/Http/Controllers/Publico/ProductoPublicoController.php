@@ -6,9 +6,19 @@ use App\Http\Controllers\Base\WebController;
 use App\Services\ProductoService;
 use App\Models\Resena;
 use App\Models\Producto;
+use App\Models\Usuario;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
+use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Validation\ValidationException;
 
 class ProductoPublicoController extends WebController
 {
@@ -22,7 +32,7 @@ class ProductoPublicoController extends WebController
     /**
      * Mostrar un producto específico (público)
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         try {
             $this->applyLocalization();
@@ -30,9 +40,9 @@ class ProductoPublicoController extends WebController
             Log::info('Método show público llamado', [
                 'id_original' => $id,
                 'tipo_id' => gettype($id),
-                'url_completa' => request()->fullUrl(),
-                'referer' => request()->header('referer'),
-                'user_agent' => request()->header('user-agent')
+                'url_completa' => $request->fullUrl(),
+                'referer' => $request->header('referer'),
+                'user_agent' => $request->header('user-agent')
             ]);
             
             // Convertir el ID a entero ya que viene como string desde la ruta
@@ -101,7 +111,7 @@ class ProductoPublicoController extends WebController
                 $productosRelacionados = $productosRelacionados->merge($productosPopulares);
             }
             
-            return view('productos.show', compact('producto', 'productosRelacionados'));
+            return View::make('productos.show', compact('producto', 'productosRelacionados'));
             
         } catch (\Exception $e) {
             Log::error('Error al mostrar producto público', [
@@ -167,15 +177,15 @@ class ProductoPublicoController extends WebController
                 $resenaData['usuario_id'] = Auth::id();
             } else {
                 // Si no hay usuario autenticado, crear o usar un usuario anónimo
-                $usuarioAnonimo = \App\Models\Usuario::firstOrCreate(
+                $usuarioAnonimo = Usuario::firstOrCreate(
                     ['correo_electronico' => 'anonimo@example.com'],
                     [
                         'nombre_usuario' => $request->nombre_usuario,
                         'correo_electronico' => 'anonimo@example.com',
-                        'contrasena' => bcrypt('password'),
+                        'contrasena' => Hash::make('password'),
                         'rol' => 'cliente',
                         'estado' => true,
-                        'fecha_registro' => now()
+                        'fecha_registro' => Carbon::now()
                     ]
                 );
                 $resenaData['usuario_id'] = $usuarioAnonimo->usuario_id;
@@ -191,7 +201,7 @@ class ProductoPublicoController extends WebController
                 'usuario_autenticado' => Auth::check()
             ]);
 
-            return response()->json([
+            return Response::json([
                 'success' => true,
                 'message' => '¡Reseña enviada exitosamente!',
                 'resena' => [
@@ -212,7 +222,7 @@ class ProductoPublicoController extends WebController
                 'error' => $e->getMessage()
             ]);
             
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => '❌ Producto no encontrado',
                 'error_type' => 'not_found',
@@ -226,9 +236,9 @@ class ProductoPublicoController extends WebController
             ]);
             
             // Obtener el primer error para mostrar un mensaje principal
-            $firstError = collect($e->errors())->first()[0] ?? 'Hay errores en los datos ingresados';
+            $firstError = Collection::make($e->errors())->first()[0] ?? 'Hay errores en los datos ingresados';
             
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => '❌ ' . $firstError,
                 'errors' => $e->errors(),
@@ -247,12 +257,12 @@ class ProductoPublicoController extends WebController
                 'trace' => $e->getTraceAsString()
             ]);
             
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => '❌ Error interno del servidor',
                 'error_type' => 'server_error',
                 'suggestion' => 'Por favor, intenta nuevamente en unos minutos',
-                'debug_info' => config('app.debug') ? $e->getMessage() : null
+                'debug_info' => Config::get('app.debug') ? $e->getMessage() : null
             ], 500);
         }
     }

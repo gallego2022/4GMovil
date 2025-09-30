@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Base\WebController;
 use App\Services\InventarioService;
 use App\Models\VarianteProducto;
 use App\Models\MovimientoInventario;
@@ -10,8 +10,11 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Response;
 
-class InventarioVarianteController extends Controller
+class InventarioVarianteController extends WebController
 {
     protected $inventarioService;
 
@@ -44,13 +47,13 @@ class InventarioVarianteController extends Controller
             );
 
             if ($success) {
-                return redirect()->back()->with('success', 'Entrada de stock registrada correctamente');
+                return Redirect::back()->with('success', 'Entrada de stock registrada correctamente');
             }
 
-            return redirect()->back()->with('error', 'Error al registrar la entrada de stock');
+            return Redirect::back()->with('error', 'Error al registrar la entrada de stock');
         } catch (\Exception $e) {
             Log::error('Error al registrar entrada de variante', ['error' => $e->getMessage()]);
-            return redirect()->back()->with('error', 'Error interno del servidor');
+            return Redirect::back()->with('error', 'Error interno del servidor');
         }
     }
 
@@ -76,13 +79,13 @@ class InventarioVarianteController extends Controller
             );
 
             if ($success) {
-                return redirect()->back()->with('success', 'Salida de stock registrada correctamente');
+                return Redirect::back()->with('success', 'Salida de stock registrada correctamente');
             }
 
-            return redirect()->back()->with('error', 'Error al registrar la salida de stock');
+            return Redirect::back()->with('error', 'Error al registrar la salida de stock');
         } catch (\Exception $e) {
             Log::error('Error al registrar salida de variante', ['error' => $e->getMessage()]);
-            return redirect()->back()->with('error', 'Error interno del servidor');
+            return Redirect::back()->with('error', 'Error interno del servidor');
         }
     }
 
@@ -106,13 +109,13 @@ class InventarioVarianteController extends Controller
             );
 
             if ($resultado) {
-                return redirect()->back()->with('success', 'Stock ajustado correctamente');
+                return Redirect::back()->with('success', 'Stock ajustado correctamente');
             }
 
-            return redirect()->back()->with('error', 'Error al ajustar el stock');
+            return Redirect::back()->with('error', 'Error al ajustar el stock');
         } catch (\Exception $e) {
             Log::error('Error al ajustar stock de variante', ['error' => $e->getMessage()]);
-            return redirect()->back()->with('error', 'Error interno del servidor');
+            return Redirect::back()->with('error', 'Error interno del servidor');
         }
     }
 
@@ -126,18 +129,18 @@ class InventarioVarianteController extends Controller
             $reporte = $this->inventarioService->getReporteInventarioVariantes($productoId);
 
             if ($request->wantsJson()) {
-                return response()->json($reporte);
+                return Response::json($reporte);
             }
 
-            return view('pages.admin.inventario.variantes.reporte', compact('reporte'));
+            return View::make('pages.admin.inventario.variantes.reporte', compact('reporte'));
         } catch (\Exception $e) {
             Log::error('Error en reporte de variantes', ['error' => $e->getMessage()]);
             
             if ($request->wantsJson()) {
-                return response()->json(['error' => 'Error al generar reporte'], 500);
+                return Response::json(['error' => 'Error al generar reporte'], 500);
             }
 
-            return redirect()->back()->with('error', 'Error al generar el reporte');
+            return Redirect::back()->with('error', 'Error al generar el reporte');
         }
     }
 
@@ -150,10 +153,10 @@ class InventarioVarianteController extends Controller
             $filtros = $this->getFiltrosMovimientos($request);
             $data = $this->getMovimientosVariantesData($filtros);
 
-            return view('pages.admin.inventario.variantes.movimientos', $data);
+            return View::make('pages.admin.inventario.variantes.movimientos', $data);
         } catch (\Exception $e) {
             Log::error('Error en movimientos de variantes', ['error' => $e->getMessage()]);
-            return redirect()->back()->with('error', 'Error al cargar los movimientos');
+            return Redirect::back()->with('error', 'Error al cargar los movimientos');
         }
     }
 
@@ -163,8 +166,8 @@ class InventarioVarianteController extends Controller
     private function getFiltrosMovimientos(Request $request): array
     {
         return [
-            'fecha_inicio' => $request->get('fecha_inicio') ? Carbon::parse($request->fecha_inicio) : now()->subMonth(),
-            'fecha_fin' => $request->get('fecha_fin') ? Carbon::parse($request->fecha_fin) : now(),
+            'fecha_inicio' => $request->get('fecha_inicio') ? Carbon::parse($request->fecha_inicio) : Carbon::now()->subMonth(),
+            'fecha_fin' => $request->get('fecha_fin') ? Carbon::parse($request->fecha_fin) : Carbon::now(),
             'variante_id' => $request->get('variante_id'),
             'tipo_movimiento' => $request->get('tipo_movimiento'),
             'producto_id' => $request->get('producto_id')

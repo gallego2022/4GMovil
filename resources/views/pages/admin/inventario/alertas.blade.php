@@ -3,6 +3,9 @@
 @section('title', 'Alertas de Inventario - 4GMovil')
 
 @section('content')
+<!-- Notificaciones -->
+<x-notifications />
+
 <div class="space-y-6">
     <!-- Encabezado -->
     <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">

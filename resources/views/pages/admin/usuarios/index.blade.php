@@ -202,6 +202,9 @@
 @endpush
 
 @section('content')
+<!-- Notificaciones -->
+<x-notifications />
+
 <div class="space-y-6">
     <!-- Vista móvil (cards) -->
     <div class="grid grid-cols-1 gap-4 sm:hidden" id="mobileCards">

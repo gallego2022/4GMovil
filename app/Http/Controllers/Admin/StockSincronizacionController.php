@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Services\StockSincronizacionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Base\WebController;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Response;
 
-class StockSincronizacionController extends Controller
+class StockSincronizacionController extends WebController
 {
     protected $stockSincronizacionService;
 
@@ -24,7 +26,7 @@ class StockSincronizacionController extends Controller
         $reporte = $this->stockSincronizacionService->obtenerReporteSincronizacion();
         $integridad = $this->stockSincronizacionService->verificarIntegridadStock();
 
-        return view('admin.stock-sincronizacion.dashboard', compact('reporte', 'integridad'));
+        return View::make('admin.stock-sincronizacion.dashboard', compact('reporte', 'integridad'));
     }
 
     /**
@@ -40,13 +42,13 @@ class StockSincronizacionController extends Controller
             $resultado = $this->stockSincronizacionService->sincronizarProducto($request->producto_id);
             
             if ($resultado['success']) {
-                return response()->json([
+                return Response::json([
                     'success' => true,
                     'message' => 'Stock sincronizado correctamente',
                     'data' => $resultado
                 ]);
             } else {
-                return response()->json([
+                return Response::json([
                     'success' => false,
                     'message' => 'Error al sincronizar stock',
                     'error' => $resultado['error']
@@ -58,7 +60,7 @@ class StockSincronizacionController extends Controller
                 'error' => $e->getMessage()
             ]);
 
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => 'Error interno del servidor',
                 'error' => $e->getMessage()
@@ -74,7 +76,7 @@ class StockSincronizacionController extends Controller
         try {
             $resultado = $this->stockSincronizacionService->sincronizarTodosLosProductos();
             
-            return response()->json([
+            return Response::json([
                 'success' => true,
                 'message' => 'Sincronización completada',
                 'data' => $resultado
@@ -84,7 +86,7 @@ class StockSincronizacionController extends Controller
                 'error' => $e->getMessage()
             ]);
 
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => 'Error interno del servidor',
                 'error' => $e->getMessage()
@@ -100,7 +102,7 @@ class StockSincronizacionController extends Controller
         try {
             $reporte = $this->stockSincronizacionService->obtenerReporteSincronizacion();
             
-            return response()->json([
+            return Response::json([
                 'success' => true,
                 'data' => $reporte
             ]);
@@ -109,7 +111,7 @@ class StockSincronizacionController extends Controller
                 'error' => $e->getMessage()
             ]);
 
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => 'Error al obtener reporte',
                 'error' => $e->getMessage()
@@ -125,7 +127,7 @@ class StockSincronizacionController extends Controller
         try {
             $integridad = $this->stockSincronizacionService->verificarIntegridadStock();
             
-            return response()->json([
+            return Response::json([
                 'success' => true,
                 'data' => $integridad
             ]);
@@ -134,7 +136,7 @@ class StockSincronizacionController extends Controller
                 'error' => $e->getMessage()
             ]);
 
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => 'Error al verificar integridad',
                 'error' => $e->getMessage()
@@ -150,7 +152,7 @@ class StockSincronizacionController extends Controller
         try {
             $resultado = $this->stockSincronizacionService->corregirSincronizacion();
             
-            return response()->json([
+            return Response::json([
                 'success' => true,
                 'message' => 'Corrección automática completada',
                 'data' => $resultado
@@ -160,7 +162,7 @@ class StockSincronizacionController extends Controller
                 'error' => $e->getMessage()
             ]);
 
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => 'Error en corrección automática',
                 'error' => $e->getMessage()
@@ -176,6 +178,6 @@ class StockSincronizacionController extends Controller
         $reporte = $this->stockSincronizacionService->obtenerReporteSincronizacion();
         $integridad = $this->stockSincronizacionService->verificarIntegridadStock();
 
-        return view('admin.stock-sincronizacion.reporte-detallado', compact('reporte', 'integridad'));
+        return View::make('admin.stock-sincronizacion.reporte-detallado', compact('reporte', 'integridad'));
     }
 }

@@ -6,9 +6,11 @@ use App\Models\DetallePedido;
 use App\Models\Pedido;
 use App\Models\Producto;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Base\WebController;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Redirect;
 
-class DetallePedidoController extends Controller
+class DetallePedidoController extends WebController
 {
     // Mostrar todos los detalles de un pedido específico
     public function index($pedido_id)
@@ -16,7 +18,7 @@ class DetallePedidoController extends Controller
         $pedido = Pedido::findOrFail($pedido_id);
         $detalles = $pedido->detalles; // Relación hasMany en Pedido
 
-        return view('detalles_pedido.index', compact('pedido', 'detalles'));
+        return View::make('detalles_pedido.index', compact('pedido', 'detalles'));
     }
 
     // Mostrar formulario para crear un detalle de pedido nuevo
@@ -25,7 +27,7 @@ class DetallePedidoController extends Controller
         $pedido = Pedido::findOrFail($pedido_id);
         $productos = Producto::all();
 
-        return view('detalles_pedido.create', compact('pedido', 'productos'));
+        return View::make('detalles_pedido.create', compact('pedido', 'productos'));
     }
 
     // Guardar un nuevo detalle de pedido
@@ -44,7 +46,7 @@ class DetallePedidoController extends Controller
         $detalle->precio_unitario = $request->precio_unitario;
         $detalle->save();
 
-        return redirect()->route('detalles_pedido.index', $pedido_id)->with('success', 'Detalle de pedido agregado correctamente.');
+        return Redirect::route('detalles_pedido.index', $pedido_id)->with('success', 'Detalle de pedido agregado correctamente.');
     }
 
     // Mostrar formulario para editar un detalle existente
@@ -54,7 +56,7 @@ class DetallePedidoController extends Controller
         $pedido = $detalle->pedido;
         $productos = Producto::all();
 
-        return view('detalles_pedido.edit', compact('detalle', 'pedido', 'productos'));
+        return View::make('detalles_pedido.edit', compact('detalle', 'pedido', 'productos'));
     }
 
     // Actualizar detalle de pedido
@@ -73,7 +75,7 @@ class DetallePedidoController extends Controller
         $detalle->precio_unitario = $request->precio_unitario;
         $detalle->save();
 
-        return redirect()->route('detalles_pedido.index', $detalle->pedido_id)->with('success', 'Detalle de pedido actualizado correctamente.');
+        return Redirect::route('detalles_pedido.index', $detalle->pedido_id)->with('success', 'Detalle de pedido actualizado correctamente.');
     }
 
     // Eliminar un detalle de pedido
@@ -83,6 +85,6 @@ class DetallePedidoController extends Controller
         $pedido_id = $detalle->pedido_id;
         $detalle->delete();
 
-        return redirect()->route('detalles_pedido.index', $pedido_id)->with('success', 'Detalle de pedido eliminado correctamente.');
+        return Redirect::route('detalles_pedido.index', $pedido_id)->with('success', 'Detalle de pedido eliminado correctamente.');
     }
 }

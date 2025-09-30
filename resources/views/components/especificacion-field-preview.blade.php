@@ -9,17 +9,12 @@
 @endphp
 
 @switch($especificacion->tipo_campo)
-    @case('text')
+    @case('texto')
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ $labelText }}</label>
         <input type="text" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm" placeholder="Ingresa {{ strtolower($especificacion->etiqueta) }}" disabled>
         @break
         
-    @case('textarea')
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ $labelText }}</label>
-        <textarea rows="3" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm" placeholder="Ingresa {{ strtolower($especificacion->etiqueta) }}" disabled></textarea>
-        @break
-        
-    @case('number')
+    @case('numero')
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ $labelText }}</label>
         <input type="number" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm" placeholder="Ingresa un número" disabled>
         @break

@@ -7,6 +7,13 @@ use App\Services\Business\PedidoService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Exception;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Auth;
+use App\Models\DireccionEnvio;
+use App\Models\MetodoPago;
+use App\Models\Pedido;
+use App\Models\EstadoPedido;
 
 class PedidoController extends WebController
 {
@@ -26,7 +33,7 @@ class PedidoController extends WebController
             $filters = $this->getFilterParams($request);
             $result = $this->pedidoService->getUserOrders($filters);
             
-            return view('pages.cliente.pedidos.index', [
+            return View::make('pages.cliente.pedidos.index', [
                 'pedidos' => $result['data']
             ]);
 
@@ -44,7 +51,7 @@ class PedidoController extends WebController
             $filters = $this->getFilterParams($request);
             $result = $this->pedidoService->getUserOrders($filters);
             
-            return view('pages.cliente.pedidos.historial', [
+            return View::make('pages.cliente.pedidos.historial', [
                 'pedidos' => $result['data']
             ]);
 
@@ -64,7 +71,7 @@ class PedidoController extends WebController
             $filters = $this->getFilterParams($request);
             $result = $this->pedidoService->getAllOrders($filters);
             
-            return view('pages.admin.pedidos.index', [
+            return View::make('pages.admin.pedidos.index', [
                 'pedidos' => $result['data']
             ]);
 
@@ -81,7 +88,7 @@ class PedidoController extends WebController
         try {
             $result = $this->pedidoService->getOrderById($id);
             
-            return view('pages.cliente.pedidos.show', [
+            return View::make('pages.cliente.pedidos.show', [
                 'pedido' => $result['data']
             ]);
 
@@ -98,7 +105,7 @@ class PedidoController extends WebController
         try {
             $result = $this->pedidoService->getOrderById($id);
             
-            return view('pages.cliente.pedidos.detalle', [
+            return View::make('pages.cliente.pedidos.detalle', [
                 'pedido' => $result['data']
             ]);
 
@@ -117,7 +124,7 @@ class PedidoController extends WebController
             
             $result = $this->pedidoService->getOrderById($id);
             
-            return view('pages.admin.pedidos.show', [
+            return View::make('pages.admin.pedidos.show', [
                 'pedido' => $result['data']
             ]);
 
@@ -135,14 +142,14 @@ class PedidoController extends WebController
             $result = $this->pedidoService->createOrderFromCart($request);
             
             if ($request->ajax() || $request->wantsJson()) {
-                return response()->json($result);
+                return Response::json($result);
             }
             
             return $this->redirectSuccess('pedidos.show', 'Pedido creado exitosamente', ['id' => $result['data']['id']]);
 
         } catch (ValidationException $e) {
             if ($request->ajax() || $request->wantsJson()) {
-                return response()->json([
+                return Response::json([
                     'success' => false,
                     'message' => 'Datos inválidos',
                     'errors' => $e->errors()
@@ -152,7 +159,7 @@ class PedidoController extends WebController
             return $this->backWithInput('Por favor, corrige los errores en el formulario');
         } catch (Exception $e) {
             if ($request->ajax() || $request->wantsJson()) {
-                return response()->json([
+                return Response::json([
                     'success' => false,
                     'message' => $e->getMessage()
                 ], 400);
@@ -173,14 +180,14 @@ class PedidoController extends WebController
             $result = $this->pedidoService->updateOrderStatus($id, $request);
             
             if ($request->ajax() || $request->wantsJson()) {
-                return response()->json($result);
+                return Response::json($result);
             }
             
             return $this->redirectSuccess('admin.pedidos.show', 'Estado del pedido actualizado exitosamente', ['id' => $id]);
 
         } catch (ValidationException $e) {
             if ($request->ajax() || $request->wantsJson()) {
-                return response()->json([
+                return Response::json([
                     'success' => false,
                     'message' => 'Datos inválidos',
                     'errors' => $e->errors()
@@ -190,7 +197,7 @@ class PedidoController extends WebController
             return $this->backWithInput('Por favor, corrige los errores en el formulario');
         } catch (Exception $e) {
             if ($request->ajax() || $request->wantsJson()) {
-                return response()->json([
+                return Response::json([
                     'success' => false,
                     'message' => $e->getMessage()
                 ], 400);
@@ -209,14 +216,14 @@ class PedidoController extends WebController
             $result = $this->pedidoService->cancelOrder($id, $request);
             
             if ($request->ajax() || $request->wantsJson()) {
-                return response()->json($result);
+                return Response::json($result);
             }
             
             return $this->redirectSuccess('pedidos.show', 'Pedido cancelado exitosamente', ['id' => $id]);
 
         } catch (ValidationException $e) {
             if ($request->ajax() || $request->wantsJson()) {
-                return response()->json([
+                return Response::json([
                     'success' => false,
                     'message' => 'Datos inválidos',
                     'errors' => $e->errors()
@@ -226,7 +233,7 @@ class PedidoController extends WebController
             return $this->backWithInput('Por favor, corrige los errores en el formulario');
         } catch (Exception $e) {
             if ($request->ajax() || $request->wantsJson()) {
-                return response()->json([
+                return Response::json([
                     'success' => false,
                     'message' => $e->getMessage()
                 ], 400);
@@ -248,16 +255,16 @@ class PedidoController extends WebController
             $result = $this->pedidoService->getOrderStatistics($filters);
             
             if ($request->ajax() || $request->wantsJson()) {
-                return response()->json($result);
+                return Response::json($result);
             }
             
-            return view('pages.admin.pedidos.statistics', [
+            return View::make('pages.admin.pedidos.statistics', [
                 'estadisticas' => $result['data']
             ]);
 
         } catch (Exception $e) {
             if ($request->ajax() || $request->wantsJson()) {
-                return response()->json([
+                return Response::json([
                     'success' => false,
                     'message' => $e->getMessage()
                 ], 400);
@@ -276,16 +283,16 @@ class PedidoController extends WebController
             $result = $this->pedidoService->getOrderStatusHistory($id);
             
             if (request()->ajax() || request()->wantsJson()) {
-                return response()->json($result);
+                return Response::json($result);
             }
             
-            return view('pages.cliente.pedidos.status-history', [
+            return View::make('pages.cliente.pedidos.status-history', [
                 'historial' => $result['data']
             ]);
 
         } catch (Exception $e) {
             if (request()->ajax() || request()->wantsJson()) {
-                return response()->json([
+                return Response::json([
                     'success' => false,
                     'message' => $e->getMessage()
                 ], 400);
@@ -302,10 +309,10 @@ class PedidoController extends WebController
     {
         try {
             // Aquí se obtendrían las direcciones de envío y métodos de pago del usuario
-            $direcciones = \App\Models\DireccionEnvio::where('usuario_id', \Illuminate\Support\Facades\Auth::id())->get();
-            $metodosPago = \App\Models\MetodoPago::where('activo', true)->get();
+            $direcciones = DireccionEnvio::where('usuario_id', \Illuminate\Support\FacadesAuth::id())->get();
+            $metodosPago = MetodoPago::where('activo', true)->get();
             
-            return view('pages.cliente.pedidos.create', [
+            return View::make('pages.cliente.pedidos.create', [
                 'direcciones' => $direcciones,
                 'metodosPago' => $metodosPago
             ]);
@@ -323,10 +330,10 @@ class PedidoController extends WebController
         try {
             $this->requireRole('admin');
             
-            $pedido = \App\Models\Pedido::with(['estado'])->findOrFail($id);
-            $estados = \App\Models\EstadoPedido::all();
+            $pedido = Pedido::with(['estado'])->findOrFail($id);
+            $estados = EstadoPedido::all();
             
-            return view('pages.admin.pedidos.edit-status', [
+            return View::make('pages.admin.pedidos.edit-status', [
                 'pedido' => $pedido,
                 'estados' => $estados
             ]);
@@ -342,16 +349,16 @@ class PedidoController extends WebController
     public function getOrdersJson(Request $request)
     {
         try {
-            if (\Illuminate\Support\Facades\Auth::user()->hasRole('admin')) {
+            if (\Illuminate\Support\FacadesAuth::user()->hasRole('admin')) {
                 $result = $this->pedidoService->getAllOrders($request->all());
             } else {
                 $result = $this->pedidoService->getUserOrders($request->all());
             }
             
-            return response()->json($result);
+            return Response::json($result);
 
         } catch (Exception $e) {
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => $e->getMessage()
             ], 400);
@@ -366,10 +373,10 @@ class PedidoController extends WebController
         try {
             $result = $this->pedidoService->getOrderById($id);
             
-            return response()->json($result);
+            return Response::json($result);
 
         } catch (Exception $e) {
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => $e->getMessage()
             ], 400);

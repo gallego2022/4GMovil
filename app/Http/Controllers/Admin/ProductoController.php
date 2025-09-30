@@ -7,6 +7,14 @@ use App\Services\Business\ProductoServiceOptimizadoCorregido;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Exception;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Redirect;
+use App\Models\Categoria;
+use App\Models\Marca;
+use App\Models\Producto;
+use App\Models\VarianteProducto;
+use App\Models\Usuario;
 
 class ProductoController extends WebController
 {
@@ -26,10 +34,10 @@ class ProductoController extends WebController
             $filters = $this->getFilterParams($request);
             $result = $this->productoService->getAllProducts($filters);
             
-            return view('pages.admin.productos.listadoP', [
+            return View::make('pages.admin.productos.listadoP', [
                 'productos' => $result['data'],
-                'categorias' => \App\Models\Categoria::all(),
-                'marcas' => \App\Models\Marca::all()
+                'categorias' => Categoria::all(),
+                'marcas' => Marca::all()
             ]);
 
         } catch (Exception $e) {
@@ -54,7 +62,7 @@ class ProductoController extends WebController
         try {
             $result = $this->productoService->getFormData();
             
-            return view('pages.admin.productos.create', [
+            return View::make('pages.admin.productos.create', [
                 'categorias' => $result['categorias'],
                 'marcas' => $result['marcas']
             ]);
@@ -72,7 +80,7 @@ class ProductoController extends WebController
         try {
             $result = $this->productoService->createProduct($request);
             
-            return $this->redirectSuccess('productos.index', 'Producto creado exitosamente');
+            return $this->redirectSuccess('productos.index', 'Producto Creado');
 
         } catch (ValidationException $e) {
             return $this->handleValidationException($e, 'productos.create');
@@ -89,7 +97,7 @@ class ProductoController extends WebController
         try {
             $result = $this->productoService->getProductById($id);
             
-            return view('pages.admin.productos.show', [
+            return View::make('pages.admin.productos.show', [
                 'producto' => $result['data']
             ]);
 
@@ -107,7 +115,7 @@ class ProductoController extends WebController
             $productoResult = $this->productoService->getProductById($id);
             $formDataResult = $this->productoService->getFormData();
             
-            return view('pages.admin.productos.edit', [
+            return View::make('pages.admin.productos.edit', [
                 'producto' => $productoResult['data'],
                 'categorias' => $formDataResult['categorias'],
                 'marcas' => $formDataResult['marcas']
@@ -126,7 +134,7 @@ class ProductoController extends WebController
         try {
             $result = $this->productoService->updateProduct($id, $request);
             
-            return $this->redirectSuccess('productos.index', 'Producto actualizado exitosamente');
+            return $this->redirectSuccess('productos.index', 'Producto Actualizado');
 
         } catch (ValidationException $e) {
             return $this->handleValidationException($e, 'productos.edit', ['producto' => $id]);
@@ -165,11 +173,11 @@ class ProductoController extends WebController
 
             $result = $this->productoService->searchProducts($searchTerm, $filters);
             
-            return view('pages.admin.productos.search', [
+            return View::make('pages.admin.productos.search', [
                 'productos' => $result['data'],
                 'searchTerm' => $searchTerm,
-                'categorias' => \App\Models\Categoria::all(),
-                'marcas' => \App\Models\Marca::all()
+                'categorias' => Categoria::all(),
+                'marcas' => Marca::all()
             ]);
 
         } catch (Exception $e) {
@@ -185,9 +193,9 @@ class ProductoController extends WebController
         try {
             $result = $this->productoService->getProductsByCategory($categoriaId);
             
-            return view('pages.admin.productos.byCategory', [
+            return View::make('pages.admin.productos.byCategory', [
                 'productos' => $result['data'],
-                'categoria' => \App\Models\Categoria::find($categoriaId)
+                'categoria' => Categoria::find($categoriaId)
             ]);
 
         } catch (Exception $e) {
@@ -203,9 +211,9 @@ class ProductoController extends WebController
         try {
             $result = $this->productoService->getProductsByBrand($marcaId);
             
-            return view('pages.admin.productos.byBrand', [
+            return View::make('pages.admin.productos.byBrand', [
                 'productos' => $result['data'],
-                'marca' => \App\Models\Marca::find($marcaId)
+                'marca' => Marca::find($marcaId)
             ]);
 
         } catch (Exception $e) {
@@ -237,7 +245,7 @@ class ProductoController extends WebController
             $result = $this->productoService->getProductosConVariantes();
             
             // Vista eliminada - usar show.blade.php en su lugar
-            return redirect()->route('productos.index')->with('info', 'La vista de productos con variantes ha sido consolidada en la vista principal de productos.');
+            return Redirect::route('productos.index')->with('info', 'La vista de productos con variantes ha sido consolidada en la vista principal de productos.');
 
         } catch (Exception $e) {
             return $this->handleException($e, 'productos.index');
@@ -252,7 +260,7 @@ class ProductoController extends WebController
         try {
             $result = $this->productoService->getProductoConVariantes($productoId);
             
-            return view('productos.detalle-variantes', [
+            return View::make('productos.detalle-variantes', [
                 'producto' => $result['producto'],
                 'productosRelacionados' => $result['productosRelacionados']
             ]);
@@ -270,10 +278,10 @@ class ProductoController extends WebController
         try {
             $result = $this->productoService->getStockInfo($productoId);
             
-            return response()->json($result);
+            return Response::json($result);
 
         } catch (Exception $e) {
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => 'Error al obtener información de stock'
             ], 500);
@@ -288,10 +296,10 @@ class ProductoController extends WebController
         try {
             $result = $this->productoService->getVariantesProducto($productoId);
             
-            return response()->json($result);
+            return Response::json($result);
 
         } catch (Exception $e) {
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => 'Error al obtener variantes'
             ], 500);
@@ -309,10 +317,10 @@ class ProductoController extends WebController
 
             $result = $this->productoService->buscarProductosConVariantes($query, $categoriaId);
             
-            return response()->json($result);
+            return Response::json($result);
 
         } catch (Exception $e) {
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => 'Error al buscar productos'
             ], 500);
@@ -327,9 +335,9 @@ class ProductoController extends WebController
         try {
             $result = $this->productoService->getProductosPorCategoriaConVariantes($categoriaId);
             
-            return view('productos.por-categoria', [
+            return View::make('productos.por-categoria', [
                 'productos' => $result['data'],
-                'categoria' => \App\Models\Categoria::find($categoriaId)
+                'categoria' => Categoria::find($categoriaId)
             ]);
 
         } catch (Exception $e) {
@@ -345,7 +353,7 @@ class ProductoController extends WebController
         try {
             $result = $this->productoService->getProductosStockBajo();
             
-            return view('productos.stock-bajo', [
+            return View::make('productos.stock-bajo', [
                 'productos' => $result['data']
             ]);
 
@@ -362,7 +370,7 @@ class ProductoController extends WebController
         try {
             $result = $this->productoService->getProductosSinStock();
             
-            return view('productos.sin-stock', [
+            return View::make('productos.sin-stock', [
                 'productos' => $result['data']
             ]);
 
@@ -381,7 +389,7 @@ class ProductoController extends WebController
         try {
             $result = $this->productoService->getProductoConVariantes($productoId);
             
-            return view('admin.variantes.index', [
+            return View::make('admin.variantes.index', [
                 'producto' => $result['producto'],
                 'variantes' => $result['producto']->variantes()->orderBy('orden')->get()
             ]);
@@ -397,8 +405,8 @@ class ProductoController extends WebController
     public function variantesCreate(int $productoId)
     {
         try {
-            $producto = \App\Models\Producto::findOrFail($productoId);
-            return view('admin.variantes.create', compact('producto'));
+            $producto = Producto::findOrFail($productoId);
+            return View::make('admin.variantes.create', compact('producto'));
 
         } catch (Exception $e) {
             return $this->handleException($e, 'productos.index');
@@ -432,12 +440,12 @@ class ProductoController extends WebController
     public function variantesEdit(int $productoId, int $varianteId)
     {
         try {
-            $producto = \App\Models\Producto::findOrFail($productoId);
-            $variante = \App\Models\VarianteProducto::where('producto_id', $productoId)
+            $producto = Producto::findOrFail($productoId);
+            $variante = VarianteProducto::where('producto_id', $productoId)
                 ->where('variante_id', $varianteId)
                 ->firstOrFail();
             
-            return view('admin.variantes.edit', compact('producto', 'variante'));
+            return View::make('admin.variantes.edit', compact('producto', 'variante'));
 
         } catch (Exception $e) {
             return $this->handleException($e, 'productos.index');
@@ -492,10 +500,10 @@ class ProductoController extends WebController
     public function resenasIndex(int $productoId)
     {
         try {
-            $producto = \App\Models\Producto::findOrFail($productoId);
+            $producto = Producto::findOrFail($productoId);
             $resenas = $producto->resenas()->with('usuario')->orderBy('created_at', 'desc')->get();
             
-            return view('admin.productos.resenas.index', compact('producto', 'resenas'));
+            return View::make('admin.productos.resenas.index', compact('producto', 'resenas'));
         } catch (Exception $e) {
             return $this->handleException($e, 'productos.index');
         }
@@ -507,9 +515,9 @@ class ProductoController extends WebController
     public function resenasCreate(int $productoId)
     {
         try {
-            $producto = \App\Models\Producto::findOrFail($productoId);
-            $usuarios = \App\Models\Usuario::all();
-            return view('admin.productos.resenas.create', compact('producto', 'usuarios'));
+            $producto = Producto::findOrFail($productoId);
+            $usuarios = Usuario::all();
+            return View::make('admin.productos.resenas.create', compact('producto', 'usuarios'));
         } catch (Exception $e) {
             return $this->handleException($e, 'productos.index');
         }
@@ -542,11 +550,11 @@ class ProductoController extends WebController
     public function resenasEdit(int $productoId, int $resenaId)
     {
         try {
-            $producto = \App\Models\Producto::findOrFail($productoId);
+            $producto = Producto::findOrFail($productoId);
             $resena = $producto->resenas()->findOrFail($resenaId);
-            $usuarios = \App\Models\Usuario::all();
+            $usuarios = Usuario::all();
             
-            return view('admin.productos.resenas.edit', compact('producto', 'resena', 'usuarios'));
+            return View::make('admin.productos.resenas.edit', compact('producto', 'resena', 'usuarios'));
         } catch (Exception $e) {
             return $this->handleException($e, 'productos.index');
         }

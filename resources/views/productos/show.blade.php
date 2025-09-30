@@ -434,293 +434,230 @@
         </nav>
     </div>
 
-    <!-- Product Details Section - Estilo Neutro -->
-    <section id="producto" class="py-20 bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-800">
+    <!-- Product Details Section - Diseño Mejorado -->
+    <section id="producto" class="py-16 bg-gradient-to-br from-slate-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         <div class="container mx-auto px-4">
             <div class="max-w-7xl mx-auto">
                 <!-- Product Card -->
-                <div
-                    class="bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-gray-800 dark:via-gray-700 dark:to-gray-700 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-600 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] relative">
+                <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-3xl">
                     
-                    <!-- Elemento decorativo superior sutil -->
-                    <div class="absolute top-0 left-0 w-24 h-24 bg-gradient-to-br from-gray-400 to-gray-500 opacity-5 rounded-full -translate-x-12 -translate-y-12"></div>
-                    <div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-gray-400 to-gray-500 opacity-5 rounded-full translate-x-10 -translate-y-10"></div>
-                    <div class="grid lg:grid-cols-2 gap-12 p-8">
-
+                    <div class="grid lg:grid-cols-2 gap-6 lg:gap-8 p-4 sm:p-6 lg:p-8">
                         <!-- Left Section - Product Images -->
-                        <div class="product-gallery-container group">
+                        <div class="space-y-4 sm:space-y-6">
                             <!-- Main Image Container -->
-                            <div class="main-image-wrapper">
-                                @if ($producto->imagenes->first())
-                                    <img id="mainImage"
-                                        src="{{ $producto->imagenes->first()->url_completa }}"
-                                        alt="{{ $producto->nombre_producto }}"
-                                        class="main-image bg-gray-50 dark:bg-gray-800 shadow-lg group-hover:scale-105">
-                                @else
-                                    <div id="mainImage" class="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-xl shadow-lg flex items-center justify-center">
-                                        <i class="fas fa-image text-6xl text-gray-400 dark:text-gray-500"></i>
-                                    </div>
-                                @endif
+                            <div class="relative group">
+                                <div class="aspect-square w-full max-w-sm sm:max-w-md lg:max-w-lg mx-auto bg-gray-50 dark:bg-gray-700 rounded-2xl overflow-hidden shadow-lg">
+                                    @if ($producto->imagenes->count() > 0)
+                                        <img id="mainImage"
+                                            src="{{ $producto->imagenes->first()->url_completa }}"
+                                            alt="{{ $producto->nombre_producto }}"
+                                            class="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
+                                            loading="lazy"
+                                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                        <div class="hidden w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-600 dark:to-gray-700 flex items-center justify-center">
+                                            <i class="fas fa-image text-6xl text-gray-400 dark:text-gray-500"></i>
+                                        </div>
+                                    @else
+                                        <div class="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-600 dark:to-gray-700 flex items-center justify-center">
+                                            <i class="fas fa-image text-6xl text-gray-400 dark:text-gray-500"></i>
+                                        </div>
+                                    @endif
+                                </div>
 
                                 <!-- Navigation Arrows -->
-                                <button
-                                    class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white dark:bg-gray-800 p-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                    <i class="fas fa-chevron-left text-gray-600 dark:text-gray-300"></i>
-                                </button>
-                                <button
-                                    class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white dark:bg-gray-800 p-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                    <i class="fas fa-chevron-right text-gray-600 dark:text-gray-300"></i>
-                                </button>
+                                @if ($producto->imagenes->count() > 1)
+                                    <button id="prevImage" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm p-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white dark:hover:bg-gray-700">
+                                        <i class="fas fa-chevron-left text-gray-600 dark:text-gray-300"></i>
+                                    </button>
+                                    <button id="nextImage" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm p-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white dark:hover:bg-gray-700">
+                                        <i class="fas fa-chevron-right text-gray-600 dark:text-gray-300"></i>
+                                    </button>
+                                @endif
 
-                                <!-- Zoom Indicator -->
-                                <div class="absolute top-4 right-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
-                                    onclick="openImageZoom()">
+                                <!-- Zoom Button -->
+                                <button onclick="openImageZoom()" class="absolute top-4 right-4 bg-black/50 backdrop-blur-sm text-white px-3 py-2 rounded-full text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-black/70">
                                     <i class="fas fa-search-plus mr-1"></i>Zoom
-                                </div>
+                                </button>
                             </div>
 
-                            <!-- Thumbnail Gallery - Fixed below main image -->
-                            <div class="thumbnail-gallery-wrapper">
-                                <div class="thumbnail-grid">
-                                    @php
-                                        $imagenes = $producto->imagenes;
-                                        $totalImagenes = $imagenes->count();
-                                    @endphp
-
-                                    @for ($i = 0; $i < 5; $i++)
-                                        @if ($i < $totalImagenes)
-                                            @php
-                                                $imagen = $imagenes[$i];
-                                                $imagenUrl = $imagen->url_completa;
-                                                $imagenPrincipal = $imagen->url_completa;
-                                            @endphp
-                                            <img src="{{ $imagenUrl }}"
-                                                alt="{{ $producto->nombre_producto }} - Vista {{ $i + 1 }}"
-                                                class="thumbnail-item {{ $i === 0 ? 'border-blue-500' : '' }}"
-                                                data-image-url="{{ $imagenPrincipal }}">
-                                        @else
-                                            <div class="thumbnail-item flex items-center justify-center">
-                                                <i class="fas fa-image text-gray-400 dark:text-gray-500 text-sm"></i>
+                            <!-- Thumbnail Gallery -->
+                            @if ($producto->imagenes->count() > 1)
+                                <div class="flex space-x-2 sm:space-x-3 overflow-x-auto pb-2">
+                                    @foreach ($producto->imagenes->take(5) as $index => $imagen)
+                                        <button class="thumbnail-btn flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border-2 {{ $index === 0 ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200 dark:border-gray-600' }} hover:border-blue-400 transition-all duration-200"
+                                                data-image-index="{{ $index }}"
+                                                data-image-url="{{ $imagen->url_completa }}">
+                                            <img src="{{ $imagen->url_completa }}" 
+                                                 alt="{{ $producto->nombre_producto }} - Vista {{ $index + 1 }}"
+                                                 class="w-full h-full object-cover"
+                                                 loading="lazy"
+                                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                            <div class="hidden w-full h-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
+                                                <i class="fas fa-image text-gray-400 dark:text-gray-500"></i>
                                             </div>
-                                        @endif
-                                    @endfor
+                                        </button>
+                                    @endforeach
                                 </div>
-                            </div>
-
-                            <!-- Pagination Dots -->
-                            <div class="pagination-dots">
-                                @for ($i = 1; $i <= 5; $i++)
-                                    <div
-                                        class="w-2 h-2 rounded-full {{ $i === 1 ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600' }} cursor-pointer hover:bg-blue-500 transition-colors duration-200"
-                                        >
-                                    </div>
-                                @endfor
-                            </div>
+                            @endif
                         </div>
 
                         <!-- Right Section - Product Details -->
-                        <div class="space-y-4">
-
-                            <!-- Action Icons - Estilo Neutro -->
-                            <div class="flex items-center space-x-4">
-                                <button
-                                    class="p-3 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200 group shadow-sm hover:shadow-md border border-gray-200 dark:border-gray-600">
-                                    <i
-                                        class="fas fa-heart text-gray-600 dark:text-gray-400 group-hover:text-red-500 transition-colors duration-200"></i>
+                        <div class="space-y-6">
+                            <!-- Action Icons -->
+                            <div class="flex items-center space-x-3">
+                                <button class="p-3 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200 group shadow-sm hover:shadow-md border border-gray-200 dark:border-gray-600">
+                                    <i class="fas fa-heart text-gray-600 dark:text-gray-400 group-hover:text-red-500 transition-colors duration-200"></i>
                                 </button>
-                                <button
-                                    class="p-3 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200 group shadow-sm hover:shadow-md border border-gray-200 dark:border-gray-600">
-                                    <i
-                                        class="fas fa-share-alt text-gray-600 dark:text-gray-400 group-hover:text-gray-800 dark:group-hover:text-gray-200 transition-colors duration-200"></i>
-                                </button>           
+                                <button class="p-3 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200 group shadow-sm hover:shadow-md border border-gray-200 dark:border-gray-600">
+                                    <i class="fas fa-share-alt text-gray-600 dark:text-gray-400 group-hover:text-blue-500 transition-colors duration-200"></i>
+                                </button>
                             </div>
-                            <!-- Product Title - Estilo Neutro -->
-                            <div class="relative">
-                                <div class="absolute -left-3 top-0 w-0.5 h-full bg-gray-400 rounded-full"></div>
-                                <div class="pl-6">
-                                    <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight mb-3">
-                                        {{ $producto->nombre_producto }}
-                                    </h1>
-                                    <div class="flex items-center space-x-4">
-                                        <span class="inline-flex items-center px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-full border border-gray-200 dark:border-gray-600">
-                                            <i class="fas fa-barcode mr-2"></i>
-                                            SKU: {{ $producto->sku ?? 'N/A' }}
-                                        </span>
-                                        <span class="inline-flex items-center px-3 py-1 bg-green-100 dark:bg-green-700 text-green-700 dark:text-green-300 text-sm font-medium rounded-full border border-green-200 dark:border-green-600">
-                                            <i class="fas fa-check-circle mr-2"></i>
-                                            {{ __('messages.product_show.available') }}
-                                        </span>
-                                    </div>
+
+                            <!-- Product Title -->
+                            <div>
+                                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white leading-tight mb-4">
+                                    {{ $producto->nombre_producto }}
+                                </h1>
+                                <div class="flex flex-wrap items-center gap-3">
+                                    <span class="inline-flex items-center px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-full border border-gray-200 dark:border-gray-600">
+                                        <i class="fas fa-barcode mr-2"></i>
+                                        SKU: {{ $producto->sku ?? 'N/A' }}
+                                    </span>
+                                    <span class="inline-flex items-center px-3 py-1 bg-green-100 dark:bg-green-700 text-green-700 dark:text-green-300 text-sm font-medium rounded-full border border-green-200 dark:border-green-600">
+                                        <i class="fas fa-check-circle mr-2"></i>
+                                        {{ __('messages.product_show.available') }}
+                                    </span>
                                 </div>
                             </div>
 
-                            <!-- Pricing - Estilo Neutro -->
-                            <div class="space-y-4">
-                                <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-600">
-                                    <div class="flex items-baseline space-x-4">
-                                        <div class="relative">
-                                            <span class="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white">
-                                                {{ \App\Helpers\CurrencyHelper::formatPrice($producto->precio ?? 0) }}
+                            <!-- Pricing -->
+                            <div class="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-600">
+                                <div class="flex items-baseline space-x-4 mb-4">
+                                    <span class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white">
+                                        {{ \App\Helpers\CurrencyHelper::formatPrice($producto->precio ?? 0) }}
+                                    </span>
+                                    @if (isset($producto->precio_anterior) && $producto->precio_anterior > $producto->precio)
+                                        <div class="flex flex-col items-start space-y-1">
+                                            <span class="text-lg text-gray-500 line-through">
+                                                {{ \App\Helpers\CurrencyHelper::formatPrice($producto->precio_anterior) }}
                                             </span>
-                                            <div class="absolute -top-2 -right-2 w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                                            <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                                                -{{ round((($producto->precio_anterior - $producto->precio) / $producto->precio_anterior) * 100) }}% OFF
+                                            </span>
                                         </div>
-                                        @if (isset($producto->precio_anterior) && $producto->precio_anterior > $producto->precio)
-                                            <div class="flex flex-col items-start space-y-2">
-                                                <span class="text-xl text-gray-500 line-through">
-                                                    {{ \App\Helpers\CurrencyHelper::formatPrice($producto->precio_anterior) }}
-                                                </span>
-                                                <span
-                                                    class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-                                                    -{{ round((($producto->precio_anterior - $producto->precio) / $producto->precio_anterior) * 100) }}% OFF
-                                                </span>
+                                    @endif
+                                </div>
+                                
+                                <!-- Información adicional -->
+                                <div class="space-y-2 pt-4 border-t border-gray-200 dark:border-gray-600">
+                                    <div class="flex items-center justify-between text-sm">
+                                        <span class="text-gray-600 dark:text-gray-400">Envío:</span>
+                                        <span class="text-green-600 dark:text-green-400 font-semibold">GRATIS</span>
+                                    </div>
+                                    <div class="flex items-center justify-between text-sm">
+                                        <span class="text-gray-600 dark:text-gray-400">{{ __('messages.product_show.warranty') }}:</span>
+                                        <span class="text-gray-700 dark:text-gray-300 font-semibold">{{ __('messages.product_show.warranty_period') }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Selected Variant Info -->
+                            @if ($producto->variantes->count() > 0)
+                                <div class="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-6 border border-blue-200 dark:border-blue-700/30">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="w-10 h-10 rounded-full border-2 border-blue-500 shadow-lg" id="selectedColorPreview"
+                                            style="background-color: {{ $producto->variantes->first()->codigo_color ?? '#000000' }};">
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="flex items-center space-x-2 mb-1">
+                                                <i class="fas fa-palette text-blue-500"></i>
+                                                <p class="text-sm font-bold text-blue-900 dark:text-blue-100">
+                                                    {{ __('messages.product_show.color') }}: <span id="selectedColorText" class="text-blue-700 dark:text-blue-300">{{ $producto->variantes->first()->nombre }}</span>
+                                                </p>
                                             </div>
-                                        @endif
-                                    </div>
-                                    
-                                    <!-- Información adicional de precio -->
-                                    <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
-                                        <div class="flex items-center justify-between text-sm">
-                                            <span class="text-gray-600 dark:text-gray-400">Envío:</span>
-                                            <span class="text-green-600 dark:text-green-400 font-semibold">GRATIS</span>
+                                            <div class="flex items-center space-x-2 mb-1">
+                                                <i class="fas fa-boxes text-green-500"></i>
+                                                <p class="text-xs text-green-700 dark:text-green-300" id="selectedColorStock">
+                                                    {{ __('messages.product_show.stock_available') }}: <span class="font-bold">{{ $producto->variantes->first()->stock }} {{ __('messages.product_show.stock_units') }}</span>
+                                                </p>
+                                            </div>
+                                            @if ($producto->variantes->first()->precio_adicional > 0)
+                                                <p class="text-xs text-purple-600 dark:text-purple-400 font-medium" id="selectedColorPrice">
+                                                    <i class="fas fa-plus-circle mr-1"></i>
+                                                    {{ __('messages.product_show.additional_price') }}: <span id="precioAdicional" class="font-bold">{{ \App\Helpers\CurrencyHelper::formatPrice($producto->variantes->first()->precio_adicional) }}</span>
+                                                </p>
+                                            @endif
                                         </div>
-                                        <div class="flex items-center justify-between text-sm">
-                                            <span class="text-gray-600 dark:text-gray-400">{{ __('messages.product_show.warranty') }}:</span>
-                                            <span class="text-gray-700 dark:text-gray-300 font-semibold">{{ __('messages.product_show.warranty_period') }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Selected Variant Info - Modern Corporate Design -->
-                            <div
-                                class="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-purple-900/20 rounded-2xl p-6 border-2 border-blue-200 dark:border-blue-700/30 shadow-lg relative overflow-hidden">
-                                
-                                <!-- Elemento decorativo -->
-                                <div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-400 to-indigo-500 opacity-10 rounded-full translate-x-10 -translate-y-10"></div>
-                                
-                                <div class="flex items-center space-x-4 relative z-10">
-                                    <div class="relative">
-                                        <div class="w-8 h-8 rounded-full border-3 border-blue-500 shadow-lg" id="selectedColorPreview"
-                                            style="background-color: {{ $producto->variantes->first() ? $producto->variantes->first()->codigo_color ?? '#000000' : '#000000' }};">
-                                        </div>
-                                        <div class="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white animate-pulse"></div>
-                                    </div>
-                                    <div class="flex-1">
-                                        <div class="flex items-center space-x-2 mb-2">
-                                            <i class="fas fa-palette text-blue-500"></i>
-                                            <p class="text-sm font-bold text-blue-900 dark:text-blue-100">
-                                                {{ __('messages.product_show.color') }}: <span
-                                                    id="selectedColorText" class="text-indigo-700 dark:text-indigo-300">{{ $producto->variantes->first() ? $producto->variantes->first()->nombre : __('messages.product_show.color_not_available') }}</span>
-                                            </p>
-                                        </div>
-                                        <div class="flex items-center space-x-2 mb-2">
-                                            <i class="fas fa-boxes text-green-500"></i>
-                                            <p class="text-xs text-green-700 dark:text-green-300" id="selectedColorStock">
-                                                {{ __('messages.product_show.stock_available') }}: <span class="font-bold">{{ $producto->variantes->first() ? $producto->variantes->first()->stock : 0 }} {{ __('messages.product_show.stock_units') }}</span>
-                                            </p>
-                                        </div>
-                                        <p class="text-xs text-purple-600 dark:text-purple-400 font-medium" id="selectedColorPrice"
-                                            style="display: {{ $producto->variantes->first() && $producto->variantes->first()->precio_adicional > 0 ? 'block' : 'none' }};">
-                                            <i class="fas fa-plus-circle mr-1"></i>
-                                            {{ __('messages.product_show.additional_price') }}: <span
-                                                id="precioAdicional" class="font-bold">{{ \App\Helpers\CurrencyHelper::formatPrice($producto->variantes->first() ? $producto->variantes->first()->precio_adicional : 0) }}</span>
-                                        </p>
                                     </div>
                                 </div>
-                            </div>
+                            @endif
 
-                            <!-- Color Variants - Modern Corporate Design -->
-                            <div class="space-y-6">
-                                <div class="flex items-center justify-between">
+                            <!-- Color Variants -->
+                            @if ($producto->variantes->count() > 0)
+                                <div class="space-y-4">
                                     <div class="flex items-center space-x-3">
-                                        <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                                        <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
                                             <i class="fas fa-palette text-white text-sm"></i>
                                         </div>
-                                        <h3 class="text-xl font-bold bg-gradient-to-r from-gray-900 to-blue-800 dark:from-white dark:to-blue-200 bg-clip-text text-transparent">{{ __('messages.product_show.select_color') }}</h3>
+                                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ __('messages.product_show.select_color') }}</h3>
                                     </div>
-                                    <span class="text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-3 py-1 rounded-full border border-blue-200 dark:border-blue-700/30"
-                                        id="selectedColorName">{{ $producto->variantes->first() ? $producto->variantes->first()->nombre : __('messages.product_show.color_not_available') }}</span>
-                                </div>
-                                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                                    @if ($producto->variantes->count() > 0)
+                                    
+                                    <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
                                         @foreach ($producto->variantes as $index => $variante)
                                             <div class="relative group">
-                                                <button
-                                                    class="color-variant w-16 h-16 rounded-2xl border-3 transition-all duration-300 {{ $index === 0 ? 'border-blue-500 ring-4 ring-blue-200 shadow-xl' : 'border-gray-300 dark:border-gray-600' }} {{ !$variante->disponible ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110 hover:shadow-2xl hover:border-blue-400' }}"
-                                                    style="background-color: {{ $variante->codigo_color ?? '#CCCCCC' }};"
-                                                    data-color="{{ $variante->nombre }}"
-                                                    data-available="{{ $variante->disponible ? 'true' : 'false' }}"
-                                                    data-stock="{{ $variante->stock }}"
-                                                    data-precio-adicional="{{ $variante->precio_adicional }}"
-                                                    data-descripcion="{{ $variante->descripcion }}"
-                                                    data-codigo-color="{{ $variante->codigo_color }}"
-                                                    data-has-images="{{ $variante->imagenes->count() > 0 ? 'true' : 'false' }}"
-                                                    {{ !$variante->disponible ? 'disabled' : '' }}
-                                                    title="{{ $variante->nombre }} - Stock: {{ $variante->stock }} {{ !$variante->disponible ? '(No disponible)' : '' }} {{ $variante->imagenes->count() > 0 ? '(Con imágenes)' : '(Sin imágenes)' }}">
-                                                    
-                                                    <!-- Efecto de brillo en hover -->
-                                                    <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                                <button class="color-variant w-14 h-14 rounded-xl border-2 transition-all duration-200 {{ $index === 0 ? 'border-blue-500 ring-2 ring-blue-200 shadow-lg' : 'border-gray-300 dark:border-gray-600' }} {{ !$variante->disponible ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 hover:shadow-lg hover:border-blue-400' }}"
+                                                        style="background-color: {{ $variante->codigo_color ?? '#CCCCCC' }};"
+                                                        data-color="{{ $variante->nombre }}"
+                                                        data-available="{{ $variante->disponible ? 'true' : 'false' }}"
+                                                        data-stock="{{ $variante->stock }}"
+                                                        data-precio-adicional="{{ $variante->precio_adicional }}"
+                                                        data-descripcion="{{ $variante->descripcion }}"
+                                                        data-codigo-color="{{ $variante->codigo_color }}"
+                                                        data-has-images="{{ $variante->imagenes->count() > 0 ? 'true' : 'false' }}"
+                                                        {{ !$variante->disponible ? 'disabled' : '' }}
+                                                        title="{{ $variante->nombre }} - Stock: {{ $variante->stock }}">
                                                     
                                                     @if (!$variante->disponible)
-                                                        <div class="w-full h-full flex items-center justify-center relative z-10">
-                                                            <i class="fas fa-times text-gray-400 text-lg"></i>
+                                                        <div class="w-full h-full flex items-center justify-center">
+                                                            <i class="fas fa-times text-gray-400 text-sm"></i>
                                                         </div>
                                                     @endif
                                                 </button>
 
-                                                <!-- Stock indicator - Modern Corporate Design -->
+                                                <!-- Stock indicator -->
                                                 @if ($variante->stock <= 5 && $variante->stock > 0)
-                                                    <div
-                                                        class="absolute -top-2 -right-2 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold shadow-lg border-2 border-white animate-pulse">
+                                                    <div class="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold shadow-lg border border-white">
                                                         {{ $variante->stock }}
                                                     </div>
                                                 @elseif($variante->stock == 0)
-                                                    <div
-                                                        class="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center shadow-lg border-2 border-white">
+                                                    <div class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-lg border border-white">
                                                         <i class="fas fa-times text-xs"></i>
-                                                    </div>
-                                                @endif
-
-                                                <!-- Image indicator - Modern Corporate Design -->
-                                                @if ($variante->imagenes->count() > 0)
-                                                    <div
-                                                        class="absolute -bottom-2 -left-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center shadow-lg border-2 border-white">
-                                                        <i class="fas fa-image text-xs"></i>
                                                     </div>
                                                 @endif
                                             </div>
                                         @endforeach
-                                    @else
-                                        <!-- Fallback: Mostrar mensaje si no hay variantes -->
-                                        <div class="text-center w-full py-4">
-                                            <p class="text-gray-500 dark:text-gray-400 text-sm">
-                                                No hay variantes de color disponibles para este producto
+                                    </div>
+                                </div>
+                            @endif
+
+                            <!-- Color Description -->
+                            @if ($producto->variantes->count() > 0 && $producto->variantes->first()->descripcion)
+                                <div class="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-4 border border-blue-200 dark:border-blue-700/30">
+                                    <div class="flex items-start space-x-3">
+                                        <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <i class="fas fa-info-circle text-white text-sm"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <h4 class="text-sm font-bold text-blue-900 dark:text-blue-100 mb-1">{{ __('messages.product_show.color_description') }}</h4>
+                                            <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed" id="colorDescription">
+                                                {{ $producto->variantes->first()->descripcion }}
                                             </p>
                                         </div>
-                                    @endif
-                                </div>
-                            </div>
-
-                            <!-- Color Description - Modern Corporate Design -->
-                            <div class="bg-gradient-to-r from-gray-50 via-blue-50 to-indigo-50 dark:from-gray-800 dark:via-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6 border border-blue-200 dark:border-blue-700/30 shadow-lg relative overflow-hidden">
-                                
-                                <!-- Elemento decorativo -->
-                                <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-blue-400 to-indigo-500 opacity-10 rounded-full translate-x-8 -translate-y-8"></div>
-                                
-                                <div class="flex items-start space-x-3 relative z-10">
-                                    <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0">
-                                        <i class="fas fa-info-circle text-white text-sm"></i>
-                                    </div>
-                                    <div class="flex-1">
-                                        <h4 class="text-sm font-bold text-blue-900 dark:text-blue-100 mb-2">{{ __('messages.product_show.color_description') }}</h4>
-                                        <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed" id="colorDescription">
-                                            {{ $producto->variantes->first() ? $producto->variantes->first()->descripcion ?? __('messages.product_show.color_default_description') : __('messages.product_show.color_no_description') }}
-                                        </p>
                                     </div>
                                 </div>
-                            </div>
+                            @endif
 
-                            <!-- Action Buttons - Modern Corporate Design -->
+                            <!-- Action Buttons -->
                             <div class="space-y-4">
                                 @php
                                     $tieneVariantes = $producto->variantes && $producto->variantes->count() > 0;
@@ -729,115 +666,80 @@
 
                                 @if ($stockDisponible > 0)
                                     @if ($tieneVariantes)
-                                        <!-- Si tiene variantes, mostrar botón que abra modal de selección -->
                                         <button type="button"
-                                            class="select-variant w-full bg-gray-800 hover:bg-gray-900 text-white py-4 px-8 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl shadow-lg group relative overflow-hidden"
+                                            class="select-variant w-full bg-gray-800 hover:bg-gray-900 text-white py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 hover:shadow-lg"
                                             data-producto-id="{{ $producto->producto_id }}" 
                                             data-producto-nombre="{{ $producto->nombre_producto }}" 
                                             data-producto-precio="{{ $producto->precio }}">
-                                            
-                                            <!-- Efecto de brillo sutil -->
-                                            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                                            
-                                            <div class="relative z-10 flex items-center justify-center">
-                                                <i class="fas fa-palette mr-3 text-xl group-hover:scale-110 transition-transform duration-300"></i>
-                                                <span>{{ __('messages.product_show.select_variant') }}</span>
-                                                <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform duration-300"></i>
-                                            </div>
+                                            <i class="fas fa-palette mr-3"></i>
+                                            {{ __('messages.product_show.select_variant') }}
                                         </button>
                                     @else
-                                        <!-- Si no tiene variantes, agregar directamente al carrito -->
                                         <button type="button"
-                                            class="add-to-cart w-full bg-green-600 hover:bg-green-700 text-white py-4 px-8 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl shadow-lg group relative overflow-hidden"
+                                            class="add-to-cart w-full bg-green-600 hover:bg-green-700 text-white py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 hover:shadow-lg"
                                             data-id="{{ $producto->producto_id }}" 
                                             data-name="{{ $producto->nombre_producto }}" 
                                             data-price="{{ $producto->precio }}">
-                                            
-                                            <!-- Efecto de brillo sutil -->
-                                            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                                            
-                                            <div class="relative z-10 flex items-center justify-center">
-                                                <i class="fas fa-shopping-cart mr-3 text-xl group-hover:scale-110 transition-transform duration-300"></i>
-                                                <span>{{ __('messages.product_show.add_to_cart') }}</span>
-                                                <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform duration-300"></i>
-                                            </div>
+                                            <i class="fas fa-shopping-cart mr-3"></i>
+                                            {{ __('messages.product_show.add_to_cart') }}
                                         </button>
                                     @endif
                                 @else
                                     <button type="button"
-                                        class="w-full bg-gradient-to-r from-gray-400 to-gray-500 text-white py-5 px-8 rounded-2xl font-bold text-lg cursor-not-allowed opacity-75" disabled>
-                                        <i class="fas fa-times mr-3 text-xl"></i>
+                                        class="w-full bg-gray-400 text-white py-4 px-6 rounded-xl font-bold text-lg cursor-not-allowed opacity-75" disabled>
+                                        <i class="fas fa-times mr-3"></i>
                                         {{ __('messages.product_show.out_of_stock') }}
                                     </button>
                                 @endif
                             </div>
 
-                            <!-- Quick Actions - Modern Corporate Design -->
-                            <div class="flex flex-wrap gap-4">
-                                <a href="#reseñas"
-                                    class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-yellow-100 via-orange-100 to-yellow-200 dark:from-yellow-900/30 dark:via-orange-900/30 dark:to-yellow-800/30 text-yellow-700 dark:text-yellow-300 rounded-xl hover:from-yellow-200 hover:via-orange-200 hover:to-yellow-300 dark:hover:from-yellow-800/30 dark:hover:via-orange-800/30 dark:hover:to-yellow-700/30 transition-all duration-300 border border-yellow-200 dark:border-yellow-700/30 shadow-lg hover:shadow-xl group">
-                                    <i class="fas fa-star mr-3 text-yellow-500 group-hover:scale-110 transition-transform duration-300"></i>
-                                    <span class="font-semibold">{{ __('messages.product_show.view_reviews') }} ({{ $producto->resenas->count() }})</span>
-                                    <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform duration-300"></i>
+                            <!-- Quick Actions -->
+                            <div class="flex flex-wrap gap-3">
+                                <a href="#reseñas" class="inline-flex items-center px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-lg hover:bg-yellow-200 dark:hover:bg-yellow-800/30 transition-colors duration-200">
+                                    <i class="fas fa-star mr-2 text-yellow-500"></i>
+                                    <span class="font-medium">{{ __('messages.product_show.view_reviews') }} ({{ $producto->resenas->count() }})</span>
                                 </a>
-                                <button onclick="openReviewModal()"
-                                    class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-orange-100 via-red-100 to-orange-200 dark:from-orange-900/30 dark:via-red-900/30 dark:to-orange-800/30 text-orange-700 dark:text-orange-300 rounded-xl hover:from-orange-200 hover:via-red-200 hover:to-orange-300 dark:hover:from-orange-800/30 dark:hover:via-red-800/30 dark:hover:to-orange-700/30 transition-all duration-300 border border-orange-200 dark:border-orange-700/30 shadow-lg hover:shadow-xl group">
-                                    <i class="fas fa-edit mr-3 text-orange-500 group-hover:scale-110 transition-transform duration-300"></i>
-                                    <span class="font-semibold">Escribir Reseña</span>
-                                    <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform duration-300"></i>
+                                <button onclick="openReviewModal()" class="inline-flex items-center px-4 py-2 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-lg hover:bg-orange-200 dark:hover:bg-orange-800/30 transition-colors duration-200">
+                                    <i class="fas fa-edit mr-2 text-orange-500"></i>
+                                    <span class="font-medium">Escribir Reseña</span>
                                 </button>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Additional Info - Full Width - Estilo Neutro -->
+                    <!-- Additional Info -->
                     <div class="px-8 pb-8">
-                        <div
-                            class="bg-gray-50 dark:bg-gray-800 rounded-xl p-8 w-full border border-gray-200 dark:border-gray-600 shadow-lg relative overflow-hidden">
-                            
-                            <!-- Elementos decorativos sutiles -->
-                            <div class="absolute top-0 left-0 w-20 h-20 bg-gray-400 opacity-5 rounded-full -translate-x-10 -translate-y-10"></div>
-                            <div class="absolute bottom-0 right-0 w-16 h-16 bg-gray-400 opacity-5 translate-x-8 translate-y-8"></div>
-                            
-                            <div class="relative z-10">
-                                <h3 class="font-bold text-2xl text-gray-900 dark:text-white mb-6 flex items-center">
-                                    <div class="w-10 h-10 bg-gray-600 rounded-xl flex items-center justify-center mr-4">
-                                        <i class="fas fa-shield-halved text-white text-lg"></i>
+                        <div class="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-600">
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                                <i class="fas fa-shield-halved text-gray-600 dark:text-gray-400 mr-3"></i>
+                                Información Adicional
+                            </h3>
+                            <div class="grid md:grid-cols-3 gap-4">
+                                <div class="flex items-center space-x-3 p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-check text-white"></i>
                                     </div>
-                                    <span class="text-gray-900 dark:text-white">
-                                        Información Adicional
-                                    </span>
-                                </h3>
-                                <div class="grid md:grid-cols-3 gap-8">
-                                    <div class="flex items-center space-x-4 p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-600 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105">
-                                        <div
-                                            class="bg-green-600 w-12 h-12 rounded-xl flex items-center justify-center shadow-md">
-                                            <i class="fas fa-check text-white text-lg"></i>
-                                        </div>
-                                        <div>
-                                            <span class="text-gray-700 dark:text-gray-300 font-semibold">{{ __('messages.product_show.warranty_official') }}</span>
-                                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('messages.product_show.warranty_description') }}</p>
-                                        </div>
+                                    <div>
+                                        <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ __('messages.product_show.warranty_official') }}</span>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('messages.product_show.warranty_description') }}</p>
                                     </div>
-                                    <div class="flex items-center space-x-4 p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-600 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105">
-                                        <div
-                                            class="bg-gray-600 w-12 h-12 rounded-xl flex items-center justify-center shadow-md">
-                                            <i class="fas fa-undo text-white text-lg"></i>
-                                        </div>
-                                        <div>
-                                            <span class="text-gray-700 dark:text-gray-300 font-semibold">{{ __('messages.product_show.return_policy') }}</span>
-                                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('messages.product_show.return_description') }}</p>
-                                        </div>
+                                </div>
+                                <div class="flex items-center space-x-3 p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="w-10 h-10 bg-gray-500 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-undo text-white"></i>
                                     </div>
-                                    <div class="flex items-center space-x-4 p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-600 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105">
-                                        <div
-                                            class="bg-gray-600 w-12 h-12 rounded-xl flex items-center justify-center shadow-md">
-                                            <i class="fas fa-headset text-white text-lg"></i>
-                                        </div>
-                                        <div>
-                                            <span class="text-gray-700 dark:text-gray-300 font-semibold">Soporte Técnico</span>
-                                            <p class="text-sm text-gray-500 dark:text-gray-400">Incluido 24/7</p>
-                                        </div>
+                                    <div>
+                                        <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ __('messages.product_show.return_policy') }}</span>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('messages.product_show.return_description') }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3 p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <div class="w-10 h-10 bg-gray-500 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-headset text-white"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Soporte Técnico</span>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">Incluido 24/7</p>
                                     </div>
                                 </div>
                             </div>
@@ -1941,31 +1843,37 @@
                             return;
                         }
 
-                        // Update selected color
-                        const colorName = this.dataset.color;
-                        const colorInfo = colorData[colorName];
-                        console.log('Selected color name:', colorName);
-                        console.log('Color info:', colorInfo);
+                // Update selected color
+                const colorName = this.dataset.color;
+                const colorInfo = colorData[colorName];
+                console.log('Selected color name:', colorName);
+                console.log('Color info:', colorInfo);
 
-                        selectedColorName.textContent = colorName;
+                // Update selected color preview and info
+                const selectedColorPreview = document.getElementById('selectedColorPreview');
+                const selectedColorText = document.getElementById('selectedColorText');
+                const selectedColorStock = document.getElementById('selectedColorStock');
+                const colorDescription = document.getElementById('colorDescription');
 
-                        // Update color description
-                        colorDescription.textContent = colorInfo.description;
+                if (selectedColorPreview) {
+                    selectedColorPreview.style.backgroundColor = colorInfo.code;
+                }
+                if (selectedColorText) {
+                    selectedColorText.textContent = colorName;
+                }
+                if (selectedColorStock) {
+                    selectedColorStock.innerHTML = 
+                        `{{ __('messages.product_show.stock_available') }}: <span class="font-bold">${colorInfo.stock} {{ __('messages.product_show.stock_units') }}</span>`;
+                }
+                if (colorDescription) {
+                    colorDescription.textContent = colorInfo.description;
+                }
 
-                        // Update selected color preview and info
-                        const selectedColorPreview = document.getElementById('selectedColorPreview');
-                        const selectedColorText = document.getElementById('selectedColorText');
-                        const selectedColorStock = document.getElementById('selectedColorStock');
-
-                        if (selectedColorPreview) {
-                            selectedColorPreview.style.backgroundColor = colorInfo.code;
-                        }
-                        if (selectedColorText) {
-                            selectedColorText.textContent = colorName;
-                        }
-                        if (selectedColorStock) {
-                            selectedColorStock.textContent =
-                                `{{ __('messages.product_show.stock_available') }}: ${colorInfo.stock} {{ __('messages.product_show.stock_units') }}`;
+                        // Actualizar el indicador de stock en la tarjeta del producto
+                        if (window.stockSync) {
+                            window.stockSync.updateStock(colorInfo.stock);
+                        } else {
+                            updateProductCardStock(colorInfo.stock);
                         }
 
                         // Update price additional info
@@ -1973,8 +1881,13 @@
                         const precioAdicional = document.getElementById('precioAdicional');
                         if (selectedColorPrice && precioAdicional) {
                             if (colorInfo.precioAdicional > 0) {
-                                // Usar la función de formateo de moneda
-                                precioAdicional.textContent = formatCurrency(colorInfo.precioAdicional, 'COP');
+                                // Formatear precio adicional
+                                const formattedPrice = new Intl.NumberFormat('es-CO', {
+                                    style: 'currency',
+                                    currency: 'COP',
+                                    minimumFractionDigits: 0
+                                }).format(colorInfo.precioAdicional);
+                                precioAdicional.textContent = formattedPrice;
                                 selectedColorPrice.style.display = 'block';
                             } else {
                                 selectedColorPrice.style.display = 'none';
@@ -1982,12 +1895,16 @@
                         }
 
                         // Update price if there's an additional cost
-                        const priceElement = document.querySelector(
-                        '.text-4xl.font-bold.text-blue-600');
+                        const priceElement = document.querySelector('.text-4xl.md\\:text-5xl.font-bold.text-gray-900.dark\\:text-white');
                         if (priceElement) {
                             const basePrice = parseFloat('{{ $producto->precio ?? 0 }}');
                             const totalPrice = basePrice + colorInfo.precioAdicional;
-                            priceElement.textContent = formatCurrency(totalPrice, 'COP');
+                            const formattedPrice = new Intl.NumberFormat('es-CO', {
+                                style: 'currency',
+                                currency: 'COP',
+                                minimumFractionDigits: 0
+                            }).format(totalPrice);
+                            priceElement.textContent = formattedPrice;
                         }
 
                         // Update visual selection
@@ -2569,6 +2486,301 @@
         });
         
         console.log('=== SCRIPT INITIALIZATION COMPLETE ===');
+
+        // Función para actualizar el indicador de stock en la tarjeta del producto
+        function updateProductCardStock(stock) {
+            console.log('Actualizando stock de la tarjeta del producto:', stock);
+            
+            // Buscar todos los indicadores de stock en la página
+            const stockIndicators = document.querySelectorAll('.stock-status');
+            
+            stockIndicators.forEach(indicator => {
+                // Actualizar el texto del stock
+                const stockText = indicator.querySelector('.stock-text');
+                if (stockText) {
+                    if (stock > 10) {
+                        stockText.textContent = `${stock} disponibles`;
+                        stockText.className = stockText.className.replace(/text-(red|yellow|gray)-600/, 'text-green-600');
+                    } else if (stock > 5) {
+                        stockText.textContent = `${stock} disponibles`;
+                        stockText.className = stockText.className.replace(/text-(red|green|gray)-600/, 'text-yellow-600');
+                    } else if (stock > 0) {
+                        stockText.textContent = `Solo ${stock} disponibles`;
+                        stockText.className = stockText.className.replace(/text-(green|yellow|gray)-600/, 'text-red-600');
+                    } else {
+                        stockText.textContent = 'Agotado';
+                        stockText.className = stockText.className.replace(/text-(red|yellow|green)-600/, 'text-gray-500');
+                    }
+                }
+                
+                // Actualizar el indicador visual (punto de color)
+                const stockDot = indicator.querySelector('.stock-dot');
+                if (stockDot) {
+                    stockDot.className = stockDot.className.replace(/bg-(red|yellow|green|gray)-500/, '');
+                    if (stock > 10) {
+                        stockDot.classList.add('bg-green-500');
+                    } else if (stock > 5) {
+                        stockDot.classList.add('bg-yellow-500');
+                    } else if (stock > 0) {
+                        stockDot.classList.add('bg-red-500');
+                    } else {
+                        stockDot.classList.add('bg-gray-400');
+                    }
+                }
+                
+                // Actualizar la barra de progreso si existe
+                const progressBar = indicator.querySelector('.stock-progress');
+                if (progressBar) {
+                    const totalStock = {{ $producto->stock ?? 0 }};
+                    const percentage = totalStock > 0 ? (stock / totalStock) * 100 : 0;
+                    progressBar.style.width = `${percentage}%`;
+                    
+                    // Actualizar el color de la barra
+                    progressBar.className = progressBar.className.replace(/bg-(red|yellow|green)-500/, '');
+                    if (stock > 10) {
+                        progressBar.classList.add('bg-green-500');
+                    } else if (stock > 5) {
+                        progressBar.classList.add('bg-yellow-500');
+                    } else {
+                        progressBar.classList.add('bg-red-500');
+                    }
+                }
+            });
+            
+            // También actualizar cualquier elemento con clase específica de stock (excluyendo botones de variantes)
+            const stockElements = document.querySelectorAll('.stock-available, .stock-disponible');
+            stockElements.forEach(element => {
+                // Verificar que no sea un botón de variante
+                if (!element.classList.contains('color-variant') && 
+                    (element.textContent.includes('disponibles') || element.textContent.includes('Stock'))) {
+                    if (stock > 0) {
+                        element.textContent = `${stock} disponibles`;
+                    } else {
+                        element.textContent = 'Agotado';
+                    }
+                }
+            });
+        }
+
+        // Función para restaurar el stock original del producto
+        function restoreOriginalStock() {
+            console.log('Restaurando stock original del producto');
+            const originalStock = {{ $producto->stock_disponible ?? 0 }};
+            updateProductCardStock(originalStock);
+        }
+
+        // Agregar evento para restaurar stock cuando se cierra el modal de variantes
+        document.addEventListener('DOMContentLoaded', function() {
+            // Escuchar cuando se cierra el modal de variantes
+            const variantModal = document.getElementById('variantSelectionModal');
+            if (variantModal) {
+                variantModal.addEventListener('hidden.bs.modal', function() {
+                    // Restaurar stock original si no hay variante seleccionada
+                    const selectedVariant = document.querySelector('.color-variant.border-blue-500');
+                    if (!selectedVariant) {
+                        restoreOriginalStock();
+                    }
+                });
+            }
+        });
+
+        // ===== JAVASCRIPT SIMPLIFICADO PARA IMÁGENES =====
+        
+        // Variables globales para el manejo de imágenes
+        let currentImageIndex = 0;
+        let productImages = [
+            @foreach ($producto->imagenes as $imagen)
+                '{{ $imagen->url_completa }}',
+            @endforeach
+        ];
+
+        // Función para cambiar la imagen principal
+        function changeMainImage(imageUrl) {
+            const mainImage = document.getElementById('mainImage');
+            if (mainImage && imageUrl) {
+                // Asegurar que la imagen mantenga object-contain
+                mainImage.style.objectFit = 'contain';
+                mainImage.style.objectPosition = 'center';
+                
+                mainImage.src = imageUrl;
+                mainImage.onerror = function() {
+                    console.error('Error loading image:', imageUrl);
+                    this.style.display = 'none';
+                    const placeholder = this.nextElementSibling;
+                    if (placeholder) placeholder.style.display = 'flex';
+                };
+                mainImage.onload = function() {
+                    console.log('Image loaded successfully:', imageUrl);
+                    this.style.display = 'block';
+                    const placeholder = this.nextElementSibling;
+                    if (placeholder) placeholder.style.display = 'none';
+                };
+            }
+        }
+
+        // Función para navegar entre imágenes
+        function navigateImage(direction) {
+            if (productImages.length <= 1) return;
+            
+            if (direction === 'next') {
+                currentImageIndex = (currentImageIndex + 1) % productImages.length;
+            } else {
+                currentImageIndex = (currentImageIndex - 1 + productImages.length) % productImages.length;
+            }
+            
+            changeMainImage(productImages[currentImageIndex]);
+            updateThumbnailSelection();
+        }
+
+        // Función para actualizar la selección de thumbnails
+        function updateThumbnailSelection() {
+            const thumbnails = document.querySelectorAll('.thumbnail-btn');
+            thumbnails.forEach((btn, index) => {
+                if (index === currentImageIndex) {
+                    btn.classList.add('border-blue-500', 'ring-2', 'ring-blue-200');
+                    btn.classList.remove('border-gray-300', 'dark:border-gray-600');
+                } else {
+                    btn.classList.remove('border-blue-500', 'ring-2', 'ring-blue-200');
+                    btn.classList.add('border-gray-300', 'dark:border-gray-600');
+                }
+            });
+        }
+
+        // Event listeners para navegación de imágenes
+        document.addEventListener('DOMContentLoaded', function() {
+            // Botones de navegación
+            const prevBtn = document.getElementById('prevImage');
+            const nextBtn = document.getElementById('nextImage');
+            
+            if (prevBtn) {
+                prevBtn.addEventListener('click', () => navigateImage('prev'));
+            }
+            
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => navigateImage('next'));
+            }
+
+            // Thumbnails
+            const thumbnails = document.querySelectorAll('.thumbnail-btn');
+            thumbnails.forEach((btn, index) => {
+                btn.addEventListener('click', function() {
+                    currentImageIndex = index;
+                    const imageUrl = this.dataset.imageUrl;
+                    changeMainImage(imageUrl);
+                    updateThumbnailSelection();
+                });
+            });
+
+            // Inicializar selección de thumbnails
+            updateThumbnailSelection();
+        });
+
+        // Función para abrir zoom de imagen (simplificada)
+        function openImageZoom() {
+            if (productImages.length > 0) {
+                // Implementar modal de zoom simple
+                const zoomModal = document.createElement('div');
+                zoomModal.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50';
+                zoomModal.innerHTML = `
+                    <div class="relative max-w-4xl max-h-full p-4">
+                        <button onclick="this.parentElement.parentElement.remove()" class="absolute top-4 right-4 text-white text-2xl hover:text-gray-300">×</button>
+                        <img src="${productImages[currentImageIndex]}" alt="Zoom" class="max-w-full max-h-full object-contain rounded-lg">
+                    </div>
+                `;
+                document.body.appendChild(zoomModal);
+                
+                // Cerrar con ESC
+                zoomModal.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        zoomModal.remove();
+                    }
+                });
+                zoomModal.focus();
+            }
+        }
+
+        // ===== MANEJO SIMPLIFICADO DE SELECCIÓN DE COLORES =====
+        
+        // Función para actualizar la información del color seleccionado
+        function updateColorInfo(colorName, colorData) {
+            console.log('Updating color info for:', colorName, colorData);
+            
+            // Actualizar preview del color
+            const selectedColorPreview = document.getElementById('selectedColorPreview');
+            if (selectedColorPreview && colorData.code) {
+                selectedColorPreview.style.backgroundColor = colorData.code;
+            }
+            
+            // Actualizar texto del color
+            const selectedColorText = document.getElementById('selectedColorText');
+            if (selectedColorText) {
+                selectedColorText.textContent = colorName;
+            }
+            
+            // Actualizar stock
+            const selectedColorStock = document.getElementById('selectedColorStock');
+            if (selectedColorStock) {
+                selectedColorStock.innerHTML = 
+                    `{{ __('messages.product_show.stock_available') }}: <span class="font-bold">${colorData.stock} {{ __('messages.product_show.stock_units') }}</span>`;
+            }
+            
+            // Actualizar descripción
+            const colorDescription = document.getElementById('colorDescription');
+            if (colorDescription) {
+                colorDescription.textContent = colorData.description || '{{ __('messages.product_show.color_default_description') }}';
+            }
+            
+            // Actualizar precio adicional
+            const selectedColorPrice = document.getElementById('selectedColorPrice');
+            const precioAdicional = document.getElementById('precioAdicional');
+            if (selectedColorPrice && precioAdicional) {
+                if (colorData.precioAdicional > 0) {
+                    const formattedPrice = new Intl.NumberFormat('es-CO', {
+                        style: 'currency',
+                        currency: 'COP',
+                        minimumFractionDigits: 0
+                    }).format(colorData.precioAdicional);
+                    precioAdicional.textContent = formattedPrice;
+                    selectedColorPrice.style.display = 'block';
+                } else {
+                    selectedColorPrice.style.display = 'none';
+                }
+            }
+        }
+
+        // Event listener simplificado para selección de colores
+        document.addEventListener('DOMContentLoaded', function() {
+            const colorVariants = document.querySelectorAll('.color-variant');
+            
+            colorVariants.forEach(variant => {
+                variant.addEventListener('click', function() {
+                    if (this.dataset.available === 'false') {
+                        alert('Este color no está disponible actualmente.');
+                        return;
+                    }
+                    
+                    // Remover selección anterior
+                    colorVariants.forEach(v => {
+                        v.classList.remove('border-blue-500', 'ring-2', 'ring-blue-200');
+                        v.classList.add('border-gray-300', 'dark:border-gray-600');
+                    });
+                    
+                    // Agregar selección actual
+                    this.classList.remove('border-gray-300', 'dark:border-gray-600');
+                    this.classList.add('border-blue-500', 'ring-2', 'ring-blue-200');
+                    
+                    // Actualizar información
+                    const colorData = {
+                        code: this.dataset.codigoColor || '#CCCCCC',
+                        stock: parseInt(this.dataset.stock) || 0,
+                        precioAdicional: parseFloat(this.dataset.precioAdicional) || 0,
+                        description: this.dataset.descripcion || '{{ __('messages.product_show.color_default_description') }}'
+                    };
+                    
+                    updateColorInfo(this.dataset.color, colorData);
+                });
+            });
+        });
     </script>
 @endpush
 

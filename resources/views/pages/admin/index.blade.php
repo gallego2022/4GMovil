@@ -41,8 +41,17 @@
                 </div>
                 <p class="ml-16 truncate text-sm font-medium text-content-secondary">{{ __('admin.stats.total_products') }}</p>
             </dt>
-            <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
-                <p class="text-2xl font-semibold text-content">{{ $totalProductos }}</p>
+            <dd class="ml-16 pb-6 sm:pb-7">
+                @php
+                    $totalProductosPrev = $totalProductosPrev ?? null;
+                    $deltaProductos = !is_null($totalProductosPrev) && $totalProductosPrev > 0
+                        ? (($totalProductos - $totalProductosPrev) / $totalProductosPrev) * 100
+                        : null;
+                @endphp
+                <div class="flex items-center justify-between">
+                    <p class="text-2xl font-semibold text-content">{{ $totalProductos }}</p>
+                    <x-delta-badge :delta="$deltaProductos" />
+                </div>
                 <div class="absolute inset-x-0 bottom-0 bg-gray-50 dark:bg-gray-900 px-4 py-4 sm:px-6">
                     <div class="text-sm">
                         <a href="{{ route('productos.listadoP') }}" class="font-medium text-gray-600 dark:text-brand-600 hover:text-blue-500">{{ __('admin.stats.view_products') }}<span class="sr-only"> productos</span></a>
@@ -62,8 +71,17 @@
                 </div>
                 <p class="ml-16 truncate text-sm font-medium text-content-secondary">{{ __('admin.stats.total_users') }}</p>
             </dt>
-            <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
-                <p class="text-2xl font-semibold text-content">{{ $usuarios }}</p>
+            <dd class="ml-16 pb-6 sm:pb-7">
+                @php
+                    $usuariosPrev = $usuariosPrev ?? null;
+                    $deltaUsuarios = !is_null($usuariosPrev) && $usuariosPrev > 0
+                        ? (($usuarios - $usuariosPrev) / $usuariosPrev) * 100
+                        : null;
+                @endphp
+                <div class="flex items-center justify-between">
+                    <p class="text-2xl font-semibold text-content">{{ $usuarios }}</p>
+                    <x-delta-badge :delta="$deltaUsuarios" />
+                </div>
                 <div class="absolute inset-x-0 bottom-0 bg-gray-50 dark:bg-gray-900 px-4 py-4 sm:px-6">
                     <div class="text-sm">
                         <a href="{{ route('usuarios.index') }}" class="font-medium text-gray-600 dark:text-brand-600 hover:text-blue-500">{{ __('admin.stats.view_users') }}<span class="sr-only"> usuarios</span></a>
@@ -83,8 +101,17 @@
                 </div>
                 <p class="ml-16 truncate text-sm font-medium text-content-secondary">{{ __('admin.stats.total_categories') }}</p>
             </dt>
-            <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
-                <p class="text-2xl font-semibold text-content">{{ $totalCategorias }}</p>
+            <dd class="ml-16 pb-6 sm:pb-7">
+                @php
+                    $totalCategoriasPrev = $totalCategoriasPrev ?? null;
+                    $deltaCategorias = !is_null($totalCategoriasPrev) && $totalCategoriasPrev > 0
+                        ? (($totalCategorias - $totalCategoriasPrev) / $totalCategoriasPrev) * 100
+                        : null;
+                @endphp
+                <div class="flex items-center justify-between">
+                    <p class="text-2xl font-semibold text-content">{{ $totalCategorias }}</p>
+                    <x-delta-badge :delta="$deltaCategorias" />
+                </div>
                 <div class="absolute inset-x-0 bottom-0 bg-gray-50 dark:bg-gray-900 px-4 py-4 sm:px-6">
                     <div class="text-sm">
                         <a href="{{ route('categorias.index') }}" class="font-medium text-gray-600 dark:text-brand-600 hover:text-blue-500">{{ __('admin.stats.view_categories') }}<span class="sr-only"> categorías</span></a>
@@ -105,17 +132,96 @@
                 </div>
                 <p class="ml-16 truncate text-sm font-medium text-content-secondary">{{ __('admin.stats.total_brands') }}</p>
             </dt>
-            <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
-                <p class="text-2xl font-semibold text-content">{{ $totalMarcas }}</p>
+            <dd class="ml-16 pb-6 sm:pb-7">
+                @php
+                    $totalMarcasPrev = $totalMarcasPrev ?? null; // Pásalo desde el controlador si está disponible
+                    $deltaMarcas = !is_null($totalMarcasPrev) && $totalMarcasPrev > 0
+                        ? (($totalMarcas - $totalMarcasPrev) / $totalMarcasPrev) * 100
+                        : null;
+                @endphp
+                <div class="flex items-center justify-between">
+                    <p class="text-2xl font-semibold text-content">{{ $totalMarcas }}</p>
+                    <x-delta-badge :delta="$deltaMarcas" />
+                </div>
                 <div class="absolute inset-x-0 bottom-0 bg-gray-50 dark:bg-gray-900 px-4 py-4 sm:px-6">
                     <div class="text-sm">
-                            <a href="{{ route('marcas.index') }}" class="font-medium text-gray-600 dark:text-brand-600 hover:text-blue-500">{{ __('admin.stats.view_brands') }}<span class="sr-only"> marcas</span></a>
+                        <a href="{{ route('marcas.index') }}" class="font-medium text-gray-600 dark:text-brand-600 hover:text-blue-500">{{ __('admin.stats.view_brands') }}<span class="sr-only"> marcas</span></a>
                     </div>
                 </div>
             </dd>
         </div>
     </dl>
+<!-- Estadísticas de {{ __('admin.webhooks.order') }}s -->
+<div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6">
+        <h3 class="text-lg font-medium leading-6 text-content">🛒 Estadísticas de {{ __('admin.webhooks.order') }}s</h3>
+        <p class="mt-1 max-w-2xl text-sm text-content-secondary">{{ __('admin.fields.status') }} actual de los pedidos en el sistema</p>
+    </div>
+    
+    <div class="border-t border-gray-200 dark:border-gray-700">
+        <dl class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 p-4">
+            <!-- Total {{ __('admin.webhooks.order') }}s -->
+            <div class="relative overflow-hidden rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 px-4 py-5 shadow sm:px-6">
+                <dt>
+                    <div class="absolute rounded-md bg-purple-400 p-3">
+                        <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                    </div>
+                    <p class="ml-16 truncate text-sm font-medium text-purple-100">Total {{ __('admin.webhooks.order') }}s</p>
+                </dt>
+                <dd class="ml-16 flex items-baseline">
+                    <p class="text-2xl font-semibold text-white">{{ $pedidoStats['total_pedidos'] }}</p>
+                </dd>
+            </div>
 
+            <!-- {{ __('admin.webhooks.order') }}s {{ __('admin.orders.pending_orders') }} -->
+            <div class="relative overflow-hidden rounded-lg bg-gradient-to-r from-yellow-500 to-yellow-600 px-4 py-5 shadow sm:px-6">
+                <dt>
+                    <div class="absolute rounded-md bg-yellow-400 p-3">
+                        <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <p class="ml-16 truncate text-sm font-medium text-yellow-100">{{ __('admin.orders.pending_orders') }}</p>
+                </dt>
+                <dd class="ml-16 flex items-baseline">
+                    <p class="text-2xl font-semibold text-white">{{ $pedidoStats['pedidos_pendientes'] }}</p>
+                </dd>
+            </div>
+
+            <!-- {{ __('admin.webhooks.order') }}s {{ __('admin.orders.confirmed_orders') }} -->
+            <div class="relative overflow-hidden rounded-lg bg-gradient-to-r from-green-500 to-green-600 px-4 py-5 shadow sm:px-6">
+                <dt>
+                    <div class="absolute rounded-md bg-green-400 p-3">
+                        <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </div>
+                    <p class="ml-16 truncate text-sm font-medium text-green-100">{{ __('admin.orders.confirmed_orders') }}</p>
+                </dt>
+                <dd class="ml-16 flex items-baseline">
+                    <p class="text-2xl font-semibold text-white">{{ $pedidoStats['pedidos_confirmados'] }}</p>
+                </dd>
+            </div>
+
+            <!-- {{ __('admin.webhooks.order') }}s {{ __('admin.orders.cancelled_orders') }} -->
+            <div class="relative overflow-hidden rounded-lg bg-gradient-to-r from-red-500 to-red-600 px-4 py-5 shadow sm:px-6">
+                <dt>
+                    <div class="absolute rounded-md bg-red-400 p-3">
+                        <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </div>
+                    <p class="ml-16 truncate text-sm font-medium text-red-100">{{ __('admin.orders.cancelled_orders') }}</p>
+                </dt>
+                <dd class="ml-16 flex items-baseline">
+                    <p class="text-2xl font-semibold text-white">{{ $pedidoStats['pedidos_cancelados'] }}</p>
+                </dd>
+            </div>
+        </dl>
+    </div>
+</div>
     <!-- Estadísticas de Webhooks y Pagos -->
     <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg">
         <div class="px-4 py-5 sm:px-6">
@@ -188,77 +294,7 @@
         </div>
     </div>
 
-    <!-- Estadísticas de {{ __('admin.webhooks.order') }}s -->
-    <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-        <div class="px-4 py-5 sm:px-6">
-            <h3 class="text-lg font-medium leading-6 text-content">🛒 Estadísticas de {{ __('admin.webhooks.order') }}s</h3>
-            <p class="mt-1 max-w-2xl text-sm text-content-secondary">{{ __('admin.fields.status') }} actual de los pedidos en el sistema</p>
-        </div>
-        
-        <div class="border-t border-gray-200 dark:border-gray-700">
-            <dl class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 p-4">
-                <!-- Total {{ __('admin.webhooks.order') }}s -->
-                <div class="relative overflow-hidden rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 px-4 py-5 shadow sm:px-6">
-                    <dt>
-                        <div class="absolute rounded-md bg-purple-400 p-3">
-                            <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                            </svg>
-                        </div>
-                        <p class="ml-16 truncate text-sm font-medium text-purple-100">Total {{ __('admin.webhooks.order') }}s</p>
-                    </dt>
-                    <dd class="ml-16 flex items-baseline">
-                        <p class="text-2xl font-semibold text-white">{{ $pedidoStats['total_pedidos'] }}</p>
-                    </dd>
-                </div>
-
-                <!-- {{ __('admin.webhooks.order') }}s {{ __('admin.orders.pending_orders') }} -->
-                <div class="relative overflow-hidden rounded-lg bg-gradient-to-r from-yellow-500 to-yellow-600 px-4 py-5 shadow sm:px-6">
-                    <dt>
-                        <div class="absolute rounded-md bg-yellow-400 p-3">
-                            <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                        <p class="ml-16 truncate text-sm font-medium text-yellow-100">{{ __('admin.orders.pending_orders') }}</p>
-                    </dt>
-                    <dd class="ml-16 flex items-baseline">
-                        <p class="text-2xl font-semibold text-white">{{ $pedidoStats['pedidos_pendientes'] }}</p>
-                    </dd>
-                </div>
-
-                <!-- {{ __('admin.webhooks.order') }}s {{ __('admin.orders.confirmed_orders') }} -->
-                <div class="relative overflow-hidden rounded-lg bg-gradient-to-r from-green-500 to-green-600 px-4 py-5 shadow sm:px-6">
-                    <dt>
-                        <div class="absolute rounded-md bg-green-400 p-3">
-                            <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                        </div>
-                        <p class="ml-16 truncate text-sm font-medium text-green-100">{{ __('admin.orders.confirmed_orders') }}</p>
-                    </dt>
-                    <dd class="ml-16 flex items-baseline">
-                        <p class="text-2xl font-semibold text-white">{{ $pedidoStats['pedidos_confirmados'] }}</p>
-                    </dd>
-                </div>
-
-                <!-- {{ __('admin.webhooks.order') }}s {{ __('admin.orders.cancelled_orders') }} -->
-                <div class="relative overflow-hidden rounded-lg bg-gradient-to-r from-red-500 to-red-600 px-4 py-5 shadow sm:px-6">
-                    <dt>
-                        <div class="absolute rounded-md bg-red-400 p-3">
-                            <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </div>
-                        <p class="ml-16 truncate text-sm font-medium text-red-100">{{ __('admin.orders.cancelled_orders') }}</p>
-                    </dt>
-                    <dd class="ml-16 flex items-baseline">
-                        <p class="text-2xl font-semibold text-white">{{ $pedidoStats['pedidos_cancelados'] }}</p>
-                    </dd>
-                </div>
-            </dl>
-        </div>
-    </div>
+    
 
     <!-- {{ __('admin.webhooks.event') }}s Recientes de Webhooks -->
     @if($recentWebhooks->isNotEmpty())

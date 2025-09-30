@@ -7,6 +7,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 
 abstract class ApiController extends BaseController
 {
@@ -117,7 +119,7 @@ abstract class ApiController extends BaseController
      */
     protected function handleException(\Exception $e): JsonResponse
     {
-        $message = config('app.debug') ? $e->getMessage() : 'Ha ocurrido un error inesperado';
+        $message = Config::get('app.debug') ? $e->getMessage() : 'Ha ocurrido un error inesperado';
         $code = $e->getCode() ?: 500;
         
         if ($code < 100 || $code > 599) {
@@ -132,7 +134,7 @@ abstract class ApiController extends BaseController
      */
     protected function requireAuth(): void
     {
-        if (!\Illuminate\Support\Facades\Auth::check()) {
+        if (!Auth::check()) {
             abort(401, 'Usuario no autenticado');
         }
     }
@@ -144,7 +146,7 @@ abstract class ApiController extends BaseController
     {
         $this->requireAuth();
         
-        if (\Illuminate\Support\Facades\Auth::user()->rol !== $role) {
+        if (Auth::user()->rol !== $role) {
             abort(403, 'No tienes permisos para realizar esta acción');
         }
     }
@@ -156,7 +158,7 @@ abstract class ApiController extends BaseController
     {
         $this->requireAuth();
         
-        if (!in_array(\Illuminate\Support\Facades\Auth::user()->rol, $roles)) {
+        if (!in_array(Auth::user()->rol, $roles)) {
             abort(403, 'No tienes permisos para realizar esta acción');
         }
     }
@@ -166,7 +168,7 @@ abstract class ApiController extends BaseController
      */
     protected function getAuthUser()
     {
-        return \Illuminate\Support\Facades\Auth::user();
+        return Auth::user();
     }
 
     /**
@@ -174,7 +176,7 @@ abstract class ApiController extends BaseController
      */
     protected function getAuthUserId(): ?int
     {
-        return \Illuminate\Support\Facades\Auth::id();
+        return Auth::id();
     }
 
     /**

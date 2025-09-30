@@ -29,28 +29,23 @@
 
                     <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
                         <div class="sm:col-span-4">
-                            <label for="nombre"
-                                class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-300">
-                               Nombre de la marca
-                            </label>
-                            <div class="mt-2 relative rounded-md shadow-sm">
-                                <input type="text" name="nombre" id="nombre"
-                                    value="{{ old('nombre', $marca->nombre) }}"
-                                    class="block w-full px-4 py-3 rounded-md border-0 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-brand-600 dark:focus:ring-brand-500 dark:bg-gray-800 sm:text-sm sm:leading-6 transition-colors duration-200 @error('nombre') ring-red-300 dark:ring-red-600 focus:ring-red-500 dark:focus:ring-red-500 @enderror"
-                                    placeholder="{{ __('admin.fields.name') }} de la marca" required>
-                                @error('nombre')
-                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                        <svg class="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd"
-                                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                                clip-rule="evenodd" />
-                                        </svg>
-                                    </div>
-                                @enderror
-                            </div>
-                            @error('nombre')
-                                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                            @enderror
+                            <x-validation-field 
+                                name="nombre"
+                                label="Nombre de la marca"
+                                type="text"
+                                placeholder="Nombre de la marca"
+                                :required="true"
+                                :rules="['required', 'minLength:2', 'maxLength:100', 'noSpecialChars', 'brandFormat']"
+                                :messages="[
+                                    'required' => 'El nombre de la marca es requerido',
+                                    'minLength' => 'Mínimo 2 caracteres',
+                                    'maxLength' => 'Máximo 100 caracteres',
+                                    'noSpecialChars' => 'No debe contener caracteres especiales',
+                                    'brandFormat' => 'Debe empezar con mayúscula'
+                                ]"
+                                help-text="Nombre de la marca del producto (solo letras, números y espacios)"
+                                :value="old('nombre', $marca->nombre)"
+                            />
                         </div>
                     </div>
                 </div>

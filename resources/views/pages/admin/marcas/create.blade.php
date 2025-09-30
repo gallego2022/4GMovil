@@ -54,18 +54,22 @@
 
                     <div class="grid grid-cols-1 gap-6">
                         <!-- Nombre de la marca -->
-                        <div>
-                            <label for="nombre"
-                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                               Nombre de la {{ __('admin.fields.brand') }} <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" name="nombre" id="nombre" value="{{ old('nombre') }}"
-                                class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200 @error('nombre') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror"
-                                placeholder="Ej: Apple, Samsung, Xiaomi..." required>
-                            @error('nombre')
-                                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                            @enderror
-                        </div>
+                        <x-validation-field 
+                            name="nombre"
+                            label="Nombre de la marca"
+                            type="text"
+                            placeholder="Ej: Apple, Samsung, Xiaomi..."
+                            :required="true"
+                            :rules="['required', 'minLength:2', 'maxLength:100', 'noSpecialChars', 'brandFormat']"
+                            :messages="[
+                                'required' => 'El nombre de la marca es requerido',
+                                'minLength' => 'Mínimo 2 caracteres',
+                                'maxLength' => 'Máximo 100 caracteres',
+                                'noSpecialChars' => 'No debe contener caracteres especiales',
+                                'brandFormat' => 'Debe empezar con mayúscula'
+                            ]"
+                            help-text="Nombre de la marca del producto (solo letras, números y espacios)"
+                        />
                     </div>
                 </div>
             </div>

@@ -266,6 +266,55 @@
         </div>
     </div>
 
+    <!-- Movimientos Recientes -->
+    @if($movimientos->count() > 0)
+    <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Movimientos Recientes</h3>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-800">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('admin.webhooks.date') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('admin.products.product') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Variante</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('admin.fields.type') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Cantidad</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Motivo</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                    @foreach($movimientos->take(20) as $movimiento)
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                {{ $movimiento->created_at->format('d/m/Y H:i') }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                {{ $movimiento->variante->producto->nombre_producto ?? __('admin.webhooks.not_available') }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                {{ $movimiento->variante->nombre ?? __('admin.webhooks.not_available') }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @php $tipoVal = $movimiento->tipo_movimiento ?? $movimiento->tipo; @endphp
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium 
+                                    {{ $tipoVal === 'entrada' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 
+                                       'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' }}">
+                                    {{ ucfirst($tipoVal) }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                {{ $movimiento->cantidad }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                {{ $movimiento->motivo }}
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @endif
     <!-- Lista de Productos -->
     <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Productos en Inventario</h3>
@@ -339,55 +388,7 @@
         @endif
     </div>
 
-    <!-- Movimientos Recientes -->
-    @if($movimientos->count() > 0)
-    <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Movimientos Recientes</h3>
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-800">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('admin.webhooks.date') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('admin.products.product') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Variante</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('admin.fields.type') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Cantidad</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Motivo</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-                    @foreach($movimientos->take(20) as $movimiento)
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                {{ $movimiento->created_at->format('d/m/Y H:i') }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                {{ $movimiento->variante->producto->nombre_producto ?? __('admin.webhooks.not_available') }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                {{ $movimiento->variante->nombre ?? __('admin.webhooks.not_available') }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                @php $tipoVal = $movimiento->tipo_movimiento ?? $movimiento->tipo; @endphp
-                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium 
-                                    {{ $tipoVal === 'entrada' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 
-                                       'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' }}">
-                                    {{ ucfirst($tipoVal) }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                {{ $movimiento->cantidad }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                {{ $movimiento->motivo }}
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    </div>
-    @endif
+    
 </div>
 
 <script>

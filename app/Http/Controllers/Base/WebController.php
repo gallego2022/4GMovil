@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Session;
 
 abstract class WebController extends BaseController
 {
@@ -37,7 +41,7 @@ abstract class WebController extends BaseController
     /**
      * Redirecciona con mensaje de éxito
      */
-    protected function redirectSuccess(string $route, string $message = 'Operación completada exitosamente', array $parameters = []): \Illuminate\Http\RedirectResponse
+    protected function redirectSuccess(string $route, string $message = 'Operación completada exitosamente', array $parameters = []): RedirectResponse
     {
         return Redirect::route($route, $parameters)->with('mensaje', $message)->with('tipo', 'success');
     }
@@ -45,7 +49,7 @@ abstract class WebController extends BaseController
     /**
      * Redirecciona con mensaje de error
      */
-    protected function redirectError(string $route, string $message = 'Ha ocurrido un error', array $parameters = []): \Illuminate\Http\RedirectResponse
+    protected function redirectError(string $route, string $message = 'Ha ocurrido un error', array $parameters = []): RedirectResponse
     {
         return Redirect::route($route, $parameters)->with('mensaje', $message)->with('tipo', 'error');
     }
@@ -53,7 +57,7 @@ abstract class WebController extends BaseController
     /**
      * Redirecciona con mensaje de advertencia
      */
-    protected function redirectWarning(string $route, string $message = 'Advertencia', array $parameters = []): \Illuminate\Http\RedirectResponse
+    protected function redirectWarning(string $route, string $message = 'Advertencia', array $parameters = []): RedirectResponse
     {
         return Redirect::route($route, $parameters)->with('mensaje', $message)->with('tipo', 'warning');
     }
@@ -61,7 +65,7 @@ abstract class WebController extends BaseController
     /**
      * Redirecciona con mensaje de información
      */
-    protected function redirectInfo(string $route, string $message = 'Información', array $parameters = []): \Illuminate\Http\RedirectResponse
+    protected function redirectInfo(string $route, string $message = 'Información', array $parameters = []): RedirectResponse
     {
         return Redirect::route($route, $parameters)->with('mensaje', $message)->with('tipo', 'info');
     }
@@ -69,7 +73,7 @@ abstract class WebController extends BaseController
     /**
      * Redirecciona de vuelta con mensaje de éxito
      */
-    protected function backSuccess(string $message = 'Operación completada exitosamente'): \Illuminate\Http\RedirectResponse
+    protected function backSuccess(string $message = 'Operación completada exitosamente'): RedirectResponse
     {
         return Redirect::back()->with('mensaje', $message)->with('tipo', 'success');
     }
@@ -77,7 +81,7 @@ abstract class WebController extends BaseController
     /**
      * Redirecciona de vuelta con mensaje de error
      */
-    protected function backError(string $message = 'Ha ocurrido un error'): \Illuminate\Http\RedirectResponse
+    protected function backError(string $message = 'Ha ocurrido un error'): RedirectResponse
     {
         return Redirect::back()->with('mensaje', $message)->with('tipo', 'error');
     }
@@ -85,7 +89,7 @@ abstract class WebController extends BaseController
     /**
      * Redirecciona de vuelta con mensaje de advertencia
      */
-    protected function backWarning(string $message = 'Advertencia'): \Illuminate\Http\RedirectResponse
+    protected function backWarning(string $message = 'Advertencia'): RedirectResponse
     {
         return Redirect::back()->with('mensaje', $message)->with('tipo', 'warning');
     }
@@ -93,7 +97,7 @@ abstract class WebController extends BaseController
     /**
      * Redirecciona de vuelta con mensaje de información
      */
-    protected function backInfo(string $message = 'Información'): \Illuminate\Http\RedirectResponse
+    protected function backInfo(string $message = 'Información'): RedirectResponse
     {
         return Redirect::back()->with('mensaje', $message)->with('tipo', 'info');
     }
@@ -101,7 +105,7 @@ abstract class WebController extends BaseController
     /**
      * Redirecciona con datos de entrada para mantener formularios
      */
-    protected function redirectWithInput(string $route, string $message = 'Por favor, corrige los errores', array $parameters = []): \Illuminate\Http\RedirectResponse
+    protected function redirectWithInput(string $route, string $message = 'Por favor, corrige los errores', array $parameters = []): RedirectResponse
     {
         return Redirect::route($route, $parameters)
             ->withInput()
@@ -112,7 +116,7 @@ abstract class WebController extends BaseController
     /**
      * Redirecciona de vuelta con datos de entrada
      */
-    protected function backWithInput(string $message = 'Por favor, corrige los errores'): \Illuminate\Http\RedirectResponse
+    protected function backWithInput(string $message = 'Por favor, corrige los errores'): RedirectResponse
     {
         return Redirect::back()
             ->withInput()
@@ -123,7 +127,7 @@ abstract class WebController extends BaseController
     /**
      * Maneja excepciones de validación para web
      */
-    protected function handleValidationException(ValidationException $e, string $redirectRoute = null, array $parameters = []): \Illuminate\Http\RedirectResponse
+    protected function handleValidationException(ValidationException $e, string $redirectRoute = null, array $parameters = []): RedirectResponse
     {
         $message = 'Por favor, corrige los errores en el formulario';
         
@@ -137,9 +141,9 @@ abstract class WebController extends BaseController
     /**
      * Maneja excepciones generales para web
      */
-    protected function handleException(\Exception $e, string $redirectRoute = null, array $parameters = []): \Illuminate\Http\RedirectResponse
+    protected function handleException(\Exception $e, string $redirectRoute = null, array $parameters = []): RedirectResponse
     {
-        $message = config('app.debug') ? $e->getMessage() : 'Ha ocurrido un error inesperado';
+        $message = Config::get('app.debug') ? $e->getMessage() : 'Ha ocurrido un error inesperado';
         
         if ($redirectRoute) {
             return $this->redirectError($redirectRoute, $message, $parameters);
@@ -153,7 +157,7 @@ abstract class WebController extends BaseController
      */
     protected function requireAuth(): void
     {
-        if (!\Illuminate\Support\Facades\Auth::check()) {
+        if (!Auth::check()) {
             abort(401, 'Usuario no autenticado');
         }
     }
@@ -165,7 +169,7 @@ abstract class WebController extends BaseController
     {
         $this->requireAuth();
         
-        if (\Illuminate\Support\Facades\Auth::user()->rol !== $role) {
+        if (Auth::user()->rol !== $role) {
             abort(403, 'No tienes permisos para realizar esta acción');
         }
     }
@@ -177,7 +181,7 @@ abstract class WebController extends BaseController
     {
         $this->requireAuth();
         
-        if (!in_array(\Illuminate\Support\Facades\Auth::user()->rol, $roles)) {
+        if (!in_array(Auth::user()->rol, $roles)) {
             abort(403, 'No tienes permisos para realizar esta acción');
         }
     }
@@ -187,7 +191,7 @@ abstract class WebController extends BaseController
      */
     protected function getAuthUser()
     {
-        return \Illuminate\Support\Facades\Auth::user();
+        return Auth::user();
     }
 
     /**
@@ -195,7 +199,7 @@ abstract class WebController extends BaseController
      */
     protected function getAuthUserId(): ?int
     {
-        return \Illuminate\Support\Facades\Auth::id();
+        return Auth::id();
     }
 
     /**
@@ -237,8 +241,8 @@ abstract class WebController extends BaseController
      */
     protected function addFlashMessage(string $message, string $type = 'info'): void
     {
-        session()->flash('mensaje', $message);
-        session()->flash('tipo', $type);
+        Session::flash('mensaje', $message);
+        Session::flash('tipo', $type);
     }
 
     /**
@@ -256,7 +260,7 @@ abstract class WebController extends BaseController
      */
     protected function hasFlashMessages(): bool
     {
-        return session()->has('mensaje') || session()->has('tipo');
+        return Session::has('mensaje') || Session::has('tipo');
     }
 
     /**
@@ -265,8 +269,8 @@ abstract class WebController extends BaseController
     protected function getFlashMessages(): array
     {
         return [
-            'mensaje' => session('mensaje'),
-            'tipo' => session('tipo')
+            'mensaje' => Session::get('mensaje'),
+            'tipo' => Session::get('tipo')
         ];
     }
 }

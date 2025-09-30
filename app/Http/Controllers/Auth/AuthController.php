@@ -6,6 +6,19 @@ use App\Http\Controllers\Base\WebController;
 use App\Services\AuthService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
+use Illuminate\Support\Carbon;
+use Laravel\Socialite\Facades\Socialite;
+use App\Models\Usuario;
+use App\Models\OtpCode;
 
 class AuthController extends WebController
 {
@@ -20,14 +33,14 @@ class AuthController extends WebController
     public function index()
     {
         $this->applyLocalization();
-        return view('modules.auth.login');
+        return View::make('modules.auth.login');
     }
 
     // Esta funcion muestra el formulario para cambiar contraseña
     public function formCambiarContrasena()
     {
         $this->applyLocalization();
-        return view('modules.auth.cambiar-contrasena');
+        return View::make('modules.auth.cambiar-contrasena');
     }
 
     // Funcion para cambiar contraseña
@@ -53,7 +66,7 @@ class AuthController extends WebController
         $result = $this->authService->cambiarContrasena($request);
 
             if ($request->expectsJson()) {
-            return response()->json($result, $result['success'] ? 200 : 422);
+            return Response::json($result, $result['success'] ? 200 : 422);
         }
 
         if ($result['success']) {
@@ -92,7 +105,7 @@ class AuthController extends WebController
             $result = $this->authService->registrar($request);
 
             if ($result['success']) {
-            return redirect()->route('otp.verify.register')
+            return Redirect::route('otp.verify.register')
                     ->with('verification_email', $result['usuario']->correo_electronico)
                     ->with('mensaje', $result['message'])
                 ->with('registro_exitoso', trans('auth.register_success'));
@@ -119,11 +132,11 @@ class AuthController extends WebController
 
             if ($result['success']) {
                 if ($result['usuario']->rol === 'admin') {
-                return redirect()->route('admin.index')
+                return Redirect::route('admin.index')
                     ->with('status', trans('auth.login_success'))
                     ->with('status_type', 'success');
             } else {
-                return redirect()->route('landing')
+                return Redirect::route('landing')
                     ->with('status', trans('auth.login_success'))
                     ->with('status_type', 'success');
             }
@@ -132,30 +145,30 @@ class AuthController extends WebController
             // Manejar diferentes tipos de error
             switch ($result['error_type']) {
                 case 'google_account':
-                    return back()
+                    return Redirect::back()
                         ->with('error_login', $result['message'])
                         ->withInput(['correo_electronico' => $request->correo_electronico]);
                 
                 case 'inactive_account':
-                    return back()
+                    return Redirect::back()
                         ->with('error_login', $result['message'])
                         ->withInput(['correo_electronico' => $request->correo_electronico]);
                 
                 case 'unverified_email':
-                    return redirect()->route('otp.verify.register')
+                    return Redirect::route('otp.verify.register')
                         ->with('verification_email', $result['usuario']->correo_electronico)
                         ->with('error_login', $result['message'])
                         ->withInput(['correo_electronico' => $request->correo_electronico]);
                 
                 default:
-                    return back()
+                    return Redirect::back()
                         ->with('error_login', $result['message'])
                         ->withInput(['correo_electronico' => $request->correo_electronico]);
             }
 
         } catch (\Exception $e) {
             Log::error('Error en login: ' . $e->getMessage());
-        return back()
+        return Redirect::back()
             ->with('error_login', trans('auth.login_error'))
             ->withInput(['correo_electronico' => $request->correo_electronico]);
         }
@@ -168,10 +181,10 @@ class AuthController extends WebController
             $result = $this->authService->logout($request);
         
             if ($result['success']) {
-        return redirect()
-            ->route('landing')
+                return redirect()
+                    ->route('landing')
                     ->with('status', $result['message'])
-            ->with('status_type', 'info');
+                    ->with('status_type', 'info');
             }
 
             return $this->backError($result['message']);
@@ -190,7 +203,7 @@ class AuthController extends WebController
             
             if ($result['success']) {
                 $usuario = $result['usuario'];
-                return view($result['view'], compact('usuario'));
+                return View::make($result['view'], compact('usuario'));
             }
 
             return $this->backError($result['message']);
@@ -206,7 +219,7 @@ class AuthController extends WebController
     {
         $request->validate([
             'nombre_usuario' => ['required', 'string', 'max:25', 'regex:/^[\pL\s]+$/u'],
-            'correo_electronico' => 'required|email|unique:usuarios,correo_electronico,' . \Illuminate\Support\Facades\Auth::id() . ',usuario_id',
+            'correo_electronico' => 'required|email|unique:usuarios,correo_electronico,' . Auth::id() . ',usuario_id',
             'telefono' => ['nullable', 'regex:/^3\d{9}$/'],
             'foto_perfil' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048|dimensions:min_width=100,min_height=100,max_width=2000,max_height=2000'
         ]);
@@ -232,13 +245,13 @@ class AuthController extends WebController
             $result = $this->authService->eliminarFoto();
 
             if ($result['success']) {
-                return response()->json([
+                return Response::json([
                     'tipo' => 'success',
                     'mensaje' => $result['message']
                 ]);
             }
 
-                return response()->json([
+                return Response::json([
                     'tipo' => 'error',
                 'mensaje' => $result['message']
             ], 400);
@@ -246,7 +259,7 @@ class AuthController extends WebController
         } catch (\Exception $e) {
             Log::error('Error al eliminar la foto de perfil: ' . $e->getMessage());
             
-            return response()->json([
+            return Response::json([
                 'tipo' => 'error',
                 'mensaje' => 'Error interno del servidor al eliminar la foto'
             ], 500);
@@ -259,13 +272,13 @@ class AuthController extends WebController
             $result = $this->authService->validarContrasenaActual($request);
 
             if ($result['success']) {
-                return response()->json([
+                return Response::json([
                     'valid' => $result['valid'],
                     'message' => $result['message']
                 ]);
             }
 
-            return response()->json([
+            return Response::json([
                 'valid' => false,
                 'message' => $result['message']
             ]);
@@ -273,7 +286,7 @@ class AuthController extends WebController
         } catch (\Exception $e) {
             Log::error('Error al validar contraseña: ' . $e->getMessage());
             
-            return response()->json([
+            return Response::json([
                 'valid' => false,
                 'message' => 'Error al validar la contraseña'
             ], 500);
@@ -288,8 +301,8 @@ class AuthController extends WebController
     public function showLinkRequestForm()
     {
         // Al abrir el flujo de recuperación, limpiar correo persistido en sesión
-        session()->forget('email_sent');
-        return view('auth.passwords.email-otp');
+        Session::forget('email_sent');
+        return View::make('auth.passwords.email-otp');
     }
 
     /**
@@ -306,40 +319,73 @@ class AuthController extends WebController
         ]);
 
         try {
-            $usuario = \App\Models\Usuario::where('correo_electronico', $request->email)->first();
+            $usuario = Usuario::where('correo_electronico', $request->email)->first();
             
             // Verificar si ya tiene un código válido
-            if (\App\Models\OtpCode::tieneCodigoValido($usuario->usuario_id, 'password_reset')) {
-                $otp = \App\Models\OtpCode::obtenerCodigoValido($usuario->usuario_id, 'password_reset');
+            if (OtpCode::tieneCodigoValido($usuario->usuario_id, 'password_reset')) {
+                $otp = OtpCode::obtenerCodigoValido($usuario->usuario_id, 'password_reset');
                 $tiempoRestante = $otp->tiempoRestante();
                 
-                return back()->withErrors([
-                    'email' => "Ya tienes un código válido. Espera {$tiempoRestante} minutos para solicitar uno nuevo."
-                ]);
+                // Si han pasado menos de 1 minuto desde la última solicitud, permitir invalidar
+                if (OtpCode::puedeSolicitarNuevoCodigo($usuario->usuario_id, 'password_reset', 1)) {
+                    // Invalidar códigos existentes y continuar
+                    OtpCode::invalidarCodigosExistentes($usuario->usuario_id, 'password_reset');
+                    Log::info("Códigos OTP anteriores invalidados para: {$usuario->correo_electronico}");
+                } else {
+                    // Si es una petición AJAX, devolver JSON
+                    if ($request->expectsJson()) {
+                        return Response::json([
+                            'success' => false,
+                            'message' => "Ya tienes un código válido. Espera {$tiempoRestante} minutos para solicitar uno nuevo."
+                        ], 429);
+                    }
+                    
+                    return Redirect::back()->withErrors([
+                        'email' => "Ya tienes un código válido. Espera {$tiempoRestante} minutos para solicitar uno nuevo."
+                    ]);
+                }
             }
 
             // Crear nuevo código OTP
-            $otp = \App\Models\OtpCode::crear($usuario->usuario_id, 'password_reset', 10);
+            $otp = OtpCode::crear($usuario->usuario_id, 'password_reset', 10);
 
             // Enviar correo
-            \Illuminate\Support\Facades\Mail::to($usuario->correo_electronico)
+            Mail::to($usuario->correo_electronico)
                 ->send(new \App\Mail\OtpVerification($usuario, $otp->codigo, 'password_reset', 10));
 
-            \Illuminate\Support\Facades\Log::info("Código OTP para restablecimiento enviado a: {$usuario->correo_electronico}");
+            Log::info("Código OTP para restablecimiento enviado a: {$usuario->correo_electronico}");
 
             // Crear un token temporal para el email
             $tempToken = base64_encode($request->email . '|' . time());
             
-            return back()->with([
+            // Si es una petición AJAX, devolver JSON
+            if ($request->expectsJson()) {
+                return Response::json([
+                    'success' => true,
+                    'message' => '¡Código OTP enviado! Revisa tu correo electrónico para continuar.',
+                    'email_sent' => $request->email,
+                    'temp_token' => $tempToken
+                ]);
+            }
+            
+            return Redirect::route('password.reset.otp')->with([
                 'status' => '¡Código OTP enviado! Revisa tu correo electrónico para continuar.',
                 'email_sent' => $request->email,
                 'temp_token' => $tempToken
-            ])->withInput($request->only('email'));
+            ]);
 
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Error enviando OTP de restablecimiento: ' . $e->getMessage());
+            Log::error('Error enviando OTP de restablecimiento: ' . $e->getMessage());
             
-            return back()->withErrors([
+            // Si es una petición AJAX, devolver JSON
+            if ($request->expectsJson()) {
+                return Response::json([
+                    'success' => false,
+                    'message' => 'Error al enviar el código OTP. Intenta nuevamente.'
+                ], 500);
+            }
+            
+            return Redirect::back()->withErrors([
                 'email' => 'Error al enviar el código OTP. Intenta nuevamente.'
             ]);
         }
@@ -353,7 +399,7 @@ class AuthController extends WebController
     public function redirectToGoogle()
     {
         try {
-            $url = \Laravel\Socialite\Facades\Socialite::driver('google')
+            $url = Socialite::driver('google')
                 ->redirect()
                 ->getTargetUrl();
                 
@@ -362,8 +408,8 @@ class AuthController extends WebController
                 
             return redirect($url);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Error al redirigir a Google: ' . $e->getMessage());
-            return redirect()->route('login')->with('error', 'Error al conectar con Google. Inténtalo de nuevo.');
+            Log::error('Error al redirigir a Google: ' . $e->getMessage());
+            return Redirect::route('login')->with('error', 'Error al conectar con Google. Inténtalo de nuevo.');
         }
     }
 
@@ -373,25 +419,25 @@ class AuthController extends WebController
     public function handleGoogleCallback()
     {
         try {
-            $googleUser = \Laravel\Socialite\Facades\Socialite::driver('google')->user();
+            $googleUser = Socialite::driver('google')->user();
             
-            \Illuminate\Support\Facades\Log::info("Google callback recibido para: " . $googleUser->getEmail());
-            \Illuminate\Support\Facades\Log::info("Google ID: " . $googleUser->getId());
-            \Illuminate\Support\Facades\Log::info("Google Name: " . $googleUser->getName());
+            Log::info("Google callback recibido para: " . $googleUser->getEmail());
+            Log::info("Google ID: " . $googleUser->getId());
+            Log::info("Google Name: " . $googleUser->getName());
             
             // Buscar usuario existente por google_id o email
-            $usuario = \App\Models\Usuario::where('google_id', $googleUser->getId())
+            $usuario = Usuario::where('google_id', $googleUser->getId())
                 ->orWhere('correo_electronico', $googleUser->getEmail())
                 ->first();
             
             if ($usuario) {
-                \Illuminate\Support\Facades\Log::info("Usuario encontrado en BD: " . $usuario->correo_electronico);
-                \Illuminate\Support\Facades\Log::info("Usuario google_id: " . $usuario->google_id);
-                \Illuminate\Support\Facades\Log::info("Usuario estado: " . $usuario->estado);
+                Log::info("Usuario encontrado en BD: " . $usuario->correo_electronico);
+                Log::info("Usuario google_id: " . $usuario->google_id);
+                Log::info("Usuario estado: " . $usuario->estado);
                 
                 // CASO 1: Usuario existe con google_id
                 if ($usuario->google_id === $googleUser->getId()) {
-                    \Illuminate\Support\Facades\Log::info("Usuario existente con google_id: {$usuario->correo_electronico}");
+                    Log::info("Usuario existente con google_id: {$usuario->correo_electronico}");
                     
                     // Actualizar foto de perfil si es de Google
                     if (\App\Helpers\PhotoHelper::isGooglePhotoUrl($usuario->foto_perfil)) {
@@ -399,35 +445,35 @@ class AuthController extends WebController
                         $usuario->save();
                     }
                     
-                    \Illuminate\Support\Facades\Auth::login($usuario);
-                    \Illuminate\Support\Facades\Log::info("Auth::login ejecutado para: " . $usuario->correo_electronico);
-                    \Illuminate\Support\Facades\Log::info("Usuario autenticado: " . (\Illuminate\Support\Facades\Auth::check() ? 'SÍ' : 'NO'));
-                    \Illuminate\Support\Facades\Log::info("Usuario actual: " . (\Illuminate\Support\Facades\Auth::user() ? \Illuminate\Support\Facades\Auth::user()->correo_electronico : 'NONE'));
+                    Auth::login($usuario);
+                    Log::info("Auth::login ejecutado para: " . $usuario->correo_electronico);
+                    Log::info("Usuario autenticado: " . (Auth::check() ? 'SÍ' : 'NO'));
+                    Log::info("Usuario actual: " . (Auth::user() ? Auth::user()->correo_electronico : 'NONE'));
                     
-                    \Illuminate\Support\Facades\Log::info("Usuario existente logueado con Google: {$usuario->correo_electronico}");
-                    return redirect()->intended('/perfil')->with('success', '¡Bienvenido de vuelta!');
+                    Log::info("Usuario existente logueado con Google: {$usuario->correo_electronico}");
+                    return Redirect::intended('/perfil')->with('success', '¡Bienvenido de vuelta!');
                 }
                 
                 // CASO 2: Usuario existe con email pero sin google_id (convertir a Google)
                 if ($usuario->correo_electronico === $googleUser->getEmail() && !$usuario->google_id) {
-                    \Illuminate\Support\Facades\Log::info("Convirtiendo usuario existente a Google: {$usuario->correo_electronico}");
+                    Log::info("Convirtiendo usuario existente a Google: {$usuario->correo_electronico}");
                     
                     $usuario->google_id = $googleUser->getId();
                     $usuario->foto_perfil = \App\Helpers\PhotoHelper::cleanGooglePhotoUrl($googleUser->getAvatar());
-                    $usuario->email_verified_at = now();
+                    $usuario->email_verified_at = Carbon::now();
                     $usuario->save();
                     
-                    \Illuminate\Support\Facades\Auth::login($usuario);
-                    \Illuminate\Support\Facades\Log::info("Auth::login ejecutado para usuario convertido: " . $usuario->correo_electronico);
-                    \Illuminate\Support\Facades\Log::info("Usuario autenticado: " . (\Illuminate\Support\Facades\Auth::check() ? 'SÍ' : 'NO'));
+                    Auth::login($usuario);
+                    Log::info("Auth::login ejecutado para usuario convertido: " . $usuario->correo_electronico);
+                    Log::info("Usuario autenticado: " . (Auth::check() ? 'SÍ' : 'NO'));
                     
-                    \Illuminate\Support\Facades\Log::info("Usuario convertido a Google: {$usuario->correo_electronico}");
-                    return redirect()->intended('/perfil')->with('success', '¡Cuenta vinculada con Google exitosamente!');
+                    Log::info("Usuario convertido a Google: {$usuario->correo_electronico}");
+                    return Redirect::intended('/perfil')->with('success', '¡Cuenta vinculada con Google exitosamente!');
                 }
                 
                 // CASO 3: Conflicto - google_id diferente (puede pasar en desarrollo)
                 if ($usuario->google_id && $usuario->google_id !== $googleUser->getId()) {
-                    \Illuminate\Support\Facades\Log::warning("Conflicto de google_id para: {$usuario->correo_electronico}");
+                    Log::warning("Conflicto de google_id para: {$usuario->correo_electronico}");
                     
                     // En desarrollo, permitir sobrescribir
                     if (app()->environment('local', 'development')) {
@@ -435,21 +481,21 @@ class AuthController extends WebController
                         $usuario->foto_perfil = \App\Helpers\PhotoHelper::cleanGooglePhotoUrl($googleUser->getAvatar());
                         $usuario->save();
                         
-                        \Illuminate\Support\Facades\Auth::login($usuario);
-                        \Illuminate\Support\Facades\Log::info("Auth::login ejecutado para conflicto resuelto: " . $usuario->correo_electronico);
-                        \Illuminate\Support\Facades\Log::info("Usuario autenticado: " . (\Illuminate\Support\Facades\Auth::check() ? 'SÍ' : 'NO'));
+                        Auth::login($usuario);
+                        Log::info("Auth::login ejecutado para conflicto resuelto: " . $usuario->correo_electronico);
+                        Log::info("Usuario autenticado: " . (Auth::check() ? 'SÍ' : 'NO'));
                         
-                        \Illuminate\Support\Facades\Log::info("Conflicto resuelto en desarrollo para: {$usuario->correo_electronico}");
-                        return redirect()->intended('/perfil')->with('success', '¡Bienvenido! Conflicto resuelto.');
+                        Log::info("Conflicto resuelto en desarrollo para: {$usuario->correo_electronico}");
+                        return Redirect::intended('/perfil')->with('success', '¡Bienvenido! Conflicto resuelto.');
                     } else {
-                        return redirect()->route('login')->with('error', 'Esta cuenta ya está asociada con otra cuenta de Google.');
+                        return Redirect::route('login')->with('error', 'Esta cuenta ya está asociada con otra cuenta de Google.');
                     }
                 }
             } else {
                 // CASO 4: Nuevo usuario
-                \Illuminate\Support\Facades\Log::info("Creando nuevo usuario de Google: {$googleUser->getEmail()}");
+                Log::info("Creando nuevo usuario de Google: {$googleUser->getEmail()}");
                 
-                $usuario = \App\Models\Usuario::create([
+                $usuario = Usuario::create([
                     'nombre_usuario' => $googleUser->getName() ?: explode('@', $googleUser->getEmail())[0],
                     'correo_electronico' => $googleUser->getEmail(),
                     'google_id' => $googleUser->getId(),
@@ -457,19 +503,19 @@ class AuthController extends WebController
                     'foto_perfil' => \App\Helpers\PhotoHelper::cleanGooglePhotoUrl($googleUser->getAvatar()),
                     'estado' => true,
                     'rol' => 'cliente',
-                    'fecha_registro' => now(),
-                    'email_verified_at' => now(), // Google ya verificó el email
+                    'fecha_registro' => Carbon::now(),
+                    'email_verified_at' => Carbon::now(), // Google ya verificó el email
                 ]);
                 
-                \Illuminate\Support\Facades\Auth::login($usuario);
-                \Illuminate\Support\Facades\Log::info("Auth::login ejecutado para nuevo usuario: " . $usuario->correo_electronico);
-                \Illuminate\Support\Facades\Log::info("Usuario autenticado: " . (\Illuminate\Support\Facades\Auth::check() ? 'SÍ' : 'NO'));
+                Auth::login($usuario);
+                Log::info("Auth::login ejecutado para nuevo usuario: " . $usuario->correo_electronico);
+                Log::info("Usuario autenticado: " . (Auth::check() ? 'SÍ' : 'NO'));
                 
-                \Illuminate\Support\Facades\Log::info("Nuevo usuario creado con Google: {$usuario->correo_electronico}");
+                Log::info("Nuevo usuario creado con Google: {$usuario->correo_electronico}");
                 
                 // Devolver JSON para mostrar modal
                 if (request()->expectsJson()) {
-                    return response()->json([
+                    return Response::json([
                         'success' => true,
                         'message' => '¡Cuenta creada exitosamente!',
                         'redirect' => '/perfil',
@@ -477,14 +523,14 @@ class AuthController extends WebController
                     ]);
                 } else {
                     // Para navegadores normales, redirigir directamente
-                    return redirect()->route('perfil')->with('success', '¡Cuenta creada exitosamente!');
+                    return Redirect::route('perfil')->with('success', '¡Cuenta creada exitosamente!');
                 }
             }
             
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Error en callback de Google: ' . $e->getMessage());
-            \Illuminate\Support\Facades\Log::error('Stack trace: ' . $e->getTraceAsString());
-            return redirect()->route('login')->with('error', 'Error al autenticarse con Google. Inténtalo de nuevo.');
+            Log::error('Error en callback de Google: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            return Redirect::route('login')->with('error', 'Error al autenticarse con Google. Inténtalo de nuevo.');
         }
     }
 
@@ -496,14 +542,14 @@ class AuthController extends WebController
     public function setPassword(Request $request)
     {
         // Verificar que el usuario esté autenticado
-        if (!\Illuminate\Support\Facades\Auth::check()) {
+        if (!Auth::check()) {
             if ($request->expectsJson()) {
-                return response()->json(['error' => 'No autenticado'], 401);
+                return Response::json(['error' => 'No autenticado'], 401);
             }
-            return redirect()->route('login');
+            return Redirect::route('login');
         }
 
-        $usuario = \Illuminate\Support\Facades\Auth::user();
+        $usuario = Auth::user();
 
         // Validar la solicitud
         $request->validate([
@@ -523,32 +569,32 @@ class AuthController extends WebController
 
         try {
             // Establecer la contraseña
-            $usuario->contrasena = \Illuminate\Support\Facades\Hash::make($request->password);
+            $usuario->contrasena = Hash::make($request->password);
             $usuario->save();
 
-            \Illuminate\Support\Facades\Log::info("Contraseña establecida para usuario de Google: {$usuario->correo_electronico}");
+            Log::info("Contraseña establecida para usuario de Google: {$usuario->correo_electronico}");
 
             if ($request->expectsJson()) {
-                return response()->json([
+                return Response::json([
                     'success' => true,
                     'message' => '¡Contraseña establecida exitosamente! Ahora puedes hacer login manual con tu correo y contraseña.',
                     'redirect' => route('perfil')
                 ]);
             }
 
-            return redirect()->route('perfil')
+            return Redirect::route('perfil')
                 ->with('success', '¡Contraseña establecida exitosamente! Ahora puedes hacer login manual con tu correo y contraseña.');
 
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Error al establecer contraseña para usuario de Google: ' . $e->getMessage());
+            Log::error('Error al establecer contraseña para usuario de Google: ' . $e->getMessage());
             
             if ($request->expectsJson()) {
-        return response()->json([
+        return Response::json([
                     'error' => 'Error al establecer la contraseña. Inténtalo de nuevo.'
                 ], 500);
             }
             
-            return back()
+            return Redirect::back()
                 ->withErrors(['error' => 'Error al establecer la contraseña. Inténtalo de nuevo.'])
                 ->withInput();
         }
@@ -576,7 +622,7 @@ class AuthController extends WebController
                     }
                 }
             } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('Error decodificando token: ' . $e->getMessage());
+                Log::error('Error decodificando token: ' . $e->getMessage());
             }
         }
         
@@ -586,7 +632,7 @@ class AuthController extends WebController
         }
         
         // Debug: Log para ver qué está pasando
-        \Illuminate\Support\Facades\Log::info('ResetPasswordController - Email sources:', [
+        Log::info('ResetPasswordController - Email sources:', [
             'token' => $token,
             'query_email' => $request->query('email'),
             'request_email' => $request->email,
@@ -596,14 +642,14 @@ class AuthController extends WebController
         
         // Si no hay email, redirigir al formulario de solicitud
         if (!$email) {
-            return redirect()->route('password.request')
+            return Redirect::route('password.request')
                 ->withErrors(['email' => 'Debes solicitar un código OTP primero.']);
         }
         
         // Guardar el email en la sesión para mantenerlo durante el proceso
         session(['email_sent' => $email]);
         
-        return view('auth.passwords.reset-otp')->with([
+        return View::make('auth.passwords.reset-otp')->with([
             'email' => $email
         ]);
     }
@@ -615,7 +661,7 @@ class AuthController extends WebController
     {
         // Validar que el email esté presente y sea válido
         if (!$request->filled('email')) {
-            return back()
+            return Redirect::back()
                 ->withInput($request->only('otp_code'))
                 ->withErrors(['email' => 'El campo correo electrónico es obligatorio.']);
         }
@@ -646,47 +692,47 @@ class AuthController extends WebController
         ]);
 
         try {
-            $usuario = \App\Models\Usuario::where('correo_electronico', $request->email)->first();
+            $usuario = Usuario::where('correo_electronico', $request->email)->first();
             
             if (!$usuario) {
-                return back()
+                return Redirect::back()
                     ->withInput($request->only('email'))
                     ->withErrors(['email' => 'Usuario no encontrado.']);
             }
 
             // Verificar código OTP
-            if (!\App\Models\OtpCode::verificar($usuario->usuario_id, $request->otp_code, 'password_reset')) {
-                return back()
+            if (!OtpCode::verificar($usuario->usuario_id, $request->otp_code, 'password_reset')) {
+                return Redirect::back()
                     ->withInput($request->only('email'))
                     ->withErrors(['otp_code' => 'Código OTP inválido o expirado.']);
             }
 
             // Validar que la nueva contraseña no sea igual a la anterior
-            if (!empty($usuario->contrasena) && \Illuminate\Support\Facades\Hash::check($request->password, $usuario->contrasena)) {
-                return back()
+            if (!empty($usuario->contrasena) && Hash::check($request->password, $usuario->contrasena)) {
+                return Redirect::back()
                     ->withInput($request->only('email'))
                     ->withErrors(['password' => 'Utiliza una contraseña diferente.']);
             }
 
             // Actualizar contraseña
             $usuario->forceFill([
-                'contrasena' => \Illuminate\Support\Facades\Hash::make($request->password),
-                'remember_token' => \Illuminate\Support\Str::random(60),
+                'contrasena' => Hash::make($request->password),
+                'remember_token' => Str::random(60),
             ])->save();
 
-            \Illuminate\Support\Facades\Log::info("Contraseña restablecida exitosamente para: {$usuario->correo_electronico}");
+            Log::info("Contraseña restablecida exitosamente para: {$usuario->correo_electronico}");
 
             // Limpiar el email almacenado en sesión para no prellenar futuros intentos
-            session()->forget('email_sent');
+            Session::forget('email_sent');
 
-            return redirect()->route('login')
+            return Redirect::route('login')
                 ->with('status', '¡Tu contraseña ha sido restablecida exitosamente! Ahora puedes iniciar sesión con tu nueva contraseña.')
                 ->with('status_type', 'success');
 
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Error restableciendo contraseña: ' . $e->getMessage());
+            Log::error('Error restableciendo contraseña: ' . $e->getMessage());
             
-            return back()
+            return Redirect::back()
                 ->withInput($request->only('email'))
                 ->withErrors(['email' => 'Error al restablecer la contraseña. Intenta nuevamente.']);
         }

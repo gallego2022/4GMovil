@@ -155,8 +155,23 @@ Alpine.data('dashboard', () => ({
             // Limpiar caché local
             window.clientCache.clear();
             
-            // Redirigir a logout
-            window.location.href = '/logout';
+            // Crear y enviar formulario de logout
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/logout';
+            
+            // Agregar token CSRF
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            if (csrfToken) {
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = csrfToken.getAttribute('content');
+                form.appendChild(csrfInput);
+            }
+            
+            document.body.appendChild(form);
+            form.submit();
         }
     }
 }));

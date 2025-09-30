@@ -4,9 +4,13 @@ namespace App\Http\Controllers\Servicios;
 
 use App\Http\Controllers\Base\WebController;
 use App\Services\StripeService;
+use App\Models\Pedido;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Redirect;
 
 class StripeController extends WebController
 {
@@ -23,7 +27,7 @@ class StripeController extends WebController
     public function showPaymentForm($pedidoId)
     {
         try {
-            $pedido = \App\Models\Pedido::with(['detalles.producto.imagenes', 'usuario'])->find($pedidoId);
+            $pedido = Pedido::with(['detalles.producto.imagenes', 'usuario'])->find($pedidoId);
             
             if (!$pedido) {
                 Log::error('Pedido no encontrado', ['pedido_id' => $pedidoId]);
@@ -43,13 +47,13 @@ class StripeController extends WebController
             // Verificar que el pedido no esté ya pagado
             if ($pedido->estado_id == 2) {
                 Log::info('Pedido ya pagado', ['pedido_id' => $pedido->pedido_id]);
-                return redirect()->route('checkout.success', $pedido)
+                return Redirect::route('checkout.success', $pedido)
                     ->with('info', 'Este pedido ya ha sido pagado.');
             }
 
             Log::info('Mostrando formulario de pago Stripe', ['pedido_id' => $pedido->pedido_id]);
 
-            return view('checkout.stripe-payment', compact('pedido'));
+            return View::make('checkout.stripe-payment', compact('pedido'));
 
         } catch (\Exception $e) {
             Log::error('Error al mostrar formulario de pago: ' . $e->getMessage());
@@ -66,17 +70,17 @@ class StripeController extends WebController
             $result = $this->stripeService->createPaymentIntent($request);
 
             if ($result['success']) {
-                return response()->json([
+                return Response::json([
                     'clientSecret' => $result['client_secret'],
                     'paymentIntentId' => $result['payment_intent_id'],
                 ]);
             }
 
-            return response()->json(['error' => $result['message']], 400);
+            return Response::json(['error' => $result['message']], 400);
 
         } catch (\Exception $e) {
             Log::error('Error al crear PaymentIntent: ' . $e->getMessage());
-            return response()->json(['error' => 'Error interno del servidor'], 500);
+            return Response::json(['error' => 'Error interno del servidor'], 500);
         }
     }
 
@@ -89,18 +93,18 @@ class StripeController extends WebController
             $result = $this->stripeService->confirmPayment($request);
 
             if ($result['success']) {
-                return response()->json([
+                return Response::json([
                     'success' => true,
                     'message' => $result['message'],
                     'pedido_id' => $result['pedido_id']
                 ]);
             }
 
-            return response()->json(['error' => $result['message']], 400);
+            return Response::json(['error' => $result['message']], 400);
 
         } catch (\Exception $e) {
             Log::error('Error al confirmar pago: ' . $e->getMessage());
-            return response()->json(['error' => 'Error interno del servidor'], 500);
+            return Response::json(['error' => 'Error interno del servidor'], 500);
         }
     }
 
@@ -113,14 +117,14 @@ class StripeController extends WebController
             $result = $this->stripeService->processWebhook($request);
 
             if ($result['success']) {
-                return response()->json(['status' => 'success']);
+                return Response::json(['status' => 'success']);
             }
 
-            return response()->json(['error' => $result['message']], 400);
+            return Response::json(['error' => $result['message']], 400);
 
         } catch (\Exception $e) {
             Log::error('Error al procesar webhook: ' . $e->getMessage());
-            return response()->json(['error' => 'Error interno del servidor'], 500);
+            return Response::json(['error' => 'Error interno del servidor'], 500);
         }
     }
 }

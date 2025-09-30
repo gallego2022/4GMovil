@@ -231,7 +231,7 @@ class ProductoServiceOptimizado extends BaseService
         $rules = [
             'nombre_producto' => 'required|string|max:255',
             'descripcion' => 'nullable|string',
-            'precio' => 'required|numeric|min:0',
+            'precio' => 'required|numeric|min:10000|max:20000000',
             'stock' => 'required|integer|min:0',
             'estado' => 'required|in:nuevo,usado',
             'categoria_id' => 'required|exists:categorias,categoria_id',
@@ -250,6 +250,8 @@ class ProductoServiceOptimizado extends BaseService
             'nombre_producto.required' => 'El nombre del producto es obligatorio',
             'precio.required' => 'El precio es obligatorio',
             'precio.numeric' => 'El precio debe ser un número',
+            'precio.min' => 'El precio mínimo es $10,000 COP',
+            'precio.max' => 'El precio máximo es $20,000,000 COP',
             'stock.required' => 'El stock es obligatorio',
             'stock.integer' => 'El stock debe ser un número entero',
             'categoria_id.required' => 'Debe seleccionar una categoría',
@@ -273,7 +275,7 @@ class ProductoServiceOptimizado extends BaseService
         $rules = [
             'nombre_producto' => 'sometimes|required|string|max:255',
             'descripcion' => 'nullable|string',
-            'precio' => 'sometimes|required|numeric|min:0',
+            'precio' => 'sometimes|required|numeric|min:10000|max:20000000',
             'stock' => 'sometimes|required|integer|min:0',
             'estado' => 'sometimes|required|in:nuevo,usado',
             'categoria_id' => 'sometimes|required|exists:categorias,categoria_id',

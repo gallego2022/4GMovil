@@ -53,7 +53,7 @@ class ValidationService
         $rules = [
             'nombre' => 'required|string|max:255',
             'descripcion' => 'nullable|string',
-            'precio' => 'required|numeric|min:0',
+            'precio' => 'required|numeric|min:10000|max:20000000',
             'stock' => 'required|integer|min:0',
             'categoria_id' => 'required|exists:categorias,id',
             'imagen' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
@@ -67,7 +67,8 @@ class ValidationService
             'nombre.required' => 'El nombre del producto es obligatorio',
             'precio.required' => 'El precio del producto es obligatorio',
             'precio.numeric' => 'El precio debe ser un número',
-            'precio.min' => 'El precio no puede ser negativo',
+            'precio.min' => 'El precio mínimo es $10,000 COP',
+            'precio.max' => 'El precio máximo es $20,000,000 COP',
             'stock.required' => 'El stock es obligatorio',
             'stock.integer' => 'El stock debe ser un número entero',
             'stock.min' => 'El stock no puede ser negativo',

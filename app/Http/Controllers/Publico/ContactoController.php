@@ -7,6 +7,7 @@ use App\Services\ContactoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Response;
 
 class ContactoController extends WebController
 {
@@ -41,7 +42,7 @@ class ContactoController extends WebController
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => 'Por favor, corrige los errores en el formulario.',
                 'errors' => $validator->errors()
@@ -52,13 +53,13 @@ class ContactoController extends WebController
             $result = $this->contactoService->enviarFormulario($request);
 
             if ($result['success']) {
-                return response()->json([
+                return Response::json([
                     'success' => true,
                     'message' => $result['message']
                 ]);
             }
 
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => $result['message']
             ], 500);
@@ -66,7 +67,7 @@ class ContactoController extends WebController
         } catch (\Exception $e) {
             Log::error('Error al enviar formulario de contacto: ' . $e->getMessage());
             
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => 'Hubo un error al enviar el mensaje. Por favor, inténtalo de nuevo más tarde.'
             ], 500);
@@ -91,13 +92,13 @@ class ContactoController extends WebController
             $result = $this->contactoService->enviarServicioTecnico($request);
 
             if ($result['success']) {
-                return response()->json([
+                return Response::json([
                     'success' => true,
                     'message' => $result['message']
                 ]);
             }
 
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => $result['message']
             ], 500);
@@ -105,7 +106,7 @@ class ContactoController extends WebController
         } catch (\Exception $e) {
             Log::error('Error en formulario de servicio técnico: ' . $e->getMessage());
             
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => 'Hubo un error al enviar la solicitud. Por favor, inténtalo de nuevo más tarde.'
             ], 500);

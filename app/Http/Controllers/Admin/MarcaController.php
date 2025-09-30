@@ -4,19 +4,21 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Marca;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Base\WebController;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Redirect;
 
-class MarcaController extends Controller
+class MarcaController extends WebController
 {
     public function index()
     {
         $marcas = Marca::all();
-        return view('pages.admin.marcas.index', compact('marcas'));
+        return View::make('pages.admin.marcas.index', compact('marcas'));
     }
 
     public function create()
     {
-        return view('pages.admin.marcas.create');
+        return View::make('pages.admin.marcas.create');
     }
 
     public function store(Request $request)
@@ -28,13 +30,13 @@ class MarcaController extends Controller
        Marca::create($request->only('nombre'));
 
 
-        return redirect()->route('marcas.index')->with('success', 'Marca creada correctamente.');
+        return Redirect::route('marcas.index')->with('mensaje', 'Marca Creada')->with('tipo', 'success');
     }
 
     public function edit($id)
     {
         $marca = Marca::findOrFail($id);
-        return view('pages.admin.marcas.edit', compact('marca'));
+        return View::make('pages.admin.marcas.edit', compact('marca'));
     }
 
     public function update(Request $request, $id)
@@ -49,7 +51,7 @@ class MarcaController extends Controller
             'nombre' => $request->nombre,
         ]);
 
-        return redirect()->route('marcas.index')->with('success', 'Marca actualizada correctamente.');
+        return Redirect::route('marcas.index')->with('mensaje', 'Marca Actualizada')->with('tipo', 'success');
     }
 
     public function destroy($id)
@@ -57,6 +59,6 @@ class MarcaController extends Controller
         $marca = Marca::findOrFail($id);
         $marca->delete();
 
-        return redirect()->route('marcas.index')->with('eliminado',  'Marca eliminada correctamente.');
+        return Redirect::route('marcas.index')->with('mensaje', 'Marca Eliminada')->with('tipo', 'success');
     }
 }

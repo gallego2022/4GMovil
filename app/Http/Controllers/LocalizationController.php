@@ -6,6 +6,9 @@ use App\Models\LocalizationConfig;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Redirect;
 
 class LocalizationController extends Controller
 {
@@ -14,7 +17,7 @@ class LocalizationController extends Controller
      */
     public function showConfigModal()
     {
-        $config = LocalizationConfig::getConfigForUser(auth()->id());
+        $config = LocalizationConfig::getConfigForUser(Auth::id());
         
         $countries = [
             'CO' => ['name' => 'Colombia', 'flag' => '🇨🇴'],
@@ -36,7 +39,7 @@ class LocalizationController extends Controller
             'EUR' => 'Euro (EUR)',
         ];
 
-        return response()->json([
+        return Response::json([
             'config' => $config,
             'countries' => $countries,
             'languages' => $languages,
@@ -76,8 +79,8 @@ class LocalizationController extends Controller
             Session::put('currency', $request->currency_code);
 
             // Si el usuario está autenticado, guardar en la base de datos
-            if (auth()->check()) {
-                $userId = auth()->id();
+            if (Auth::check()) {
+                $userId = Auth::id();
                 $config = LocalizationConfig::where('usuario_id', $userId)->first();
                 
                 if (!$config) {
@@ -91,7 +94,7 @@ class LocalizationController extends Controller
                 $config->save();
             }
 
-            return response()->json([
+            return Response::json([
                 'success' => true,
                 'message' => __('messages.messages.save_success'),
                 'config' => [
@@ -102,7 +105,7 @@ class LocalizationController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => __('messages.messages.save_error'),
                 'error' => $e->getMessage()
@@ -140,11 +143,11 @@ class LocalizationController extends Controller
             Session::put('currency', $config['currency']);
             
             // Actualizar configuración del usuario si está autenticado
-            if (auth()->check()) {
-                $userConfig = LocalizationConfig::where('usuario_id', auth()->id())->first();
+            if (Auth::check()) {
+                $userConfig = LocalizationConfig::where('usuario_id', Auth::id())->first();
                 if (!$userConfig) {
                     $userConfig = new LocalizationConfig();
-                    $userConfig->usuario_id = auth()->id();
+                    $userConfig->usuario_id = Auth::id();
                 }
                 
                 $userConfig->language_code = $language;
@@ -154,7 +157,7 @@ class LocalizationController extends Controller
             }
         }
 
-        return redirect()->back();
+        return Redirect::back();
     }
 
     /**
@@ -162,7 +165,7 @@ class LocalizationController extends Controller
      */
     public function getCurrentConfig()
     {
-        $userId = auth()->id();
+        $userId = Auth::id();
         $config = LocalizationConfig::getConfigForUser($userId);
         
         // Si no hay configuración, usar valores por defecto de la sesión
@@ -174,7 +177,7 @@ class LocalizationController extends Controller
             ];
         }
         
-        return response()->json([
+        return Response::json([
             'config' => $config,
             'current_locale' => App::getLocale(),
             'session_locale' => Session::get('locale'),

@@ -172,10 +172,23 @@
                     </button>
                 </form>
                 
-                <div class="mt-6 text-center">
-                    <a href="{{ route('password.request') }}" class="text-blue-400 hover:text-blue-300 font-medium">
-                        <i class="fas fa-arrow-left mr-1"></i> Volver a solicitar código
-                    </a>
+                <div class="mt-6 text-center space-y-3">
+                    <!-- Botón para solicitar nuevo código OTP -->
+                    <div>
+                        <button type="button" 
+                                id="request-new-code-btn"
+                                onclick="requestNewCode()"
+                                class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition duration-300">
+                            <i class="fas fa-redo mr-2"></i> Solicitar nuevo código OTP
+                        </button>
+                    </div>
+                    
+                    <!-- Enlace para volver al inicio -->
+                    <div>
+                        <a href="{{ route('password.request') }}" class="text-blue-400 hover:text-blue-300 font-medium">
+                            <i class="fas fa-arrow-left mr-1"></i> Volver al inicio
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -214,6 +227,82 @@
             field.type = 'password';
             icon.className = 'fas fa-eye';
         }
+    }
+
+    // Función para solicitar nuevo código OTP
+    function requestNewCode() {
+        const email = '{{ session("email_sent") }}';
+        if (!email) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se encontró el correo electrónico. Por favor, vuelve al inicio.',
+                confirmButtonText: 'Entendido'
+            });
+            return;
+        }
+
+        Swal.fire({
+            title: '¿Solicitar nuevo código?',
+            text: 'Se enviará un nuevo código OTP a tu correo electrónico.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3b82f6',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Sí, enviar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Mostrar loading
+                Swal.fire({
+                    title: 'Enviando...',
+                    text: 'Por favor espera',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // Enviar solicitud
+                fetch('{{ route("password.email") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        email: email
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Código enviado!',
+                            text: 'Revisa tu correo electrónico para el nuevo código OTP.',
+                            confirmButtonText: 'Entendido'
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message || 'Error al enviar el código OTP.',
+                            confirmButtonText: 'Entendido'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error de conexión. Intenta nuevamente.',
+                        confirmButtonText: 'Entendido'
+                    });
+                });
+            }
+        });
     }
 
     // Validación de contraseña en tiempo real

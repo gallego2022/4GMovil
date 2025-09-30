@@ -117,4 +117,36 @@ class OtpCode extends Model
     {
         return max(0, now()->diffInMinutes($this->fecha_expiracion, false));
     }
+
+    // Invalidar códigos OTP existentes para un usuario y tipo específico
+    public static function invalidarCodigosExistentes($usuarioId, $tipo): int
+    {
+        return self::where('usuario_id', $usuarioId)
+            ->where('tipo', $tipo)
+            ->where('usado', false)
+            ->update(['usado' => true]);
+    }
+
+    // Verificar si el usuario puede solicitar un nuevo código (considerando errores)
+    public static function puedeSolicitarNuevoCodigo($usuarioId, $tipo, $minutosEspera = 1): bool
+    {
+        $ultimoCodigo = self::where('usuario_id', $usuarioId)
+            ->where('tipo', $tipo)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if (!$ultimoCodigo) {
+            return true;
+        }
+
+        // Si el código está expirado o usado, puede solicitar uno nuevo
+        if ($ultimoCodigo->estaExpirado() || $ultimoCodigo->estaUsado()) {
+            return true;
+        }
+
+        // Si el código es válido pero han pasado menos de 1 minuto desde la última solicitud,
+        // permitir invalidar y crear uno nuevo (para casos de error)
+        $tiempoDesdeCreacion = now()->diffInMinutes($ultimoCodigo->created_at);
+        return $tiempoDesdeCreacion >= $minutosEspera;
+    }
 }

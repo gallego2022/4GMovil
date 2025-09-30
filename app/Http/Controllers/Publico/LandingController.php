@@ -6,6 +6,9 @@ use App\Http\Controllers\Base\WebController;
 use App\Services\LandingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Collection;
 
 class LandingController extends WebController
 {
@@ -25,18 +28,18 @@ class LandingController extends WebController
             $this->applyLocalization();
             $data = $this->landingService->getHomePageData();
             
-            return view('pages.landing.index', $data);
+            return View::make('pages.landing.index', $data);
 
         } catch (\Exception $e) {
             Log::error('Error en LandingController@index: ' . $e->getMessage());
             
             // En caso de error, mostrar vista con datos vacíos
-            return view('pages.landing.index', [
-                'productos' => collect(),
-                'productosDestacados' => collect(),
-                'categorias' => collect(),
-                'marcas' => collect(),
-                'productosPopulares' => collect()
+            return View::make('pages.landing.index', [
+                'productos' => Collection::make(),
+                'productosDestacados' => Collection::make(),
+                'categorias' => Collection::make(),
+                'marcas' => Collection::make(),
+                'productosPopulares' => Collection::make()
             ]);
         }
     }
@@ -50,7 +53,7 @@ class LandingController extends WebController
             $this->applyLocalization();
             $data = $this->landingService->getCatalogData($request);
             
-            return view('pages.landing.productos', $data);
+            return View::make('pages.landing.productos', $data);
 
         } catch (\Exception $e) {
             Log::error('Error en LandingController@catalogo: ' . $e->getMessage());
@@ -71,7 +74,7 @@ class LandingController extends WebController
                 try {
                     $html = $this->landingService->generateProductsHtml($data['productos']);
                     
-                    return response()->json([
+                    return Response::json([
                         'success' => true,
                         'productos' => $data['productos'],
                         'html' => $html
@@ -79,7 +82,7 @@ class LandingController extends WebController
                 } catch (\Exception $viewError) {
                     Log::error('Error al renderizar vista en productosFiltrados: ' . $viewError->getMessage());
                     
-                    return response()->json([
+                    return Response::json([
                         'success' => false,
                         'message' => 'Error al generar la vista de productos: ' . $viewError->getMessage()
                     ], 500);
@@ -87,14 +90,14 @@ class LandingController extends WebController
             }
 
             // Si es una petición directa, devolver la vista completa
-            return view('pages.landing.productos', $data);
+            return View::make('pages.landing.productos', $data);
 
         } catch (\Exception $e) {
             Log::error('Error en productosFiltrados: ' . $e->getMessage());
             
             // Si es AJAX, devolver error JSON
             if ($request->ajax() || $request->wantsJson()) {
-                return response()->json([
+                return Response::json([
                     'success' => false,
                     'message' => 'Error al filtrar productos: ' . $e->getMessage()
                 ], 500);

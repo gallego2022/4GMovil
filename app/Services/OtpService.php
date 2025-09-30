@@ -139,10 +139,17 @@ class OtpService
                 $otp = OtpCode::obtenerCodigoValido($usuario->usuario_id, 'password_reset');
                 $tiempoRestante = $otp->tiempoRestante();
                 
-                return [
-                    'success' => false,
-                    'message' => "Ya tienes un código válido. Espera {$tiempoRestante} minutos para solicitar uno nuevo."
-                ];
+                // Si han pasado menos de 1 minuto desde la última solicitud, permitir invalidar
+                if (OtpCode::puedeSolicitarNuevoCodigo($usuario->usuario_id, 'password_reset', 1)) {
+                    // Invalidar códigos existentes y continuar
+                    OtpCode::invalidarCodigosExistentes($usuario->usuario_id, 'password_reset');
+                    Log::info("Códigos OTP anteriores invalidados para: {$usuario->correo_electronico}");
+                } else {
+                    return [
+                        'success' => false,
+                        'message' => "Ya tienes un código válido. Espera {$tiempoRestante} minutos para solicitar uno nuevo."
+                    ];
+                }
             }
 
             // Crear nuevo código OTP

@@ -7,6 +7,9 @@ use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Collection;
 
 class SearchController extends WebController
 {
@@ -20,7 +23,7 @@ class SearchController extends WebController
         $q = trim((string) $request->get('q', ''));
 
         // Productos (nombre, categoría, marca)
-        $productos = collect();
+        $productos = Collection::make();
         if ($q !== '') {
             $productos = Producto::with(['categoria', 'marca', 'imagenes'])
                 ->where(function ($query) use ($q) {
@@ -39,7 +42,7 @@ class SearchController extends WebController
         }
 
         // Páginas estáticas conocidas (con palabras clave) - solo incluir si la ruta existe
-        $pages = collect([
+        $pages = Collection::make([
             [ 'title' => 'Inicio', 'route' => 'landing', 'keywords' => ['home', 'principal', 'inicio'] ],
             [ 'title' => 'Catálogo de Productos', 'route' => 'productos.lista', 'keywords' => ['catalogo', 'productos', 'tienda', 'catalogo completo'] ],
             [ 'title' => 'Nosotros', 'route' => 'nosotros', 'keywords' => ['about', 'quienes somos', 'nosotros', 'empresa'] ],
@@ -55,7 +58,7 @@ class SearchController extends WebController
         })->values();
 
         $qNorm = Str::lower(Str::ascii($q));
-        $paginas = collect($pages)->filter(function ($page) use ($qNorm) {
+        $paginas = Collection::make($pages)->filter(function ($page) use ($qNorm) {
             if ($qNorm === '') { return false; }
             $haystack = Str::lower(Str::ascii($page['title'] . ' ' . implode(' ', $page['keywords'] ?? [])));
             return Str::contains($haystack, $qNorm);
@@ -63,7 +66,7 @@ class SearchController extends WebController
             return [ 'title' => $page['title'], 'route' => $page['route'] ];
         })->values();
 
-        return view('pages.search.results', [
+        return View::make('pages.search.results', [
             'q' => $q,
             'productos' => $productos,
             'paginas' => $paginas,
@@ -77,7 +80,7 @@ class SearchController extends WebController
     {
         $q = trim((string) $request->get('q', ''));
         if ($q === '') {
-            return response()->json([
+            return Response::json([
                 'productos' => [],
                 'paginas' => [],
             ]);
@@ -118,7 +121,7 @@ class SearchController extends WebController
                 ];
             });
 
-        $pages = collect([
+        $pages = Collection::make([
             [ 'title' => 'Inicio', 'route' => 'landing', 'keywords' => ['home', 'principal', 'inicio'] ],
             [ 'title' => 'Catálogo de Productos', 'route' => 'productos.lista', 'keywords' => ['catalogo', 'productos', 'tienda', 'catalogo completo'] ],
             [ 'title' => 'Nosotros', 'route' => 'nosotros', 'keywords' => ['about', 'quienes somos', 'nosotros', 'empresa'] ],
@@ -134,7 +137,7 @@ class SearchController extends WebController
         })->values();
 
         $qNorm = Str::lower(Str::ascii($q));
-        $paginas = collect($pages)
+        $paginas = Collection::make($pages)
             ->filter(function ($page) use ($qNorm) {
                 $haystack = Str::lower(Str::ascii($page['title'] . ' ' . implode(' ', $page['keywords'] ?? [])));
                 return Str::contains($haystack, $qNorm);

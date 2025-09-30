@@ -6,6 +6,8 @@ use App\Http\Controllers\Base\WebController;
 use App\Services\DashboardService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Collection;
 
 class DashboardController extends WebController
 {
@@ -21,7 +23,7 @@ class DashboardController extends WebController
             $data = $this->dashboardService->getDashboardData($request);
             
             if ($data['success']) {
-                return view('pages.admin.index', [
+                return View::make('pages.admin.index', [
                     'totalProductos' => $data['basicStats']['totalProductos'],
                     'totalCategorias' => $data['basicStats']['totalCategorias'],
                     'totalMarcas' => $data['basicStats']['totalMarcas'],
@@ -36,16 +38,16 @@ class DashboardController extends WebController
             }
 
             // En caso de error, mostrar vista con datos vacíos
-            return view('pages.admin.index', [
+            return View::make('pages.admin.index', [
                 'totalProductos' => 0,
                 'totalCategorias' => 0,
                 'totalMarcas' => 0,
                 'total_variantes'=> 0,
                 'usuarios' => 0,
-                'ultimosProductos' => collect(),
+                'ultimosProductos' => Collection::make(),
                 'webhookStats' => [],
                 'pedidoStats' => [],
-                'recentWebhooks' => collect(),
+                'recentWebhooks' => Collection::make(),
                 'filters' => []
             ]);
 
@@ -53,16 +55,16 @@ class DashboardController extends WebController
             Log::error('Error en DashboardController@index: ' . $e->getMessage());
             
             // Vista de fallback
-            return view('pages.admin.index', [
+            return View::make('pages.admin.index', [
                 'totalProductos' => 0,
                 'totalCategorias' => 0,
                 'totalMarcas' => 0,
                 'total_variantes'=> 0,
                 'usuarios' => 0,
-                'ultimosProductos' => collect(),
+                'ultimosProductos' => Collection::make(),
                 'webhookStats' => [],
                 'pedidoStats' => [],
-                'recentWebhooks' => collect(),
+                'recentWebhooks' => Collection::make(),
                 'filters' => []
             ]);
         }

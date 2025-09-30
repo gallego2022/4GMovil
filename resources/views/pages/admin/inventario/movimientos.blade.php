@@ -3,6 +3,9 @@
 @section('title', 'Movimientos de Inventario - 4GMovil')
 
 @section('content')
+<!-- Notificaciones -->
+<x-notifications />
+
 <div class="space-y-6">
     <!-- Encabezado -->
     <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
@@ -250,7 +253,7 @@
                             {{ $movimiento->motivo }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                            {{ $movimiento->usuario->name ?? 'Sistema' }}
+                            {{ $movimiento->usuario->nombre_usuario ?? 'Sistema' }}
                         </td>
                     </tr>
                     @empty

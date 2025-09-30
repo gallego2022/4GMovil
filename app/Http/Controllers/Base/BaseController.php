@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Base;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Response as ResponseFacade;
+use Illuminate\Support\Carbon;
 
 abstract class BaseController extends \Illuminate\Routing\Controller
 {
@@ -16,11 +17,11 @@ abstract class BaseController extends \Illuminate\Routing\Controller
      */
     protected function successResponse($data = null, string $message = 'Operación exitosa', int $code = 200): JsonResponse
     {
-        return response()->json([
+        return ResponseFacade::json([
             'success' => true,
             'message' => $message,
             'data' => $data,
-            'timestamp' => now()->toISOString()
+            'timestamp' => Carbon::now()->toISOString()
         ], $code);
     }
 
@@ -32,14 +33,14 @@ abstract class BaseController extends \Illuminate\Routing\Controller
         $response = [
             'success' => false,
             'message' => $message,
-            'timestamp' => now()->toISOString()
+            'timestamp' => Carbon::now()->toISOString()
         ];
 
         if ($errors) {
             $response['errors'] = $errors;
         }
 
-        return response()->json($response, $code);
+        return ResponseFacade::json($response, $code);
     }
 
     /**

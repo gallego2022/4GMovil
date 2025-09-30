@@ -6,6 +6,10 @@ use App\Http\Controllers\Base\WebController;
 use App\Services\OtpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Redirect;
 
 class OtpController extends WebController
 {
@@ -20,7 +24,7 @@ class OtpController extends WebController
      */
     public function showVerificationForm()
     {
-        return view('auth.otp-verification');
+        return View::make('auth.otp-verification');
     }
 
     /**
@@ -28,12 +32,12 @@ class OtpController extends WebController
      */
     public function showRegisterVerificationForm()
     {
-        $email = session('verification_email');
+        $email = Session::get('verification_email');
         if (!$email) {
-            return redirect()->route('otp.verify.form');
+            return Redirect::route('otp.verify.form');
         }
         
-        return view('auth.otp-verification-register', compact('email'));
+        return View::make('auth.otp-verification-register', compact('email'));
     }
 
     /**
@@ -45,14 +49,14 @@ class OtpController extends WebController
             $result = $this->otpService->sendOtp($request);
 
             if ($result['success']) {
-                return response()->json([
+                return Response::json([
                     'success' => true,
                     'message' => $result['message'],
                     'tiempo_expiracion' => $result['tiempo_expiracion']
                 ]);
             }
 
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => $result['message']
             ], 429);
@@ -60,7 +64,7 @@ class OtpController extends WebController
         } catch (\Exception $e) {
             Log::error('Error enviando OTP: ' . $e->getMessage());
             
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => 'Error interno del servidor'
             ], 500);
@@ -76,13 +80,13 @@ class OtpController extends WebController
             $result = $this->otpService->verifyOtp($request);
 
             if ($result['success']) {
-                return response()->json([
+                return Response::json([
                     'success' => true,
                     'message' => $result['message']
                 ]);
             }
 
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => $result['message']
             ], 400);
@@ -90,7 +94,7 @@ class OtpController extends WebController
         } catch (\Exception $e) {
             Log::error('Error verificando OTP: ' . $e->getMessage());
             
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => 'Error interno del servidor'
             ], 500);
@@ -106,14 +110,14 @@ class OtpController extends WebController
             $result = $this->otpService->sendPasswordResetOtp($request);
 
             if ($result['success']) {
-                return response()->json([
+                return Response::json([
                     'success' => true,
                     'message' => $result['message'],
                     'tiempo_expiracion' => $result['tiempo_expiracion']
                 ]);
             }
 
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => $result['message']
             ], 429);
@@ -121,7 +125,7 @@ class OtpController extends WebController
         } catch (\Exception $e) {
             Log::error('Error enviando OTP de restablecimiento: ' . $e->getMessage());
             
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => 'Error interno del servidor'
             ], 500);
@@ -137,14 +141,14 @@ class OtpController extends WebController
             $result = $this->otpService->verifyPasswordResetOtp($request);
 
             if ($result['success']) {
-                return response()->json([
+                return Response::json([
                     'success' => true,
                     'message' => $result['message'],
                     'usuario_id' => $result['usuario_id']
                 ]);
             }
 
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => $result['message']
             ], 400);
@@ -152,7 +156,7 @@ class OtpController extends WebController
         } catch (\Exception $e) {
             Log::error('Error verificando OTP de restablecimiento: ' . $e->getMessage());
             
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => 'Error interno del servidor'
             ], 500);
@@ -168,13 +172,13 @@ class OtpController extends WebController
             $result = $this->otpService->limpiarExpirados();
             
             if ($result['success']) {
-                return response()->json([
+                return Response::json([
                     'success' => true,
                     'message' => $result['message']
                 ]);
             }
 
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => $result['message']
             ], 500);
@@ -182,7 +186,7 @@ class OtpController extends WebController
         } catch (\Exception $e) {
             Log::error('Error limpiando códigos OTP expirados: ' . $e->getMessage());
             
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => 'Error interno del servidor'
             ], 500);

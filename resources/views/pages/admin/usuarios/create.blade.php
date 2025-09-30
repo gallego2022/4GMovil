@@ -48,38 +48,38 @@
                 
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                     <!-- Nombre del usuario -->
-                    <div>
-                        <label for="nombre_usuario" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                           Nombre Completo <span class="text-red-500">*</span>
-                        </label>
-                        <input type="text" 
-                               name="nombre_usuario" 
-                               id="nombre_usuario"
-                               class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200 @error('nombre_usuario') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
-                               value="{{ old('nombre_usuario') }}" 
-                               placeholder="Ej: Juan Pérez"
-                               required>
-                        @error('nombre_usuario')
-                            <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    <x-validation-field 
+                        name="nombre_usuario"
+                        label="Nombre Completo"
+                        type="text"
+                        placeholder="Ej: Juan Pérez"
+                        :required="true"
+                        :rules="['required', 'minLength:2', 'maxLength:100', 'nameFormat', 'noNumbers']"
+                        :messages="[
+                            'required' => 'El nombre completo es requerido',
+                            'minLength' => 'Mínimo 2 caracteres',
+                            'maxLength' => 'Máximo 100 caracteres',
+                            'nameFormat' => 'Debe contener al menos nombre y apellido',
+                            'noNumbers' => 'No debe contener números'
+                        ]"
+                        help-text="Nombre completo del usuario (nombre y apellido)"
+                    />
 
-                    <!--{{ __('admin.fields.phone') }}-->
-                    <div>
-                        <label for="telefono" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                           {{ __('admin.fields.phone') }}<span class="text-red-500">*</span>
-                        </label>
-                        <input type="tel" 
-                               name="telefono" 
-                               id="telefono"
-                               class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200 @error('telefono') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
-                               value="{{ old('telefono') }}" 
-                               placeholder="Ej: +57 300 123 4567"
-                               required>
-                        @error('telefono')
-                            <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    <!-- Teléfono -->
+                    <x-validation-field 
+                        name="telefono"
+                        label="Teléfono"
+                        type="tel"
+                        placeholder="Ej: +57 300 123 4567"
+                        :required="true"
+                        :rules="['required', 'phone', 'phoneLength']"
+                        :messages="[
+                            'required' => 'El teléfono es requerido',
+                            'phone' => 'Ingresa un número de teléfono válido',
+                            'phoneLength' => 'El teléfono debe tener entre 7 y 15 dígitos'
+                        ]"
+                        help-text="Número de teléfono del usuario (con código de país)"
+                    />
                 </div>
             </div>
 
@@ -94,53 +94,54 @@
                 
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                     <!-- Correo electrónico -->
-                    <div>
-                        <label for="correo_electronico" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Correo Electrónico <span class="text-red-500">*</span>
-                        </label>
-                        <input type="email" 
-                               name="correo_electronico" 
-                               id="correo_electronico"
-                               class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200 @error('correo_electronico') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
-                               value="{{ old('correo_electronico') }}" 
-                               placeholder="usuario@ejemplo.com"
-                               required>
-                        @error('correo_electronico')
-                            <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    <x-validation-field 
+                        name="correo_electronico"
+                        label="Correo Electrónico"
+                        type="email"
+                        placeholder="usuario@ejemplo.com"
+                        :required="true"
+                        :rules="['required', 'email', 'emailDomain']"
+                        :messages="[
+                            'required' => 'El correo electrónico es requerido',
+                            'email' => 'Ingresa un correo electrónico válido',
+                            'emailDomain' => 'El dominio del correo debe ser válido'
+                        ]"
+                        help-text="Correo electrónico del usuario"
+                    />
 
                     <!-- Contraseña -->
-                    <div>
-                        <label for="contrasena" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Contraseña <span class="text-red-500">*</span>
-                        </label>
-                        <input type="password" 
-                               name="contrasena" 
-                               id="contrasena"
-                               class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200 @error('contrasena') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
-                               placeholder="Mínimo 8 caracteres"
-                               required>
-                        @error('contrasena')
-                            <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    <x-validation-field 
+                        name="contrasena"
+                        label="Contraseña"
+                        type="password"
+                        placeholder="Mínimo 8 caracteres"
+                        :required="true"
+                        :rules="['required', 'minLength:8', 'passwordStrength']"
+                        :messages="[
+                            'required' => 'La contraseña es requerida',
+                            'minLength' => 'Mínimo 8 caracteres',
+                            'passwordStrength' => 'Debe contener al menos una mayúscula, una minúscula y un número'
+                        ]"
+                        help-text="Contraseña segura del usuario"
+                    />
                 </div>
 
                 <!-- Confirmar contraseña -->
                 <div class="mt-6">
-                    <label for="contrasena_confirmation" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Confirmar Contraseña <span class="text-red-500">*</span>
-                    </label>
-                    <input type="password" 
-                           name="contrasena_confirmation" 
-                           id="password_confirmation"
-                           class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200" 
-                           placeholder="Repite la contraseña"
-                           required>
-                    @error('contrasena_confirmation')
-                        <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                    @enderror
+                    <x-validation-field 
+                        name="contrasena_confirmation"
+                        label="Confirmar Contraseña"
+                        type="password"
+                        placeholder="Repite la contraseña"
+                        :required="true"
+                        :rules="['required', 'matchPassword', 'passwordStrength']"
+                        :messages="[
+                            'required' => 'La confirmación de contraseña es requerida',
+                            'matchPassword' => 'Las contraseñas no coinciden',
+                            'passwordStrength' => 'Debe contener al menos una mayúscula, una minúscula y un número'
+                        ]"
+                        help-text="Repite la contraseña para confirmar"
+                    />
                 </div>
             </div>
 

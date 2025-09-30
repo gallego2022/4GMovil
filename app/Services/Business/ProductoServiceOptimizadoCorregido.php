@@ -99,7 +99,8 @@ class ProductoServiceOptimizadoCorregido extends BaseService
             
             // Procesar variantes
             if ($request->has('variantes')) {
-                $this->processVariantes($producto, $request->input('variantes'), $request->file('variantes'));
+                $variantesFiles = $request->file('variantes') ?? [];
+                $this->processVariantes($producto, $request->input('variantes'), $variantesFiles);
             }
             
             // Procesar especificaciones
@@ -211,7 +212,7 @@ class ProductoServiceOptimizadoCorregido extends BaseService
                 'marca', 
                 'variantes.imagenes', 
                 'imagenes',
-                'especificaciones'
+                'especificaciones.especificacionCategoria'
             ])->findOrFail($productoId);
 
             return $this->formatSuccessResponse($producto, 'Producto obtenido exitosamente');
@@ -233,7 +234,8 @@ class ProductoServiceOptimizadoCorregido extends BaseService
         $rules = [
             'nombre_producto' => 'required|string|max:255',
             'descripcion' => 'nullable|string',
-            'precio' => 'required|numeric|min:0',
+            'precio' => 'required|numeric|min:10000|max:20000000',
+            'stock' => 'nullable|integer|min:0',
             'stock_inicial' => 'required|integer|min:0',
             'estado' => 'required|in:nuevo,usado',
             'categoria_id' => 'required|exists:categorias,categoria_id',
@@ -252,6 +254,8 @@ class ProductoServiceOptimizadoCorregido extends BaseService
             'nombre_producto.required' => 'El nombre del producto es obligatorio',
             'precio.required' => 'El precio es obligatorio',
             'precio.numeric' => 'El precio debe ser un número',
+            'precio.min' => 'El precio mínimo es $10,000 COP',
+            'precio.max' => 'El precio máximo es $20,000,000 COP',
             'stock_inicial.required' => 'El stock inicial es obligatorio para calcular alertas',
             'stock_inicial.integer' => 'El stock inicial debe ser un número entero',
             'categoria_id.required' => 'Debe seleccionar una categoría',

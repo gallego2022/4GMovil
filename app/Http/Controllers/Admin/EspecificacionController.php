@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Base\WebController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Response;
 use App\Models\EspecificacionCategoria;
 use App\Models\Categoria;
 
-class EspecificacionController extends Controller
+class EspecificacionController extends WebController
 {
     /**
      * Mostrar el listado de especificaciones
@@ -22,10 +25,10 @@ class EspecificacionController extends Controller
                 ->orderBy('orden')
                 ->get();
 
-            return view('pages.admin.especificaciones.index', compact('especificaciones'));
+            return View::make('pages.admin.especificaciones.index', compact('especificaciones'));
         } catch (\Exception $e) {
             Log::error('Error al cargar especificaciones: ' . $e->getMessage());
-            return back()->with('error', 'Error al cargar las especificaciones');
+            return Redirect::back()->with('mensaje', 'Error al cargar las especificaciones')->with('tipo', 'error');
         }
     }
 
@@ -39,10 +42,10 @@ class EspecificacionController extends Controller
                 ->orderBy('nombre')
                 ->get();
 
-            return view('pages.admin.especificaciones.create', compact('categorias'));
+            return View::make('pages.admin.especificaciones.create', compact('categorias'));
         } catch (\Exception $e) {
             Log::error('Error al cargar formulario de creación: ' . $e->getMessage());
-            return back()->with('error', 'Error al cargar el formulario');
+            return Redirect::back()->with('mensaje', 'Error al cargar el formulario')->with('tipo', 'error');
         }
     }
 
@@ -56,7 +59,7 @@ class EspecificacionController extends Controller
                 'categoria_id' => 'required|exists:categorias,categoria_id',
                 'nombre_campo' => 'required|string|max:100',
                 'etiqueta' => 'required|string|max:100',
-                'tipo_campo' => 'required|in:text,textarea,number,select,checkbox,radio,date,email,url',
+                'tipo_campo' => 'required|in:texto,numero,select,checkbox,radio',
                 'opciones' => 'nullable|string|max:500',
                 'unidad' => 'nullable|string|max:50',
                 'descripcion' => 'nullable|string|max:500',
@@ -74,7 +77,7 @@ class EspecificacionController extends Controller
                 ->exists();
                 
             if ($existe) {
-                return back()->withInput()->withErrors([
+                return Redirect::back()->withInput()->withErrors([
                     'nombre_campo' => 'Ya existe un campo con ese nombre en esta categoría'
                 ]);
             }
@@ -94,12 +97,13 @@ class EspecificacionController extends Controller
                 'campo' => $especificacion->nombre_campo
             ]);
 
-            return redirect()->route('admin.especificaciones.index')
-                ->with('success', 'Especificación creada exitosamente');
+            return Redirect::route('admin.especificaciones.index')
+                ->with('mensaje', 'Especificación creada exitosamente')
+                ->with('tipo', 'success');
 
         } catch (\Exception $e) {
             Log::error('Error al crear especificación: ' . $e->getMessage());
-            return back()->withInput()->withErrors([
+            return Redirect::back()->withInput()->withErrors([
                 'error' => 'Error al crear la especificación: ' . $e->getMessage()
             ]);
         }
@@ -113,10 +117,10 @@ class EspecificacionController extends Controller
         try {
             $especificacion = EspecificacionCategoria::with('categoria')->findOrFail($id);
             
-            return view('pages.admin.especificaciones.show', compact('especificacion'));
+            return View::make('pages.admin.especificaciones.show', compact('especificacion'));
         } catch (\Exception $e) {
             Log::error('Error al cargar especificación: ' . $e->getMessage());
-            return back()->with('error', 'Especificación no encontrada');
+            return Redirect::back()->with('mensaje', 'Especificación no encontrada')->with('tipo', 'error');
         }
     }
 
@@ -131,10 +135,10 @@ class EspecificacionController extends Controller
                 ->orderBy('nombre')
                 ->get();
 
-            return view('pages.admin.especificaciones.edit', compact('especificacion', 'categorias'));
+            return View::make('pages.admin.especificaciones.edit', compact('especificacion', 'categorias'));
         } catch (\Exception $e) {
             Log::error('Error al cargar especificación para editar: ' . $e->getMessage());
-            return back()->with('error', 'Especificación no encontrada');
+            return Redirect::back()->with('mensaje', 'Especificación no encontrada')->with('tipo', 'error');
         }
     }
 
@@ -150,7 +154,7 @@ class EspecificacionController extends Controller
                 'categoria_id' => 'required|exists:categorias,categoria_id',
                 'nombre_campo' => 'required|string|max:100',
                 'etiqueta' => 'required|string|max:100',
-                'tipo_campo' => 'required|in:text,textarea,number,select,checkbox,radio,date,email,url',
+                'tipo_campo' => 'required|in:texto,numero,select,checkbox,radio',
                 'opciones' => 'nullable|string|max:500',
                 'unidad' => 'nullable|string|max:50',
                 'descripcion' => 'nullable|string|max:500',
@@ -165,7 +169,7 @@ class EspecificacionController extends Controller
                 ->exists();
                 
             if ($existe) {
-                return back()->withInput()->withErrors([
+                return Redirect::back()->withInput()->withErrors([
                     'nombre_campo' => 'Ya existe un campo con ese nombre en esta categoría'
                 ]);
             }
@@ -178,12 +182,13 @@ class EspecificacionController extends Controller
                 'campo' => $especificacion->nombre_campo
             ]);
 
-            return redirect()->route('admin.especificaciones.index')
-                ->with('success', 'Especificación actualizada exitosamente');
+            return Redirect::route('admin.especificaciones.index')
+                ->with('mensaje', 'Especificación actualizada exitosamente')
+                ->with('tipo', 'success');
 
         } catch (\Exception $e) {
             Log::error('Error al actualizar especificación: ' . $e->getMessage());
-            return back()->withInput()->withErrors([
+            return Redirect::back()->withInput()->withErrors([
                 'error' => 'Error al actualizar la especificación: ' . $e->getMessage()
             ]);
         }
@@ -203,7 +208,7 @@ class EspecificacionController extends Controller
                 ->count();
                 
             if ($productosConEspecificacion > 0) {
-                return back()->with('error', 'No se puede eliminar esta especificación porque está siendo utilizada por productos');
+                return Redirect::back()->with('mensaje', 'No se puede eliminar esta especificación porque está siendo utilizada por productos')->with('tipo', 'error');
             }
 
             $especificacion->delete();
@@ -213,12 +218,12 @@ class EspecificacionController extends Controller
                 'campo' => $especificacion->nombre_campo ?? 'N/A'
             ]);
 
-            return redirect()->route('admin.especificaciones.index')
+            return Redirect::route('admin.especificaciones.index')
                 ->with('eliminado', 'ok');
 
         } catch (\Exception $e) {
             Log::error('Error al eliminar especificación: ' . $e->getMessage());
-            return back()->with('error', 'Error al eliminar la especificación');
+            return Redirect::back()->with('mensaje', 'Error al eliminar la especificación')->with('tipo', 'error');
         }
     }
 
@@ -233,13 +238,13 @@ class EspecificacionController extends Controller
                 ->orderBy('orden')
                 ->get();
 
-            return response()->json([
+            return Response::json([
                 'success' => true,
                 'data' => $especificaciones
             ]);
         } catch (\Exception $e) {
             Log::error('Error al obtener especificaciones por categoría: ' . $e->getMessage());
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => 'Error al obtener especificaciones'
             ], 500);
@@ -263,14 +268,14 @@ class EspecificacionController extends Controller
                 'estado' => $estado
             ]);
 
-            return response()->json([
+            return Response::json([
                 'success' => true,
                 'message' => "Especificación {$estado} exitosamente",
                 'activo' => $especificacion->activo
             ]);
         } catch (\Exception $e) {
             Log::error('Error al cambiar estado de especificación: ' . $e->getMessage());
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => 'Error al cambiar el estado'
             ], 500);
@@ -296,13 +301,13 @@ class EspecificacionController extends Controller
 
             Log::info('Especificaciones reordenadas exitosamente');
 
-            return response()->json([
+            return Response::json([
                 'success' => true,
                 'message' => 'Orden actualizado exitosamente'
             ]);
         } catch (\Exception $e) {
             Log::error('Error al reordenar especificaciones: ' . $e->getMessage());
-            return response()->json([
+            return Response::json([
                 'success' => false,
                 'message' => 'Error al actualizar el orden'
             ], 500);

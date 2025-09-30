@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Services\CategoriaService;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Base\WebController;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Redirect;
 
-class CategoriaController extends Controller
+class CategoriaController extends WebController
 {
     protected $categoriaService;
 
@@ -18,12 +20,12 @@ class CategoriaController extends Controller
     public function index()
     {
         $categorias = $this->categoriaService->getAllCategorias();
-        return view('pages.admin.categorias.index', compact('categorias'));
+        return View::make('pages.admin.categorias.index', compact('categorias'));
     }
 
     public function create()
     {
-        return view('pages.admin.categorias.create');
+        return View::make('pages.admin.categorias.create');
     }
 
     public function store(Request $request)
@@ -34,9 +36,11 @@ class CategoriaController extends Controller
 
         $result = $this->categoriaService->createCategoria($request->only('nombre'));
 
-        return redirect()
-            ->route('categorias.index')
-            ->with($result['success'] ? 'success' : 'error', $result['message']);
+        if ($result['success']) {
+            return Redirect::route('categorias.index')->with('mensaje', 'Categoría Creada')->with('tipo', 'success');
+        }
+        
+        return Redirect::route('categorias.index')->with('mensaje', $result['message'])->with('tipo', 'error');
     }
 
     public function edit($id)
@@ -44,10 +48,10 @@ class CategoriaController extends Controller
         $data = $this->categoriaService->getCategoriaById($id);
         
         if (!$data) {
-            return redirect()->route('categorias.index')->with('error', 'Categoría no encontrada.');
+            return Redirect::route('categorias.index')->with('error', 'Categoría no encontrada.');
         }
 
-        return view('pages.admin.categorias.edit', $data);
+        return View::make('pages.admin.categorias.edit', $data);
     }
 
     public function update(Request $request, $id)
@@ -58,17 +62,21 @@ class CategoriaController extends Controller
 
         $result = $this->categoriaService->updateCategoria($id, $request->only('nombre'));
 
-        return redirect()
-            ->route('categorias.index')
-            ->with($result['success'] ? 'success' : 'error', $result['message']); 
+        if ($result['success']) {
+            return Redirect::route('categorias.index')->with('mensaje', 'Categoría Actualizada')->with('tipo', 'success');
+        }
+        
+        return Redirect::route('categorias.index')->with('mensaje', $result['message'])->with('tipo', 'error');
     }
 
     public function destroy($id)
     {
         $result = $this->categoriaService->deleteCategoria($id);
 
-        return redirect()
-            ->route('categorias.index')
-            ->with($result['success'] ? 'success' : 'error', $result['message']);
+        if ($result['success']) {
+            return Redirect::route('categorias.index')->with('mensaje', 'Categoría Eliminada')->with('tipo', 'success');
+        }
+        
+        return Redirect::route('categorias.index')->with('mensaje', $result['message'])->with('tipo', 'error');
     }
 }

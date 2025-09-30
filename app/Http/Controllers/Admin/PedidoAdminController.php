@@ -2,15 +2,20 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Base\WebController;
 use App\Models\Pedido;
 use App\Models\EstadoPedido;
 use App\Services\PedidoNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+use Carbon\Carbon;
 
-class PedidoAdminController extends Controller
+class PedidoAdminController extends WebController
 {
     public function __construct()
     {
@@ -24,10 +29,10 @@ class PedidoAdminController extends Controller
                 ->orderBy('fecha_pedido', 'desc')
                 ->paginate(10);
 
-            return view('pages.admin.pedidos.index', compact('pedidos'));
+            return View::make('pages.admin.pedidos.index', compact('pedidos'));
         } catch (\Exception $e) {
             Log::error('Error en PedidoAdminController@index: ' . $e->getMessage());
-            return back()->with('error', 'Hubo un error al cargar los pedidos.');
+            return Redirect::back()->with('error', 'Hubo un error al cargar los pedidos.');
         }
     }
 
@@ -42,10 +47,10 @@ class PedidoAdminController extends Controller
                 'detalles.producto'
             ])->findOrFail($id);
 
-            return view('pages.admin.pedidos.show', compact('pedido'));
+            return View::make('pages.admin.pedidos.show', compact('pedido'));
         } catch (\Exception $e) {
             Log::error('Error en PedidoAdminController@show: ' . $e->getMessage());
-            return back()->with('error', 'Hubo un error al cargar el detalle del pedido.');
+            return Redirect::back()->with('error', 'Hubo un error al cargar el detalle del pedido.');
         }
     }
 
@@ -80,14 +85,14 @@ class PedidoAdminController extends Controller
                 'nuevo_estado' => $nuevoEstado
             ]);
 
-            return back()->with('success', 'Estado del pedido actualizado correctamente.');
+            return Redirect::back()->with('mensaje', 'Estado del Pedido Actualizado')->with('tipo', 'success');
 
         } catch (\Exception $e) {
             Log::error('Error en PedidoAdminController@updateEstado: ' . $e->getMessage(), [
                 'pedido_id' => $id,
                 'estado_id' => $request->estado_id ?? 'no_provisto'
             ]);
-            return back()->with('error', 'Hubo un error al actualizar el estado del pedido.');
+            return Redirect::back()->with('mensaje', 'Hubo un error al actualizar el estado del pedido.')->with('tipo', 'error');
         }
     }
 
@@ -165,7 +170,7 @@ class PedidoAdminController extends Controller
         try {
             // Por ahora, para cancelaciones usamos el mailable existente
             // En el futuro se puede crear un método específico en PedidoNotificationService
-            $pedidoUrl = route('pedidos.show', $pedido->pedido_id);
+            $pedidoUrl = Route::route('pedidos.show', $pedido->pedido_id);
             
             // Enviar correo de cancelación usando el mailable existente
             Mail::to($pedido->usuario->correo_electronico)
@@ -218,7 +223,7 @@ class PedidoAdminController extends Controller
                         $variante->confirmarVenta(
                             $detalle->cantidad,
                             "Confirmación de pedido #{$pedido->pedido_id}",
-                            \Illuminate\Support\Facades\Auth::id(),
+                            \Illuminate\Support\FacadesAuth::id(),
                             "Pedido #{$pedido->pedido_id}"
                         );
                         
@@ -239,10 +244,10 @@ class PedidoAdminController extends Controller
                         'stock_anterior' => $producto->stock,
                         'stock_nuevo' => $producto->stock, // No cambia el stock físico
                         'motivo' => "Confirmación de pedido #{$pedido->pedido_id}",
-                        'usuario_id' => \Illuminate\Support\Facades\Auth::id(),
+                        'usuario_id' => \Illuminate\Support\FacadesAuth::id(),
                         'pedido_id' => $pedido->pedido_id,
                         'costo_unitario' => $producto->costo_unitario,
-                        'fecha_movimiento' => now()
+                        'fecha_movimiento' => Carbon::now()
                     ]);
                     
                     Log::info('Venta de producto confirmada', [
@@ -262,7 +267,7 @@ class PedidoAdminController extends Controller
                         $variante->liberarReserva(
                             $detalle->cantidad,
                             "Cancelación de pedido #{$pedido->pedido_id}",
-                            \Illuminate\Support\Facades\Auth::id(),
+                            \Illuminate\Support\FacadesAuth::id(),
                             "Pedido #{$pedido->pedido_id}"
                         );
                         
@@ -279,7 +284,7 @@ class PedidoAdminController extends Controller
                     $producto->liberarStockReservado(
                         $detalle->cantidad,
                         "Cancelación de pedido #{$pedido->pedido_id}",
-                        \Illuminate\Support\Facades\Auth::id(),
+                        \Illuminate\Support\FacadesAuth::id(),
                         $pedido->pedido_id
                     );
                     
@@ -300,7 +305,7 @@ class PedidoAdminController extends Controller
                         $variante->registrarEntrada(
                             $detalle->cantidad,
                             "Devolución por cancelación - Pedido #{$pedido->pedido_id}",
-                            \Illuminate\Support\Facades\Auth::id(),
+                            \Illuminate\Support\FacadesAuth::id(),
                             "Pedido #{$pedido->pedido_id}"
                         );
                         
@@ -317,7 +322,7 @@ class PedidoAdminController extends Controller
                     $producto->registrarEntrada(
                         $detalle->cantidad,
                         "Devolución por cancelación - Pedido #{$pedido->pedido_id}",
-                        \Illuminate\Support\Facades\Auth::id(),
+                        \Illuminate\Support\FacadesAuth::id(),
                         "Pedido #{$pedido->pedido_id}"
                     );
                     

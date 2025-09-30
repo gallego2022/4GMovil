@@ -68,52 +68,57 @@
         
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
             <!-- Nombre del producto -->
-            <div>
-                <label for="nombre_producto" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Nombre del producto <span class="text-red-500">*</span>
-                </label>
-                <input type="text" 
-                       name="nombre_producto" 
-                       id="nombre_producto"
-                       class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200 @error('nombre_producto') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
-                       placeholder="Ej: iPhone 15 Pro Max"
-                       required 
-                       value="{{ old('nombre_producto', $producto->nombre_producto ?? '') }}">
-                @error('nombre_producto')
-                    <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                @enderror
-            </div>
+            <x-validation-field 
+                name="nombre_producto"
+                label="Nombre del producto"
+                type="text"
+                placeholder="Ej: iPhone 15 Pro Max"
+                :required="true"
+                :rules="['required', 'minLength:3', 'maxLength:255']"
+                :messages="[
+                    'required' => 'El nombre del producto es requerido',
+                    'minLength' => 'Mínimo 3 caracteres',
+                    'maxLength' => 'Máximo 255 caracteres'
+                ]"
+                help-text="Nombre descriptivo del producto"
+                :value="old('nombre_producto', $producto->nombre_producto ?? '')"
+            />
 
             <!-- SKU -->
-            <div>
-                <label for="sku" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    SKU (Código de producto)
-                </label>
-                <input type="text" 
-                       name="sku" 
-                       id="sku"
-                       class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200 @error('sku') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
-                       placeholder="Ej: IPH15PM-256GB"
-                       value="{{ old('sku', $producto->sku ?? '') }}">
-                @error('sku')
-                    <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                @enderror
-            </div>
+            <x-validation-field 
+                name="sku"
+                label="SKU (Código de producto)"
+                type="text"
+                placeholder="Ej: IPH15PM-256GB"
+                :rules="['minLength:3', 'maxLength:50', 'uniqueSku']"
+                :messages="[
+                    'minLength' => 'Mínimo 3 caracteres',
+                    'maxLength' => 'Máximo 50 caracteres',
+                    'uniqueSku' => 'Este SKU ya existe'
+                ]"
+                help-text="Código único del producto (opcional)"
+                :value="old('sku', $producto->sku ?? '')"
+            />
         </div>
 
         <!-- Descripción -->
         <div class="mt-6">
-            <label for="descripcion" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Descripción <span class="text-red-500">*</span>
-            </label>
-            <textarea name="descripcion" 
-                      id="descripcion"
-                      rows="4"
-                      placeholder="Describe las características, beneficios y especificaciones del producto..."
-                      class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200 @error('descripcion') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror">{{ old('descripcion', $producto->descripcion ?? '') }}</textarea>
-            @error('descripcion')
-                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-            @enderror
+            <x-validation-field 
+                name="descripcion"
+                label="Descripción"
+                type="textarea"
+                placeholder="Describe las características, beneficios y especificaciones del producto..."
+                :required="true"
+                :rules="['required', 'minLength:10', 'maxLength:2000']"
+                :messages="[
+                    'required' => 'La descripción es requerida',
+                    'minLength' => 'Mínimo 10 caracteres',
+                    'maxLength' => 'Máximo 2000 caracteres'
+                ]"
+                help-text="Descripción detallada del producto"
+                :rows="4"
+                :value="old('descripcion', $producto->descripcion ?? '')"
+            />
         </div>
     </div>
 
@@ -128,27 +133,26 @@
         
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
             <!-- Precio de Venta -->
-            <div>
-                <label for="precio" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Precio de Venta <span class="text-red-500">*</span>
-                </label>
-                <div class="relative rounded-lg shadow-sm">
-                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                        <span class="text-gray-500 dark:text-gray-400 sm:text-sm">$</span>
-                    </div>
-                    <input type="number" 
-                           name="precio" 
-                           id="precio"
-                           min="0"
-                           placeholder="0"
-                           class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 pl-7 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200 @error('precio') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
-                           required 
-                           value="{{ old('precio', $producto->precio ?? '') }}">
-                </div>
-                @error('precio')
-                    <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                @enderror
-            </div>
+            <x-validation-field 
+                name="precio"
+                label="Precio de Venta (COP)"
+                type="number"
+                placeholder="10000"
+                :required="true"
+                :rules="['required', 'decimal', 'priceColombian']"
+                :messages="[
+                    'required' => 'El precio es requerido',
+                    'decimal' => 'Ingresa un precio válido',
+                    'priceColombian' => 'El precio debe estar entre $10,000 y $20,000,000 COP'
+                ]"
+                help-text="Precio de venta al público en pesos colombianos"
+                min="10000"
+                max="20000000"
+                step="100"
+                icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />'
+                icon-position="left"
+                :value="old('precio', $producto->precio ?? '')"
+            />
 
             <!-- Costo Unitario -->
             <div>
@@ -215,7 +219,7 @@
                         id="stock"
                         min="0"
                         placeholder="0"
-                        disabled
+                        readonly
                         class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400 sm:text-sm cursor-not-allowed transition-colors duration-200 @error('stock') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
                         value="{{ old('stock', $producto->stock ?? 0) }}">
                  <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Se calcula automáticamente desde las variantes de color</p>
@@ -306,48 +310,36 @@
         
         <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
             <!-- Categoría -->
-            <div>
-                <label for="categoria_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Categoría <span class="text-red-500">*</span>
-                </label>
-                <select name="categoria_id" 
-                        id="categoria_id"
-                        class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200 @error('categoria_id') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 @enderror" 
-                        required>
-                    <option value="">Selecciona una categoría</option>
-                    @foreach($categorias as $categoria)
-                        <option value="{{ $categoria->categoria_id }}"
-                            {{ old('categoria_id', $producto->categoria_id ?? '') == $categoria->categoria_id ? 'selected' : '' }}>
-                            {{ $categoria->nombre }}
-                        </option>
-                    @endforeach
-                </select>
-                @error('categoria_id')
-                    <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                @enderror
-            </div>
+            <x-validation-field 
+                name="categoria_id"
+                label="Categoría"
+                type="select"
+                placeholder="Selecciona una categoría"
+                :required="true"
+                :rules="['required']"
+                :messages="[
+                    'required' => 'La categoría es requerida'
+                ]"
+                help-text="Categoría del producto"
+                :options="$categorias->pluck('nombre', 'categoria_id')->toArray()"
+                :value="old('categoria_id', $producto->categoria_id ?? '')"
+            />
 
             <!-- Marca -->
-            <div>
-                <label for="marca_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Marca <span class="text-red-500">*</span>
-                </label>
-                <select name="marca_id" 
-                        id="marca_id"
-                        class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200 @error('marca_id') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 @enderror" 
-                        required>
-                    <option value="">Selecciona una marca</option>
-                    @foreach($marcas as $marca)
-                        <option value="{{ $marca->marca_id }}"
-                            {{ old('marca_id', $producto->marca_id ?? '') == $marca->marca_id ? 'selected' : '' }}>
-                            {{ $marca->nombre }}
-                        </option>
-                    @endforeach
-                </select>
-                @error('marca_id')
-                    <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                @enderror
-            </div>
+            <x-validation-field 
+                name="marca_id"
+                label="Marca"
+                type="select"
+                placeholder="Selecciona una marca"
+                :required="true"
+                :rules="['required']"
+                :messages="[
+                    'required' => 'La marca es requerida'
+                ]"
+                help-text="Marca del producto"
+                :options="$marcas->pluck('nombre', 'marca_id')->toArray()"
+                :value="old('marca_id', $producto->marca_id ?? '')"
+            />
 
             <!-- Estado del producto -->
             <div>
@@ -378,54 +370,52 @@
         
         <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
             <!-- Peso -->
-            <div>
-                <label for="peso" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Peso (kg)
-                </label>
-                <input type="number" 
-                       name="peso" 
-                       id="peso"
-                       step="0.01"
-                       min="0"
-                       placeholder="0.00"
-                       class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200 @error('peso') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
-                       value="{{ old('peso', $producto->peso ?? '') }}">
-                @error('peso')
-                    <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                @enderror
-            </div>
+            <x-validation-field 
+                name="peso"
+                label="Peso (kg)"
+                type="number"
+                placeholder="0.00"
+                :rules="['decimal', 'range:0,999.99']"
+                :messages="[
+                    'decimal' => 'Ingresa un peso válido',
+                    'range' => 'El peso debe estar entre 0 y 999.99 kg'
+                ]"
+                help-text="Peso del producto en kilogramos"
+                min="0"
+                max="999.99"
+                step="0.01"
+                :value="old('peso', $producto->peso ?? '')"
+            />
 
             <!-- Dimensiones -->
-            <div>
-                <label for="dimensiones" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Dimensiones
-                </label>
-                <input type="text" 
-                       name="dimensiones" 
-                       id="dimensiones"
-                       placeholder="Largo x Ancho x Alto (cm)"
-                       class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200 @error('dimensiones') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
-                       value="{{ old('dimensiones', $producto->dimensiones ?? '') }}">
-                @error('dimensiones')
-                    <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                @enderror
-            </div>
+            <x-validation-field 
+                name="dimensiones"
+                label="Dimensiones"
+                type="text"
+                placeholder="Largo x Ancho x Alto (cm)"
+                :rules="['maxLength:100']"
+                :messages="[
+                    'maxLength' => 'Máximo 100 caracteres'
+                ]"
+                help-text="Dimensiones del producto (ej: 15x10x5 cm)"
+                :value="old('dimensiones', $producto->dimensiones ?? '')"
+            />
 
             <!-- Código de Barras -->
-            <div>
-                <label for="codigo_barras" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Código de Barras
-                </label>
-                <input type="text" 
-                       name="codigo_barras" 
-                       id="codigo_barras"
-                       placeholder="1234567890123"
-                       class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200 @error('codigo_barras') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
-                       value="{{ old('codigo_barras', $producto->codigo_barras ?? '') }}">
-                @error('codigo_barras')
-                    <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                @enderror
-            </div>
+            <x-validation-field 
+                name="codigo_barras"
+                label="Código de Barras"
+                type="text"
+                placeholder="1234567890123"
+                :rules="['integer', 'minLength:8', 'maxLength:20']"
+                :messages="[
+                    'integer' => 'Solo números permitidos',
+                    'minLength' => 'Mínimo 8 dígitos',
+                    'maxLength' => 'Máximo 20 dígitos'
+                ]"
+                help-text="Código de barras del producto (solo números)"
+                :value="old('codigo_barras', $producto->codigo_barras ?? '')"
+            />
         </div>
     </div>
 
@@ -537,7 +527,7 @@
 <script>
     // Variables globales
     let especificacionesActuales = [];
-    let valoresEspecificaciones = window.valoresEspecificaciones || {};
+    let valoresEspecificaciones = {};
 
     // Cálculo automático del costo unitario
     document.getElementById('precio').addEventListener('input', function() {
@@ -556,40 +546,48 @@
         }
     });
 
-         // Función para cargar especificaciones
-     async function cargarEspecificaciones(categoriaId) {
-         try {
-             console.log('Cargando especificaciones para categoría:', categoriaId);
-             
-             const response = await fetch(`/api/especificaciones/${categoriaId}`);
-             
-             if (!response.ok) {
-                 throw new Error(`HTTP error! status: ${response.status}`);
-             }
-             
-             const especificaciones = await response.json();
+    // Función para cargar especificaciones
+    async function cargarEspecificaciones(categoriaId) {
+        try {
+            console.log('Cargando especificaciones para categoría:', categoriaId);
+            
+            const response = await fetch(`/api/especificaciones/${categoriaId}`);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const especificaciones = await response.json();
             console.log('Especificaciones recibidas:', especificaciones);
-             
-             // Log detallado de cada especificación
-             especificaciones.forEach((espec, index) => {
-                 console.log(`Especificación ${index + 1}:`, {
-                     nombre_campo: espec.nombre_campo,
-                     tipo_campo: espec.tipo_campo,
-                     opciones: espec.opciones,
-                     opciones_tipo: typeof espec.opciones,
-                     opciones_array: espec.opciones_array,
-                     opciones_array_tipo: typeof espec.opciones_array
-                 });
-             });
-             
-             especificacionesActuales = especificaciones;
-             renderizarEspecificaciones(especificaciones);
-             
-         } catch (error) {
-             console.error('Error al cargar especificaciones:', error);
-             mostrarError('Error al cargar las especificaciones de la categoría: ' + error.message);
-         }
-     }
+            
+            // Log detallado de cada especificación
+            especificaciones.forEach((espec, index) => {
+                console.log(`Especificación ${index + 1}:`, {
+                    nombre_campo: espec.nombre_campo,
+                    tipo_campo: espec.tipo_campo,
+                    opciones: espec.opciones,
+                    opciones_tipo: typeof espec.opciones,
+                    opciones_array: espec.opciones_array,
+                    opciones_array_tipo: typeof espec.opciones_array
+                });
+            });
+            
+            especificacionesActuales = especificaciones;
+            renderizarEspecificaciones(especificaciones);
+            
+            // Si hay valores de especificaciones existentes, re-renderizar después de un breve delay
+            if (Object.keys(valoresEspecificaciones).length > 0) {
+                setTimeout(() => {
+                    console.log('Re-renderizando con valores existentes después de cargar especificaciones');
+                    renderizarEspecificaciones(especificaciones);
+                }, 100);
+            }
+            
+        } catch (error) {
+            console.error('Error al cargar especificaciones:', error);
+            mostrarError('Error al cargar las especificaciones de la categoría: ' + error.message);
+        }
+    }
 
     // Función para renderizar especificaciones
     function renderizarEspecificaciones(especificaciones) {
@@ -612,17 +610,23 @@
         container.innerHTML = html;
         
         // Agregar event listeners a los campos creados
-        agregarEventListenersEspecificaciones();
+        // Usar setTimeout para asegurar que ValidationSystem esté listo
+        setTimeout(() => {
+            console.log('Agregando event listeners a especificaciones...');
+            agregarEventListenersEspecificaciones();
+        }, 100);
     }
 
     // Función para crear un campo de especificación
     function crearCampoEspecificacion(espec, index) {
-        const valorActual = (window.valoresEspecificaciones || {})[espec.nombre_campo] || '';
+        const valorActual = valoresEspecificaciones[espec.nombre_campo] || '';
         const requerido = espec.requerido ? '<span class="text-red-500">*</span>' : '';
         const unidad = espec.unidad ? ` (${espec.unidad})` : '';
         
         // Debug: mostrar qué tipo de campo se está procesando
         console.log(`Creando campo: ${espec.nombre_campo}, tipo: ${espec.tipo_campo}, etiqueta: ${espec.etiqueta}`);
+        console.log(`Valor actual para ${espec.nombre_campo}:`, valorActual);
+        console.log('Valores de especificaciones disponibles:', valoresEspecificaciones);
         
         let campo = '';
         
@@ -636,7 +640,10 @@
                            value="${valorActual}"
                            class="block w-full px-3 py-2 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm text-gray-900 dark:bg-gray-600 dark:text-gray-100 transition-colors duration-200"
                            placeholder="Ingresa ${espec.etiqueta.toLowerCase()}"
-                           ${espec.requerido ? 'required' : ''}>
+                           ${espec.requerido ? 'required' : ''}
+                           data-field-name="especificaciones[${espec.nombre_campo}]"
+                           data-rules='${JSON.stringify(espec.requerido ? ['required'] : [])}'
+                           data-messages='${JSON.stringify(espec.requerido ? {required: `${espec.etiqueta} es requerido`} : {})}'>
                 `;
                 break;
                 
@@ -649,7 +656,10 @@
                            value="${valorActual}"
                            class="block w-full px-3 py-2 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm text-gray-900 dark:bg-gray-600 dark:text-gray-100 transition-colors duration-200"
                            placeholder="0"
-                           ${espec.requerido ? 'required' : ''}>
+                           ${espec.requerido ? 'required' : ''}
+                           data-field-name="especificaciones[${espec.nombre_campo}]"
+                           data-rules='${JSON.stringify(espec.requerido ? ['required', 'decimal'] : ['decimal'])}'
+                           data-messages='${JSON.stringify(espec.requerido ? {required: `${espec.etiqueta} es requerido`, decimal: 'Ingresa un número válido'} : {decimal: 'Ingresa un número válido'})}'>
                 `;
                 break;
                 
@@ -662,8 +672,18 @@
                  if (espec.opciones_array && Array.isArray(espec.opciones_array)) {
                      opciones = espec.opciones_array;
                  } else if (espec.opciones && typeof espec.opciones === 'string') {
-                     // Si hay opciones como string, convertirlas a array
-                     opciones = espec.opciones.split(',').map(op => op.trim());
+                     // Si hay opciones como string JSON, parsearlas
+                     if (espec.opciones.startsWith('[') && espec.opciones.endsWith(']')) {
+                         try {
+                             opciones = JSON.parse(espec.opciones);
+                         } catch (e) {
+                             console.error('Error parseando opciones JSON:', e);
+                             opciones = espec.opciones.split(',').map(op => op.trim());
+                         }
+                     } else {
+                         // Si no es JSON, dividir por comas
+                         opciones = espec.opciones.split(',').map(op => op.trim());
+                     }
                  } else if (espec.opciones && Array.isArray(espec.opciones)) {
                      // Si ya es un array
                      opciones = espec.opciones;
@@ -693,20 +713,30 @@
                      }
                  }
                  
+                 console.log(`Campo select ${espec.nombre_campo}:`, {
+                     valorActual: valorActual,
+                     opciones: opciones,
+                     opcionesOriginales: espec.opciones
+                 });
+                 
                  let opcionesHtml = '<option value="">Selecciona una opción</option>';
                  opciones.forEach(opcion => {
                      const selected = valorActual === opcion ? 'selected' : '';
+                     console.log(`Opción ${opcion}: selected = ${selected}, valorActual = ${valorActual}`);
                      opcionesHtml += `<option value="${opcion}" ${selected}>${opcion}</option>`;
                  });
                  
-                 campo = `
-                     <select name="especificaciones[${espec.nombre_campo}]" 
-                             id="espec_${espec.nombre_campo}"
-                             class="block w-full px-3 py-2 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm text-gray-900 dark:bg-gray-600 dark:text-gray-100 transition-colors duration-200"
-                             ${espec.requerido ? 'required' : ''}>
-                         ${opcionesHtml}
-                     </select>
-                 `;
+                campo = `
+                    <select name="especificaciones[${espec.nombre_campo}]" 
+                            id="espec_${espec.nombre_campo}"
+                            class="block w-full px-3 py-2 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm text-gray-900 dark:bg-gray-600 dark:text-gray-100 transition-colors duration-200"
+                            ${espec.requerido ? 'required' : ''}
+                            data-field-name="especificaciones[${espec.nombre_campo}]"
+                            data-rules='${JSON.stringify(espec.requerido ? ['required'] : [])}'
+                            data-messages='${JSON.stringify(espec.requerido ? {required: `${espec.etiqueta} es requerido`} : {})}'>
+                        ${opcionesHtml}
+                    </select>
+                `;
                  break;
                 
             case 'textarea':
@@ -716,7 +746,10 @@
                               rows="3"
                               class="block w-full px-3 py-2 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm text-gray-900 dark:bg-gray-600 dark:text-gray-100 transition-colors duration-200"
                               placeholder="Describe ${espec.etiqueta.toLowerCase()}"
-                              ${espec.requerido ? 'required' : ''}>${valorActual}</textarea>
+                              ${espec.requerido ? 'required' : ''}
+                              data-field-name="especificaciones[${espec.nombre_campo}]"
+                              data-rules='${JSON.stringify(espec.requerido ? ['required'] : [])}'
+                              data-messages='${JSON.stringify(espec.requerido ? {required: `${espec.etiqueta} es requerido`} : {})}'>${valorActual}</textarea>
                 `;
                 break;
                 
@@ -788,7 +821,22 @@
                     </label>
                     ${espec.descripcion ? `<p class="text-xs text-gray-500 dark:text-gray-400 mt-1">${espec.descripcion}</p>` : ''}
                 </div>
-                ${campo}
+                <div class="relative">
+                    ${campo}
+                    <!-- Icono de validación (se llena con JavaScript) -->
+                    <div class="validation-icon absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none" style="display: none;">
+                        <!-- Icono de éxito -->
+                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        <!-- Icono de error -->
+                        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </div>
+                </div>
+                <!-- Mensaje de error dinámico (se llena con JavaScript) -->
+                <p class="field-error mt-1 text-sm text-red-600 dark:text-red-400" style="display: none;"></p>
             </div>
         `;
     }
@@ -798,6 +846,7 @@
         especificacionesActuales.forEach(espec => {
             const campo = document.getElementById(`espec_${espec.nombre_campo}`);
             if (campo) {
+                // Event listeners para guardar valores
                 campo.addEventListener('change', function() {
                     guardarValorEspecificacion(espec.nombre_campo, this.value);
                 });
@@ -807,14 +856,48 @@
                         guardarValorEspecificacion(espec.nombre_campo, this.checked ? '1' : '0');
                     });
                 }
+                
+                // Registrar campo con el sistema de validación
+                console.log('Intentando registrar campo:', campo.name, 'con ValidationSystem:', !!window.ValidationSystem);
+                
+                // Verificar que ValidationSystem esté completamente inicializado
+                if (window.ValidationSystem && typeof window.ValidationSystem.addRule === 'function') {
+                    const rules = JSON.parse(campo.getAttribute('data-rules') || '[]');
+                    const messages = JSON.parse(campo.getAttribute('data-messages') || '{}');
+                    
+                    console.log('Reglas para', campo.name, ':', rules);
+                    console.log('Mensajes para', campo.name, ':', messages);
+                    
+                    if (rules.length > 0) {
+                        window.ValidationSystem.addRule(campo.name, rules);
+                        if (Object.keys(messages).length > 0) {
+                            window.ValidationSystem.addMessage(campo.name, messages);
+                        }
+                        
+                        // Marcar campo como requerido si tiene la regla 'required'
+                        if (rules.includes('required')) {
+                            campo.setAttribute('data-required', 'true');
+                        }
+                        
+                        // Registrar el campo dinámico
+                        if (typeof window.ValidationSystem.registerDynamicField === 'function') {
+                            window.ValidationSystem.registerDynamicField(campo);
+                        }
+                        
+                        console.log('Campo', campo.name, 'registrado exitosamente');
+                    } else {
+                        console.log('No hay reglas para el campo', campo.name);
+                    }
+                } else {
+                    console.error('ValidationSystem no está disponible');
+                }
             }
         });
     }
 
     // Función para guardar valor de especificación
     function guardarValorEspecificacion(nombreCampo, valor) {
-        window.valoresEspecificaciones = window.valoresEspecificaciones || {};
-        window.valoresEspecificaciones[nombreCampo] = valor;
+        valoresEspecificaciones[nombreCampo] = valor;
     }
 
     // Función para limpiar especificaciones
@@ -825,7 +908,7 @@
         container.innerHTML = '';
         noEspecificaciones.classList.remove('hidden');
         especificacionesActuales = [];
-        window.valoresEspecificaciones = {};
+        valoresEspecificaciones = {};
     }
 
     // Función para mostrar errores
@@ -863,27 +946,44 @@
         }, 5000);
     }
 
+    // Función para cargar especificaciones existentes del producto
+    function cargarEspecificacionesExistentes() {
+        @if(isset($producto) && $producto->especificaciones && $producto->especificaciones->count() > 0)
+            console.log('Cargando especificaciones existentes del producto:', @json($producto->especificaciones->map(function($esp) {
+                return [
+                    'nombre_campo' => $esp->especificacionCategoria ? $esp->especificacionCategoria->nombre_campo : null,
+                    'valor' => $esp->valor,
+                    'especificacion_categoria' => $esp->especificacionCategoria
+                ];
+            })));
+            
+            // Cargar valores de especificaciones existentes
+            @foreach($producto->especificaciones as $especProducto)
+                @if($especProducto->especificacionCategoria)
+                    valoresEspecificaciones['{{ $especProducto->especificacionCategoria->nombre_campo }}'] = {!! json_encode($especProducto->valor) !!};
+                @endif
+            @endforeach
+            
+            console.log('Valores de especificaciones cargados:', valoresEspecificaciones);
+        @endif
+    }
+
     // Cargar especificaciones al cargar la página si ya hay una categoría seleccionada
     document.addEventListener('DOMContentLoaded', function() {
-        const categoriaSelect = document.getElementById('categoria_id');
-        if (categoriaSelect.value) {
-            cargarEspecificaciones(categoriaSelect.value);
-        }
+        console.log('DOMContentLoaded ejecutado - Iniciando carga de especificaciones');
         
-        // Cargar especificaciones existentes si estamos editando
-        @if(isset($producto) && $producto->especificaciones && $producto->especificaciones->count() > 0)
-            // Esperar a que se carguen las especificaciones de la categoría
-            setTimeout(() => {
-                @foreach($producto->especificaciones as $especProducto)
-                    valoresEspecificaciones['{{ $especProducto->especificacionCategoria->nombre_campo }}'] = '{{ $especProducto->valor }}';
-                @endforeach
-                
-                // Re-renderizar las especificaciones con los valores existentes
-                if (especificacionesActuales.length > 0) {
-                    renderizarEspecificaciones(especificacionesActuales);
-                }
-            }, 500);
-        @endif
+        // Cargar especificaciones existentes primero
+        cargarEspecificacionesExistentes();
+        
+        const categoriaSelect = document.getElementById('categoria_id');
+        console.log('Categoría seleccionada:', categoriaSelect.value);
+        
+        if (categoriaSelect.value) {
+            console.log('Cargando especificaciones para categoría:', categoriaSelect.value);
+            cargarEspecificaciones(categoriaSelect.value);
+        } else {
+            console.log('No hay categoría seleccionada');
+        }
     });
 
     // Calcular costo unitario al cargar la página si ya hay un precio

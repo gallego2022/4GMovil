@@ -9,7 +9,9 @@ use Illuminate\Auth\AuthenticationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
+use Illuminate\Session\TokenMismatchException;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Response;
 
 class TestErrorController extends Controller
 {
@@ -31,7 +33,7 @@ class TestErrorController extends Controller
                 throw new \Exception('Error interno de prueba');
                 
             case '419':
-                throw new \Illuminate\Session\TokenMismatchException('Token CSRF expirado de prueba');
+                throw new TokenMismatchException('Token CSRF expirado de prueba');
                 
             case '429':
                 throw new TooManyRequestsHttpException('Demasiadas solicitudes de prueba');
@@ -49,7 +51,7 @@ class TestErrorController extends Controller
                 throw new AuthenticationException('Usuario no autenticado de prueba');
                 
             default:
-                return response()->json([
+                return Response::json([
                     'message' => 'Middleware funcionando correctamente',
                     'available_errors' => [
                         '404', '403', '500', '419', '429', 

@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers\Cliente;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Base\WebController;
 use App\Services\Business\PedidoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Redirect;
+use App\Models\Pedido;
 use Exception;
 
-class PedidoController extends Controller
+class PedidoController extends WebController
 {
     protected $pedidoService;
 
@@ -26,7 +29,7 @@ class PedidoController extends Controller
         try {
             // Verificar que el usuario esté autenticado
             if (!Auth::check()) {
-                return redirect()->route('login');
+                return Redirect::route('login');
             }
 
             $filters = [
@@ -38,7 +41,7 @@ class PedidoController extends Controller
 
             $result = $this->pedidoService->getUserOrders($filters);
             
-            return view('modules.cliente.pedidos.historial', [
+            return View::make('modules.cliente.pedidos.historial', [
                 'pedidos' => $result['data']
             ]);
 
@@ -50,7 +53,7 @@ class PedidoController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
 
-            return redirect()->back()->with('error', 'Error al cargar el historial de pedidos. Por favor, inténtalo de nuevo.');
+            return Redirect::back()->with('error', 'Error al cargar el historial de pedidos. Por favor, inténtalo de nuevo.');
         }
     }
 
@@ -62,21 +65,21 @@ class PedidoController extends Controller
         try {
             // Verificar que el usuario esté autenticado
             if (!Auth::check()) {
-                return redirect()->route('login');
+                return Redirect::route('login');
             }
 
             // Obtener el pedido y verificar que pertenezca al usuario
-            $pedido = \App\Models\Pedido::where('pedido_id', $pedidoId)
+            $pedido = Pedido::where('pedido_id', $pedidoId)
                 ->where('usuario_id', Auth::id())
                 ->with(['detalles.producto', 'detalles.variante', 'estado', 'direccion', 'pago.metodoPago'])
                 ->firstOrFail();
 
-            return view('modules.cliente.pedidos.detalle', [
+            return View::make('modules.cliente.pedidos.detalle', [
                 'pedido' => $pedido
             ]);
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return redirect()->route('pedidos.historial')->with('error', 'Pedido no encontrado.');
+            return Redirect::route('pedidos.historial')->with('error', 'Pedido no encontrado.');
         } catch (Exception $e) {
             Log::error('Error al cargar detalle de pedido: ' . $e->getMessage(), [
                 'user_id' => Auth::id(),
@@ -84,7 +87,7 @@ class PedidoController extends Controller
                 'error' => $e->getMessage()
             ]);
 
-            return redirect()->back()->with('error', 'Error al cargar el detalle del pedido. Por favor, inténtalo de nuevo.');
+            return Redirect::back()->with('error', 'Error al cargar el detalle del pedido. Por favor, inténtalo de nuevo.');
         }
     }
 }
