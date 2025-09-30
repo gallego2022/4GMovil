@@ -46,7 +46,10 @@ php artisan migrate --force
 
 # Crear enlace simbólico para storage usando el comando Artisan
 echo "🔗 Verificando y corrigiendo enlace simbólico de storage..."
-php artisan storage:fix-link
+# Eliminar enlace existente si está roto
+rm -f /var/www/html/public/storage
+# Crear nuevo enlace simbólico
+php artisan storage:link
 
 # Establecer permisos correctos
 echo "🔐 Estableciendo permisos..."
