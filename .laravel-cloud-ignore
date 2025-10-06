@@ -1,0 +1,66 @@
+# Archivos y directorios que Laravel Cloud debe ignorar
+# Estos archivos son específicos para Docker y no deben desplegarse
+
+# Docker files
+Dockerfile
+docker-compose.yml
+docker/
+.dockerignore
+
+# Docker environment files
+env.docker.example
+
+# Docker scripts
+install-docker.bat
+install-docker.sh
+rebuild-docker.bat
+rebuild-docker.sh
+
+# Docker documentation
+DOCKER_README.md
+DOCKER_DEPLOYMENT_GUIDE.md
+
+# GitHub specific files (si no son necesarios para Laravel Cloud)
+.github/
+.github/workflows/
+
+# Node.js files (Laravel Cloud maneja esto automáticamente)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build files que Laravel Cloud genera automáticamente
+public/build/
+public/hot
+
+# Archivos de desarrollo local
+.env.local
+.env.development
+.env.testing
+
+# Archivos de IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Logs locales
+storage/logs/*.log
+!storage/logs/.gitkeep
+
+# Cache local
+storage/framework/cache/*
+!storage/framework/cache/.gitkeep
+storage/framework/sessions/*
+!storage/framework/sessions/.gitkeep
+storage/framework/views/*
+!storage/framework/views/.gitkeep
+
+# Archivos de testing
+tests/
+phpunit.xml

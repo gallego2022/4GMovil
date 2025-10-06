@@ -323,7 +323,8 @@
                         @endphp
                             <img src="{{ $photoUrl }}" 
                                  class="h-12 w-12 rounded-full object-cover" 
-                                 alt="{{ $usuario->nombre_usuario }}">
+                                 alt="{{ $usuario->nombre_usuario }}" 
+                                 loading="lazy" decoding="async" referrerpolicy="no-referrer" crossorigin="anonymous">
                         @else
                             <span class="inline-block h-12 w-12 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700">
                                 <svg class="h-full w-full text-gray-300 dark:text-gray-500" fill="currentColor" viewBox="0 0 24 24">
@@ -565,7 +566,8 @@
                                     @endphp
                                     <img src="{{ $photoUrl }}" 
                                          class="h-10 w-10 rounded-full object-cover" 
-                                         alt="{{ $usuario->nombre_usuario }}">
+                                         alt="{{ $usuario->nombre_usuario }}" 
+                                         loading="lazy" decoding="async" referrerpolicy="no-referrer" crossorigin="anonymous">
                                 @else
                                     <span class="inline-block h-10 w-10 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700">
                                         <svg class="h-full w-full text-gray-300 dark:text-gray-500" fill="currentColor" viewBox="0 0 24 24">

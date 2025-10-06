@@ -28,6 +28,27 @@ class InventarioController extends WebController
     }
 
     /**
+     * Valor del inventario por categoría
+     */
+    public function valorPorCategoria(Request $request)
+    {
+        try {
+            $valorTotal = $this->inventarioService->getValorTotalInventario();
+            $valorPorCategoria = $this->inventarioService->getValorInventarioPorCategoria();
+
+            return View::make('pages.admin.inventario.valor-por-categoria', [
+                'valorTotal' => $valorTotal,
+                'valorPorCategoria' => $valorPorCategoria,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error en valor por categoría', ['error' => $e->getMessage()]);
+            return Redirect::route('admin.inventario.dashboard')
+                ->with('mensaje', 'Error al cargar Valor por Categoría')
+                ->with('tipo', 'error');
+        }
+    }
+
+    /**
      * Dashboard de inventario
      */
     public function dashboard()
@@ -470,6 +491,10 @@ class InventarioController extends WebController
             <p>$' . number_format($estadisticas['valor_inventario'] ?? 0, 0, ',', '.') . '</p>
         </div>
         <div class="stat-box">
+            <h3>Stock Crítico</h3>
+            <p>' . ($estadisticas['productos_stock_critico'] ?? 0) . '</p>
+        </div>
+        <div class="stat-box">
             <h3>Stock Bajo</h3>
             <p>' . ($estadisticas['productos_stock_bajo'] ?? 0) . '</p>
         </div>
@@ -566,6 +591,7 @@ class InventarioController extends WebController
         $csv .= "Total de Variantes," . number_format($estadisticas['total_variantes'] ?? 0) . "\n";
         $csv .= "Stock Total (unidades)," . number_format($estadisticas['stock_total'] ?? 0) . "\n";
         $csv .= "Valor Total del Inventario,$" . number_format($estadisticas['valor_inventario'] ?? 0, 0, ',', '.') . "\n";
+        $csv .= "Productos con Stock Crítico," . number_format($estadisticas['productos_stock_critico'] ?? 0) . "\n";
         $csv .= "Productos con Stock Bajo," . number_format($estadisticas['productos_stock_bajo'] ?? 0) . "\n";
         $csv .= "Productos Sin Stock," . number_format($estadisticas['productos_sin_stock'] ?? 0) . "\n";
         $csv .= "Movimientos de Entrada," . number_format($estadisticas['movimientos_entrada'] ?? 0) . "\n";
@@ -661,17 +687,22 @@ class InventarioController extends WebController
             'stock_total' => $estadisticas['stock_total'] ?? 0,
         ];
         
-        // Preparar alertas
+        // Preparar alertas (usar conteos separados del servicio)
         $alertas = [
-            'stock_critico' => $estadisticas['productos_stock_bajo'] ?? 0,
+            'stock_critico' => $estadisticas['productos_stock_critico'] ?? 0,
             'stock_bajo' => $estadisticas['productos_stock_bajo'] ?? 0,
             'sin_stock' => $estadisticas['productos_sin_stock'] ?? 0,
             'stock_excesivo' => 0, // No tenemos esta métrica en los datos actuales
         ];
         
         // Preparar productos con stock bajo
+        // Productos con stock bajo (usar umbral 60% stock inicial si está disponible)
         $productosStockBajo = $productos->filter(function ($producto) {
-            return $producto->stock <= 10; // Consideramos stock bajo si es <= 10
+            $stockInicial = $producto->stock_inicial ?? ($producto->stock ?? 0);
+            $umbralBajo = $stockInicial > 0 ? (int) ceil(($stockInicial * 60) / 100) : 10;
+            $umbralCritico = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 5;
+            $stockActual = $producto->stock ?? 0;
+            return $stockActual <= $umbralBajo && $stockActual > $umbralCritico;
         })->values();
         
         // Preparar valor por categoría

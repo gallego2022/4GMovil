@@ -8,7 +8,7 @@
     <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900 dark:text-white"{{ >{{ __('admin.fields.value') }} }}del{{ {{ __('admin.inventory.title') }} }}por{{ {{ __('admin.fields.category') }}< }}/h1>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Valor del Inventario por Categoría</h1>
                 <p class="mt-2 text-sm text-gray-500 dark:text-gray-300">Análisis del valor del inventario distribuido por categorías</p>
             </div>
             <div class="flex items-center gap-2">
@@ -128,7 +128,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
             </svg>
             <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No hay categorías</h3>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400"{{ >{{ __('admin.status.no') }} }}se encontraron categorías con productos en inventario.</p>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">No se encontraron categorías con productos en inventario.</p>
         </div>
         @endforelse
     </div>

@@ -286,6 +286,17 @@
                     <p class="text-sm text-gray-500 dark:text-gray-400">Historial de entradas y salidas</p>
                 </div>
             </a>
+
+            <a href="{{ route('admin.inventario.valor-por-categoria') }}" 
+               class="flex items-center p-4 bg-teal-50 dark:bg-teal-900/20 rounded-lg hover:bg-teal-100 dark:hover:bg-teal-900/30 transition-colors">
+                <svg class="w-8 h-8 text-teal-600 dark:text-teal-400 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3v18m10-8H3"/>
+                </svg>
+                <div>
+                    <p class="font-medium text-gray-900 dark:text-white">Valor por Categoría</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Distribución del valor por categorías</p>
+                </div>
+            </a>
             
             <a href="{{ route('admin.inventario.reporte') }}" 
                class="flex items-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors">

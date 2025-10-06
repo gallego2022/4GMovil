@@ -653,13 +653,24 @@ class InventarioService
         $movimientosEntrada = $movimientos->where('tipo_movimiento', 'entrada')->sum('cantidad');
         $movimientosSalida = $movimientos->where('tipo_movimiento', 'salida')->sum('cantidad');
 
-        $productosStockBajo = $productos->filter(function($producto) {
-            $stockInicial = $producto->stock_inicial ?? 0;
-            $umbralBajo = $stockInicial > 0 ? (int) ceil(($stockInicial * 60) / 100) : 10;
-            return $producto->stock <= $umbralBajo;
+        // Cálculo de umbrales basado en la lógica documentada (60% bajo, 20% crítico del stock inicial)
+        $productosStockCritico = $productos->filter(function($producto) {
+            $stockInicial = $producto->stock_inicial ?? ($producto->stock ?? 0);
+            $umbralCritico = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 5;
+            return ($producto->stock ?? 0) <= $umbralCritico;
         })->count();
 
-        $productosSinStock = $productos->where('stock', 0)->count();
+        $productosStockBajo = $productos->filter(function($producto) {
+            $stockInicial = $producto->stock_inicial ?? ($producto->stock ?? 0);
+            $umbralBajo = $stockInicial > 0 ? (int) ceil(($stockInicial * 60) / 100) : 10;
+            $umbralCritico = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 5;
+            $stockActual = $producto->stock ?? 0;
+            return $stockActual <= $umbralBajo && $stockActual > $umbralCritico;
+        })->count();
+
+        $productosSinStock = $productos->filter(function($producto){
+            return ($producto->stock ?? 0) <= 0;
+        })->count();
 
         return [
             'total_productos' => $totalProductos,
@@ -669,6 +680,7 @@ class InventarioService
             'movimientos_entrada' => $movimientosEntrada,
             'movimientos_salida' => $movimientosSalida,
             'productos_stock_bajo' => $productosStockBajo,
+            'productos_stock_critico' => $productosStockCritico,
             'productos_sin_stock' => $productosSinStock,
             'periodo' => [
                 'inicio' => $fechaInicio->format('d/m/Y'),

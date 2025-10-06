@@ -222,6 +222,20 @@
                 </div>
             </div>
             
+            <div class="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg">
+                <div class="flex items-center">
+                    <div class="p-2 bg-orange-100 dark:bg-orange-800 rounded-full">
+                        <svg class="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Stock Crítico</p>
+                        <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ $estadisticas['productos_stock_critico'] ?? 0 }}</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg">
                 <div class="flex items-center">
                     <div class="p-2 bg-yellow-100 dark:bg-yellow-800 rounded-full">
