@@ -85,7 +85,7 @@ class RefactoringCommand extends Command
     /**
      * Mostrar estado actual del refactoring
      */
-    protected function showStatus(string $phase = null, bool $verbose = false): void
+    protected function showStatus(?string $phase = null, bool $verbose = false): void
     {
         $this->info('📊 ESTADO ACTUAL DEL REFACTORING');
         $this->info('==================================');
@@ -125,7 +125,7 @@ class RefactoringCommand extends Command
     /**
      * Analizar el código base
      */
-    protected function analyzeCodebase(string $phase = null, bool $verbose = false): void
+    protected function analyzeCodebase(?string $phase = null, bool $verbose = false): void
     {
         $this->info('🔍 ANÁLISIS DEL CÓDIGO BASE');
         $this->info('==============================');
@@ -261,7 +261,7 @@ class RefactoringCommand extends Command
     /**
      * Mostrar progreso del refactoring
      */
-    protected function showProgress(string $phase = null, bool $verbose = false): void
+    protected function showProgress(?string $phase = null, bool $verbose = false): void
     {
         $this->info('📈 PROGRESO DEL REFACTORING');
         $this->info('============================');
@@ -305,7 +305,7 @@ class RefactoringCommand extends Command
     /**
      * Mostrar métricas del refactoring
      */
-    protected function showMetrics(string $phase = null, bool $verbose = false): void
+    protected function showMetrics(?string $phase = null, bool $verbose = false): void
     {
         $this->info('📊 MÉTRICAS DEL REFACTORING');
         $this->info('============================');
@@ -326,7 +326,7 @@ class RefactoringCommand extends Command
     /**
      * Limpiar archivos temporales y caché
      */
-    protected function cleanup(string $phase = null, bool $verbose = false): void
+    protected function cleanup(?string $phase = null, bool $verbose = false): void
     {
         $this->info('🧹 LIMPIEZA DEL REFACTORING');
         $this->info('============================');
@@ -465,7 +465,7 @@ class RefactoringCommand extends Command
     /**
      * Mostrar servicios disponibles
      */
-    protected function showServices(string $phase = null, bool $verbose = false): void
+    protected function showServices(?string $phase = null, bool $verbose = false): void
     {
         $this->info('🔧 SERVICIOS DISPONIBLES');
         $this->line('========================');

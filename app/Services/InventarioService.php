@@ -692,7 +692,7 @@ class InventarioService
     /**
      * Obtener reporte de inventario de variantes
      */
-    public function getReporteInventarioVariantes(int $productoId = null): array
+    public function getReporteInventarioVariantes(?int $productoId = null): array
     {
         try {
             $query = VarianteProducto::with(['producto', 'imagenes'])
