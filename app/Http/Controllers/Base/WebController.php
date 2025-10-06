@@ -127,7 +127,7 @@ abstract class WebController extends BaseController
     /**
      * Maneja excepciones de validación para web
      */
-    protected function handleValidationException(ValidationException $e, string $redirectRoute = null, array $parameters = []): RedirectResponse
+    protected function handleValidationException(ValidationException $e, ?string $redirectRoute = null, array $parameters = []): RedirectResponse
     {
         $message = 'Por favor, corrige los errores en el formulario';
         
@@ -141,7 +141,7 @@ abstract class WebController extends BaseController
     /**
      * Maneja excepciones generales para web
      */
-    protected function handleException(\Exception $e, string $redirectRoute = null, array $parameters = []): RedirectResponse
+    protected function handleException(\Exception $e, ?string $redirectRoute = null, array $parameters = []): RedirectResponse
     {
         $message = Config::get('app.debug') ? $e->getMessage() : 'Ha ocurrido un error inesperado';
         
