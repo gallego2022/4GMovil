@@ -31,6 +31,17 @@ chmod -R 775 /tmp/views
 # Crear archivo .env específico para Laravel Cloud
 echo "📋 Creando archivo .env específico para Laravel Cloud..."
 if [ -f "laravel-cloud.env" ]; then
+    # Usar laravel-cloud.env pero temporalmente cambiar Redis por archivos para el build
+    cp laravel-cloud.env .env
+    echo "✅ Archivo .env copiado desde laravel-cloud.env"
+    
+    # Temporalmente cambiar Redis por archivos durante el build para evitar errores
+    echo "🔧 Configurando para build (sin Redis)..."
+    sed -i 's/CACHE_DRIVER=redis/CACHE_DRIVER=file/' .env
+    sed -i 's/SESSION_DRIVER=redis/SESSION_DRIVER=file/' .env
+    sed -i 's/QUEUE_CONNECTION=redis/QUEUE_CONNECTION=sync/' .env
+    echo "✅ Configuración temporal aplicada para build"
+elif [ -f "laravel-cloud-simple.env" ]; then
     cp laravel-cloud-simple.env .env
     echo "✅ Archivo .env copiado desde laravel-cloud-simple.env"
 else
@@ -58,7 +69,7 @@ LOG_LEVEL=error
 # Base de datos - Laravel Cloud proporciona automáticamente estas variables
 # No configurar manualmente, Laravel Cloud las inyecta automáticamente
 
-SESSION_DRIVER=database
+SESSION_DRIVER=file
 SESSION_LIFETIME=120
 SESSION_ENCRYPT=false
 SESSION_PATH=/
@@ -66,9 +77,9 @@ SESSION_DOMAIN=null
 
 BROADCAST_CONNECTION=log
 FILESYSTEM_DISK=local
-QUEUE_CONNECTION=database
+QUEUE_CONNECTION=sync
 
-# Configuración de caché CRÍTICA para Laravel Cloud
+# Configuración de caché CRÍTICA para Laravel Cloud (SIN REDIS durante build)
 CACHE_DRIVER=file
 CACHE_STORE=file
 CACHE_PREFIX=4gmovil_cache
@@ -146,6 +157,10 @@ php artisan storage:link || true
 echo "🔧 Configurando base de datos simple..."
 cp config/database-simple.php config/database.php || true
 
+# Usar configuración simple de caché para evitar errores de Redis
+echo "🔧 Configurando caché simple..."
+cp config/cache-build.php config/cache.php || true
+
 # Optimizar para producción
 echo "⚡ Optimizando para producción..."
 php artisan config:cache
@@ -172,20 +187,27 @@ if [ -d "public/img" ]; then
     done
 fi
 
-# Configurar Redis para máximo rendimiento
-echo "🔴 Configurando Redis..."
-php artisan tinker --execute="
-    try {
-        Redis::ping();
-        Redis::config('set', 'maxmemory-policy', 'allkeys-lru');
-        echo 'Redis configurado correctamente';
-    } catch (Exception \$e) {
-        echo 'Redis no disponible';
-    }
-" || true
+# Redis se configurará automáticamente por Laravel Cloud en runtime
+echo "🔴 Redis se configurará automáticamente por Laravel Cloud..."
 
 # Limpiar logs antiguos
 echo "📝 Limpiando logs antiguos..."
 find storage/logs -name "*.log" -mtime +7 -delete 2>/dev/null || true
+
+# Restaurar configuración original de Redis para runtime
+echo "🔄 Restaurando configuración de Redis para runtime..."
+if [ -f "laravel-cloud.env" ]; then
+    # Restaurar la configuración original de Redis
+    sed -i 's/CACHE_DRIVER=file/CACHE_DRIVER=redis/' .env
+    sed -i 's/SESSION_DRIVER=file/SESSION_DRIVER=redis/' .env
+    sed -i 's/QUEUE_CONNECTION=sync/QUEUE_CONNECTION=redis/' .env
+    echo "✅ Configuración de Redis restaurada para runtime"
+    
+    # Limpiar caché para aplicar nueva configuración
+    echo "🧹 Limpiando caché para aplicar configuración de Redis..."
+    php artisan config:clear || true
+    php artisan cache:clear || true
+    echo "✅ Caché limpiado"
+fi
 
 echo "✅ Construcción optimizada completada para Laravel Cloud!"

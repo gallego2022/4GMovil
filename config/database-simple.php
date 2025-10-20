@@ -33,6 +33,7 @@ return [
             'password' => env('REDIS_PASSWORD', null),
             'port' => env('REDIS_PORT', '6379'),
             'database' => env('REDIS_DB', '0'),
+            'timeout' => 0.1, // Timeout muy corto para evitar bloqueos
         ],
         'cache' => [
             'url' => env('REDIS_URL'),
@@ -40,6 +41,7 @@ return [
             'password' => env('REDIS_PASSWORD', null),
             'port' => env('REDIS_PORT', '6379'),
             'database' => env('REDIS_CACHE_DB', '1'),
+            'timeout' => 0.1,
         ],
         'session' => [
             'url' => env('REDIS_URL'),
@@ -47,6 +49,7 @@ return [
             'password' => env('REDIS_PASSWORD', null),
             'port' => env('REDIS_PORT', '6379'),
             'database' => env('REDIS_SESSION_DB', '2'),
+            'timeout' => 0.1,
         ],
         'queue' => [
             'url' => env('REDIS_URL'),
@@ -54,6 +57,7 @@ return [
             'password' => env('REDIS_PASSWORD', null),
             'port' => env('REDIS_PORT', '6379'),
             'database' => env('REDIS_QUEUE_DB', '3'),
+            'timeout' => 0.1,
         ],
     ],
 ];
