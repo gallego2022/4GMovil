@@ -30,7 +30,11 @@ chmod -R 775 /tmp/views
 
 # Crear archivo .env específico para Laravel Cloud
 echo "📋 Creando archivo .env específico para Laravel Cloud..."
-cat > .env << 'EOF'
+if [ -f "laravel-cloud-simple.env" ]; then
+    cp laravel-cloud-simple.env .env
+    echo "✅ Archivo .env copiado desde laravel-cloud-simple.env"
+else
+    cat > .env << 'EOF'
 APP_NAME="4GMovil"
 APP_ENV=production
 APP_KEY=base64:gRO33MAV0Lza0BC8blZlvMHUzg8zMAoiO/kCmRyi+64=
@@ -116,6 +120,8 @@ GOOGLE_REDIRECT_URI=https://tu-dominio.laravel.cloud/auth/callback/google
 INVENTORY_LOW_STOCK_THRESHOLD=10
 INVENTORY_ALERT_EMAIL=4gmoviltest@gmail.com
 EOF
+    echo "✅ Archivo .env creado manualmente"
+fi
 
 # Limpiar caché existente
 echo "🧹 Limpiando caché existente..."
@@ -135,6 +141,10 @@ php artisan migrate --force || true
 # Crear enlace simbólico para storage
 echo "🔗 Creando enlace simbólico para storage..."
 php artisan storage:link || true
+
+# Usar configuración simple de base de datos para evitar errores
+echo "🔧 Configurando base de datos simple..."
+cp config/database-simple.php config/database.php || true
 
 # Optimizar para producción
 echo "⚡ Optimizando para producción..."
