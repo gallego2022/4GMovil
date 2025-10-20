@@ -1,39 +1,31 @@
-<!-- Pantalla de Carga Ultra-Suave y Minimalista para 4GMovil -->
-<div id="pageLoadingScreen" class="fixed inset-0 bg-white dark:bg-gray-900 z-[9999] flex items-center justify-center transition-all duration-1500">
+<!-- Pantalla de Carga Optimizada y Rápida para 4GMovil -->
+<div id="pageLoadingScreen" class="fixed inset-0 bg-white dark:bg-gray-900 z-[9999] flex items-center justify-center transition-all duration-500">
     <div class="text-center relative">
-        <!-- Logo de 4GMovil centrado -->
-        <div class="mb-12">
-            <div class="w-32 h-32 mx-auto bg-gray-50 dark:bg-gray-800 rounded-3xl flex items-center justify-center border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
-                <img src="{{ asset('img/Logo_2.png') }}" alt="4GMovil" class="w-24 h-24 object-contain opacity-90">
+        <!-- Logo de 4GMovil centrado - Optimizado -->
+        <div class="mb-8">
+            <div class="w-24 h-24 mx-auto bg-gray-50 dark:bg-gray-800 rounded-2xl flex items-center justify-center border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
+                <img src="{{ asset('img/Logo_2.png') }}" alt="4GMovil" class="w-16 h-16 object-contain opacity-90" loading="eager">
             </div>
         </div>
         
-        <!-- Título de la marca -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-light text-gray-700 dark:text-gray-300 mb-2 tracking-wide">
+        <!-- Título de la marca - Simplificado -->
+        <div class="mb-6">
+            <h1 class="text-2xl font-light text-gray-700 dark:text-gray-300 mb-1 tracking-wide">
                 4G Móvil
             </h1>
-            <p class="text-gray-500 dark:text-gray-500 text-base font-light">Tu tecnología, tu futuro</p>
+            <p class="text-gray-500 dark:text-gray-500 text-sm font-light">Tu tecnología, tu futuro</p>
         </div>
         
-        <!-- Mensaje de carga dinámico -->
-        <div class="mb-8">
-            <h3 class="text-lg font-normal text-gray-600 dark:text-gray-400 mb-2" id="loadingMessage">Inicializando sistema...</h3>
-            <p class="text-gray-400 dark:text-gray-500 text-sm font-light">Preparando tu experiencia digital</p>
+        <!-- Spinner simple y rápido -->
+        <div class="mb-6">
+            <div class="w-8 h-8 border-2 border-gray-200 dark:border-gray-600 border-t-blue-500 rounded-full animate-spin mx-auto mb-3"></div>
+            <h3 class="text-sm font-normal text-gray-600 dark:text-gray-400" id="loadingMessage">Cargando...</h3>
         </div>
         
-        <!-- Barra de progreso centrada -->
-        <div class="w-80 mx-auto mb-8">
-            <!-- Contenedor de la barra -->
-            <div class="bg-gray-100 dark:bg-gray-800 rounded-full h-2 overflow-hidden border border-gray-200/30 dark:border-gray-600/30">
-                <!-- Barra de progreso ultra-suave -->
-                <div id="loadingProgressBar" class="bg-gradient-to-r from-blue-400/80 to-blue-500/80 h-2 rounded-full transition-all duration-1000 ease-out shadow-none" style="width: 0%"></div>
-            </div>
-            
-            <!-- Porcentaje de progreso -->
-            <div class="mt-4 text-center">
-                <span id="loadingProgressText" class="text-lg font-light text-gray-600 dark:text-gray-400">0%</span>
-                <span class="text-gray-400 dark:text-gray-500 text-sm ml-2 font-light">completado</span>
+        <!-- Barra de progreso simplificada -->
+        <div class="w-64 mx-auto">
+            <div class="bg-gray-100 dark:bg-gray-800 rounded-full h-1.5 overflow-hidden">
+                <div id="loadingProgressBar" class="bg-gradient-to-r from-blue-500 to-blue-600 h-1.5 rounded-full transition-all duration-300 ease-out" style="width: 0%"></div>
             </div>
         </div>
     </div>
@@ -74,7 +66,7 @@
 </div>
 
 <script>
-// Sistema de Carga Ultra-Suave y Minimalista para 4GMovil
+// Sistema de Carga Optimizado y Rápido para 4GMovil
 
 class PageLoadingManager {
     constructor() {
@@ -89,14 +81,11 @@ class PageLoadingManager {
         // Mostrar pantalla de carga inicial
         this.showInitialLoading();
         
-        // Simular progreso de carga inicial ultra-suave
-        this.simulateInitialProgress();
+        // Carga rápida y eficiente
+        this.simulateFastProgress();
         
         // Interceptar navegación
         this.interceptNavigation();
-        
-        // Interceptar recarga de página
-        this.interceptPageReload();
     }
     
     showInitialLoading() {
@@ -111,67 +100,57 @@ class PageLoadingManager {
         const loadingScreen = document.getElementById('pageLoadingScreen');
         if (loadingScreen) {
             loadingScreen.style.opacity = '0';
-            loadingScreen.style.transform = 'scale(0.99)';
+            loadingScreen.style.transform = 'scale(0.98)';
             
             setTimeout(() => {
                 loadingScreen.style.display = 'none';
                 loadingScreen.classList.add('hidden');
                 loadingScreen.style.opacity = '';
                 loadingScreen.style.transform = '';
-            }, 1500);
+            }, 300); // Transición más rápida
         }
     }
     
-    simulateInitialProgress() {
+    simulateFastProgress() {
         const progressBar = document.getElementById('loadingProgressBar');
-        const progressText = document.getElementById('loadingProgressText');
-        const messages = [
-            'Inicializando sistema...',
-            'Cargando componentes...',
-            'Preparando interfaz...',
-            'Conectando servicios...',
-            'Sincronizando datos...',
-            'Finalizando carga...'
+        const messageElement = document.getElementById('loadingMessage');
+        
+        // Progreso rápido y realista
+        const steps = [
+            { progress: 20, message: 'Cargando...' },
+            { progress: 50, message: 'Preparando...' },
+            { progress: 80, message: 'Finalizando...' },
+            { progress: 100, message: 'Listo!' }
         ];
         
         let currentStep = 0;
         
         this.progressInterval = setInterval(() => {
-            this.progress += Math.random() * 6 + 4; // Incremento ultra-suave entre 4-10
-            
-            if (this.progress >= 100) {
-                this.progress = 100;
+            if (currentStep < steps.length) {
+                const step = steps[currentStep];
+                this.progress = step.progress;
+                
+                // Actualizar barra de progreso
+                if (progressBar) {
+                    progressBar.style.width = `${this.progress}%`;
+                }
+                
+                // Actualizar mensaje
+                if (messageElement) {
+                    messageElement.textContent = step.message;
+                }
+                
+                currentStep++;
+            } else {
                 clearInterval(this.progressInterval);
                 
-                // Simular tiempo final de carga
+                // Ocultar rápidamente
                 setTimeout(() => {
                     this.hideInitialLoading();
                     this.isInitialLoad = false;
-                }, 800);
+                }, 200); // Tiempo mínimo
             }
-            
-            // Actualizar barra de progreso ultra-suave
-            if (progressBar) {
-                progressBar.style.width = `${this.progress}%`;
-            }
-            
-            if (progressText) {
-                progressText.textContent = `${Math.round(this.progress)}%`;
-            }
-            
-            // Cambiar mensaje según el progreso
-            if (currentStep < messages.length && this.progress > (currentStep + 1) * 16) {
-                const messageElement = document.getElementById('loadingMessage');
-                if (messageElement) {
-                    messageElement.style.opacity = '0';
-                    setTimeout(() => {
-                        messageElement.textContent = messages[currentStep];
-                        messageElement.style.opacity = '1';
-                    }, 200);
-                    currentStep++;
-                }
-            }
-        }, 400); // Intervalo más lento para efecto ultra-suave
+        }, 150); // Intervalo más rápido
     }
     
     showNavigationLoading(message = 'Navegando...') {
@@ -186,8 +165,8 @@ class PageLoadingManager {
             navigationScreen.classList.remove('hidden');
             navigationScreen.classList.add('flex');
             
-            // Simular progreso de navegación ultra-suave
-            this.simulateNavigationProgress();
+            // Progreso rápido de navegación
+            this.simulateFastNavigationProgress();
         }
     }
     
@@ -201,31 +180,31 @@ class PageLoadingManager {
         }
     }
     
-    simulateNavigationProgress() {
+    simulateFastNavigationProgress() {
         const progressBar = document.getElementById('navigationProgressBar');
         let progress = 0;
         
         const interval = setInterval(() => {
-            progress += Math.random() * 15 + 10; // Progreso más suave
+            progress += 25; // Progreso más rápido
             
             if (progress >= 100) {
                 progress = 100;
                 clearInterval(interval);
                 
-                // Ocultar después de completar
+                // Ocultar rápidamente
                 setTimeout(() => {
                     this.hideNavigationLoading();
-                }, 300);
+                }, 100);
             }
             
             if (progressBar) {
                 progressBar.style.width = `${progress}%`;
             }
-        }, 150); // Intervalo más lento
+        }, 50); // Intervalo muy rápido
     }
     
     interceptNavigation() {
-        // Interceptar clicks en enlaces internos
+        // Interceptar clicks en enlaces internos - Optimizado
         document.addEventListener('click', (e) => {
             const link = e.target.closest('a');
             if (link && this.shouldShowNavigationLoading(link)) {
@@ -236,30 +215,30 @@ class PageLoadingManager {
                 
                 this.showNavigationLoading(message);
                 
-                // Simular tiempo de navegación
+                // Navegación más rápida
                 setTimeout(() => {
                     window.location.href = href;
-                }, 1000);
+                }, 300); // Reducido de 1000ms a 300ms
             }
         });
         
-        // Interceptar navegación programática
+        // Interceptar navegación programática - Optimizado
         const originalPushState = history.pushState;
         const originalReplaceState = history.replaceState;
         
         history.pushState = function(...args) {
             originalPushState.apply(history, args);
             if (!window.loadingManager.isInitialLoad) {
-                window.loadingManager.showNavigationLoading('Actualizando página...');
-                setTimeout(() => window.loadingManager.hideNavigationLoading(), 800);
+                window.loadingManager.showNavigationLoading('Actualizando...');
+                setTimeout(() => window.loadingManager.hideNavigationLoading(), 200);
             }
         };
         
         history.replaceState = function(...args) {
             originalReplaceState.apply(history, args);
             if (!window.loadingManager.isInitialLoad) {
-                window.loadingManager.showNavigationLoading('Actualizando página...');
-                setTimeout(() => window.loadingManager.hideNavigationLoading(), 800);
+                window.loadingManager.showNavigationLoading('Actualizando...');
+                setTimeout(() => window.loadingManager.hideNavigationLoading(), 200);
             }
         };
     }
@@ -276,14 +255,6 @@ class PageLoadingManager {
                !link.target &&
                !link.hasAttribute('data-no-loading');
     }
-    
-    interceptPageReload() {
-        window.addEventListener('beforeunload', () => {
-            if (!this.isInitialLoad) {
-                this.showNavigationLoading('Recargando página...');
-            }
-        });
-    }
 }
 
 // Inicializar el sistema de carga cuando el DOM esté listo
@@ -291,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.loadingManager = new PageLoadingManager();
 });
 
-// Función global para mostrar loading de navegación manualmente
+// Funciones globales optimizadas
 function showNavigationLoading(message = 'Navegando...') {
     if (window.loadingManager) {
         window.loadingManager.showNavigationLoading(message);
@@ -302,14 +273,6 @@ function hideNavigationLoading() {
     if (window.loadingManager) {
         window.loadingManager.hideNavigationLoading();
     }
-}
-
-// Función para mostrar loading en enlaces específicos
-function addNavigationLoadingToLink(selector, message = 'Navegando...') {
-    const links = document.querySelectorAll(selector);
-    links.forEach(link => {
-        link.setAttribute('data-loading-message', message);
-    });
 }
 
 // Función para excluir enlaces del loading automático

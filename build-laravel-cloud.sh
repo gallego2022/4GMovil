@@ -51,13 +51,8 @@ LOG_STACK=single
 LOG_DEPRECATIONS_CHANNEL=null
 LOG_LEVEL=error
 
-# Base de datos - Laravel Cloud
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=4gmovil
-DB_USERNAME=laravel
-DB_PASSWORD=password
+# Base de datos - Laravel Cloud proporciona automáticamente estas variables
+# No configurar manualmente, Laravel Cloud las inyecta automáticamente
 
 SESSION_DRIVER=database
 SESSION_LIFETIME=120
@@ -146,12 +141,41 @@ echo "⚡ Optimizando para producción..."
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
+php artisan event:cache
+php artisan optimize
 
-# Instalar dependencias de Node.js y compilar assets
-echo "📦 Instalando dependencias de Node.js..."
-npm install || echo "⚠️ Error en npm install, continuando..."
+# Instalar dependencias de Node.js optimizadas
+echo "📦 Instalando dependencias de Node.js optimizadas..."
+npm ci --only=production --no-audit --no-fund || echo "⚠️ Error en npm install, continuando..."
 
-echo "🎨 Compilando assets..."
+# Compilar assets para producción
+echo "🎨 Compilando assets para producción..."
 npm run build || echo "⚠️ Error en npm build, continuando..."
 
-echo "✅ Construcción completada para Laravel Cloud!"
+# Optimizar imágenes
+echo "🖼️ Optimizando imágenes..."
+if [ -d "public/img" ]; then
+    find public/img -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" | head -10 | while read img; do
+        if command -v convert &> /dev/null; then
+            convert "$img" -quality 85 -strip "$img" 2>/dev/null || true
+        fi
+    done
+fi
+
+# Configurar Redis para máximo rendimiento
+echo "🔴 Configurando Redis..."
+php artisan tinker --execute="
+    try {
+        Redis::ping();
+        Redis::config('set', 'maxmemory-policy', 'allkeys-lru');
+        echo 'Redis configurado correctamente';
+    } catch (Exception \$e) {
+        echo 'Redis no disponible';
+    }
+" || true
+
+# Limpiar logs antiguos
+echo "📝 Limpiando logs antiguos..."
+find storage/logs -name "*.log" -mtime +7 -delete 2>/dev/null || true
+
+echo "✅ Construcción optimizada completada para Laravel Cloud!"
