@@ -30,7 +30,7 @@ chmod -R 775 /tmp/views
 
 # Crear archivo .env específico para Laravel Cloud
 echo "📋 Creando archivo .env específico para Laravel Cloud..."
-if [ -f "laravel-cloud-simple.env" ]; then
+if [ -f "laravel-cloud.env" ]; then
     cp laravel-cloud-simple.env .env
     echo "✅ Archivo .env copiado desde laravel-cloud-simple.env"
 else
