@@ -18,6 +18,74 @@ use App\Http\Controllers\LocalizationController;
 Route::get('/test-errors', [App\Http\Controllers\Servicios\TestErrorController::class, 'testErrors'])
     ->name('test.errors');
 
+// Verificación de Redis (solo para desarrollo)
+Route::get('/redis-status', function () {
+    if (!app()->environment('local', 'testing')) {
+        abort(404);
+    }
+    
+    $status = [
+        'timestamp' => now()->toDateTimeString(),
+        'environment' => app()->environment(),
+        'configuration' => [
+            'cache_driver' => config('cache.default'),
+            'session_driver' => config('session.driver'),
+            'queue_connection' => config('queue.default'),
+        ],
+        'redis' => [
+            'host' => config('database.redis.default.host'),
+            'port' => config('database.redis.default.port'),
+            'connected' => false,
+            'ping' => null,
+            'error' => null,
+        ],
+        'services' => [
+            'cache' => ['working' => false, 'error' => null],
+            'session' => ['working' => false, 'error' => null],
+            'queue' => ['working' => false, 'error' => null],
+        ]
+    ];
+    
+    // Verificar conexión Redis
+    try {
+        $pong = \Illuminate\Support\Facades\Redis::ping();
+        $status['redis']['connected'] = true;
+        $status['redis']['ping'] = $pong;
+    } catch (\Exception $e) {
+        $status['redis']['error'] = $e->getMessage();
+    }
+    
+    // Verificar caché
+    try {
+        \Illuminate\Support\Facades\Cache::put('test_redis_status', 'test_value', 60);
+        $value = \Illuminate\Support\Facades\Cache::get('test_redis_status');
+        $status['services']['cache']['working'] = ($value === 'test_value');
+        \Illuminate\Support\Facades\Cache::forget('test_redis_status');
+    } catch (\Exception $e) {
+        $status['services']['cache']['error'] = $e->getMessage();
+    }
+    
+    // Verificar sesiones
+    try {
+        session(['test_redis_status' => 'test_value']);
+        $value = session('test_redis_status');
+        $status['services']['session']['working'] = ($value === 'test_value');
+        session()->forget('test_redis_status');
+    } catch (\Exception $e) {
+        $status['services']['session']['error'] = $e->getMessage();
+    }
+    
+    // Verificar colas
+    try {
+        $queue = \Illuminate\Support\Facades\Queue::connection('redis');
+        $status['services']['queue']['working'] = true;
+    } catch (\Exception $e) {
+        $status['services']['queue']['error'] = $e->getMessage();
+    }
+    
+    return response()->json($status, 200, [], JSON_PRETTY_PRINT);
+})->name('redis.status');
+
 // Google
 Route::get('/auth/redirect/google', [AuthController::class, 'redirectToGoogle'])->name('google.redirect');
 Route::get('/auth/callback/google', [AuthController::class, 'handleGoogleCallback'])->name('google.callback');
