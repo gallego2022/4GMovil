@@ -22,10 +22,10 @@ if [ -f "docker-compose.yml" ]; then
     echo
     
     echo "Deteniendo contenedores..."
-    docker-compose down
+    docker compose down
     
     echo "Reconstruyendo y levantando contenedores..."
-    docker-compose up --build -d
+    docker compose up --build -d
     
     echo "Esperando que los contenedores estén listos..."
     sleep 10

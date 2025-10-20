@@ -53,7 +53,7 @@ fi
 
 echo
 echo "Construyendo y levantando contenedores Docker..."
-docker-compose up --build -d
+docker compose up --build -d
 
 echo
 echo "Esperando que los contenedores estén listos..."
@@ -61,7 +61,7 @@ sleep 10
 
 echo
 echo "Verificando estado de contenedores..."
-docker-compose ps
+docker compose ps
 
 echo
 echo "========================================"
@@ -78,9 +78,9 @@ echo "- Admin: 4gmoviltest@gmail.com / Admin123!"
 echo "- Base de datos: laraveluser / laravelpass"
 echo
 echo "Comandos útiles:"
-echo "- Ver logs: docker-compose logs -f"
-echo "- Detener: docker-compose down"
-echo "- Reiniciar: docker-compose restart"
+echo "- Ver logs: docker compose logs -f"
+echo "- Detener: docker compose down"
+echo "- Reiniciar: docker compose restart"
 echo
 echo "IMPORTANTE: Configura tus credenciales de Google OAuth y Stripe en el archivo .env"
 echo

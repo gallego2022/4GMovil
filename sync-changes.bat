@@ -22,10 +22,10 @@ if exist "docker-compose.yml" (
     echo.
     
     echo Deteniendo contenedores...
-    docker-compose down
+    docker compose down
     
     echo Reconstruyendo y levantando contenedores...
-    docker-compose up --build -d
+    docker compose up --build -d
     
     echo Esperando que los contenedores esten listos...
     timeout /t 10 /nobreak >nul
