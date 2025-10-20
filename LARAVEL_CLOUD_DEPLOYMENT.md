@@ -2,14 +2,24 @@
 
 ## 📋 Configuración de Build Commands
 
-Para usar `laravel-cloud.env` en Laravel Cloud, configura estos comandos:
+Laravel Cloud puede detectar automáticamente los archivos de configuración o puedes configurarlos manualmente:
 
-### **Build Command:**
+### **Opción 1: Configuración Automática (Recomendada)**
+Laravel Cloud detectará automáticamente estos archivos:
+- `.laravel-cloud/build.sh` - Script de construcción
+- `.laravel-cloud/deploy.sh` - Script de despliegue
+- `.laravel-cloud/config.json` - Configuración JSON
+- `laravel-cloud.yml` - Configuración YAML
+
+### **Opción 2: Configuración Manual en Dashboard**
+En el dashboard de Laravel Cloud, configura:
+
+#### **Build Command:**
 ```bash
 ./build-laravel-cloud.sh
 ```
 
-### **Deploy Command (opcional):**
+#### **Deploy Command (opcional):**
 ```bash
 ./restore-redis-config.sh
 ```
@@ -29,10 +39,19 @@ Para usar `laravel-cloud.env` en Laravel Cloud, configura estos comandos:
 
 ## 📁 Archivos utilizados
 
+### **Archivos de configuración de Laravel Cloud:**
+| Archivo | Propósito | Detección automática |
+|---------|-----------|---------------------|
+| `.laravel-cloud/build.sh` | Script de construcción | ✅ Sí |
+| `.laravel-cloud/deploy.sh` | Script de despliegue | ✅ Sí |
+| `.laravel-cloud/config.json` | Configuración JSON | ✅ Sí |
+| `laravel-cloud.yml` | Configuración YAML | ✅ Sí |
+
+### **Archivos de la aplicación:**
 | Archivo | Propósito |
 |---------|-----------|
 | `laravel-cloud.env` | Variables de entorno principales |
-| `build-laravel-cloud.sh` | Script de construcción |
+| `build-laravel-cloud.sh` | Script de construcción principal |
 | `restore-redis-config.sh` | Script de restauración de Redis |
 | `config/database-simple.php` | Configuración de BD para build |
 | `config/cache-build.php` | Configuración de caché para build |

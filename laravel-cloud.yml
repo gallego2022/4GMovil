@@ -1,0 +1,53 @@
+# Configuración de Laravel Cloud
+# Este archivo define cómo Laravel Cloud debe construir y desplegar la aplicación
+
+version: 1
+
+build:
+  # Comando de construcción
+  command: ./build-laravel-cloud.sh
+  timeout: 600
+  
+  # Variables de entorno durante el build
+  environment:
+    APP_ENV: production
+    CACHE_DRIVER: file
+    SESSION_DRIVER: file
+    QUEUE_CONNECTION: sync
+
+deploy:
+  # Comando de despliegue (opcional)
+  command: ./restore-redis-config.sh
+  timeout: 300
+
+runtime:
+  # Versión de PHP
+  php: 8.2
+  
+  # Versión de Node.js
+  node: 18
+  
+  # Extensiones de PHP requeridas
+  extensions:
+    - redis
+    - pdo_mysql
+    - mbstring
+    - openssl
+    - tokenizer
+    - xml
+    - ctype
+    - json
+    - bcmath
+
+optimizations:
+  # Optimizaciones automáticas
+  cache_config: true
+  cache_routes: true
+  cache_views: true
+  optimize_autoloader: true
+  
+  # Compresión
+  gzip: true
+  
+  # Minificación
+  minify_assets: true

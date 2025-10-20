@@ -1,0 +1,20 @@
+{
+  "build": {
+    "command": "./build-laravel-cloud.sh",
+    "timeout": 600
+  },
+  "deploy": {
+    "command": "./restore-redis-config.sh",
+    "timeout": 300
+  },
+  "environment": {
+    "php_version": "8.2",
+    "node_version": "18"
+  },
+  "optimizations": {
+    "cache_config": true,
+    "cache_routes": true,
+    "cache_views": true,
+    "optimize_autoloader": true
+  }
+}
