@@ -194,10 +194,14 @@ echo "🔴 Redis se configurará automáticamente por Laravel Cloud..."
 echo "📝 Limpiando logs antiguos..."
 find storage/logs -name "*.log" -mtime +7 -delete 2>/dev/null || true
 
-# Restaurar configuración original de Redis para runtime
-echo "🔄 Restaurando configuración de Redis para runtime..."
-if [ -f "laravel-cloud.env" ]; then
-    # Restaurar la configuración original de Redis
+# Aplicar configuración de Redis para runtime
+echo "🔄 Aplicando configuración de Redis para runtime..."
+if [ -f "apply-redis-config.sh" ]; then
+    chmod +x apply-redis-config.sh
+    ./apply-redis-config.sh
+    echo "✅ Configuración de Redis aplicada usando script dedicado"
+elif [ -f "laravel-cloud.env" ]; then
+    # Fallback: restaurar la configuración original de Redis
     sed -i 's/CACHE_DRIVER=file/CACHE_DRIVER=redis/' .env
     sed -i 's/SESSION_DRIVER=file/SESSION_DRIVER=redis/' .env
     sed -i 's/QUEUE_CONNECTION=sync/QUEUE_CONNECTION=redis/' .env

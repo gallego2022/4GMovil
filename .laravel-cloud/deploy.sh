@@ -5,12 +5,15 @@
 
 echo "🚀 Iniciando despliegue automático para Laravel Cloud..."
 
-# Ejecutar el script de restauración de Redis
-if [ -f "restore-redis-config.sh" ]; then
+# Ejecutar el script de aplicación de Redis
+if [ -f "apply-redis-config.sh" ]; then
+    chmod +x apply-redis-config.sh
+    ./apply-redis-config.sh
+elif [ -f "restore-redis-config.sh" ]; then
     chmod +x restore-redis-config.sh
     ./restore-redis-config.sh
 else
-    echo "⚠️ restore-redis-config.sh no encontrado, continuando..."
+    echo "⚠️ Scripts de Redis no encontrados, continuando..."
 fi
 
 # Optimizaciones adicionales para runtime
