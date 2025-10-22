@@ -45,8 +45,19 @@ if %errorlevel% neq 0 (
     set SKIP_NODE=0
 )
 
+REM Crear directorios necesarios antes de instalar dependencias
+echo [4/10] Creando directorios necesarios...
+if not exist storage\framework mkdir storage\framework
+if not exist storage\framework\cache mkdir storage\framework\cache
+if not exist storage\framework\cache\data mkdir storage\framework\cache\data
+if not exist storage\framework\sessions mkdir storage\framework\sessions
+if not exist storage\framework\views mkdir storage\framework\views
+if not exist storage\logs mkdir storage\logs
+if not exist bootstrap\cache mkdir bootstrap\cache
+echo ✓ Directorios necesarios creados
+
 REM Instalar dependencias PHP
-echo [4/10] Instalando dependencias PHP...
+echo Instalando dependencias PHP...
 composer install
 if %errorlevel% neq 0 (
     echo ERROR: Falló la instalación de dependencias PHP
@@ -72,8 +83,8 @@ if %SKIP_NODE%==0 (
 REM Copiar archivo de configuración
 echo [6/10] Configurando archivo de entorno...
 if not exist .env (
-    copy .env.example .env
-    echo ✓ Archivo .env creado
+    copy env.local.example .env
+    echo ✓ Archivo .env creado desde env.local.example
 ) else (
     echo ✓ Archivo .env ya existe
 )

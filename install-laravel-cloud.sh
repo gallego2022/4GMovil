@@ -41,69 +41,13 @@ echo "✓ Autenticado en Laravel Cloud"
 # [3/15] Crear archivo .env para producción
 echo "[3/15] Configurando archivo de entorno para producción..."
 if [ ! -f .env.production ]; then
-    cp .env.example .env.production
-    echo "✓ Archivo .env.production creado"
+    cp env.production.example .env.production
+    echo "✓ Archivo .env.production creado desde env.production.example"
+    echo "✓ Variables de entorno configuradas para Laravel Cloud"
 else
     echo "✓ Archivo .env.production ya existe"
+    echo "ADVERTENCIA: Si necesitas actualizar la configuración, elimina el archivo .env.production y ejecuta nuevamente"
 fi
-
-# Configurar variables específicas para Laravel Cloud
-echo "Configurando variables para Laravel Cloud..."
-cat > .env.production << 'EOF'
-APP_NAME="4GMovil"
-APP_ENV=production
-APP_KEY=
-APP_DEBUG=false
-APP_URL=https://tu-proyecto.laravel-cloud.com
-
-LOG_CHANNEL=stack
-LOG_DEPRECATIONS_CHANNEL=null
-LOG_LEVEL=error
-
-# Base de datos (configurar en Laravel Cloud)
-DB_CONNECTION=mysql
-DB_HOST=mysql
-DB_PORT=3306
-DB_DATABASE=4gmovil
-DB_USERNAME=root
-DB_PASSWORD=
-
-# Caché optimizado para Laravel Cloud
-CACHE_DRIVER=database
-CACHE_PREFIX=4gmovil_cache_
-
-# Sesiones
-SESSION_DRIVER=database
-SESSION_LIFETIME=120
-
-# Cola de trabajos
-QUEUE_CONNECTION=database
-
-# Mail (configurar en Laravel Cloud)
-MAIL_MAILER=smtp
-MAIL_HOST=
-MAIL_PORT=587
-MAIL_USERNAME=
-MAIL_PASSWORD=
-MAIL_ENCRYPTION=tls
-MAIL_FROM_ADDRESS=noreply@4gmovil.com
-MAIL_FROM_NAME="4GMovil"
-
-# Stripe (configurar en Laravel Cloud)
-STRIPE_KEY=
-STRIPE_SECRET=
-STRIPE_WEBHOOK_SECRET=
-
-# Google OAuth (configurar en Laravel Cloud)
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-GOOGLE_REDIRECT_URI=
-
-# Configuración de caché específica
-CACHE_TTL=3600
-CACHE_CLEAR_ON_DEPLOY=true
-EOF
-echo "✓ Variables de entorno configuradas para Laravel Cloud"
 
 # [4/15] Crear proyecto en Laravel Cloud
 echo "[4/15] Creando proyecto en Laravel Cloud..."
@@ -182,6 +126,16 @@ EOF
 
 # [8/15] Optimizar para producción
 echo "[8/15] Optimizando para producción..."
+
+# Crear directorios necesarios antes de instalar dependencias
+echo "Creando directorios necesarios..."
+mkdir -p storage/framework/cache/data
+mkdir -p storage/framework/sessions
+mkdir -p storage/framework/views
+mkdir -p storage/logs
+mkdir -p bootstrap/cache
+chmod -R 775 storage bootstrap/cache
+echo "✓ Directorios necesarios creados"
 
 # Instalar dependencias de producción
 composer install --no-dev --optimize-autoloader --no-interaction

@@ -239,6 +239,35 @@ laravel-cloud artisan [comando]
 
 ## 🚨 Solución de Problemas
 
+### Error de Cache Path (Directorio de Cache)
+Si encuentras el error `Please provide a valid cache path`, ejecuta:
+
+**Windows:**
+```bash
+# Ejecutar script de creación de directorios
+setup-storage-directories.bat
+```
+
+**Linux/macOS:**
+```bash
+# Ejecutar script de creación de directorios
+chmod +x setup-storage-directories.sh
+./setup-storage-directories.sh
+```
+
+**Manual:**
+```bash
+# Crear directorios necesarios
+mkdir -p storage/framework/cache/data
+mkdir -p storage/framework/sessions
+mkdir -p storage/framework/views
+mkdir -p storage/logs
+mkdir -p bootstrap/cache
+
+# Configurar permisos (Linux/macOS)
+chmod -R 775 storage bootstrap/cache
+```
+
 ### Error de Permisos
 ```bash
 # Linux/macOS
@@ -307,3 +336,84 @@ Si encuentras problemas durante la instalación:
 - Se recomienda usar Docker para desarrollo local
 - Laravel Cloud es ideal para producción
 - El caché Redis mejora significativamente el rendimiento
+- **IMPORTANTE**: Los scripts ahora crean automáticamente todos los directorios necesarios para evitar errores de cache path
+- Si encuentras problemas, ejecuta `setup-storage-directories.bat` (Windows) o `./setup-storage-directories.sh` (Linux/macOS)
+
+## 🔍 Verificación de Redis
+
+### Scripts de Verificación
+```bash
+# Windows
+verificar-redis-docker.bat
+verificar-queue-docker.bat
+
+# Linux/macOS
+./verificar-redis-docker.sh
+./verificar-queue-docker.sh
+```
+
+### Comandos Manuales de Redis
+```bash
+# Verificar conexión
+docker-compose exec redis redis-cli ping
+
+# Ver todas las claves
+docker-compose exec redis redis-cli keys "*"
+
+# Ver estadísticas
+docker-compose exec redis redis-cli info
+
+# Limpiar Redis
+docker-compose exec redis redis-cli flushall
+
+# Ver configuración
+docker-compose exec redis redis-cli config get "*"
+```
+
+### Probar Caché desde la Aplicación
+```bash
+# Abrir Tinker
+docker-compose exec app php artisan tinker
+
+# Probar caché
+Cache::put('test', 'Redis funciona', 60)
+Cache::get('test')
+```
+
+## 🔄 Verificación de Queue Workers
+
+### Scripts de Verificación
+```bash
+# Windows
+verificar-queue-docker.bat
+
+# Linux/macOS
+./verificar-queue-docker.sh
+```
+
+### Comandos Manuales de Queue
+```bash
+# Ver logs del worker
+docker-compose logs -f queue-worker
+
+# Reiniciar worker
+docker-compose restart queue-worker
+
+# Detener worker
+docker-compose stop queue-worker
+
+# Iniciar worker
+docker-compose start queue-worker
+
+# Ver todos los contenedores
+docker-compose ps
+```
+
+### Probar Queue desde la Aplicación
+```bash
+# Abrir Tinker
+docker-compose exec app php artisan tinker
+
+# Probar queue
+dispatch(new \App\Jobs\ProcesarAlertaStockBajo());
+```

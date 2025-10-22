@@ -74,17 +74,17 @@ services:
     networks:
       - 4gmovil_network
 
-  queue:
+  queue-worker:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: 4gmovil_queue
+    container_name: 4gmovil_queue_worker
     restart: unless-stopped
     depends_on:
       - app
       - db
       - redis
-    command: bash -lc "php artisan queue:work --tries=3 --sleep=1"
+    command: bash -lc "chmod +x /var/www/html/docker/start-queue.sh && /var/www/html/docker/start-queue.sh"
     volumes:
       - ./storage:/var/www/html/storage
       - ./app:/var/www/html/app
@@ -99,6 +99,9 @@ services:
       - DB_DATABASE=4gmovil
       - DB_USERNAME=laraveluser
       - DB_PASSWORD=laravelpass
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - QUEUE_CONNECTION=redis
     networks:
       - 4gmovil_network
 

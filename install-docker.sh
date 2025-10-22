@@ -47,33 +47,13 @@ echo "✓ Docker está ejecutándose"
 # [4/12] Crear archivo .env para Docker
 echo "[4/12] Configurando archivo de entorno para Docker..."
 if [ ! -f .env ]; then
-    cp .env.example .env
-    echo "✓ Archivo .env creado"
+    cp env.docker.example .env
+    echo "✓ Archivo .env creado desde env.docker.example"
+    echo "✓ Variables de entorno configuradas para Docker"
 else
     echo "✓ Archivo .env ya existe"
+    echo "ADVERTENCIA: Si necesitas actualizar la configuración, elimina el archivo .env y ejecuta nuevamente"
 fi
-
-# Configurar variables específicas para Docker
-echo "Configurando variables para Docker..."
-cat >> .env << EOF
-
-# Configuración específica para Docker
-DB_CONNECTION=mysql
-DB_HOST=mysql
-DB_PORT=3306
-DB_DATABASE=4gmovil
-DB_USERNAME=root
-DB_PASSWORD=password
-
-CACHE_DRIVER=redis
-REDIS_HOST=redis
-REDIS_PORT=6379
-REDIS_PASSWORD=
-
-APP_ENV=local
-APP_DEBUG=true
-EOF
-echo "✓ Variables de entorno configuradas para Docker"
 
 # [5/12] Crear docker-compose.yml si no existe
 echo "[5/12] Configurando Docker Compose..."
@@ -235,8 +215,18 @@ sleep 10
 echo "Verificando contenedores..."
 docker-compose ps
 
-# [11/12] Instalar dependencias dentro del contenedor
-echo "[11/12] Instalando dependencias dentro del contenedor..."
+# [11/12] Crear directorios necesarios antes de instalar dependencias
+echo "[11/12] Creando directorios necesarios..."
+docker-compose exec app mkdir -p storage/framework/cache/data
+docker-compose exec app mkdir -p storage/framework/sessions
+docker-compose exec app mkdir -p storage/framework/views
+docker-compose exec app mkdir -p storage/logs
+docker-compose exec app mkdir -p bootstrap/cache
+docker-compose exec app chmod -R 775 storage bootstrap/cache
+echo "✓ Directorios necesarios creados"
+
+# Instalar dependencias dentro del contenedor
+echo "Instalando dependencias dentro del contenedor..."
 docker-compose exec app composer install --no-interaction --prefer-dist --optimize-autoloader
 docker-compose exec app npm install --silent
 echo "✓ Dependencias instaladas"
@@ -246,6 +236,7 @@ echo "[12/12] Configurando aplicación..."
 docker-compose exec app php artisan key:generate --force
 docker-compose exec app php artisan cache:table
 docker-compose exec app php artisan cache:setup-cloud --driver=redis
+docker-compose exec app php artisan queue:table
 echo "✓ Aplicación configurada"
 
 # Ejecutar migraciones y seeders
@@ -280,4 +271,9 @@ echo "Comandos de caché:"
 echo "- docker-compose exec app php artisan cache:clear"
 echo "- docker-compose exec app php artisan test:cache-performance-fallback"
 echo "- docker-compose exec app php artisan cache:configure-environment"
+echo ""
+echo "Comandos de cola:"
+echo "- Ver worker: docker-compose logs -f queue-worker"
+echo "- Probar cola: docker-compose exec app php artisan queue:work --once"
+echo "- Limpiar cola: docker-compose exec app php artisan queue:clear"
 echo ""

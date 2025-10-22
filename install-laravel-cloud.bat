@@ -36,69 +36,13 @@ echo ✓ Autenticado en Laravel Cloud
 REM Crear archivo .env para producción
 echo [3/15] Configurando archivo de entorno para producción...
 if not exist .env.production (
-    copy .env.example .env.production
-    echo ✓ Archivo .env.production creado
+    copy env.production.example .env.production
+    echo ✓ Archivo .env.production creado desde env.production.example
+    echo ✓ Variables de entorno configuradas para Laravel Cloud
 ) else (
     echo ✓ Archivo .env.production ya existe
+    echo ADVERTENCIA: Si necesitas actualizar la configuración, elimina el archivo .env.production y ejecuta nuevamente
 )
-
-REM Configurar variables específicas para Laravel Cloud
-echo Configurando variables para Laravel Cloud...
-(
-echo APP_NAME="4GMovil"
-echo APP_ENV=production
-echo APP_KEY=
-echo APP_DEBUG=false
-echo APP_URL=https://tu-proyecto.laravel-cloud.com
-echo.
-echo LOG_CHANNEL=stack
-echo LOG_DEPRECATIONS_CHANNEL=null
-echo LOG_LEVEL=error
-echo.
-echo # Base de datos (configurar en Laravel Cloud)
-echo DB_CONNECTION=mysql
-echo DB_HOST=mysql
-echo DB_PORT=3306
-echo DB_DATABASE=4gmovil
-echo DB_USERNAME=root
-echo DB_PASSWORD=
-echo.
-echo # Caché optimizado para Laravel Cloud
-echo CACHE_DRIVER=database
-echo CACHE_PREFIX=4gmovil_cache_
-echo.
-echo # Sesiones
-echo SESSION_DRIVER=database
-echo SESSION_LIFETIME=120
-echo.
-echo # Cola de trabajos
-echo QUEUE_CONNECTION=database
-echo.
-echo # Mail (configurar en Laravel Cloud)
-echo MAIL_MAILER=smtp
-echo MAIL_HOST=
-echo MAIL_PORT=587
-echo MAIL_USERNAME=
-echo MAIL_PASSWORD=
-echo MAIL_ENCRYPTION=tls
-echo MAIL_FROM_ADDRESS=noreply@4gmovil.com
-echo MAIL_FROM_NAME="4GMovil"
-echo.
-echo # Stripe (configurar en Laravel Cloud)
-echo STRIPE_KEY=
-echo STRIPE_SECRET=
-echo STRIPE_WEBHOOK_SECRET=
-echo.
-echo # Google OAuth (configurar en Laravel Cloud)
-echo GOOGLE_CLIENT_ID=
-echo GOOGLE_CLIENT_SECRET=
-echo GOOGLE_REDIRECT_URI=
-echo.
-echo # Configuración de caché específica
-echo CACHE_TTL=3600
-echo CACHE_CLEAR_ON_DEPLOY=true
-) > .env.production
-echo ✓ Variables de entorno configuradas para Laravel Cloud
 
 REM Crear proyecto en Laravel Cloud
 echo [4/15] Creando proyecto en Laravel Cloud...
@@ -179,6 +123,17 @@ echo Thumbs.db
 
 REM Optimizar para producción
 echo [8/15] Optimizando para producción...
+
+REM Crear directorios necesarios antes de instalar dependencias
+echo Creando directorios necesarios...
+if not exist storage\framework mkdir storage\framework
+if not exist storage\framework\cache mkdir storage\framework\cache
+if not exist storage\framework\cache\data mkdir storage\framework\cache\data
+if not exist storage\framework\sessions mkdir storage\framework\sessions
+if not exist storage\framework\views mkdir storage\framework\views
+if not exist storage\logs mkdir storage\logs
+if not exist bootstrap\cache mkdir bootstrap\cache
+echo ✓ Directorios necesarios creados
 
 REM Instalar dependencias de producción
 composer install --no-dev --optimize-autoloader --no-interaction

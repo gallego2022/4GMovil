@@ -54,8 +54,18 @@ else
     SKIP_NODE=1
 fi
 
-# [4/10] Instalar dependencias PHP
-echo "[4/10] Instalando dependencias PHP..."
+# [4/10] Crear directorios necesarios antes de instalar dependencias
+echo "[4/10] Creando directorios necesarios..."
+mkdir -p storage/framework/cache/data
+mkdir -p storage/framework/sessions
+mkdir -p storage/framework/views
+mkdir -p storage/logs
+mkdir -p bootstrap/cache
+chmod -R 775 storage bootstrap/cache
+echo "✓ Directorios necesarios creados"
+
+# Instalar dependencias PHP
+echo "Instalando dependencias PHP..."
 composer install --no-interaction --prefer-dist --optimize-autoloader
 echo "✓ Dependencias PHP instaladas"
 
@@ -71,8 +81,8 @@ fi
 # [6/10] Configurar archivo de entorno
 echo "[6/10] Configurando archivo de entorno..."
 if [ ! -f .env ]; then
-    cp .env.example .env
-    echo "✓ Archivo .env creado"
+    cp env.local.example .env
+    echo "✓ Archivo .env creado desde env.local.example"
 else
     echo "✓ Archivo .env ya existe"
 fi

@@ -47,108 +47,166 @@ echo ✓ Docker está ejecutándose
 REM Crear archivo .env para Docker
 echo [4/12] Configurando archivo de entorno para Docker...
 if not exist .env (
-    copy .env.example .env
-    echo ✓ Archivo .env creado
+    copy env.docker.example .env
+    echo ✓ Archivo .env creado desde env.docker.example
+    echo ✓ Variables de entorno configuradas para Docker
 ) else (
     echo ✓ Archivo .env ya existe
+    echo ADVERTENCIA: Si necesitas actualizar la configuración, elimina el archivo .env y ejecuta nuevamente
 )
-
-REM Configurar variables específicas para Docker
-echo Configurando variables para Docker...
-echo. >> .env
-echo # Configuración específica para Docker >> .env
-echo DB_CONNECTION=mysql >> .env
-echo DB_HOST=mysql >> .env
-echo DB_PORT=3306 >> .env
-echo DB_DATABASE=4gmovil >> .env
-echo DB_USERNAME=root >> .env
-echo DB_PASSWORD=password >> .env
-echo. >> .env
-echo CACHE_DRIVER=redis >> .env
-echo REDIS_HOST=redis >> .env
-echo REDIS_PORT=6379 >> .env
-echo REDIS_PASSWORD= >> .env
-echo. >> .env
-echo APP_ENV=local >> .env
-echo APP_DEBUG=true >> .env
-echo ✓ Variables de entorno configuradas para Docker
 
 REM Crear docker-compose.yml si no existe
 echo [5/12] Configurando Docker Compose...
 if not exist docker-compose.yml (
     echo Creando docker-compose.yml...
     (
-    echo version: '3.8'
-    echo.
     echo services:
     echo   app:
     echo     build:
     echo       context: .
     echo       dockerfile: Dockerfile
-    echo     container_name: 4gmovil-app
+    echo     container_name: 4gmovil_app
     echo     restart: unless-stopped
-    echo     working_dir: /var/www
-    echo     volumes:
-    echo       - ./:/var/www
-    echo       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
     echo     ports:
-    echo       - "8000:8000"
-    echo     depends_on:
-    echo       - mysql
-    echo       - redis
+    echo       - "8000:80"
+    echo     volumes:
+    echo       - ./storage:/var/www/html/storage
+    echo       - ./app:/var/www/html/app
+    echo       - ./resources:/var/www/html/resources
+    echo       - ./routes:/var/www/html/routes
+    echo       - ./database:/var/www/html/database
+    echo       - ./public:/var/www/html/public
     echo     environment:
-    echo       - DB_CONNECTION=mysql
-    echo       - DB_HOST=mysql
-    echo       - DB_PORT=3306
+    echo       - APP_ENV=production
+    echo       - APP_DEBUG=false
+    echo       - DB_HOST=db
     echo       - DB_DATABASE=4gmovil
-    echo       - DB_USERNAME=root
-    echo       - DB_PASSWORD=password
-    echo       - CACHE_DRIVER=redis
+    echo       - DB_USERNAME=laraveluser
+    echo       - DB_PASSWORD=laravelpass
     echo       - REDIS_HOST=redis
     echo       - REDIS_PORT=6379
+    echo       - CACHE_DRIVER=redis
+    echo       - QUEUE_CONNECTION=redis
+    echo     depends_on:
+    echo       - db
+    echo       - redis
+    echo     networks:
+    echo       - 4gmovil_network
     echo.
-    echo   mysql:
+    echo   db:
     echo     image: mysql:8.0
-    echo     container_name: 4gmovil-mysql
+    echo     container_name: 4gmovil_db
     echo     restart: unless-stopped
     echo     environment:
+    echo       MYSQL_ROOT_PASSWORD: rootpassword
     echo       MYSQL_DATABASE: 4gmovil
-    echo       MYSQL_ROOT_PASSWORD: password
+    echo       MYSQL_USER: laraveluser
+    echo       MYSQL_PASSWORD: laravelpass
     echo     ports:
-    echo       - "3306:3306"
+    echo       - "3307:3306"
     echo     volumes:
-    echo       - mysql_data:/var/lib/mysql
+    echo       - db_data:/var/lib/mysql
+    echo     networks:
+    echo       - 4gmovil_network
+    echo.
+    echo   phpmyadmin:
+    echo     image: phpmyadmin/phpmyadmin:latest
+    echo     container_name: 4gmovil_phpmyadmin
+    echo     restart: unless-stopped
+    echo     environment:
+    echo       PMA_HOST: db
+    echo       PMA_USER: laraveluser
+    echo       PMA_PASSWORD: laravelpass
+    echo       MYSQL_ROOT_PASSWORD: rootpassword
+    echo     ports:
+    echo       - "8080:80"
+    echo     depends_on:
+    echo       - db
+    echo     networks:
+    echo       - 4gmovil_network
     echo.
     echo   redis:
     echo     image: redis:7-alpine
-    echo     container_name: 4gmovil-redis
+    echo     container_name: 4gmovil_redis
     echo     restart: unless-stopped
     echo     ports:
     echo       - "6379:6379"
     echo     volumes:
     echo       - redis_data:/data
-    echo     command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    echo     networks:
+    echo       - 4gmovil_network
     echo.
-    echo   redis-commander:
-    echo     image: rediscommander/redis-commander:latest
-    echo     container_name: 4gmovil-redis-commander
+    echo   queue:
+    echo     build:
+    echo       context: .
+    echo       dockerfile: Dockerfile
+    echo     container_name: 4gmovil_queue
     echo     restart: unless-stopped
-    echo     ports:
-    echo       - "8081:8081"
-    echo     environment:
-    echo       - REDIS_HOSTS=local:redis:6379
-    echo       - HTTP_USER=admin
-    echo       - HTTP_PASSWORD=admin
     echo     depends_on:
+    echo       - app
+    echo       - db
     echo       - redis
+    echo     command: bash -lc "chmod +x /var/www/html/docker/start-queue.sh && /var/www/html/docker/start-queue.sh"
+    echo     volumes:
+    echo       - ./storage:/var/www/html/storage
+    echo       - ./app:/var/www/html/app
+    echo       - ./resources:/var/www/html/resources
+    echo       - ./routes:/var/www/html/routes
+    echo       - ./database:/var/www/html/database
+    echo       - ./public:/var/www/html/public
+    echo     environment:
+    echo       - APP_ENV=production
+    echo       - APP_DEBUG=false
+    echo       - DB_HOST=db
+    echo       - DB_DATABASE=4gmovil
+    echo       - DB_USERNAME=laraveluser
+    echo       - DB_PASSWORD=laravelpass
+    echo       - REDIS_HOST=redis
+    echo       - REDIS_PORT=6379
+    echo       - QUEUE_CONNECTION=redis
+    echo     networks:
+    echo       - 4gmovil_network
+    echo.
+    echo   queue-worker:
+    echo     build:
+    echo       context: .
+    echo       dockerfile: Dockerfile
+    echo     container_name: 4gmovil_queue_worker
+    echo     restart: unless-stopped
+    echo     depends_on:
+    echo       - app
+    echo       - db
+    echo       - redis
+    echo     command: bash -lc "chmod +x /var/www/html/docker/start-queue.sh && /var/www/html/docker/start-queue.sh"
+    echo     volumes:
+    echo       - ./storage:/var/www/html/storage
+    echo       - ./app:/var/www/html/app
+    echo       - ./resources:/var/www/html/resources
+    echo       - ./routes:/var/www/html/routes
+    echo       - ./database:/var/www/html/database
+    echo       - ./public:/var/www/html/public
+    echo     environment:
+    echo       - APP_ENV=production
+    echo       - APP_DEBUG=false
+    echo       - DB_HOST=db
+    echo       - DB_DATABASE=4gmovil
+    echo       - DB_USERNAME=laraveluser
+    echo       - DB_PASSWORD=laravelpass
+    echo       - REDIS_HOST=redis
+    echo       - REDIS_PORT=6379
+    echo       - QUEUE_CONNECTION=redis
+    echo     networks:
+    echo       - 4gmovil_network
     echo.
     echo volumes:
-    echo   mysql_data:
-    echo     driver: local
+    echo   db_data:
     echo   redis_data:
-    echo     driver: local
+    echo.
+    echo networks:
+    echo   4gmovil_network:
+    echo     driver: bridge
     ) > docker-compose.yml
-    echo ✓ Docker Compose configurado
+    echo ✓ Docker Compose configurado con Redis y Workers
 ) else (
     echo ✓ Docker Compose ya existe
 )
@@ -243,8 +301,18 @@ REM Verificar que los contenedores estén ejecutándose
 echo Verificando contenedores...
 docker-compose ps
 
+REM Crear directorios necesarios antes de instalar dependencias
+echo [11/12] Creando directorios necesarios...
+docker-compose exec app mkdir -p storage/framework/cache/data
+docker-compose exec app mkdir -p storage/framework/sessions
+docker-compose exec app mkdir -p storage/framework/views
+docker-compose exec app mkdir -p storage/logs
+docker-compose exec app mkdir -p bootstrap/cache
+docker-compose exec app chmod -R 775 storage bootstrap/cache
+echo ✓ Directorios necesarios creados
+
 REM Instalar dependencias dentro del contenedor
-echo [11/12] Instalando dependencias dentro del contenedor...
+echo Instalando dependencias dentro del contenedor...
 docker-compose exec app composer install --no-interaction --prefer-dist --optimize-autoloader
 if %errorlevel% neq 0 (
     echo ERROR: Falló la instalación de dependencias PHP
@@ -266,7 +334,18 @@ echo [12/12] Configurando aplicación...
 docker-compose exec app php artisan key:generate --force
 docker-compose exec app php artisan cache:table
 docker-compose exec app php artisan cache:setup-cloud --driver=redis
+docker-compose exec app php artisan queue:table
 echo ✓ Aplicación configurada
+
+REM Verificar conexión a Redis
+echo Verificando conexión a Redis...
+docker-compose exec redis redis-cli ping
+if %errorlevel% neq 0 (
+    echo ADVERTENCIA: Redis no está respondiendo correctamente
+    echo Verifica que el contenedor de Redis esté ejecutándose
+) else (
+    echo ✓ Redis está funcionando correctamente
+)
 
 REM Ejecutar migraciones y seeders
 echo Ejecutando migraciones y seeders...
@@ -305,5 +384,22 @@ echo Comandos de caché:
 echo - docker-compose exec app php artisan cache:clear
 echo - docker-compose exec app php artisan test:cache-performance-fallback
 echo - docker-compose exec app php artisan cache:configure-environment
+echo.
+echo Comandos de cola:
+echo - Ver worker: docker-compose logs -f queue-worker
+echo - Probar cola: docker-compose exec app php artisan queue:work --once
+echo - Limpiar cola: docker-compose exec app php artisan queue:clear
+echo.
+echo Comandos de Redis:
+echo - Conectar a Redis: docker-compose exec redis redis-cli
+echo - Ver estado de Redis: docker-compose exec redis redis-cli ping
+echo - Limpiar Redis: docker-compose exec redis redis-cli flushall
+echo - Ver claves: docker-compose exec redis redis-cli keys "*"
+echo - Ver configuración Redis: docker-compose exec redis redis-cli config get "*"
+echo.
+echo Verificación de configuración:
+echo - Probar caché: docker-compose exec app php artisan tinker
+echo   Luego ejecuta: Cache::put('test', 'Redis funciona', 60)
+echo   Y verifica: Cache::get('test')
 echo.
 pause
