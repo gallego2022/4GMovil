@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\ProductoController;
-use App\Http\Controllers\Cliente\EstadoPedidoController;
+// use App\Http\Controllers\Cliente\EstadoPedidoController; // ELIMINADO
 use App\Http\Controllers\Cliente\PedidoController;
 
 Route::middleware(['auth', 'email.verified'])->group(function () {
@@ -33,7 +33,7 @@ Route::middleware(['auth', 'email.verified'])->group(function () {
         Route::delete('/{resena}', [ProductoController::class, 'resenasDestroy'])->name('destroy');
     });
     // Rutas de estados de pedido para clientes
-    Route::resource('estados-pedido', EstadoPedidoController::class);
+    // Route::resource('estados-pedido', EstadoPedidoController::class); // ELIMINADO
 });
 
 // Rutas de logout para clientes

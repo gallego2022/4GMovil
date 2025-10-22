@@ -1,260 +1,309 @@
 @echo off
-setlocal enabledelayedexpansion
+REM ========================================
+REM INSTALACIÓN DOCKER - 4GMovil
+REM Sistema: Windows
+REM Entorno: Docker con Redis
+REM ========================================
 
+echo.
 echo ========================================
-echo   4GMovil - Instalacion Docker
+echo INSTALACIÓN DOCKER - 4GMovil
 echo ========================================
 echo.
 
-REM Verificar si Docker esta instalado y funcionando
-echo Verificando Docker...
+REM Verificar si Docker está instalado
+echo [1/12] Verificando Docker...
 docker --version >nul 2>&1
 if %errorlevel% neq 0 (
-    echo ERROR: Docker no esta instalado.
-    echo Por favor instala Docker Desktop desde: https://www.docker.com/products/docker-desktop
-    echo Y asegurate de que Docker Desktop este ejecutandose.
+    echo ERROR: Docker no está instalado
+    echo Por favor instala Docker Desktop desde: https://docs.docker.com/desktop/windows/install/
     pause
     exit /b 1
 )
+echo ✓ Docker encontrado
 
-REM Verificar que Docker este ejecutandose
+REM Verificar si Docker Compose está instalado
+echo [2/12] Verificando Docker Compose...
+docker-compose --version >nul 2>&1
+if %errorlevel% neq 0 (
+    echo ERROR: Docker Compose no está instalado
+    echo Por favor instala Docker Compose desde: https://docs.docker.com/compose/install/
+    pause
+    exit /b 1
+)
+echo ✓ Docker Compose encontrado
+
+REM Verificar si Docker está ejecutándose
+echo [3/12] Verificando que Docker esté ejecutándose...
 docker info >nul 2>&1
 if %errorlevel% neq 0 (
-    echo ERROR: Docker no esta ejecutandose.
-    echo Por favor inicia Docker Desktop y vuelve a intentar.
+    echo ERROR: Docker no está ejecutándose
+    echo Por favor inicia Docker Desktop
     pause
     exit /b 1
 )
+echo ✓ Docker está ejecutándose
 
-echo Docker encontrado y funcionando. Continuando...
-echo.
-
-REM Verificar si Git esta instalado
-echo Verificando Git...
-git --version >nul 2>&1
-if %errorlevel% neq 0 (
-    echo ERROR: Git no esta instalado.
-    echo Por favor instala Git desde: https://git-scm.com/downloads
-    pause
-    exit /b 1
-)
-
-echo Git encontrado. Continuando...
-echo.
-
-REM Verificar si el proyecto ya existe
-if exist "4gmovil" (
-    echo El directorio 4gmovil ya existe.
-    set /p choice="¿Deseas continuar y actualizar el proyecto? (s/n): "
-    if /i "%choice%" neq "s" (
-        echo Instalacion cancelada.
-        pause
-        exit /b 0
-    )
-    echo Actualizando proyecto...
-    cd 4gmovil
-    git pull origin main
-    if %errorlevel% neq 0 (
-        echo ERROR: No se pudo actualizar el proyecto desde Git.
-        echo Verifica tu conexion a internet y los permisos del repositorio.
-        pause
-        exit /b 1
-    )
+REM Crear archivo .env para Docker
+echo [4/12] Configurando archivo de entorno para Docker...
+if not exist .env (
+    copy .env.example .env
+    echo ✓ Archivo .env creado
 ) else (
-    echo Clonando proyecto desde GitHub...
-    git clone https://github.com/tu-usuario/4gmovil.git
-    if %errorlevel% neq 0 (
-        echo ERROR: No se pudo clonar el proyecto desde GitHub.
-        echo Verifica tu conexion a internet y los permisos del repositorio.
-        pause
-        exit /b 1
-    )
-    cd 4gmovil
+    echo ✓ Archivo .env ya existe
 )
 
-echo.
-echo Configurando variables de entorno...
-if not exist ".env" (
-    if exist "env.docker.example" (
-        copy env.docker.example .env
-        echo Archivo .env creado desde env.docker.example
-    ) else (
-        echo ERROR: No se encontro el archivo env.docker.example
-        echo Asegurate de que el proyecto este completo.
-        pause
-        exit /b 1
-    )
+REM Configurar variables específicas para Docker
+echo Configurando variables para Docker...
+echo. >> .env
+echo # Configuración específica para Docker >> .env
+echo DB_CONNECTION=mysql >> .env
+echo DB_HOST=mysql >> .env
+echo DB_PORT=3306 >> .env
+echo DB_DATABASE=4gmovil >> .env
+echo DB_USERNAME=root >> .env
+echo DB_PASSWORD=password >> .env
+echo. >> .env
+echo CACHE_DRIVER=redis >> .env
+echo REDIS_HOST=redis >> .env
+echo REDIS_PORT=6379 >> .env
+echo REDIS_PASSWORD= >> .env
+echo. >> .env
+echo APP_ENV=local >> .env
+echo APP_DEBUG=true >> .env
+echo ✓ Variables de entorno configuradas para Docker
+
+REM Crear docker-compose.yml si no existe
+echo [5/12] Configurando Docker Compose...
+if not exist docker-compose.yml (
+    echo Creando docker-compose.yml...
+    (
+    echo version: '3.8'
+    echo.
+    echo services:
+    echo   app:
+    echo     build:
+    echo       context: .
+    echo       dockerfile: Dockerfile
+    echo     container_name: 4gmovil-app
+    echo     restart: unless-stopped
+    echo     working_dir: /var/www
+    echo     volumes:
+    echo       - ./:/var/www
+    echo       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    echo     ports:
+    echo       - "8000:8000"
+    echo     depends_on:
+    echo       - mysql
+    echo       - redis
+    echo     environment:
+    echo       - DB_CONNECTION=mysql
+    echo       - DB_HOST=mysql
+    echo       - DB_PORT=3306
+    echo       - DB_DATABASE=4gmovil
+    echo       - DB_USERNAME=root
+    echo       - DB_PASSWORD=password
+    echo       - CACHE_DRIVER=redis
+    echo       - REDIS_HOST=redis
+    echo       - REDIS_PORT=6379
+    echo.
+    echo   mysql:
+    echo     image: mysql:8.0
+    echo     container_name: 4gmovil-mysql
+    echo     restart: unless-stopped
+    echo     environment:
+    echo       MYSQL_DATABASE: 4gmovil
+    echo       MYSQL_ROOT_PASSWORD: password
+    echo     ports:
+    echo       - "3306:3306"
+    echo     volumes:
+    echo       - mysql_data:/var/lib/mysql
+    echo.
+    echo   redis:
+    echo     image: redis:7-alpine
+    echo     container_name: 4gmovil-redis
+    echo     restart: unless-stopped
+    echo     ports:
+    echo       - "6379:6379"
+    echo     volumes:
+    echo       - redis_data:/data
+    echo     command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    echo.
+    echo   redis-commander:
+    echo     image: rediscommander/redis-commander:latest
+    echo     container_name: 4gmovil-redis-commander
+    echo     restart: unless-stopped
+    echo     ports:
+    echo       - "8081:8081"
+    echo     environment:
+    echo       - REDIS_HOSTS=local:redis:6379
+    echo       - HTTP_USER=admin
+    echo       - HTTP_PASSWORD=admin
+    echo     depends_on:
+    echo       - redis
+    echo.
+    echo volumes:
+    echo   mysql_data:
+    echo     driver: local
+    echo   redis_data:
+    echo     driver: local
+    ) > docker-compose.yml
+    echo ✓ Docker Compose configurado
 ) else (
-    echo El archivo .env ya existe.
+    echo ✓ Docker Compose ya existe
 )
 
-echo.
-echo Verificando archivos necesarios...
-if not exist "docker-compose.yml" (
-    echo ERROR: No se encontro docker-compose.yml
-    echo Asegurate de que el proyecto este completo.
-    pause
-    exit /b 1
+REM Crear Dockerfile si no existe
+echo [6/12] Configurando Dockerfile...
+if not exist Dockerfile (
+    echo Creando Dockerfile...
+    (
+    echo FROM php:8.2-fpm
+    echo.
+    echo # Instalar dependencias del sistema
+    echo RUN apt-get update ^&^& apt-get install -y \
+    echo     git \
+    echo     curl \
+    echo     libpng-dev \
+    echo     libonig-dev \
+    echo     libxml2-dev \
+    echo     zip \
+    echo     unzip \
+    echo     nodejs \
+    echo     npm
+    echo.
+    echo # Limpiar caché
+    echo RUN apt-get clean ^&^& rm -rf /var/lib/apt/lists/*
+    echo.
+    echo # Instalar extensiones de PHP
+    echo RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+    echo.
+    echo # Instalar Composer
+    echo COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+    echo.
+    echo # Crear usuario para la aplicación
+    echo RUN groupadd -g 1000 www
+    echo RUN useradd -u 1000 -ms /bin/bash -g www www
+    echo.
+    echo # Copiar código de la aplicación
+    echo COPY . /var/www
+    echo COPY --chown=www:www . /var/www
+    echo.
+    echo # Cambiar al directorio de trabajo
+    echo WORKDIR /var/www
+    echo.
+    echo # Cambiar al usuario www
+    echo USER www
+    echo.
+    echo # Exponer puerto 8000
+    echo EXPOSE 8000
+    echo.
+    echo # Comando por defecto
+    echo CMD php artisan serve --host=0.0.0.0 --port=8000
+    ) > Dockerfile
+    echo ✓ Dockerfile configurado
+) else (
+    echo ✓ Dockerfile ya existe
 )
 
-if not exist "Dockerfile" (
-    echo ERROR: No se encontro Dockerfile
-    echo Asegurate de que el proyecto este completo.
-    pause
-    exit /b 1
-)
+REM Crear directorio docker si no existe
+echo [7/12] Configurando directorio docker...
+if not exist docker\php mkdir docker\php
+echo upload_max_filesize=40M > docker\php\local.ini
+echo post_max_size=40M >> docker\php\local.ini
+echo memory_limit=512M >> docker\php\local.ini
+echo max_execution_time=300 >> docker\php\local.ini
+echo ✓ Configuración PHP creada
 
-echo.
-echo Construyendo y levantando contenedores Docker...
-echo Esto puede tomar varios minutos en la primera ejecucion...
-docker compose up --build -d
-
+REM Construir imágenes Docker
+echo [8/12] Construyendo imágenes Docker...
+docker-compose build --no-cache
 if %errorlevel% neq 0 (
-    echo ERROR: No se pudieron levantar los contenedores Docker.
-    echo Revisa los logs con: docker compose logs
+    echo ERROR: Falló la construcción de imágenes Docker
     pause
     exit /b 1
 )
+echo ✓ Imágenes Docker construidas
 
-echo.
-echo Esperando que los contenedores esten listos...
-echo Esto puede tomar hasta 2 minutos...
-timeout /t 30 /nobreak >nul
+REM Iniciar contenedores
+echo [9/12] Iniciando contenedores...
+docker-compose up -d
+if %errorlevel% neq 0 (
+    echo ERROR: Falló el inicio de contenedores
+    pause
+    exit /b 1
+)
+echo ✓ Contenedores iniciados
 
-echo.
-echo Verificando estado de contenedores...
-docker compose ps
-
-echo.
-echo Verificando que la aplicacion este funcionando...
+REM Esperar a que los servicios estén listos
+echo [10/12] Esperando a que los servicios estén listos...
 timeout /t 10 /nobreak >nul
 
-REM Verificar que los contenedores esten corriendo
-docker compose ps --format "table {{.Name}}\t{{.Status}}" | findstr "Up" >nul
+REM Verificar que los contenedores estén ejecutándose
+echo Verificando contenedores...
+docker-compose ps
+
+REM Instalar dependencias dentro del contenedor
+echo [11/12] Instalando dependencias dentro del contenedor...
+docker-compose exec app composer install --no-interaction --prefer-dist --optimize-autoloader
 if %errorlevel% neq 0 (
-    echo ADVERTENCIA: Algunos contenedores no estan funcionando correctamente.
-    echo Revisa los logs con: docker compose logs
-    echo.
+    echo ERROR: Falló la instalación de dependencias PHP
+    pause
+    exit /b 1
+)
+echo ✓ Dependencias PHP instaladas
+
+docker-compose exec app npm install --silent
+if %errorlevel% neq 0 (
+    echo ADVERTENCIA: Falló la instalación de dependencias Node.js
+    echo Continuando...
+) else (
+    echo ✓ Dependencias Node.js instaladas
+)
+
+REM Configurar aplicación
+echo [12/12] Configurando aplicación...
+docker-compose exec app php artisan key:generate --force
+docker-compose exec app php artisan cache:table
+docker-compose exec app php artisan cache:setup-cloud --driver=redis
+echo ✓ Aplicación configurada
+
+REM Ejecutar migraciones y seeders
+echo Ejecutando migraciones y seeders...
+docker-compose exec app php artisan migrate --force
+docker-compose exec app php artisan db:seed --force
+echo ✓ Base de datos configurada
+
+REM Compilar assets
+echo Compilando assets...
+docker-compose exec app npm run build
+if %errorlevel% neq 0 (
+    echo ADVERTENCIA: Falló la compilación de assets
+    echo Puedes compilar manualmente con: docker-compose exec app npm run dev
+) else (
+    echo ✓ Assets compilados
 )
 
 echo.
 echo ========================================
-echo   Instalando dependencias y configurando base de datos
+echo INSTALACIÓN DOCKER COMPLETADA
 echo ========================================
 echo.
-
-REM Esperar un poco mas para asegurar que la base de datos este completamente lista
-echo Esperando que la base de datos este completamente lista...
-timeout /t 15 /nobreak >nul
-
-REM Crear carpetas necesarias para Laravel
-echo Creando carpetas necesarias para Laravel...
-docker compose exec -T app mkdir -p /var/www/html/storage/framework/cache
-docker compose exec -T app mkdir -p /var/www/html/storage/framework/sessions
-docker compose exec -T app mkdir -p /var/www/html/storage/framework/views
-docker compose exec -T app mkdir -p /var/www/html/storage/logs
-docker compose exec -T app mkdir -p /var/www/html/bootstrap/cache
-docker compose exec -T app touch /var/www/html/storage/logs/laravel.log
-
-REM Establecer permisos iniciales
-echo Estableciendo permisos iniciales...
-docker compose exec -T app chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-docker compose exec -T app chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
-
-REM Instalar dependencias de Composer
-echo Instalando dependencias de PHP con Composer...
-docker compose exec -T app composer install --no-dev --optimize-autoloader
-if %errorlevel% neq 0 (
-    echo ADVERTENCIA: Error al instalar dependencias de Composer.
-    echo Continuando con la instalacion...
-    echo.
-)
-
-REM Generar clave de aplicacion
-echo Generando clave de aplicacion...
-docker compose exec -T app php artisan key:generate --force
-if %errorlevel% neq 0 (
-    echo ADVERTENCIA: Error al generar clave de aplicacion.
-    echo.
-)
-
-REM Limpiar cache
-echo Limpiando cache de la aplicacion...
-docker compose exec -T app php artisan config:clear
-docker compose exec -T app php artisan cache:clear
-docker compose exec -T app php artisan view:clear
-
-REM Ejecutar migraciones
-echo Ejecutando migraciones de base de datos...
-docker compose exec -T app php artisan migrate --force
-if %errorlevel% neq 0 (
-    echo ERROR: No se pudieron ejecutar las migraciones.
-    echo Revisa la conexion a la base de datos.
-    echo.
-)
-
-REM Ejecutar seeders
-echo Ejecutando seeders para poblar la base de datos...
-docker compose exec -T app php artisan db:seed --force
-if %errorlevel% neq 0 (
-    echo ADVERTENCIA: Error al ejecutar los seeders.
-    echo La aplicacion funcionara pero sin datos de prueba.
-    echo.
-)
-
-REM Crear enlace simbolico de storage
-echo Creando enlace simbolico de storage...
-docker compose exec -T app php artisan storage:link
-if %errorlevel% neq 0 (
-    echo ADVERTENCIA: Error al crear enlace simbolico de storage.
-    echo.
-)
-
-REM Sincronizar storage para evitar problemas de enlaces
-echo Sincronizando storage para evitar problemas de acceso a imagenes...
-docker compose exec -T app php artisan storage:sync --force
-if %errorlevel% neq 0 (
-    echo ADVERTENCIA: Error al sincronizar storage.
-    echo Continuando con la instalacion...
-    echo.
-)
-
-REM Verificar permisos finales
-echo Verificando permisos finales...
-docker compose exec -T app chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-docker compose exec -T app chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
-
+echo Servicios disponibles:
+echo - Aplicación: http://localhost:8000
+echo - Redis Commander: http://localhost:8081 (admin/admin)
+echo - MySQL: localhost:3306 (root/password)
+echo - Redis: localhost:6379
 echo.
-echo Verificando instalacion final...
-docker compose exec -T app php artisan --version
-if %errorlevel% neq 0 (
-    echo ADVERTENCIA: No se pudo verificar la instalacion de Laravel.
-    echo.
-)
-
+echo Comandos útiles:
+echo - Ver logs: docker-compose logs -f
+echo - Detener: docker-compose down
+echo - Reiniciar: docker-compose restart
+echo - Ejecutar comandos: docker-compose exec app php artisan [comando]
 echo.
-echo ========================================
-echo   Instalacion completada!
-echo ========================================
-echo.
-echo URLs de acceso:
-echo - Aplicacion: http://localhost:8000
-echo - Admin Panel: http://localhost:8000/admin
-echo - phpMyAdmin: http://localhost:8080
-echo.
-echo Credenciales por defecto:
-echo - Admin: 4gmoviltest@gmail.com / Admin123!
-echo - Base de datos: laraveluser / laravelpass
-echo.
-echo Comandos utiles:
-echo - Ver logs: docker compose logs -f
-echo - Ver logs de un servicio: docker compose logs -f app
-echo - Detener: docker compose down
-echo - Reiniciar: docker compose restart
-echo - Reconstruir: docker compose up --build -d
-echo.
-echo IMPORTANTE: Configura tus credenciales de Google OAuth y Stripe en el archivo .env
-echo.
-echo Si tienes problemas, revisa los logs con: docker compose logs
+echo Comandos de caché:
+echo - docker-compose exec app php artisan cache:clear
+echo - docker-compose exec app php artisan test:cache-performance-fallback
+echo - docker-compose exec app php artisan cache:configure-environment
 echo.
 pause

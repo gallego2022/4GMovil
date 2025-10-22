@@ -203,7 +203,7 @@ class VarianteProducto extends Model
         return DB::transaction(function () use ($cantidad, $motivo, $usuarioId, $referencia) {
             MovimientoInventario::create([
                 'variante_id' => $this->variante_id,
-                'tipo_movimiento' => 'venta',
+                'tipo_movimiento' => 'salida',
                 'cantidad' => $cantidad,
                 'stock_anterior' => $this->stock,
                 'stock_nuevo' => $this->stock, // No cambia porque ya se reservó
@@ -239,7 +239,7 @@ class VarianteProducto extends Model
             // Registrar movimiento de liberación
             MovimientoInventario::create([
                 'variante_id' => $this->variante_id,
-                'tipo_movimiento' => 'liberacion_reserva',
+                'tipo_movimiento' => 'liberacion',
                 'cantidad' => $cantidad,
                 'stock_anterior' => $stockAnterior,
                 'stock_nuevo' => $stockNuevo,
@@ -395,7 +395,7 @@ class VarianteProducto extends Model
             // Registrar movimiento de venta confirmada
             MovimientoInventario::create([
                 'variante_id' => $this->variante_id,
-                'tipo_movimiento' => 'venta_confirmada',
+                'tipo_movimiento' => 'salida',
                 'cantidad' => $cantidad,
                 'stock_anterior' => $this->stock,
                 'stock_nuevo' => $this->stock, // No cambia el stock físico

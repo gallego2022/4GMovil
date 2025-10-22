@@ -10,6 +10,7 @@ use App\Models\VarianteProducto;
 use App\Models\ImagenProducto;
 use App\Models\EspecificacionCategoria;
 use App\Services\FileService;
+use App\Services\RedisCacheService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -18,10 +19,12 @@ use Exception;
 class ProductoServiceOptimizadoCorregido extends BaseService
 {
     protected $fileService;
+    protected $cacheService;
 
-    public function __construct(FileService $fileService)
+    public function __construct(FileService $fileService, RedisCacheService $cacheService)
     {
         $this->fileService = $fileService;
+        $this->cacheService = $cacheService;
     }
 
     /**
@@ -31,35 +34,40 @@ class ProductoServiceOptimizadoCorregido extends BaseService
     {
         $this->logOperation('obteniendo_productos', ['filters' => $filters]);
 
-        try {
-            $query = Producto::with(['categoria', 'marca', 'variantes', 'imagenes']);
+        // Crear clave de caché basada en filtros
+        $cacheKey = 'productos:all:' . md5(serialize($filters));
+        
+        return $this->cacheService->remember($cacheKey, 3600, function () use ($filters) {
+            try {
+                $query = Producto::with(['categoria', 'marca', 'variantes', 'imagenes']);
 
-            // Aplicar filtros
-            if (!empty($filters['categoria_id'])) {
-                $query->where('categoria_id', $filters['categoria_id']);
+                // Aplicar filtros
+                if (!empty($filters['categoria_id'])) {
+                    $query->where('categoria_id', $filters['categoria_id']);
+                }
+
+                if (!empty($filters['marca_id'])) {
+                    $query->where('marca_id', $filters['marca_id']);
+                }
+
+                if (!empty($filters['estado'])) {
+                    $query->where('estado', $filters['estado']);
+                }
+
+                if (!empty($filters['search'])) {
+                    $query->where('nombre_producto', 'like', '%' . $filters['search'] . '%')
+                          ->orWhere('descripcion', 'like', '%' . $filters['search'] . '%');
+                }
+
+                $productos = $query->orderBy('created_at', 'desc')->get();
+
+                return $this->formatSuccessResponse($productos, 'Productos obtenidos exitosamente');
+
+            } catch (Exception $e) {
+                $this->logOperation('error_obteniendo_productos', ['error' => $e->getMessage()], 'error');
+                throw $e;
             }
-
-            if (!empty($filters['marca_id'])) {
-                $query->where('marca_id', $filters['marca_id']);
-            }
-
-            if (!empty($filters['estado'])) {
-                $query->where('estado', $filters['estado']);
-            }
-
-            if (!empty($filters['search'])) {
-                $query->where('nombre_producto', 'like', '%' . $filters['search'] . '%')
-                      ->orWhere('descripcion', 'like', '%' . $filters['search'] . '%');
-            }
-
-            $productos = $query->orderBy('created_at', 'desc')->get();
-
-            return $this->formatSuccessResponse($productos, 'Productos obtenidos exitosamente');
-
-        } catch (Exception $e) {
-            $this->logOperation('error_obteniendo_productos', ['error' => $e->getMessage()], 'error');
-            throw $e;
-        }
+        });
     }
 
     /**
@@ -67,20 +75,22 @@ class ProductoServiceOptimizadoCorregido extends BaseService
      */
     public function getFormData(): array
     {
-        try {
-            $categorias = Categoria::all();
-            $marcas = Marca::all();
+        return $this->cacheService->remember('productos:form_data', 7200, function () {
+            try {
+                $categorias = Categoria::all();
+                $marcas = Marca::all();
 
-            return [
-                'success' => true,
-                'categorias' => $categorias,
-                'marcas' => $marcas
-            ];
+                return [
+                    'success' => true,
+                    'categorias' => $categorias,
+                    'marcas' => $marcas
+                ];
 
-        } catch (Exception $e) {
-            $this->logOperation('error_obteniendo_datos_formulario', ['error' => $e->getMessage()], 'error');
-            throw $e;
-        }
+            } catch (Exception $e) {
+                $this->logOperation('error_obteniendo_datos_formulario', ['error' => $e->getMessage()], 'error');
+                throw $e;
+            }
+        });
     }
 
     /**

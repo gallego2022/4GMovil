@@ -6,6 +6,7 @@ use App\Models\Producto;
 use App\Models\MovimientoInventario;
 use App\Models\VarianteProducto;
 use App\Models\Categoria;
+use App\Services\RedisCacheService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\DB;
@@ -14,6 +15,13 @@ use Carbon\Carbon;
 
 class InventarioService
 {
+    protected $cacheService;
+
+    public function __construct(RedisCacheService $cacheService)
+    {
+        $this->cacheService = $cacheService;
+    }
+
     /**
      * Obtener productos con stock bajo (60% del stock inicial)
      */
@@ -763,18 +771,20 @@ class InventarioService
      */
     public function getDashboardData(): array
     {
-        return [
-            'alertas' => $this->getAlertasInventarioCompletas(),
-            'productosStockBajo' => $this->getProductosStockBajo(),
-            'productosStockCritico' => $this->getProductosStockCritico(),
-            'valorTotal' => $this->getValorTotalInventario(),
-            'variantesStockBajo' => $this->getVariantesStockBajo(),
-            'variantesSinStock' => $this->getVariantesSinStock(),
-            'reporteVariantes' => $this->getReporteInventarioVariantes(),
-            'productosConVariantes' => $this->getProductosConVariantes(),
-            'stockTotalVariantes' => $this->getStockTotalVariantes(),
-            'valorTotalVariantes' => $this->getValorTotalVariantes()
-        ];
+        return $this->cacheService->remember('inventario:dashboard', 600, function () {
+            return [
+                'alertas' => $this->getAlertasInventarioCompletas(),
+                'productosStockBajo' => $this->getProductosStockBajo(),
+                'productosStockCritico' => $this->getProductosStockCritico(),
+                'valorTotal' => $this->getValorTotalInventario(),
+                'variantesStockBajo' => $this->getVariantesStockBajo(),
+                'variantesSinStock' => $this->getVariantesSinStock(),
+                'reporteVariantes' => $this->getReporteInventarioVariantes(),
+                'productosConVariantes' => $this->getProductosConVariantes(),
+                'stockTotalVariantes' => $this->getStockTotalVariantes(),
+                'valorTotalVariantes' => $this->getValorTotalVariantes()
+            ];
+        });
     }
 
     /**
@@ -831,18 +841,6 @@ class InventarioService
         ];
     }
 
-    /**
-     * Obtener datos de alertas
-     */
-    public function getAlertasData(): array
-    {
-        return [
-            'productosStockBajo' => $this->getProductosStockBajo(),
-            'productosStockCritico' => $this->getProductosStockCritico(),
-            'productosSinStock' => $this->getProductosSinStock(),
-            'productosStockExcesivo' => $this->getProductosStockExcesivo()
-        ];
-    }
 
     /**
      * Obtener datos de movimientos

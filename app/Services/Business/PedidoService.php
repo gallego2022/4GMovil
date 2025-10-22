@@ -4,7 +4,7 @@ namespace App\Services\Business;
 
 use App\Services\Base\BaseService;
 use App\Models\Pedido;
-use App\Models\PedidoItem;
+use App\Models\DetallePedido;
 use App\Models\Producto;
 use App\Models\VarianteProducto;
 use App\Models\Usuario;
@@ -198,11 +198,17 @@ class PedidoService extends BaseService
         return $this->executeInTransaction(function () use ($pedidoId, $request) {
             $data = $this->validateUpdateStatusData($request);
             
-            $pedido = Pedido::findOrFail($pedidoId);
+            $pedido = Pedido::with('estado')->findOrFail($pedidoId);
             
             // Verificar permisos
             if (!Auth::user()->hasRole('admin')) {
                 throw new Exception('No tienes permisos para actualizar el estado del pedido');
+            }
+
+            // Verificar que el pedido permita cambios de estado
+            if ($this->pedidoNoPermiteCambioEstado($pedido)) {
+                $estadoActual = $pedido->estado->nombre ?? 'Desconocido';
+                throw new Exception("No se puede cambiar el estado de un pedido que ya está {$estadoActual}");
             }
 
             $estadoAnterior = $pedido->estado->nombre;
@@ -469,7 +475,7 @@ class PedidoService extends BaseService
         foreach ($items as $item) {
             $precio = $item->precio + ($item->precio_adicional ?? 0);
             
-            PedidoItem::create([
+            DetallePedido::create([
                 'pedido_id' => $pedido->id,
                 'producto_id' => $item->producto_id,
                 'variante_id' => $item->variante_id,
@@ -505,7 +511,7 @@ class PedidoService extends BaseService
                         $item->cantidad,
                         "Venta - Pedido desde carrito",
                         \Illuminate\Support\Facades\Auth::id(),
-                        "carrito_venta"
+                        null
                     );
                 }
             }
@@ -609,5 +615,19 @@ class PedidoService extends BaseService
         $sequence = $lastOrder ? (intval(substr($lastOrder->numero_pedido, -4)) + 1) : 1;
         
         return sprintf('%s%s%s%04d', $prefix, $year, $month, $sequence);
+    }
+
+    /**
+     * Verificar si un pedido permite cambio de estado
+     * Los pedidos cancelados o confirmados no permiten cambios
+     */
+    private function pedidoNoPermiteCambioEstado($pedido): bool
+    {
+        // Estados que no permiten cambios
+        $estadosFinales = ['cancelado', 'confirmado', 'entregado'];
+        
+        $estadoActual = strtolower($pedido->estado->nombre ?? '');
+        
+        return in_array($estadoActual, $estadosFinales);
     }
 }

@@ -11,9 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/style_inicio.css') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css" rel="stylesheet">
+    <!-- Alpine.js y SweetAlert2 se cargan desde Vite para mejor rendimiento -->
     <!-- CSS de animaciones de carga -->
     <link rel="stylesheet" href="{{ asset('css/loading-animations.css') }}">
     <style>
@@ -905,15 +903,15 @@
     <!-- Script del carrito -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM Content Loaded - Inicio del script'); // Debug
+            // DOM Content Loaded
 
             // Variables globales
             let cart = JSON.parse(localStorage.getItem('cart')) || [];
-            console.log('Cart inicial:', cart); // Debug
+            // Cart inicial
 
             // Funciones del carrito
             function updateCartCount() {
-                console.log('Actualizando contador del carrito'); // Debug
+                // Actualizando contador del carrito
                 const cartCount = document.getElementById('cart-count');
                 const cartCountMobile = document.getElementById('cart-count-mobile');
                 
@@ -932,7 +930,7 @@
                     cartCountMobile.textContent = totalItems;
                 }
                 
-                console.log('Total items:', totalItems); // Debug
+                // Total items calculado
             }
 
             function numberFormat(number) {
@@ -944,7 +942,7 @@
             }
 
             function updateCartDisplay() {
-                console.log('Actualizando display del carrito'); // Debug
+                // Actualizando display del carrito
                 const cartItems = document.getElementById('cart-items');
                 const cartSubtotal = document.getElementById('cart-subtotal');
                 const cartTotal = document.getElementById('cart-total');
@@ -1046,7 +1044,7 @@
             }
 
             function addToCart(product) {
-                console.log('Agregando al carrito:', product); // Debug
+                // Agregando al carrito
 
                 // Asegurarse de que el ID sea un número
                 const productId = parseInt(product.id);

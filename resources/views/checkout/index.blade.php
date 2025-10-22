@@ -166,43 +166,59 @@
                         </div>
                     </div>
 
-                    <!-- Método de pago -->
+                    <!-- Método de pago - Solo Stripe -->
                     <div class="mb-6">
                         <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Método de pago</h3>
                         
                         <div class="space-y-4">
-                            @foreach($metodosPago as $metodo)
-                                <div class="border border-gray-200 dark:border-gray-600 rounded p-4 hover:border-blue-500 dark:hover:border-blue-400 transition-colors {{ old('metodo_pago_id') == $metodo->metodo_id ? 'border-blue-500 dark:border-blue-400' : '' }}">
+                            @php
+                                $stripeMethod = $metodosPago->where('nombre', 'Stripe')->first();
+                            @endphp
+                            
+                            @if($stripeMethod)
+                                <div class="border border-blue-500 dark:border-blue-400 rounded p-4 bg-blue-50 dark:bg-blue-900/20">
                                     <label class="flex items-center cursor-pointer">
                                         <input type="radio" 
                                                name="metodo_pago_id" 
-                                               value="{{ $metodo->metodo_id }}" 
+                                               value="{{ $stripeMethod->metodo_id }}" 
                                                class="mr-3" 
                                                required
-                                               {{ old('metodo_pago_id') == $metodo->metodo_id ? 'checked' : '' }}>
+                                               checked>
                                         
-                                        @if($metodo->nombre === 'Stripe')
-                                            <div class="flex items-center">
-                                                <svg class="w-6 h-6 mr-2 text-blue-600 dark:text-blue-400" viewBox="0 0 24 24" fill="currentColor">
-                                                    <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.831 3.47 1.426 3.47 2.338 0 .914-.796 1.431-2.126 1.431-1.72 0-4.516-1.053-6.378-2.168l-.889 5.52c2.172 1.281 5.274 2.196 8.876 2.196 2.585 0 4.729-.624 6.199-1.588 1.544-1.013 2.347-2.847 2.347-5.077 0-4.716-2.508-6.489-6.594-7.88zM24 16.716V0h-5.98v16.716H24z"/>
-                                                </svg>
-                                                <span class="font-medium text-gray-900 dark:text-white">{{ $metodo->nombre }}</span>
-                                                <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">(Tarjeta de crédito/débito)</span>
-                                            </div>
-                                        @else
-                                            <span class="font-medium text-gray-900 dark:text-white">{{ $metodo->nombre }}</span>
-                                        @endif
+                                        <div class="flex items-center">
+                                            <svg class="w-6 h-6 mr-2 text-blue-600 dark:text-blue-400" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.831 3.47 1.426 3.47 2.338 0 .914-.796 1.431-2.126 1.431-1.72 0-4.516-1.053-6.378-2.168l-.889 5.52c2.172 1.281 5.274 2.196 8.876 2.196 2.585 0 4.729-.624 6.199-1.588 1.544-1.013 2.347-2.847 2.347-5.077 0-4.716-2.508-6.489-6.594-7.88zM24 16.716V0h-5.98v16.716H24z"/>
+                                            </svg>
+                                            <span class="font-medium text-gray-900 dark:text-white">{{ $stripeMethod->nombre }}</span>
+                                            <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">(Tarjeta de crédito/débito)</span>
+                                        </div>
                                     </label>
                                     
-                                    @if($metodo->nombre === 'Stripe')
-                                        <div class="mt-2 ml-9">
-                                            <p class="text-sm text-gray-600 dark:text-gray-400">
-                                                Pago seguro con tarjeta de crédito o débito. Tus datos están protegidos con encriptación SSL.
-                                            </p>
+                                    <div class="mt-2 ml-9">
+                                        <p class="text-sm text-gray-600 dark:text-gray-400">
+                                            Pago seguro con tarjeta de crédito o débito. Tus datos están protegidos con encriptación SSL.
+                                        </p>
+                                        <div class="mt-2 flex items-center text-sm text-green-600 dark:text-green-400">
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                            </svg>
+                                            Método de pago recomendado
                                         </div>
-                                    @endif
+                                    </div>
                                 </div>
-                            @endforeach
+                            @else
+                                <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                                    <div class="flex items-center">
+                                        <svg class="w-5 h-5 text-red-400 dark:text-red-300 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <span class="text-red-800 dark:text-red-200 font-medium">Stripe no está configurado</span>
+                                    </div>
+                                    <p class="text-red-700 dark:text-red-300 text-sm mt-1">
+                                        Contacta al administrador para configurar el método de pago.
+                                    </p>
+                                </div>
+                            @endif
                         </div>
 
                         @error('metodo_pago_id')
@@ -224,7 +240,7 @@
                                 @if($direcciones->isEmpty())
                                     Agregar dirección para continuar
                                 @else
-                                    Confirmar Pedido
+                                    Proceder con Stripe
                                 @endif
                             </span>
                             <span id="spinner" class="hidden ml-2">
@@ -345,12 +361,12 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Validar método de pago seleccionado
+        // El método de pago ya está preseleccionado (solo Stripe)
         const metodoPagoSeleccionado = form.querySelector('input[name="metodo_pago_id"]:checked');
         if (!metodoPagoSeleccionado) {
             Swal.fire({
                 title: 'Error',
-                text: 'Por favor, selecciona un método de pago',
+                text: 'Error de configuración del método de pago',
                 icon: 'error',
                 confirmButtonText: 'Entendido',
                 confirmButtonColor: '#0088ff'
@@ -393,19 +409,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Habilitar/deshabilitar botón según selecciones
     function validarFormulario() {
         const direccionSeleccionada = form.querySelector('input[name="direccion_id"]:checked');
-        const metodoPagoSeleccionado = form.querySelector('input[name="metodo_pago_id"]:checked');
         const buttonText = document.getElementById('buttonText');
         
-        if (!direccionSeleccionada || !metodoPagoSeleccionado) {
+        if (!direccionSeleccionada) {
             submitButton.disabled = true;
-            if (!direccionSeleccionada) {
-                buttonText.textContent = 'Selecciona una dirección';
-            } else if (!metodoPagoSeleccionado) {
-                buttonText.textContent = 'Selecciona un método de pago';
-            }
+            buttonText.textContent = 'Selecciona una dirección';
         } else {
             submitButton.disabled = false;
-            buttonText.textContent = 'Confirmar Pedido';
+            buttonText.textContent = 'Proceder con Stripe';
         }
     }
 

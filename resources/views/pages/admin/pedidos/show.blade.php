@@ -65,27 +65,69 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                        Estado del Pedido                    </h3>
-                    <form action="{{ route('admin.pedidos.updateEstado', $pedido->pedido_id) }}" method="POST" class="flex items-center space-x-3">
-                        @csrf
-                        @method('PUT')
-                        <select name="estado_id" 
-                                class="rounded-md px-4 py-3 border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200">
-                            @foreach(\App\Models\EstadoPedido::all() as $estado)
-                                <option value="{{ $estado->estado_id }}" 
-                                    {{ $pedido->estado_id == $estado->estado_id ? 'selected' : '' }}>
-                                    {{ $estado->nombre }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <button type="submit" 
-                        class="inline-flex justify-center rounded-lg bg-gradient-to-r from-emerald-500 to-teal-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:from-emerald-600 hover:to-teal-700 transform hover:scale-105 transition-all duration-200 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 hover:shadow-xl">
-                        <svg class="w-5 h-5 mr-2 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                        </svg>
-                            Actualizar
-                        </button>
-                    </form>
+                    
+                    @php
+                        $estadosFinales = ['cancelado', 'confirmado', 'entregado'];
+                        $estadoActual = strtolower($pedido->estado->nombre ?? '');
+                        $permiteCambio = !in_array($estadoActual, $estadosFinales);
+                    @endphp
+                    
+                    @if($permiteCambio)
+                        <form action="{{ route('admin.pedidos.updateEstado', $pedido->pedido_id) }}" method="POST" class="flex items-center space-x-3">
+                            @csrf
+                            @method('PUT')
+                            <select name="estado_id" 
+                                    class="rounded-md px-4 py-3 border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200">
+                                @foreach(\App\Models\EstadoPedido::all() as $estado)
+                                    <option value="{{ $estado->estado_id }}" 
+                                        {{ $pedido->estado_id == $estado->estado_id ? 'selected' : '' }}>
+                                        {{ $estado->nombre }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <button type="submit" 
+                            class="inline-flex justify-center rounded-lg bg-gradient-to-r from-emerald-500 to-teal-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:from-emerald-600 hover:to-teal-700 transform hover:scale-105 transition-all duration-200 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 hover:shadow-xl">
+                            <svg class="w-5 h-5 mr-2 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                                Actualizar
+                            </button>
+                        </form>
+                    @else
+                        <div class="flex items-center space-x-3">
+                            <select disabled 
+                                    class="rounded-md px-4 py-3 border-gray-300 dark:border-gray-600 shadow-sm bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed">
+                                <option selected>{{ ucfirst($estadoActual) }}</option>
+                            </select>
+                            <button disabled 
+                                    class="inline-flex justify-center rounded-lg bg-gray-400 px-4 py-2.5 text-sm font-semibold text-white cursor-not-allowed">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"/>
+                                </svg>
+                                No Modificable
+                            </button>
+                        </div>
+                    @endif
                 </div>
+                
+                @if(!$permiteCambio)
+                    <div class="mt-4 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                        <div class="flex items-start">
+                            <svg class="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            <div>
+                                <h4 class="text-sm font-medium text-amber-800 dark:text-amber-200">
+                                    Estado Final Alcanzado
+                                </h4>
+                                <p class="text-sm text-amber-700 dark:text-amber-300 mt-1">
+                                    Este pedido ya está en estado <strong>{{ ucfirst($estadoActual) }}</strong> y no puede ser modificado. 
+                                    Los pedidos finalizados (confirmados, cancelados o entregados) no permiten cambios de estado.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                @endif
                 
                 <div class="mt-4">
                     @php

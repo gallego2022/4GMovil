@@ -273,23 +273,20 @@ class StripeService
         $estadoAnterior = $pedido->estado_id;
         
         DB::transaction(function () use ($pedido, $pago, $paymentIntent, $estadoAnterior) {
-            // Actualizar estado del pedido
-            $pedido->update(['estado_id' => 2]); // Confirmado
+            // NO actualizar estado del pedido - se mantiene pendiente para el admin
+            // El admin será quien cambie el estado del pedido manualmente
             
-            // Recargar el pedido para asegurar que tenemos los datos actualizados
-            $pedido->refresh();
-
-            // Actualizar estado del pago
+            // Solo actualizar estado del pago
             $pago->update([
-                'estado' => 'completado', // Usar 'completado' en lugar de 'completed'
+                'estado' => 'completado',
                 'fecha_pago' => now()
             ]);
             
-            Log::info('Estado del pedido actualizado en StripeService', [
+            Log::info('Pago confirmado por Stripe - Pedido permanece pendiente', [
                 'pedido_id' => $pedido->pedido_id,
-                'estado_anterior' => $estadoAnterior,
-                'estado_nuevo' => $pedido->estado_id,
-                'estado_nombre' => $pedido->estado->nombre ?? 'No cargado'
+                'estado_pedido' => $pedido->estado_id,
+                'estado_pago' => 'completado',
+                'payment_intent_id' => $paymentIntent->id
             ]);
 
             // Generar webhook local
@@ -301,34 +298,22 @@ class StripeService
             // Enviar correo específico de pago exitoso con Stripe
             $this->enviarCorreoPagoExitoso($pedido, $paymentIntent);
 
-            Log::info('Pago procesado exitosamente', [
+            Log::info('Pago procesado exitosamente - Pedido pendiente para admin', [
                 'pedido_id' => $pedido->pedido_id,
                 'pago_id' => $pago->pago_id,
-                'payment_intent_id' => $paymentIntent->id
+                'payment_intent_id' => $paymentIntent->id,
+                'estado_pedido' => 'pendiente (admin debe confirmar)'
             ]);
         });
         
-        // Manejar stock reservado FUERA de la transacción principal
-        Log::info('Llamando a manejarStockReservado desde StripeService', [
+        // NO manejar stock automáticamente - el pedido permanece pendiente
+        // El stock se mantiene reservado hasta que el admin confirme el pedido
+        Log::info('Pago confirmado - Stock permanece reservado hasta confirmación del admin', [
             'pedido_id' => $pedido->pedido_id,
-            'estado_anterior' => $estadoAnterior,
-            'nuevo_estado' => 2
+            'estado_pedido' => 'pendiente',
+            'estado_pago' => 'completado',
+            'stock_status' => 'reservado (pendiente confirmación admin)'
         ]);
-        
-        try {
-            Log::info('Ejecutando manejo de stock fuera de transacción principal');
-            $this->manejarStockReservado($pedido, $estadoAnterior, 2);
-            Log::info('manejarStockReservado ejecutado exitosamente');
-        } catch (\Exception $e) {
-            Log::error('Error en manejarStockReservado', [
-                'pedido_id' => $pedido->pedido_id,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            
-            // Intentar registrar movimientos directamente como fallback
-            $this->registrarMovimientosFallback($pedido);
-        }
     }
 
     /**

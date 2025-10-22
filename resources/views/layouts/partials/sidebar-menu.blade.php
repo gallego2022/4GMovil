@@ -178,8 +178,8 @@
                class="sidebar-submenu-item {{ request()->routeIs('admin.inventario.movimientos') ? 'active' : '' }}">
                 <span>Movimientos</span>
             </a>
-            <a href="{{ route('admin.inventario.alertas') }}" 
-               class="sidebar-submenu-item {{ request()->routeIs('admin.inventario.alertas') ? 'active' : '' }}">
+            <a href="{{ route('admin.inventario.alertas-optimizadas') }}" 
+               class="sidebar-submenu-item {{ request()->routeIs('admin.inventario.alertas-optimizadas') ? 'active' : '' }}">
                 <span>Alertas</span>
             </a>
         </div>

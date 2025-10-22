@@ -156,7 +156,7 @@ class ValidationService
     {
         $rules = [
             'producto_id' => 'required|exists:productos,id',
-            'tipo_movimiento' => 'required|in:entrada,salida,ajuste',
+            'tipo_movimiento' => 'required|in:entrada,salida,reserva,liberacion',
             'cantidad' => 'required|integer|min:1',
             'motivo' => 'required|string|max:255',
             'referencia' => 'nullable|string|max:255',
@@ -167,7 +167,7 @@ class ValidationService
             'producto_id.required' => 'El producto es obligatorio',
             'producto_id.exists' => 'El producto no existe',
             'tipo_movimiento.required' => 'El tipo de movimiento es obligatorio',
-            'tipo_movimiento.in' => 'El tipo de movimiento debe ser entrada, salida o ajuste',
+            'tipo_movimiento.in' => 'El tipo de movimiento debe ser entrada, salida, reserva o liberacion',
             'cantidad.required' => 'La cantidad es obligatoria',
             'cantidad.integer' => 'La cantidad debe ser un número entero',
             'cantidad.min' => 'La cantidad debe ser mayor a 0',

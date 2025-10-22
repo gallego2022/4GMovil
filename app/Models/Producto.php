@@ -301,7 +301,7 @@ class Producto extends Model
         if ($diferencia != 0) {
             MovimientoInventario::create([
                 'producto_id' => $this->producto_id,
-                'tipo_movimiento' => $diferencia > 0 ? 'ajuste_positivo' : 'ajuste_negativo',
+                'tipo_movimiento' => $diferencia > 0 ? 'entrada' : 'salida',
                 'cantidad' => abs($diferencia),
                 'stock_anterior' => $stockAnterior,
                 'stock_nuevo' => $this->stock,

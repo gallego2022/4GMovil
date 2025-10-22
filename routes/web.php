@@ -185,10 +185,7 @@ Route::get('/productos-variantes/{producto}/stock', function($producto) {
     return redirect()->route('productos.show', $producto)->with('info', 'Redirigido a la vista principal del producto.');
 })->name('productos.variantes.stock');
 
-// Demo del Sistema de Carga
-Route::get('/demo-loading', function() {
-    return view('examples.loading-demo');
-})->name('demo.loading');
+// Demo del Sistema de Carga - ELIMINADO (vista no utilizada)
 
 Route::get('/productos-variantes/{producto}/variantes', function($producto) {
     return redirect()->route('productos.show', $producto)->with('info', 'Redirigido a la vista principal del producto.');

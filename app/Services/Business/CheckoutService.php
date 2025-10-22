@@ -71,7 +71,7 @@ class CheckoutService extends BaseService
     }
 
     /**
-     * Procesa el checkout
+     * Procesa el checkout - Solo para Stripe
      */
     public function processCheckout(Request $request): array
     {
@@ -88,77 +88,36 @@ class CheckoutService extends BaseService
             // Validar disponibilidad de stock
             $this->validateStockAvailability($cart);
             
-            // Crear pedido
+            // Verificar que solo se use Stripe
+            $metodoPago = MetodoPago::find($checkoutData['metodo_pago_id']);
+            if (!$metodoPago || strtolower($metodoPago->nombre) !== 'stripe') {
+                throw new Exception('Solo se acepta pago con Stripe');
+            }
+            
+            // Crear pedido con estado pendiente
             $pedido = $this->createOrder($checkoutData, $cart);
             
             // Crear detalles del pedido
             $this->createOrderDetails($pedido, $cart);
             
-            // Crear pago
+            // Crear pago con estado pendiente
             $pago = $this->createPayment($pedido, $checkoutData);
             
-            // Verificar si es Stripe para manejo especial
-            $metodoPago = MetodoPago::find($checkoutData['metodo_pago_id']);
+            // Reservar stock temporalmente
+            $this->reservarStockParaPedido($cart, $pedido->pedido_id);
             
-            if ($metodoPago && strtolower($metodoPago->nombre) === 'stripe') {
-                // Para Stripe, NO actualizar stock hasta que se confirme el pago
-                // Para Stripe, solo crear el pedido y redirigir al pago
-                $this->logOperation('checkout_stripe_preparado', [
-                    'pedido_id' => $pedido->pedido_id,
-                    'user_id' => Auth::id()
-                ]);
+            $this->logOperation('checkout_stripe_preparado', [
+                'pedido_id' => $pedido->pedido_id,
+                'user_id' => Auth::id()
+            ]);
 
-                return [
-                    'success' => true,
-                    'pedido_id' => $pedido->pedido_id,
-                    'pago_id' => $pago->pago_id,
-                    'redirect_to_stripe' => true,
-                    'message' => 'Pedido creado, redirigiendo a Stripe'
-                ];
-            } else {
-                // Para métodos no-Stripe, verificar el tipo de método de pago
-                $metodoPago = MetodoPago::find($checkoutData['metodo_pago_id']);
-                
-                if ($this->metodoRequiereConfirmacionManual($metodoPago)) {
-                    // Para métodos que requieren confirmación manual (efectivo, transferencia)
-                    // Solo reservar stock, NO descontar hasta confirmar el pago
-                    $this->reservarStockParaPedido($cart, $pedido->pedido_id);
-                    
-                    $this->logOperation('checkout_reservado_para_confirmacion', [
-                        'pedido_id' => $pedido->pedido_id,
-                        'metodo_pago' => $metodoPago->nombre,
-                        'user_id' => Auth::id()
-                    ]);
-
-                    return [
-                        'success' => true,
-                        'pedido_id' => $pedido->pedido_id,
-                        'pago_id' => $pago->pago_id,
-                        'redirect_to_stripe' => false,
-                        'requiere_confirmacion' => true,
-                        'redirect_to_confirm' => true,
-                        'message' => 'Pedido creado. El stock ha sido reservado hasta la confirmación del pago.'
-                    ];
-                } else {
-                    // Para métodos que se procesan inmediatamente (otros métodos automáticos)
-                    $this->updateProductStock($cart);
-                    $this->enviarCorreoConfirmacionSiEsNecesario($pedido, $checkoutData['metodo_pago_id']);
-                    
-                    $this->logOperation('checkout_procesado_exitosamente', [
-                        'pedido_id' => $pedido->pedido_id,
-                        'user_id' => Auth::id()
-                    ]);
-
-                    return [
-                        'success' => true,
-                        'pedido_id' => $pedido->pedido_id,
-                        'pago_id' => $pago->pago_id,
-                        'redirect_to_stripe' => false,
-                        'requiere_confirmacion' => false,
-                        'message' => 'Pedido procesado exitosamente'
-                    ];
-                }
-            }
+            return [
+                'success' => true,
+                'pedido_id' => $pedido->pedido_id,
+                'pago_id' => $pago->pago_id,
+                'redirect_to_stripe' => true,
+                'message' => 'Pedido creado, redirigiendo a Stripe'
+            ];
 
         }, 'procesamiento de checkout');
     }

@@ -8,16 +8,17 @@ use App\Http\Controllers\Admin\UsuarioController;
 use App\Http\Controllers\Admin\CategoriaController;
 use App\Http\Controllers\Admin\MarcaController;
 use App\Http\Controllers\Admin\PedidoController;      
-use App\Http\Controllers\Cliente\DetallePedidoController;
+// use App\Http\Controllers\Cliente\DetallePedidoController; // ELIMINADO
 use App\Http\Controllers\Cliente\DireccionController;
 use App\Http\Controllers\Admin\MetodoPagoController;
-use App\Http\Controllers\Admin\PagoController;
+// use App\Http\Controllers\Admin\PagoController; // ELIMINADO
 use App\Http\Controllers\Admin\PedidoAdminController;
 use App\Http\Controllers\Admin\InventarioController;
 use App\Http\Controllers\Admin\EspecificacionController;
+use App\Http\Controllers\Admin\OptimizedStockAlertController;
 
 // Solo accesibles por usuarios autenticados y administradores
-Route::middleware(['auth', 'admin'])->group(function () {
+Route::middleware(['auth', 'admin', 'cache.invalidation'])->group(function () {
 // Dashboard
     Route::get('/admin', [DashboardController::class, 'index'])->name('admin.index');
 
@@ -90,9 +91,9 @@ Route::prefix('productos/{producto}/resenas')->name('productos.resenas.')->group
     });
 
 // Recursos generales
-Route::resource('detalles-pedido', DetallePedidoController::class);
+// Route::resource('detalles-pedido', DetallePedidoController::class); // ELIMINADO
 Route::resource('metodos-pago', MetodoPagoController::class);
-Route::resource('pagos', PagoController::class);
+// Route::resource('pagos', PagoController::class); // ELIMINADO
 
 // Gestión de pedidos (admin)
 Route::prefix('admin/pedidos')->name('admin.pedidos.')->group(function () {
@@ -104,7 +105,6 @@ Route::prefix('admin/pedidos')->name('admin.pedidos.')->group(function () {
 // Rutas de inventario
 Route::prefix('admin/inventario')->name('admin.inventario.')->group(function () {
     Route::get('/', [InventarioController::class, 'dashboard'])->name('dashboard');
-    Route::get('/alertas', [InventarioController::class, 'alertas'])->name('alertas');
     Route::get('/movimientos', [InventarioController::class, 'movimientos'])->name('movimientos');
     Route::get('/reporte', [InventarioController::class, 'reporte'])->name('reporte');
     Route::get('/productos-mas-vendidos', [InventarioController::class, 'productosMasVendidos'])->name('productos-mas-vendidos');
@@ -119,5 +119,10 @@ Route::prefix('admin/inventario')->name('admin.inventario.')->group(function () 
     Route::post('/registrar-entrada', [InventarioController::class, 'registrarEntrada'])->name('registrar-entrada');
     Route::post('/registrar-salida', [InventarioController::class, 'registrarSalida'])->name('registrar-salida');
     Route::post('/ajustar-stock', [InventarioController::class, 'ajustarStock'])->name('ajustar-stock');
+    
+    // Rutas para alertas optimizadas
+    Route::get('/alertas-optimizadas', [OptimizedStockAlertController::class, 'dashboard'])->name('alertas-optimizadas');
+    Route::get('/alertas/variantes', [OptimizedStockAlertController::class, 'getVariantesProblematicas'])->name('alertas.variantes');
+    Route::get('/alertas/estadisticas', [OptimizedStockAlertController::class, 'getEstadisticas'])->name('alertas.estadisticas');
 });
 });

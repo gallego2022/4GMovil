@@ -66,19 +66,6 @@ class InventarioController extends WebController
         }
     }
 
-    /**
-     * Lista de productos con alertas de stock
-     */
-    public function alertas()
-    {
-        try {
-            $data = $this->inventarioService->getAlertasData();
-            return View::make('pages.admin.inventario.alertas', $data);
-        } catch (\Exception $e) {
-            Log::error('Error al cargar alertas', ['error' => $e->getMessage()]);
-            return Redirect::back()->with('mensaje', 'Error al cargar las alertas de inventario')->with('tipo', 'error');
-        }
-    }
 
     /**
      * Movimientos de inventario

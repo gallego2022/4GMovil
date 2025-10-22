@@ -61,9 +61,26 @@ class PedidoAdminController extends WebController
                 'estado_id' => 'required|exists:estados_pedido,estado_id'
             ]);
 
-            $pedido = Pedido::with(['detalles.producto', 'usuario'])->findOrFail($id);
+            $pedido = Pedido::with(['detalles.producto', 'usuario', 'estado'])->findOrFail($id);
             $estadoAnterior = $pedido->estado_id;
             $nuevoEstado = (int) $request->estado_id;
+            
+            // Validar que el pedido no esté cancelado o confirmado
+            if ($this->pedidoNoPermiteCambioEstado($pedido)) {
+                $estadoActual = $pedido->estado->nombre ?? 'Desconocido';
+                $mensaje = "No se puede cambiar el estado de un pedido que ya está {$estadoActual}";
+                
+                Log::warning('Intento de cambio de estado en pedido finalizado', [
+                    'pedido_id' => $pedido->pedido_id,
+                    'estado_actual' => $estadoActual,
+                    'nuevo_estado' => $nuevoEstado,
+                    'admin_id' => auth()->id()
+                ]);
+                
+                return Redirect::back()
+                    ->with('mensaje', $mensaje)
+                    ->with('tipo', 'warning');
+            }
             
             Log::info('Cambiando estado de pedido', [
                 'pedido_id' => $pedido->pedido_id,
@@ -223,7 +240,7 @@ class PedidoAdminController extends WebController
                         $variante->confirmarVenta(
                             $detalle->cantidad,
                             "Confirmación de pedido #{$pedido->pedido_id}",
-                            \Illuminate\Support\FacadesAuth::id(),
+                            \Illuminate\Support\Facades\Auth::id(),
                             "Pedido #{$pedido->pedido_id}"
                         );
                         
@@ -239,12 +256,12 @@ class PedidoAdminController extends WebController
                     // Registrar movimiento de confirmación de venta para el producto (sin descontar stock)
                     \App\Models\MovimientoInventario::create([
                         'producto_id' => $producto->producto_id,
-                        'tipo_movimiento' => 'venta_confirmada',
+                        'tipo_movimiento' => 'salida',
                         'cantidad' => $detalle->cantidad,
                         'stock_anterior' => $producto->stock,
                         'stock_nuevo' => $producto->stock, // No cambia el stock físico
                         'motivo' => "Confirmación de pedido #{$pedido->pedido_id}",
-                        'usuario_id' => \Illuminate\Support\FacadesAuth::id(),
+                        'usuario_id' => \Illuminate\Support\Facades\Auth::id(),
                         'pedido_id' => $pedido->pedido_id,
                         'costo_unitario' => $producto->costo_unitario,
                         'fecha_movimiento' => Carbon::now()
@@ -267,7 +284,7 @@ class PedidoAdminController extends WebController
                         $variante->liberarReserva(
                             $detalle->cantidad,
                             "Cancelación de pedido #{$pedido->pedido_id}",
-                            \Illuminate\Support\FacadesAuth::id(),
+                            \Illuminate\Support\Facades\Auth::id(),
                             "Pedido #{$pedido->pedido_id}"
                         );
                         
@@ -284,7 +301,7 @@ class PedidoAdminController extends WebController
                     $producto->liberarStockReservado(
                         $detalle->cantidad,
                         "Cancelación de pedido #{$pedido->pedido_id}",
-                        \Illuminate\Support\FacadesAuth::id(),
+                        \Illuminate\Support\Facades\Auth::id(),
                         $pedido->pedido_id
                     );
                     
@@ -305,7 +322,7 @@ class PedidoAdminController extends WebController
                         $variante->registrarEntrada(
                             $detalle->cantidad,
                             "Devolución por cancelación - Pedido #{$pedido->pedido_id}",
-                            \Illuminate\Support\FacadesAuth::id(),
+                            \Illuminate\Support\Facades\Auth::id(),
                             "Pedido #{$pedido->pedido_id}"
                         );
                         
@@ -322,7 +339,7 @@ class PedidoAdminController extends WebController
                     $producto->registrarEntrada(
                         $detalle->cantidad,
                         "Devolución por cancelación - Pedido #{$pedido->pedido_id}",
-                        \Illuminate\Support\FacadesAuth::id(),
+                        \Illuminate\Support\Facades\Auth::id(),
                         "Pedido #{$pedido->pedido_id}"
                     );
                     
@@ -334,5 +351,19 @@ class PedidoAdminController extends WebController
                 }
             }
         }
+    }
+
+    /**
+     * Verificar si un pedido permite cambio de estado
+     * Los pedidos cancelados o confirmados no permiten cambios
+     */
+    private function pedidoNoPermiteCambioEstado($pedido): bool
+    {
+        // Estados que no permiten cambios
+        $estadosFinales = ['cancelado', 'confirmado', 'entregado'];
+        
+        $estadoActual = strtolower($pedido->estado->nombre ?? '');
+        
+        return in_array($estadoActual, $estadosFinales);
     }
 } 
