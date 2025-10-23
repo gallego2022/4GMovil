@@ -5,7 +5,40 @@ version: 1
 
 build:
   # Comando de construcción
-  command: ./build-laravel-cloud.sh
+  command: |
+    # Copiar archivo de entorno
+    cp laravel-cloud.env .env
+    
+    # Instalar dependencias de Node.js
+    npm install
+    
+    # Compilar assets
+    npm run build
+    
+    # Instalar dependencias de PHP
+    composer install --no-dev --optimize-autoloader --no-scripts
+    
+    # Ejecutar scripts de Composer
+    composer run-script post-install-cmd || true
+    
+    # Limpiar caché
+    php artisan config:clear || true
+    php artisan cache:clear || true
+    php artisan view:clear || true
+    php artisan route:clear || true
+    
+    # Optimizar para producción
+    php artisan config:cache || true
+    php artisan route:cache || true
+    php artisan view:cache || true
+    
+    # Crear directorios necesarios
+    mkdir -p storage/framework/{cache,sessions,views}
+    mkdir -p storage/logs
+    mkdir -p bootstrap/cache
+    
+    # Generar clave de aplicación
+    php artisan key:generate --force
   timeout: 600
   
   # Variables de entorno durante el build
@@ -17,7 +50,26 @@ build:
 
 deploy:
   # Comando de despliegue (opcional)
-  command: ./restore-redis-config.sh
+  command: |
+    # Verificar que .env existe
+    if [ ! -f ".env" ]; then
+      echo "Error: .env file not found"
+      exit 1
+    fi
+    
+    # Configurar Redis
+    sed -i 's/CACHE_DRIVER=.*/CACHE_DRIVER=redis/' .env || echo "CACHE_DRIVER=redis" >> .env
+    sed -i 's/QUEUE_CONNECTION=.*/QUEUE_CONNECTION=redis/' .env || echo "QUEUE_CONNECTION=redis" >> .env
+    sed -i 's/SESSION_DRIVER=.*/SESSION_DRIVER=database/' .env || echo "SESSION_DRIVER=database" >> .env
+    
+    # Configurar Redis host
+    if ! grep -q "REDIS_HOST=" .env; then
+      echo "REDIS_HOST=redis" >> .env
+    fi
+    
+    # Limpiar y recargar configuración
+    php artisan config:clear || true
+    php artisan config:cache || true
   timeout: 300
 
 runtime:

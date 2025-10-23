@@ -1,0 +1,46 @@
+# Archivos específicos para ignorar en Laravel Cloud
+# Este archivo se usa como referencia para .gitignore
+
+# Archivos de entorno
+.env
+.env.local
+.env.production
+.env.staging
+
+# Archivos de build
+build/
+dist/
+
+# Archivos de caché
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*
+bootstrap/cache/*
+
+# Archivos de Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archivos de Composer
+vendor/
+
+# Archivos de IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de backup
+*.bak
+*.backup
+
+# Archivos temporales
+*.tmp
+*.temp
