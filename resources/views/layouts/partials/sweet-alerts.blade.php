@@ -1,42 +1,41 @@
 <!-- Alerta de confirmación para eliminación -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Configuración general de SweetAlert2
-        const Toast = Swal.mixin({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-            didOpen: (toast) => {
-                toast.addEventListener('mouseenter', Swal.stopTimer)
-                toast.addEventListener('mouseleave', Swal.resumeTimer)
-            }
-        });
+        // Verificar que SweetAlert esté disponible
+        if (typeof Swal === 'undefined') {
+            console.error('SweetAlert2 no está cargado correctamente');
+            return;
+        }
 
         // Formularios de eliminación
         const forms = document.querySelectorAll('.form-eliminar');
         forms.forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
-                Swal.fire({
-                    title: '¿Estás seguro?',
-                    text: "¡Esta acción no se puede deshacer!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#dc2626', // red-600
-                    cancelButtonColor: '#4f46e5', // indigo-600
-                    confirmButtonText: 'Sí, eliminar',
-                    cancelButtonText: 'Cancelar',
-                    customClass: {
-                        confirmButton: 'px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 rounded-md',
-                        cancelButton: 'px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-md'
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit();
-                    }
-                });
+                
+                // Usar SweetAlert utils si está disponible, sino usar Swal directamente
+                if (typeof SweetAlert !== 'undefined' && SweetAlert.delete) {
+                    SweetAlert.delete().then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: '¿Estás seguro?',
+                        text: "¡Esta acción no se puede deshacer!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#dc2626',
+                        cancelButtonColor: '#4f46e5',
+                        confirmButtonText: 'Sí, eliminar',
+                        cancelButtonText: 'Cancelar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                }
             });
         });
 

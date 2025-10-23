@@ -9,13 +9,6 @@ use Illuminate\Support\Facades\Log;
 
 class CacheInvalidationMiddleware
 {
-    protected $cacheService;
-
-    public function __construct(RedisCacheService $cacheService)
-    {
-        $this->cacheService = $cacheService;
-    }
-
     /**
      * Handle an incoming request.
      */
@@ -39,31 +32,34 @@ class CacheInvalidationMiddleware
         $route = $request->route()->getName();
         
         try {
+            // Resolver el servicio de forma lazy
+            $cacheService = app(RedisCacheService::class);
+            
             // Invalidar caché basado en la ruta
             if (str_contains($route, 'productos')) {
-                $this->cacheService->clearProductos();
+                $cacheService->clearProductos();
                 Log::info('Caché de productos invalidado', ['route' => $route]);
             }
             
             if (str_contains($route, 'inventario')) {
-                $this->cacheService->clearInventario();
+                $cacheService->clearInventario();
                 Log::info('Caché de inventario invalidado', ['route' => $route]);
             }
             
             if (str_contains($route, 'alertas')) {
-                $this->cacheService->clearAlertas();
+                $cacheService->clearAlertas();
                 Log::info('Caché de alertas invalidado', ['route' => $route]);
             }
             
             if (str_contains($route, 'dashboard') || str_contains($route, 'admin')) {
-                $this->cacheService->clearDashboard();
+                $cacheService->clearDashboard();
                 Log::info('Caché de dashboard invalidado', ['route' => $route]);
             }
             
             // Invalidar caché de pedidos si se modifica el inventario
             if (str_contains($route, 'pedidos') || str_contains($route, 'checkout')) {
-                $this->cacheService->clearInventario();
-                $this->cacheService->clearAlertas();
+                $cacheService->clearInventario();
+                $cacheService->clearAlertas();
                 Log::info('Caché relacionado con pedidos invalidado', ['route' => $route]);
             }
             

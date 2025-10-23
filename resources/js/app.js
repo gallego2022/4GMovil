@@ -4,10 +4,16 @@
  */
 
 import Alpine from 'alpinejs';
+import Swal from 'sweetalert2';
+import SweetAlertUtils from './utils/sweetalert.js';
 import { PerformanceMonitor, LazyLoader, ClientCache, InputOptimizer } from './utils/performance.js';
 
 // Configurar Alpine.js
 window.Alpine = Alpine;
+
+// Configurar SweetAlert2 globalmente
+window.Swal = Swal;
+window.SweetAlert = SweetAlertUtils;
 
 // Componentes de Alpine.js para el dashboard
 Alpine.data('dashboard', () => ({

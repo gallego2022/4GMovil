@@ -62,15 +62,8 @@ RUN composer dump-autoload -o \
 # Compilar assets de producción
 RUN npm run build
 
-# Mantener dependencias de desarrollo para desarrollo
-# RUN npm prune --production  # Comentado para desarrollo
-
 # Crear enlace simbólico de storage
 RUN php artisan storage:link
-
-
-# Mantener dependencias de desarrollo para desarrollo
-# RUN composer install --no-dev --optimize-autoloader --no-scripts  # Comentado para desarrollo
 
 # Asegurar permisos finales después de todas las operaciones
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public/storage \
@@ -94,5 +87,5 @@ RUN chmod +x /usr/local/bin/init.sh
 # Exponer puerto
 EXPOSE 80
 
-# Comando por defecto
-CMD ["/usr/local/bin/init.sh", "apache2-foreground"]
+# Comando por defecto para queue worker
+CMD ["/usr/local/bin/init.sh", "php", "artisan", "queue:work", "redis", "--tries=3", "--sleep=1", "--timeout=90", "--memory=512"]

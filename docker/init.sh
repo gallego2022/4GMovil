@@ -1,90 +1,72 @@
 #!/bin/bash
 
-# Script de inicialización para el contenedor Laravel
+# Script de inicialización para Docker
+# Este script se ejecuta cuando el contenedor inicia
 
-echo "🚀 Iniciando 4GMovil..."
+set -e
 
-# Instalar dependencias de Node.js si no están instaladas
-echo "📦 Instalando dependencias de Node.js..."
-if [ ! -d "node_modules" ]; then
-    npm install --timeout=300000 || echo "⚠️ Error en npm install, continuando..."
-fi
+echo "🚀 Iniciando configuración de Laravel en Docker..."
 
-# Compilar assets si no existen
-echo "🎨 Compilando assets..."
-if [ ! -d "public/build" ]; then
-    npm run build || echo "⚠️ Error en npm build, continuando..."
-fi
-
-# Esperar a que la base de datos esté lista
-echo "⏳ Esperando que la base de datos esté lista..."
-# Usar variables de entorno para host y puerto
-DB_HOST=${DB_HOST:-db}
-DB_PORT=${DB_PORT:-3306}
-until nc -z $DB_HOST $DB_PORT; do
-  echo "Esperando conexión a la base de datos..."
+# Esperar a que la base de datos esté disponible
+echo "⏳ Esperando a que la base de datos esté disponible..."
+until nc -z db 3306; do
+  echo "Base de datos no disponible - esperando..."
   sleep 2
 done
-echo "✅ Base de datos conectada!"
+echo "✅ Base de datos disponible"
+
+# Esperar a que Redis esté disponible
+echo "⏳ Esperando a que Redis esté disponible..."
+until nc -z redis 6379; do
+  echo "Redis no disponible - esperando..."
+  sleep 2
+done
+echo "✅ Redis disponible"
 
 # Generar clave de aplicación si no existe
-echo "🔑 Generando clave de aplicación..."
-php artisan key:generate --force
-
-# Limpiar caché
-echo "🧹 Limpiando caché..."
-php artisan config:clear
-php artisan cache:clear
-php artisan view:clear
+if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "" ]; then
+    echo "🔑 Generando clave de aplicación..."
+    php artisan key:generate --force || echo "⚠️  Error generando clave, continuando..."
+    echo "✅ Clave de aplicación generada"
+else
+    echo "✅ Clave de aplicación ya existe"
+fi
 
 # Ejecutar migraciones
 echo "📊 Ejecutando migraciones..."
-php artisan migrate --force
+php artisan migrate --force || echo "⚠️  Error en migraciones, continuando..."
+echo "✅ Migraciones ejecutadas"
 
-# Crear enlace simbólico para storage usando el comando Artisan
-echo "🔗 Verificando y corrigiendo enlace simbólico de storage..."
-# Eliminar enlace existente si está roto
-rm -f /var/www/html/public/storage
-# Crear nuevo enlace simbólico
-php artisan storage:link
+# Ejecutar seeders si es necesario
+echo "🌱 Ejecutando seeders..."
+php artisan db:seed --force || echo "⚠️  Seeders fallaron o no existen"
+echo "✅ Seeders ejecutados"
 
-# Sincronizar carpetas de storage al directorio público
-echo "📁 Sincronizando carpetas de storage..."
-# Crear directorio público de storage si no existe
-mkdir -p /var/www/html/public/storage
+# Limpiar caché
+echo "🧹 Limpiando caché..."
+php artisan config:clear || echo "⚠️  Error limpiando config"
+php artisan cache:clear || echo "⚠️  Error limpiando cache"
+php artisan route:clear || echo "⚠️  Error limpiando routes"
+php artisan view:clear || echo "⚠️  Error limpiando views"
+echo "✅ Caché limpiado"
 
-# Sincronizar todas las carpetas de storage/app/public al directorio público
-if [ -d "/var/www/html/storage/app/public" ]; then
-    echo "🔄 Sincronizando contenido de storage/app/public..."
-    # Copiar todas las carpetas y archivos
-    cp -r /var/www/html/storage/app/public/* /var/www/html/public/storage/ 2>/dev/null || true
-    
-    # Asegurar que las carpetas principales existan
-    mkdir -p /var/www/html/public/storage/productos
-    mkdir -p /var/www/html/public/storage/fotos_perfil
-    mkdir -p /var/www/html/public/storage/perfiles
-    
-    # Sincronizar contenido específico
-    if [ -d "/var/www/html/storage/app/public/productos" ]; then
-        cp -r /var/www/html/storage/app/public/productos/* /var/www/html/public/storage/productos/ 2>/dev/null || true
-    fi
-    
-    if [ -d "/var/www/html/storage/app/public/fotos_perfil" ]; then
-        cp -r /var/www/html/storage/app/public/fotos_perfil/* /var/www/html/public/storage/fotos_perfil/ 2>/dev/null || true
-    fi
-    
-    if [ -d "/var/www/html/storage/app/public/perfiles" ]; then
-        cp -r /var/www/html/storage/app/public/perfiles/* /var/www/html/public/storage/perfiles/ 2>/dev/null || true
-    fi
-fi
+# Optimizar para desarrollo (sin caché para desarrollo)
+echo "⚡ Configurando aplicación para desarrollo..."
+# En desarrollo no cacheamos para ver cambios en tiempo real
+echo "✅ Aplicación configurada para desarrollo"
 
-# Establecer permisos correctos
-echo "🔐 Estableciendo permisos..."
+# Asegurar permisos
+echo "🔐 Configurando permisos..."
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public/storage
-chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public/storage
+chmod -R 755 /var/www/html/storage
+chmod -R 777 /var/www/html/storage/framework
+chmod -R 777 /var/www/html/storage/logs
+chmod -R 777 /var/www/html/storage/app/public
+chmod -R 777 /var/www/html/bootstrap/cache
+chmod -R 755 /var/www/html/public/storage
+echo "✅ Permisos configurados"
 
-echo "✅ Aplicación lista!"
-echo "🌐 Servidor iniciando en puerto 80..."
+echo "🎉 Configuración de Laravel completada!"
 
-# Iniciar Apache
-exec apache2-foreground
+# Ejecutar el comando original
+exec "$@"

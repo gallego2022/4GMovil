@@ -18,7 +18,7 @@ use App\Http\Controllers\Admin\EspecificacionController;
 use App\Http\Controllers\Admin\OptimizedStockAlertController;
 
 // Solo accesibles por usuarios autenticados y administradores
-Route::middleware(['auth', 'admin', 'cache.invalidation'])->group(function () {
+Route::middleware(['auth', 'admin', \App\Http\Middleware\CacheInvalidationMiddleware::class])->group(function () {
 // Dashboard
     Route::get('/admin', [DashboardController::class, 'index'])->name('admin.index');
 

@@ -14,17 +14,30 @@ services:
       - ./routes:/var/www/html/routes
       - ./database:/var/www/html/database
       - ./public:/var/www/html/public
+      - ./node_modules:/var/www/html/node_modules
     environment:
-      - APP_ENV=production
-      - APP_DEBUG=false
+      - APP_ENV=local
+      - APP_DEBUG=true
       - DB_HOST=db
       - DB_DATABASE=4gmovil
       - DB_USERNAME=laraveluser
       - DB_PASSWORD=laravelpass
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=
+      - REDIS_DB=0
+      - REDIS_CLIENT=phpredis
+      - CACHE_DRIVER=redis
+      - QUEUE_CONNECTION=redis
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI}
     depends_on:
       - db
+      - redis
     networks:
       - 4gmovil_network
+    command: ["/usr/local/bin/init.sh", "apache2-foreground"]
 
   db:
     image: mysql:8.0
@@ -73,17 +86,32 @@ services:
     networks:
       - 4gmovil_network
 
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: 4gmovil_redis_commander
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+      - HTTP_USER=admin
+      - HTTP_PASSWORD=admin
+    depends_on:
+      - redis
+    networks:
+      - 4gmovil_network
+
   queue-worker:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.queue
     container_name: 4gmovil_queue_worker
     restart: unless-stopped
     depends_on:
       - app
       - db
       - redis
-    command: bash -lc "chmod +x /var/www/html/docker/start-queue.sh && /var/www/html/docker/start-queue.sh"
+    command: ["/usr/local/bin/init.sh", "php", "artisan", "queue:work", "redis", "--tries=3", "--sleep=1", "--timeout=90", "--memory=512"]
     volumes:
       - ./storage:/var/www/html/storage
       - ./app:/var/www/html/app
@@ -91,16 +119,24 @@ services:
       - ./routes:/var/www/html/routes
       - ./database:/var/www/html/database
       - ./public:/var/www/html/public
+      - ./node_modules:/var/www/html/node_modules
     environment:
-      - APP_ENV=production
-      - APP_DEBUG=false
+      - APP_ENV=local
+      - APP_DEBUG=true
       - DB_HOST=db
       - DB_DATABASE=4gmovil
       - DB_USERNAME=laraveluser
       - DB_PASSWORD=laravelpass
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - REDIS_PASSWORD=
+      - REDIS_DB=0
+      - REDIS_CLIENT=phpredis
+      - CACHE_DRIVER=redis
       - QUEUE_CONNECTION=redis
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI}
     networks:
       - 4gmovil_network
 

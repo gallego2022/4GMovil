@@ -399,6 +399,20 @@ class AuthController extends WebController
     public function redirectToGoogle()
     {
         try {
+            // Verificar configuración de Google
+            $clientId = config('services.google.client_id');
+            $clientSecret = config('services.google.client_secret');
+            
+            if (empty($clientId) || $clientId === 'your-google-client-id-here') {
+                Log::error('Google OAuth no configurado correctamente');
+                return Redirect::route('login')->with('error', 'Google OAuth no está configurado. Contacta al administrador.');
+            }
+            
+            if (empty($clientSecret) || $clientSecret === 'your-google-client-secret-here') {
+                Log::error('Google OAuth secret no configurado');
+                return Redirect::route('login')->with('error', 'Google OAuth no está configurado. Contacta al administrador.');
+            }
+            
             $url = Socialite::driver('google')
                 ->redirect()
                 ->getTargetUrl();
@@ -406,10 +420,12 @@ class AuthController extends WebController
             // Agregar parámetro para forzar selección de cuenta
             $url .= '&prompt=select_account';
                 
+            Log::info('Redirigiendo a Google OAuth: ' . $url);
             return redirect($url);
         } catch (\Exception $e) {
             Log::error('Error al redirigir a Google: ' . $e->getMessage());
-            return Redirect::route('login')->with('error', 'Error al conectar con Google. Inténtalo de nuevo.');
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            return Redirect::route('login')->with('error', 'Error al conectar con Google. Verifica la configuración.');
         }
     }
 
@@ -419,6 +435,13 @@ class AuthController extends WebController
     public function handleGoogleCallback()
     {
         try {
+            // Verificar que no hay errores en la URL
+            if (request()->has('error')) {
+                $error = request()->get('error');
+                Log::error('Error de Google OAuth: ' . $error);
+                return Redirect::route('login')->with('error', 'Error de autenticación con Google: ' . $error);
+            }
+            
             $googleUser = Socialite::driver('google')->user();
             
             Log::info("Google callback recibido para: " . $googleUser->getEmail());

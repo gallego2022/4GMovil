@@ -1,36 +1,32 @@
-# Configuración de Laravel Cloud
-# Este archivo define cómo Laravel Cloud debe construir y desplegar la aplicación
+# Configuración de Laravel Cloud - DESARROLLO
+# Este archivo define cómo Laravel Cloud debe construir y desplegar la aplicación en entorno de desarrollo
 
 version: 1
 
 build:
   # Comando de construcción optimizado
   command: |
-    # Copiar archivo de entorno
     cp laravel-cloud.env .env
-    
-    # Instalar dependencias
-    npm install
+    npm ci --timeout=300000
     composer install --no-dev --optimize-autoloader --no-scripts
-    
-    # Compilar assets
     npm run build
-    
-    # Crear directorios necesarios
-    mkdir -p storage/framework/{cache,sessions,views} storage/logs bootstrap/cache
-    
-    # Generar clave de aplicación
+    mkdir -p storage/framework/{cache,sessions,views} storage/logs bootstrap/cache storage/app/public/{productos,fotos_perfil,perfiles}
+    chmod -R 755 storage
+    chmod -R 777 storage/framework storage/logs storage/app/public
+    chmod -R 777 bootstrap/cache
     php artisan key:generate --force
-    
-    # Optimizar para producción
     php artisan config:cache
     php artisan route:cache
     php artisan view:cache
-  timeout: 600
+    php artisan package:discover --ansi
+    php artisan storage:link
+    chmod -R 755 public/storage
+  timeout: 900
   
-  # Variables de entorno durante el build
+  # Variables de entorno durante el build (DESARROLLO)
   environment:
-    APP_ENV: production
+    APP_ENV: local
+    APP_DEBUG: true
     CACHE_DRIVER: redis
     SESSION_DRIVER: database
     QUEUE_CONNECTION: redis
@@ -38,24 +34,19 @@ build:
 deploy:
   # Comando de despliegue optimizado
   command: |
-    # Verificar que .env existe
-    if [ ! -f ".env" ]; then
-      echo "Error: .env file not found"
-      exit 1
-    fi
-    
-    # Configurar Redis para producción
     sed -i 's/CACHE_DRIVER=.*/CACHE_DRIVER=redis/' .env
     sed -i 's/QUEUE_CONNECTION=.*/QUEUE_CONNECTION=redis/' .env
     sed -i 's/SESSION_DRIVER=.*/SESSION_DRIVER=database/' .env
-    
-    # Recargar configuración
+    chmod -R 755 storage
+    chmod -R 777 storage/framework storage/logs storage/app/public
+    chmod -R 777 bootstrap/cache
     php artisan config:cache
+    php artisan migrate --force
   timeout: 300
 
 runtime:
   # Versión de PHP
-  php: 8.2
+  php: 8.3
   
   # Versión de Node.js
   node: 18
@@ -71,6 +62,10 @@ runtime:
     - ctype
     - json
     - bcmath
+    - gd
+    - zip
+    - exif
+    - pcntl
 
 optimizations:
   # Optimizaciones automáticas

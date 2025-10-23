@@ -30,7 +30,7 @@ export default defineConfig({
             output: {
                 manualChunks: {
                     // Chunk para bibliotecas de proveedores
-                    vendor: ['alpinejs', 'axios'],
+                    vendor: ['alpinejs', 'axios', 'sweetalert2'],
                 },
                 
                 // Nombres de archivos optimizados para cache
@@ -74,7 +74,7 @@ export default defineConfig({
     
     // Optimizaciones de dependencias
     optimizeDeps: {
-        include: ['alpinejs', 'axios'],
+        include: ['alpinejs', 'axios', 'sweetalert2'],
         exclude: ['laravel-vite-plugin'],
     },
     

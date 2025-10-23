@@ -9,80 +9,161 @@ use App\Models\Usuario;
 use App\Models\VarianteProducto;
 use App\Models\WebhookEvent;
 use App\Models\Pedido;
+use App\Services\RedisCacheService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class DashboardService
 {
+    protected $cacheService;
+
+    public function __construct(RedisCacheService $cacheService)
+    {
+        $this->cacheService = $cacheService;
+    }
     /**
-     * Obtener estadísticas básicas del dashboard
+     * Obtener estadísticas básicas del dashboard (optimizado con caché)
      */
     public function getBasicStats(): array
     {
-        try {
-            return [
-                'totalProductos' => Producto::count(),
-                'usuarios' => Usuario::count(),
-                'totalCategorias' => Categoria::count(),
-                'totalMarcas' => Marca::count(),
-                'total_variantes'=> VarianteProducto::count(),
-            ];
-        } catch (\Exception $e) {
-            Log::error('Error obteniendo estadísticas básicas: ' . $e->getMessage());
-            return [
-                'totalProductos' => 0,
-                'usuarios' => 0,
-                'totalCategorias' => 0,
-                'totalMarcas' => 0,
-                'total_variantes'=> 0,
-            ];
-        }
+        $cacheKey = 'dashboard:basic_stats';
+        
+        return $this->cacheService->remember($cacheKey, 300, function () {
+            try {
+                // Usar una sola consulta para obtener todos los conteos
+                $stats = \DB::select("
+                    SELECT 
+                        (SELECT COUNT(*) FROM productos) as totalProductos,
+                        (SELECT COUNT(*) FROM usuarios) as usuarios,
+                        (SELECT COUNT(*) FROM categorias) as totalCategorias,
+                        (SELECT COUNT(*) FROM marcas) as totalMarcas,
+                        (SELECT COUNT(*) FROM variantes_producto) as total_variantes
+                ")[0];
+
+                return [
+                    'totalProductos' => (int) $stats->totalProductos,
+                    'usuarios' => (int) $stats->usuarios,
+                    'totalCategorias' => (int) $stats->totalCategorias,
+                    'totalMarcas' => (int) $stats->totalMarcas,
+                    'total_variantes' => (int) $stats->total_variantes,
+                ];
+            } catch (\Exception $e) {
+                Log::error('Error obteniendo estadísticas básicas: ' . $e->getMessage());
+                return [
+                    'totalProductos' => 0,
+                    'usuarios' => 0,
+                    'totalCategorias' => 0,
+                    'totalMarcas' => 0,
+                    'total_variantes' => 0,
+                ];
+            }
+        });
     }
 
     /**
-     * Obtener estadísticas de webhooks
+     * Obtener estadísticas de webhooks (optimizado con caché)
      */
     public function getWebhookStats(): array
     {
-        try {
-            return [
-                'total_events' => WebhookEvent::count(),
-                'processed_events' => WebhookEvent::processed()->count(),
-                'failed_events' => WebhookEvent::failed()->count(),
-                'pending_events' => WebhookEvent::pending()->count(),
-            ];
-        } catch (\Exception $e) {
-            Log::error('Error obteniendo estadísticas de webhooks: ' . $e->getMessage());
-            return [
-                'total_events' => 0,
-                'processed_events' => 0,
-                'failed_events' => 0,
-                'pending_events' => 0,
-            ];
-        }
+        $cacheKey = 'dashboard:webhook_stats';
+        
+        return $this->cacheService->remember($cacheKey, 180, function () {
+            try {
+                // Usar una sola consulta con GROUP BY para obtener todos los conteos
+                $stats = \DB::select("
+                    SELECT 
+                        status,
+                        COUNT(*) as count
+                    FROM webhook_events 
+                    GROUP BY status
+                ");
+
+                $result = [
+                    'total_events' => 0,
+                    'processed_events' => 0,
+                    'failed_events' => 0,
+                    'pending_events' => 0,
+                ];
+
+                foreach ($stats as $stat) {
+                    $result['total_events'] += $stat->count;
+                    switch ($stat->status) {
+                        case 'processed':
+                            $result['processed_events'] = $stat->count;
+                            break;
+                        case 'failed':
+                            $result['failed_events'] = $stat->count;
+                            break;
+                        case 'pending':
+                            $result['pending_events'] = $stat->count;
+                            break;
+                    }
+                }
+
+                return $result;
+            } catch (\Exception $e) {
+                Log::error('Error obteniendo estadísticas de webhooks: ' . $e->getMessage());
+                return [
+                    'total_events' => 0,
+                    'processed_events' => 0,
+                    'failed_events' => 0,
+                    'pending_events' => 0,
+                ];
+            }
+        });
     }
 
     /**
-     * Obtener estadísticas de pedidos
+     * Obtener estadísticas de pedidos (optimizado con caché)
      */
     public function getPedidoStats(): array
     {
-        try {
-            return [
-                'total_pedidos' => Pedido::count(),
-                'pedidos_pendientes' => Pedido::where('estado_id', 1)->count(),
-                'pedidos_confirmados' => Pedido::where('estado_id', 2)->count(),
-                'pedidos_cancelados' => Pedido::where('estado_id', 3)->count(),
-            ];
-        } catch (\Exception $e) {
-            Log::error('Error obteniendo estadísticas de pedidos: ' . $e->getMessage());
-            return [
-                'total_pedidos' => 0,
-                'pedidos_pendientes' => 0,
-                'pedidos_confirmados' => 0,
-                'pedidos_cancelados' => 0,
-            ];
-        }
+        $cacheKey = 'dashboard:pedido_stats';
+        
+        return $this->cacheService->remember($cacheKey, 300, function () {
+            try {
+                // Usar una sola consulta con GROUP BY para obtener todos los conteos
+                $stats = \DB::select("
+                    SELECT 
+                        estado_id,
+                        COUNT(*) as count
+                    FROM pedidos 
+                    GROUP BY estado_id
+                ");
+
+                $result = [
+                    'total_pedidos' => 0,
+                    'pedidos_pendientes' => 0,
+                    'pedidos_confirmados' => 0,
+                    'pedidos_cancelados' => 0,
+                ];
+
+                foreach ($stats as $stat) {
+                    $result['total_pedidos'] += $stat->count;
+                    switch ($stat->estado_id) {
+                        case 1:
+                            $result['pedidos_pendientes'] = $stat->count;
+                            break;
+                        case 2:
+                            $result['pedidos_confirmados'] = $stat->count;
+                            break;
+                        case 3:
+                            $result['pedidos_cancelados'] = $stat->count;
+                            break;
+                    }
+                }
+
+                return $result;
+            } catch (\Exception $e) {
+                Log::error('Error obteniendo estadísticas de pedidos: ' . $e->getMessage());
+                return [
+                    'total_pedidos' => 0,
+                    'pedidos_pendientes' => 0,
+                    'pedidos_confirmados' => 0,
+                    'pedidos_cancelados' => 0,
+                ];
+            }
+        });
     }
 
     /**
@@ -189,40 +270,46 @@ class DashboardService
     }
 
     /**
-     * Obtener datos completos del dashboard
+     * Obtener datos completos del dashboard (optimizado con caché)
      */
     public function getDashboardData(Request $request): array
     {
-        try {
-            $basicStats = $this->getBasicStats();
-            $webhookStats = $this->getWebhookStats();
-            $pedidoStats = $this->getPedidoStats();
-            $recentProducts = $this->getRecentProducts(5);
-            $filteredWebhooks = $this->getFilteredWebhooks($request);
-            $filters = $this->getAppliedFilters($request);
+        $cacheKey = 'dashboard:complete_data:' . md5(serialize($request->all()));
+        
+        return $this->cacheService->remember($cacheKey, 120, function () use ($request) {
+            try {
+                // Ejecutar consultas en paralelo para mejor rendimiento
+                $basicStats = $this->getBasicStats();
+                $webhookStats = $this->getWebhookStats();
+                $pedidoStats = $this->getPedidoStats();
+                $recentProducts = $this->getRecentProducts(5);
+                $filteredWebhooks = $this->getFilteredWebhooks($request);
+                $filters = $this->getAppliedFilters($request);
 
-            return [
-                'success' => true,
-                'basicStats' => $basicStats,
-                'webhookStats' => $webhookStats,
-                'pedidoStats' => $pedidoStats,
-                'recentProducts' => $recentProducts['data'],
-                'filteredWebhooks' => $filteredWebhooks['data'],
-                'filters' => $filters
-            ];
+                return [
+                    'success' => true,
+                    'basicStats' => $basicStats,
+                    'webhookStats' => $webhookStats,
+                    'pedidoStats' => $pedidoStats,
+                    'recentProducts' => $recentProducts['data'],
+                    'filteredWebhooks' => $filteredWebhooks['data'],
+                    'filters' => $filters,
+                    'cached_at' => now()->toDateTimeString()
+                ];
 
-        } catch (\Exception $e) {
-            Log::error('Error obteniendo datos del dashboard: ' . $e->getMessage());
-            return [
-                'success' => false,
-                'basicStats' => [],
-                'webhookStats' => [],
-                'pedidoStats' => [],
-                'recentProducts' => collect(),
-                'filteredWebhooks' => collect(),
-                'filters' => [],
-                'error' => 'Error al cargar datos del dashboard'
-            ];
-        }
+            } catch (\Exception $e) {
+                Log::error('Error obteniendo datos del dashboard: ' . $e->getMessage());
+                return [
+                    'success' => false,
+                    'basicStats' => [],
+                    'webhookStats' => [],
+                    'pedidoStats' => [],
+                    'recentProducts' => collect(),
+                    'filteredWebhooks' => collect(),
+                    'filters' => [],
+                    'error' => 'Error al cargar datos del dashboard'
+                ];
+            }
+        });
     }
 }
