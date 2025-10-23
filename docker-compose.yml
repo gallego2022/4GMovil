@@ -13,7 +13,6 @@ services:
       - ./resources:/var/www/html/resources
       - ./routes:/var/www/html/routes
       - ./database:/var/www/html/database
-      # Montar solo la carpeta public sin storage para permitir enlace simbólico
       - ./public:/var/www/html/public
     environment:
       - APP_ENV=production
