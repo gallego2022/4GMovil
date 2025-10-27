@@ -994,6 +994,41 @@ class InventarioService
     }
 
     /**
+     * Obtener movimientos por tipo
+     */
+    public function getMovimientosByTipo(string $tipo, Carbon $fechaInicio, Carbon $fechaFin, ?int $productoId = null, ?int $usuarioId = null): array
+    {
+        try {
+            $query = MovimientoInventario::with(['producto', 'usuario'])
+                ->where('tipo_movimiento', $tipo)
+                ->whereBetween('fecha_movimiento', [$fechaInicio, $fechaFin]);
+
+            if ($productoId) {
+                $query->where('producto_id', $productoId);
+            }
+
+            if ($usuarioId) {
+                $query->where('usuario_id', $usuarioId);
+            }
+
+            $movimientos = $query->orderBy('fecha_movimiento', 'desc')->get();
+
+            return [
+                'movimientos' => $movimientos,
+                'total' => $movimientos->count(),
+                'suma_cantidad' => $movimientos->sum('cantidad')
+            ];
+        } catch (\Exception $e) {
+            Log::error('Error al obtener movimientos por tipo', ['error' => $e->getMessage()]);
+            return [
+                'movimientos' => collect(),
+                'total' => 0,
+                'suma_cantidad' => 0
+            ];
+        }
+    }
+
+    /**
      * Obtener productos con rotación lenta
      */
     public function getProductosRotacionLenta(int $dias = 30): Collection

@@ -85,10 +85,13 @@ class StripeServiceTest extends TestCase
             'descripcion' => 'Descripción del producto stripe',
             'precio' => 100.00,
             'stock' => 10,
+            'stock_inicial' => 10,
+            'stock_minimo' => 5,
             'estado' => 'nuevo',
             'activo' => true,
             'categoria_id' => $categoria->categoria_id,
-            'marca_id' => $marca->marca_id
+            'marca_id' => $marca->marca_id,
+            'costo_unitario' => 70.00
         ]);
 
         // Crear dirección
@@ -98,10 +101,10 @@ class StripeServiceTest extends TestCase
             'telefono' => '1234567890',
             'calle' => 'Calle Stripe',
             'numero' => '123',
-            'codigo_postal' => '12345',
             'ciudad' => 'Ciudad Stripe',
             'provincia' => 'Provincia Stripe',
             'pais' => 'España',
+            'codigo_postal' => '12345',
             'activo' => true,
             'predeterminada' => true
         ]);
@@ -119,6 +122,7 @@ class StripeServiceTest extends TestCase
         $this->pedido = Pedido::create([
             'usuario_id' => $this->usuario->usuario_id,
             'direccion_id' => $direccion->direccion_id,
+            'numero_pedido' => 'PED-TEST-001',
             'fecha_pedido' => now(),
             'estado_id' => $estadoPedido->estado_id,
             'total' => 100.00

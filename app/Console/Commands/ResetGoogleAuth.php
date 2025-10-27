@@ -133,3 +133,4 @@ class ResetGoogleAuth extends Command
         $this->line("");
     }
 }
+

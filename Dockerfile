@@ -31,8 +31,9 @@ WORKDIR /var/www/html
 # Copiar archivos de configuración primero para aprovechar caché
 COPY composer.json composer.lock package.json package-lock.json ./
 
-# Instalar dependencias de PHP (incluyendo dev para desarrollo)
-RUN composer install --optimize-autoloader --no-scripts
+# Instalar dependencias de PHP (incluyendo dev para desarrollo y pruebas)
+RUN composer install --optimize-autoloader --no-scripts && \
+    composer install --dev || true
 
 # Instalar dependencias de Node.js (desarrollo - incluye devDependencies)
 RUN npm ci --timeout=300000

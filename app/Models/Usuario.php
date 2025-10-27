@@ -91,6 +91,18 @@ class Usuario extends Authenticatable implements MustVerifyEmail, CanResetPasswo
         return !is_null($this->google_id);
     }
 
+    // Verificar si el usuario tiene un rol específico
+    public function hasRole(string $role): bool
+    {
+        return $this->rol === $role;
+    }
+
+    // Verificar si el usuario es administrador
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('admin');
+    }
+
     // Si usas restablecimiento de contraseña, puedes especificar el email así:
     public function getEmailForPasswordReset()
     {

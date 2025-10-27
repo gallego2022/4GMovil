@@ -69,7 +69,7 @@ services:
       - .:/var/www/html
     depends_on:
       - db
-    command: bash -c "php artisan test --env=testing"
+    command: ["/usr/local/bin/init.sh", "apache2-foreground"]
     networks:
       - 4gmovil_network
 

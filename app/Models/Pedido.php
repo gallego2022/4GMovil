@@ -12,7 +12,7 @@ class Pedido extends Model
 
     protected $fillable = [
         'usuario_id', 'direccion_id', 'fecha_pedido',
-        'estado_id', 'total'
+        'estado_id', 'total', 'numero_pedido'
     ];
 
     protected $dates = ['fecha_pedido'];

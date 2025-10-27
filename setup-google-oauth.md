@@ -95,3 +95,4 @@ docker-compose exec app tail -f storage/logs/laravel.log
 
 ### Error: "access_denied"
 - El usuario canceló la autenticación en Google
+
