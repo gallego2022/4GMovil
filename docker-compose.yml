@@ -14,7 +14,7 @@ services:
       - ./routes:/var/www/html/routes
       - ./database:/var/www/html/database
       - ./public:/var/www/html/public
-      - ./node_modules:/var/www/html/node_modules
+      - ./tests:/var/www/html/tests
     environment:
       - APP_ENV=local
       - APP_DEBUG=true
@@ -52,10 +52,24 @@ services:
       - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
-    # healthcheck:
-    #   test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "laraveluser", "-p", "laravelpass"]
-    #   timeout: 20s
-    #   retries: 10
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel_test
+    environment:
+      APP_ENV: testing
+      APP_DEBUG: true
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ":memory:"
+      CACHE_DRIVER: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - db
+    command: bash -c "php artisan test --env=testing"
     networks:
       - 4gmovil_network
 
@@ -119,7 +133,7 @@ services:
       - ./routes:/var/www/html/routes
       - ./database:/var/www/html/database
       - ./public:/var/www/html/public
-      - ./node_modules:/var/www/html/node_modules
+      - ./tests:/var/www/html/tests
     environment:
       - APP_ENV=local
       - APP_DEBUG=true

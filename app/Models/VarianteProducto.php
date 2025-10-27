@@ -239,7 +239,7 @@ class VarianteProducto extends Model
             // Registrar movimiento de liberación
             MovimientoInventario::create([
                 'variante_id' => $this->variante_id,
-                'tipo_movimiento' => 'liberacion',
+                'tipo_movimiento' => 'liberacion_reserva',
                 'cantidad' => $cantidad,
                 'stock_anterior' => $stockAnterior,
                 'stock_nuevo' => $stockNuevo,

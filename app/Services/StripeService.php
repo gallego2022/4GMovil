@@ -716,7 +716,7 @@ class StripeService
                 if ($pedido) {
                     $pedido->update(['estado_id' => 3]); // Cancelado
                     
-                    $pago = Pago::where('stripe_payment_intent_id', $paymentIntent->id)->first();
+                    $pago = Pago::where('referencia_externa', $paymentIntent->id)->first();
                     if ($pago) {
                         $pago->update(['estado' => 'failed']);
                     }
@@ -755,7 +755,7 @@ class StripeService
                 if ($pedido) {
                     $pedido->update(['estado_id' => 3]); // Cancelado
                     
-                    $pago = Pago::where('stripe_payment_intent_id', $paymentIntent->id)->first();
+                    $pago = Pago::where('referencia_externa', $paymentIntent->id)->first();
                     if ($pago) {
                         $pago->update(['estado' => 'canceled']);
                     }

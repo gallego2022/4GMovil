@@ -145,7 +145,7 @@ class LoggingService
     {
         $context['api_endpoint'] = $endpoint;
         $context['api_method'] = $method;
-        $context['response_time'] = microtime(true) - LARAVEL_START;
+        $context['response_time'] = microtime(true) - (defined('LARAVEL_START') ? LARAVEL_START : microtime(true));
         
         $this->info("API Request: {$method} {$endpoint}", $context);
     }

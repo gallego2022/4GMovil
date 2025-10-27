@@ -51,7 +51,7 @@ class CarritoService extends BaseService
             $data = $this->validateAddToCartData($request);
             
             // Verificar disponibilidad del producto
-            $this->validateProductAvailability($data['producto_id'], $data['variante_id'], $data['cantidad']);
+            $this->validateProductAvailability($data['producto_id'], $data['variante_id'] ?? null, $data['cantidad']);
             
             if (Auth::check()) {
                 $result = $this->addToUserCart($data);
@@ -358,7 +358,7 @@ class CarritoService extends BaseService
         // Verificar si el producto ya existe en el carrito
         $existingItem = $carrito->items()
             ->where('producto_id', $data['producto_id'])
-            ->where('variante_id', $data['variante_id'])
+            ->where('variante_id', $data['variante_id'] ?? null)
             ->first();
 
         if ($existingItem) {
@@ -370,7 +370,7 @@ class CarritoService extends BaseService
             // Crear nuevo item
             $carrito->items()->create([
                 'producto_id' => $data['producto_id'],
-                'variante_id' => $data['variante_id'],
+                'variante_id' => $data['variante_id'] ?? null,
                 'cantidad' => $data['cantidad']
             ]);
         }
@@ -390,7 +390,7 @@ class CarritoService extends BaseService
         $existingIndex = null;
         foreach ($cartItems as $index => $item) {
             if ($item['producto_id'] == $data['producto_id'] && 
-                $item['variante_id'] == $data['variante_id']) {
+                ($item['variante_id'] ?? null) == ($data['variante_id'] ?? null)) {
                 $existingIndex = $index;
                 break;
             }
@@ -404,7 +404,7 @@ class CarritoService extends BaseService
             $cartItems[] = [
                 'id' => $itemId,
                 'producto_id' => $data['producto_id'],
-                'variante_id' => $data['variante_id'],
+                'variante_id' => $data['variante_id'] ?? null,
                 'cantidad' => $data['cantidad']
             ];
         }

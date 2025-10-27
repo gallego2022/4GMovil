@@ -427,7 +427,7 @@ class Producto extends Model
 
         MovimientoInventario::create([
             'producto_id' => $this->producto_id,
-            'tipo_movimiento' => 'liberacion',
+            'tipo_movimiento' => 'liberacion_reserva',
             'cantidad' => $cantidad,
             'stock_anterior' => $stockDisponibleAnterior,
             'stock_nuevo' => $nuevoStockDisponible,
