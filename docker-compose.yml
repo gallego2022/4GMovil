@@ -52,6 +52,8 @@ services:
       - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
+    networks:
+      - 4gmovil_network
   test:
     build:
       context: .

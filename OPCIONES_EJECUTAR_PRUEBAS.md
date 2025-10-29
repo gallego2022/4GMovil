@@ -135,3 +135,6 @@ docker-compose run --rm test php artisan test \
 **B)** Ejecutar todas las pruebas del proyecto  
 **C)** Ejecutar un grupo específico (Autenticación, Productos, etc.)  
 **D)** Ejecutar solo ProductoServiceTest para verificar
+
+
+

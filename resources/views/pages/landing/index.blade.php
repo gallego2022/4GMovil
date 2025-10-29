@@ -4,61 +4,104 @@
     'Descubre nuestros productos destacados en 4GMovil. Encuentra lo mejor en tecnología móvil
     y accesorios.')
 @section('content')
-@include('components.loading-screen')
-    <!-- Hero Section -->
-    <section id="inicio" class="min-h-screen flex items-center relative overflow-hidden pt-16">
-        <div class="absolute inset-0">
-            <img src="{{ asset('img/slaider/image.png') }}" alt="Fondo corporativo"
-                class="w-full h-full object-cover object-center">
-        </div>
+    @include('components.loading-screen')
+    <!-- Hero Section (inspirado en popcorn.space) -->
+    <section id="inicio" class="min-h-screen flex items-center relative overflow-hidden pt-16 bg-gradient-to-b from-white to-gray-100 dark:from-gray-900 dark:to-black">
 
-        <!-- Content Container -->
+        <!-- Contenido -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="grid lg:grid-cols-2 gap-12 items-center">
-                <!-- Left Content -->
-                <div class="text-white">
-                    <h1 class="text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                        {{ __('messages.welcome') }}
+            <div class="grid lg:grid-cols-12 gap-6 items-center">
+                <!-- Columna izquierda -->
+                <div id="hero_container" class="lg:col-span-11 text-gray-900 dark:text-white group">
+                    <div class="inline-flex items-center px-3 py-1 rounded-full bg-gray-900/5 dark:bg-white/10 border border-gray-900/10 dark:border-white backdrop-blur mb-5 motion-safe:animate-pulse group-hover:[animation-play-state:paused]">
+                        <span class="text-sm">{{ __('landing.hero.badge') }}</span>
+                    </div>
+                    <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight">
+                        <span class="sr-only">Tecnología a tu alcance</span>
+                        <div class="relative">
+                            <svg class="block w-full max-w-none h-auto" viewBox="0 0 1600 260" aria-hidden="true" preserveAspectRatio="xMinYMid meet" style="overflow: visible;">
+                                <defs>
+                                    <linearGradient id="heroTitleGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stop-color="#9CA3AF"/>
+                                        <stop offset="50%" stop-color="#6B7280"/>
+                                        <stop offset="100%" stop-color="#374151"/>
+                                    </linearGradient>
+                                </defs>
+                                <text x="0" y="180" fill="transparent" stroke="url(#heroTitleGradient)" stroke-width="4" stroke-linejoin="round" font-weight="800" font-family="'Manrope', 'Inter', 'Segoe UI', ui-sans-serif, system-ui, -apple-system, Roboto, Helvetica, Arial, Noto Sans, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji'" style="letter-spacing:-0.02em; font-size:132px;">
+                                    {{ __('landing.hero.title') }}
+                                </text>
+                            </svg>
+                        </div>
                     </h1>
-                    <p class="text-xl lg:text-2xl mb-8 text-gray-100 leading-relaxed">
-                        {{ __('messages.products.featured') }} - {{ __('messages.home.subtitle') }}
+                    <p class="mt-5 text-lg sm:text-xl text-gray-700 dark:text-gray-100/90 max-w-4xl">
+                        <span id="hero_subtitle_text">{{ __('landing.hero.phrases')[0] ?? 'Encuentra los mejores productos y servicios de tecnología a tu alcance.' }}</span>
+                        <span class="inline-block w-3 align-baseline ml-0.5 bg-gray-700 dark:bg-gray-100 animate-pulse" style="height:1.2em"></span>
                     </p>
-
-                    <!-- Features List -->
-                    <div class="space-y-4 mb-8">
-                        <div class="flex items-center">
-                            <i class="fas fa-check-circle text-4g-blue mr-3 text-xl"></i>
-                            <span class="text-lg">{{ __('messages.home.no_credit_check') }}</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="fas fa-check-circle text-4g-blue mr-3 text-xl"></i>
-                            <span class="text-lg">{{ __('messages.home.minimal_documents') }}</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="fas fa-check-circle text-4g-blue mr-3 text-xl"></i>
-                            <span class="text-lg">{{ __('messages.home.approval_24h') }}</span>
-                        </div>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="flex flex-col sm:flex-row gap-6">
-                        <button class="inline-flex items-center justify-center text-lg px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800">
-                            <i class="fas fa-rocket mr-2"></i>{{ __('messages.home.request_credit') }}
-                        </button>
-                        <button class="inline-flex items-center justify-center text-lg px-8 py-4 bg-white hover:bg-gray-50 text-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200 font-semibold rounded-xl border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600">
-                            <i class="fas fa-info-circle mr-2"></i>{{ __('messages.home.learn_more') }}
-                        </button>
-                    </div>
-
+                    <div class="mt-8 flex flex-col sm:flex-row gap-4 sm:items-center">
+                        <a href="{{ route('productos.lista') }}" class="inline-flex items-center justify-center px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-indigo-600 hover:to-purple-600 text-white font-semibold shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-indigo-600/40 transform hover:-translate-y-1 hover:scale-150 transition-all duration-500 ease-in-out focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 hover:ring-4 hover:ring-blue-400/30 dark:hover:ring-indigo-400/30 border-2 border-blue-500/40 hover:border-blue-300/70 dark:border-indigo-400/40 dark:hover:border-indigo-300/70">
+                            {{ __('landing.hero.cta_explore') }}
+                        </a>
+                        
+                        
                 </div>
             </div>
         </div>
 
-        <!-- Scroll Indicator -->
-        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white animate-bounce">
-            <i class="fas fa-chevron-down text-2xl"></i>
-        </div>
+       
+        
     </section>
+    @push('scripts')
+    <script>
+    (function(){
+        var phrases = @json(trans('landing.hero.phrases'));
+        var el = document.getElementById('hero_subtitle_text');
+        var container = document.getElementById('hero_container');
+        if (!el) return;
+        var idx = 0, pos = 0, dir = 1, typing,
+            delayTypingBase = 55,   // ms por carácter al escribir
+            delayEraseBase = 28,    // ms por carácter al borrar
+            delayPause = 5100,      // pausa al final de cada frase
+            randomness = 0.25,      // ±25% aleatoriedad en el ritmo
+            paused = false;
+        function tick(){
+            if (paused) { return; }
+            var full = phrases[idx];
+            if (dir === 1){
+                pos++;
+                if (pos > full.length){
+                    dir = -1;
+                    return setTimeout(tick, delayPause);
+                }
+            } else {
+                pos--;
+                if (pos < 0){
+                    dir = 1; idx = (idx + 1) % phrases.length; pos = 0;
+                }
+            }
+            el.textContent = full.substring(0, Math.max(0, pos));
+            // Pausa adicional tras signos de puntuación al escribir
+            var extraPause = 0;
+            if (dir === 1 && pos > 0) {
+                var ch = full.charAt(pos - 1);
+                if (/[\.,;:!?]/.test(ch)) {
+                    extraPause = 250 + Math.floor(Math.random() * 450); // 250–700ms
+                }
+            }
+            var base = dir === 1 ? delayTypingBase : delayEraseBase;
+            var jitter = 1 + ((Math.random() - 0.5) * 2 * randomness);
+            var nextDelay = Math.max(8, Math.floor(base * jitter)) + extraPause;
+            typing = setTimeout(tick, nextDelay);
+        }
+        function pause(){ paused = true; if (typing) { clearTimeout(typing); typing = null; } }
+        function resume(){ if (!paused) return; paused = false; tick(); }
+        if (container){
+            container.addEventListener('mouseenter', pause);
+            container.addEventListener('mouseleave', resume);
+        }
+        try { tick(); } catch(e){}
+    })();
+    </script>
+    @endpush
 
     <!-- Stats Section -->
     <section class="py-12 bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
@@ -84,8 +127,10 @@
     <section class="py-16 bg-white dark:bg-gray-900 overflow-hidden">
         <div class="container mx-auto px-4">
             <div class="text-center mb-12">
-                <h2 class="text-4xl font-bold text-gray-800 dark:text-white mb-4">{{ __('messages.home.trusted_brands') }}</h2>
-                <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">{{ __('messages.home.trusted_brands_desc') }}</p>
+                <h2 class="text-4xl font-bold text-gray-800 dark:text-white mb-4">{{ __('messages.home.trusted_brands') }}
+                </h2>
+                <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                    {{ __('messages.home.trusted_brands_desc') }}</p>
             </div>
 
             <!-- Carrusel Container -->
@@ -317,8 +362,10 @@
     <section class="py-16 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-800 dark:to-gray-900">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-gray-800 dark:text-white mb-4">{{ __('messages.home.our_allies') }}</h2>
-                <p class="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">{{ __('messages.home.our_allies_desc') }}</p>
+                <h2 class="text-4xl font-bold text-gray-800 dark:text-white mb-4">{{ __('messages.home.our_allies') }}
+                </h2>
+                <p class="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                    {{ __('messages.home.our_allies_desc') }}</p>
             </div>
             <br>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -342,8 +389,10 @@
                         <img src="{{ asset('img/gfi.png') }}" alt="Grupo Forma Íntimas"
                             class="w-full h-20 object-contain">
                     </div>
-                    <h3 class="text-xl font-bold mb-4 text-gray-900">{{ __('messages.allies.grupo_forma_intimas.name') }}</h3>
-                    <p class="text-gray-600 leading-relaxed">{{ __('messages.allies.grupo_forma_intimas.description') }}</p>
+                    <h3 class="text-xl font-bold mb-4 text-gray-900">{{ __('messages.allies.grupo_forma_intimas.name') }}
+                    </h3>
+                    <p class="text-gray-600 leading-relaxed">{{ __('messages.allies.grupo_forma_intimas.description') }}
+                    </p>
                 </div>
 
                 <!-- Ally 3 - Centro Colombo Americano -->
@@ -354,8 +403,10 @@
                         <img src="https://pbs.twimg.com/profile_images/827330867097980928/Rm4yC6YI_400x400.jpg"
                             alt="Centro Colombo Americano" class="w-full h-20 object-contain">
                     </div>
-                    <h3 class="text-xl font-bold mb-4 text-gray-900">{{ __('messages.allies.centro_colombo_americano.name') }}</h3>
-                    <p class="text-gray-600 leading-relaxed">{{ __('messages.allies.centro_colombo_americano.description') }}</p>
+                    <h3 class="text-xl font-bold mb-4 text-gray-900">
+                        {{ __('messages.allies.centro_colombo_americano.name') }}</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        {{ __('messages.allies.centro_colombo_americano.description') }}</p>
                 </div>
 
                 <!-- Ally 4 - Aderezos -->
@@ -373,77 +424,6 @@
         </div>
     </section>
 
-    <!-- Testimonials Mejorado -->
-    <section class="py-16 bg-white dark:bg-gray-900">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-gray-800 dark:text-white mb-4">{{ __('messages.home.testimonials') }}</h2>
-                <p class="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">{{ __('messages.home.testimonials_desc') }}</p>
-            </div>
-            <br>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Testimonial 1 -->
-                <div
-                    class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-blue-100 dark:border-gray-600">
-                    <div class="flex items-center mb-6">
-                        <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Cliente"
-                            class="w-16 h-16 rounded-full mr-4 ring-4 ring-blue-200 shadow-lg">
-                        <div>
-                            <h4 class="font-bold text-gray-900 text-lg">{{ __('messages.testimonials.maria_gonzalez.name') }}</h4>
-                            <div class="text-yellow-400 text-sm">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <p class="text-gray-700 leading-relaxed text-lg italic">"{{ __('messages.testimonials.maria_gonzalez.description') }}"</p>
-                </div>
-
-                <!-- Testimonial 2 -->
-                <div
-                    class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-green-100 dark:border-gray-600">
-                    <div class="flex items-center mb-6">
-                        <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Cliente"
-                            class="w-16 h-16 rounded-full mr-4 ring-4 ring-green-200 shadow-lg">
-                        <div>
-                            <h4 class="font-bold text-gray-900 text-lg">{{ __('messages.testimonials.carlos_martinez.name') }}</h4>
-                            <div class="text-yellow-400 text-sm">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <p class="text-gray-700 leading-relaxed text-lg italic">"{{ __('messages.testimonials.carlos_martinez.description') }}"</p>
-                </div>
-
-                <!-- Testimonial 3 -->
-                <div
-                    class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-purple-100 dark:border-gray-600">
-                    <div class="flex items-center mb-6">
-                        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Cliente"
-                            class="w-16 h-16 rounded-full mr-4 ring-4 ring-purple-200 shadow-lg">
-                        <div>
-                            <h4 class="font-bold text-gray-900 text-lg">{{ __('messages.testimonials.laura_rodriguez.name') }}</h4>
-                            <div class="text-yellow-400 text-sm">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <p class="text-gray-700 leading-relaxed text-lg italic">"{{ __('messages.testimonials.laura_rodriguez.description') }}"</p>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- Call to Action Mejorado -->
     <section
@@ -461,7 +441,8 @@
                 <img src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
                     alt="Contacto" class="w-full h-80 object-cover rounded-2xl mb-8 shadow-2xl">
                 <h2 class="text-4xl font-bold mb-6 text-white">{{ __('messages.home.need_help') }}</h2>
-                <p class="text-xl mb-10 max-w-3xl mx-auto leading-relaxed text-white">{{ __('messages.home.need_help_desc') }}</p>
+                <p class="text-xl mb-10 max-w-3xl mx-auto leading-relaxed text-white">
+                    {{ __('messages.home.need_help_desc') }}</p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
                     <a href="{{ route('contactanos') }}"
                         class="inline-block bg-white text-blue-600 px-8 py-4 rounded-xl font-bold hover:bg-gray-100 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 hover:scale-105">

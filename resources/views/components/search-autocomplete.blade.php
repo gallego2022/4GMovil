@@ -7,8 +7,8 @@
 
 @php($uid = uniqid('srch_'))
 
-<div class="{{ $context === 'error' ? '' : 'relative' }}" style="position: relative; display: flex; justify-content: center;">
-    <form action="{{ $action }}" method="GET" class="{{ $context === 'error' ? 'error-search-form' : 'flex items-center gap-2' }}" id="{{ $uid }}_form" autocomplete="off">
+<div class="{{ $context === 'error' ? '' : 'relative' }}" style="display: flex; justify-content: center;">
+    <form action="{{ $action }}" method="GET" class="{{ $context === 'error' ? 'error-search-form' : 'flex items-center gap-2 relative' }}" id="{{ $uid }}_form" autocomplete="off">
         <input type="text" name="q" id="{{ $uid }}_input"
                placeholder="{{ $placeholder }}"
                class="{{ $context === 'error' 
@@ -17,8 +17,13 @@
         <button type="submit" class="{{ $context === 'error' ? 'error-search-btn' : 'p-2 text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition' }}" aria-label="Buscar">
             <i class="fas fa-search"></i>
         </button>
+        @if($context !== 'error')
+        <div id="{{ $uid }}_box" class="absolute top-full mt-2 left-0 right-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden" style="display:none; z-index: 9999;"></div>
+        @endif
     </form>
-    <div id="{{ $uid }}_box" class="{{ $context === 'error' ? 'search-suggestions' : 'absolute mt-2 w-[28rem] max-w-[80vw] right-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden' }}" style="display:none; z-index: 9999;"></div>
+    @if($context === 'error')
+    <div id="{{ $uid }}_box" class="search-suggestions" style="display:none; z-index: 9999;"></div>
+    @endif
 </div>
 
 @push('scripts')
@@ -29,8 +34,42 @@
     var box = document.getElementById('{{ $uid }}_box');
     var lastQ = '';
     var t;
-    function hideBox(){ if (box){ box.style.display = 'none'; box.innerHTML = ''; } }
-    function showBox(html){ if (box){ box.innerHTML = html; box.style.display = 'block'; } }
+    function hideBox(){
+        if (!box) return;
+        box.style.display = 'none';
+        box.innerHTML = '';
+        window.removeEventListener('scroll', onReposition, true);
+        window.removeEventListener('resize', onReposition, true);
+    }
+    function repositionBox(){
+        if (!box || !input || box.style.display === 'none') return;
+        var rect = input.getBoundingClientRect();
+        var top = Math.round(rect.bottom + 8);
+        var left = Math.round(rect.left);
+        var width = Math.round(rect.width);
+        box.style.position = 'fixed';
+        box.style.top = top + 'px';
+        box.style.left = left + 'px';
+        box.style.width = width + 'px';
+        box.style.maxHeight = '60vh';
+        box.style.overflowY = 'auto';
+        box.style.zIndex = 99999;
+    }
+    function onReposition(){
+        try { repositionBox(); } catch(e) {}
+    }
+    function showBox(html){
+        if (!box) return;
+        // Mover a body para evitar recortes por overflow oculto en contenedores padres
+        if (box.parentElement !== document.body) {
+            document.body.appendChild(box);
+        }
+        box.innerHTML = html;
+        box.style.display = 'block';
+        repositionBox();
+        window.addEventListener('scroll', onReposition, true);
+        window.addEventListener('resize', onReposition, true);
+    }
     function buildHTML(data){
         var html = '';
         if (data.paginas && data.paginas.length){

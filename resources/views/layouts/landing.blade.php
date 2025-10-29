@@ -388,11 +388,11 @@
             <!-- Logo -->
             <div class="flex items-center">
                 <a href="{{ route('landing') }}" class="text-2xl font-bold text-blue-600">
-                    <img src="{{ asset('img/Logo_2.png') }}" alt="4GMovil " class="h-16">
+                    <img src="{{ asset('img/Logo_2.png') }}" alt="4GMovil " class="h-12 sm:h-14 lg:h-16">
                 </a>
             </div>
 
-            <!-- Desktop Menu -->
+            <!-- Desktop Menu (desde md) -->
             <div class="hidden md:flex items-center space-x-6">
                 <a href="{{ route('landing') }}" data-loading-message="Cargando inicio..."
                     class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300">{{ __('messages.nav.home') }}</a>
@@ -408,7 +408,7 @@
                     class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300">{{ __('messages.nav.contact') }}</a>
             </div>
 
-            <!-- Desktop Actions -->
+            <!-- Desktop Actions (desde md) -->
             <div class="hidden md:flex items-center space-x-4">
                 <!-- Botón de cambio de tema -->
                 <button @click="darkMode = !darkMode"
@@ -472,7 +472,7 @@
                 </a>
             </div>
 
-            <!-- Mobile Menu Button -->
+            <!-- Mobile Menu Button (solo < md) -->
             <div class="md:hidden flex items-center space-x-3">
                 <!-- Botón de cambio de tema móvil -->
                 <button @click="darkMode = !darkMode"
@@ -744,17 +744,22 @@
                 <div class="border-t border-gray-700/50"></div>
 
                 <!-- Sección inferior -->
-                <div class="pt-8 text-center">
-                    <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-                        <div class="flex items-center">
-                            <img src="{{ asset('img/Logo_2.png') }}" alt="Logo 4GMovil" class="h-10 mr-3">
-                            <div>
-                                <p class="text-gray-900 dark:text-white font-bold">© 2025 4GMovil</p>
-                                <p class="text-gray-500 dark:text-gray-400 text-sm">{{ __('messages.footer.all_rights_reserved') }}</p>
-                            </div>
+                <div class="pt-8">
+                    <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4 text-center md:text-left">
+                        <!-- Marca -->
+                        <div class="flex items-center justify-center md:justify-start gap-3">
+                            <img src="{{ asset('img/Logo_2.png') }}" alt="Logo 4GMovil" class="h-16">
+                           
                         </div>
+
+                        <!-- Derechos reservados (centro) -->
+                        <div class="order-3 md:order-none flex flex-col items-center justify-center">
+                            <p class="text-gray-500 dark:text-gray-400 text-sm">{{ __('messages.footer.all_rights_reserved') }}</p>
+                            <p class="mt-1 text-gray-900 dark:text-white font-bold">© 2025 4GMovil</p>
                         </div>
-                        <div class="flex space-x-6 text-sm text-gray-500 dark:text-gray-400">
+
+                        <!-- Enlaces legales (derecha, en columna) -->
+                        <div class="flex flex-col items-center md:items-end gap-2 text-sm text-gray-500 dark:text-gray-400">
                             <a href="#" class="hover:text-gray-900 dark:hover:text-white transition-colors duration-300">{{ __('messages.footer.privacy_policy') }}</a>
                             <a href="#" class="hover:text-gray-900 dark:hover:text-white transition-colors duration-300">{{ __('messages.footer.terms_of_service') }}</a>
                             <a href="#" class="hover:text-gray-900 dark:hover:text-white transition-colors duration-300">{{ __('messages.footer.cookie_policy') }}</a>
