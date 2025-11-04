@@ -8,12 +8,26 @@ document.addEventListener('DOMContentLoaded', function() {
     // Función para inicializar un carrusel específico
     function initCarousel(carouselId, prevButtonId, nextButtonId) {
         const carousel = document.getElementById(carouselId);
-        const prevBtn = document.getElementById(prevButtonId);
-        const nextBtn = document.getElementById(nextButtonId);
         
-        if (!carousel || !prevBtn || !nextBtn) {
+        if (!carousel) {
             console.warn(`⚠️ Elementos del carrusel ${carouselId} no encontrados`);
-            return;
+            return null;
+        }
+        
+        // Los botones son opcionales (para carruseles con scroll horizontal)
+        const prevBtn = prevButtonId ? document.getElementById(prevButtonId) : null;
+        const nextBtn = nextButtonId ? document.getElementById(nextButtonId) : null;
+        
+        // Si no hay botones, el carrusel es solo scroll horizontal - no necesita inicialización
+        if (!prevBtn && !nextBtn) {
+            console.log(`ℹ️ Carrusel ${carouselId} es de scroll horizontal (sin botones prev/next)`);
+            return null;
+        }
+        
+        // Si faltan botones pero se esperaban, mostrar advertencia
+        if ((prevButtonId && !prevBtn) || (nextButtonId && !nextBtn)) {
+            console.warn(`⚠️ Algunos botones del carrusel ${carouselId} no encontrados`);
+            return null;
         }
         
         let currentPage = 0;
@@ -163,14 +177,14 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
     
-    // Inicializar carrusel de productos destacados
+    // Inicializar carrusel de productos destacados (solo scroll horizontal, sin botones)
     const productsCarousel = initCarousel(
         'products-carousel',
-        'products-prev',
-        'products-next'
+        null, // Sin botón prev
+        null  // Sin botón next
     );
     
-    // Inicializar carrusel de marcas
+    // Inicializar carrusel de marcas (con botones prev/next)
     const brandsCarousel = initCarousel(
         'brands-carousel',
         'brands-prev',

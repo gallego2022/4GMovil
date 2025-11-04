@@ -54,19 +54,33 @@ class ProductoRepository implements ProductoRepositoryInterface
 
     /**
      * Actualizar los umbrales de alerta basados en el stock inicial
+     * Solo actualiza si los umbrales no existen (null o 0)
      */
-    public function actualizarUmbrales(Producto $producto): void
+    public function actualizarUmbrales(Producto $producto, bool $forzar = false): void
     {
         $stockInicial = $producto->stock_inicial;
         
         if ($stockInicial > 0) {
-            $umbralBajo = (int) ceil(($stockInicial * 60) / 100);
-            $umbralCritico = (int) ceil(($stockInicial * 20) / 100);
+            // Solo actualizar si no hay umbrales personalizados o si se fuerza
+            $actualizarMinimo = $forzar || ($producto->stock_minimo === null || $producto->stock_minimo <= 0);
+            $actualizarMaximo = $forzar || ($producto->stock_maximo === null || $producto->stock_maximo <= 0);
             
-            $producto->update([
-                'stock_minimo' => $umbralCritico,
-                'stock_maximo' => $umbralBajo
-            ]);
+            if ($actualizarMinimo || $actualizarMaximo) {
+                $umbralBajo = (int) ceil(($stockInicial * 60) / 100);
+                $umbralCritico = (int) ceil(($stockInicial * 20) / 100);
+                
+                $updateData = [];
+                if ($actualizarMinimo) {
+                    $updateData['stock_minimo'] = $umbralCritico;
+                }
+                if ($actualizarMaximo) {
+                    $updateData['stock_maximo'] = $umbralBajo;
+                }
+                
+                if (!empty($updateData)) {
+                    $producto->update($updateData);
+                }
+            }
         }
     }
 

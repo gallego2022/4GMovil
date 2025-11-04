@@ -239,9 +239,19 @@ class CheckoutService extends BaseService
             
             if (isset($item['variante_id'])) {
                 $variante = VarianteProducto::find($item['variante_id']);
-                $this->validateStock($variante->stock, $cantidad, $producto->nombre_producto);
+                if (!$variante) {
+                    throw new Exception("Variante no encontrada para el producto '{$producto->nombre_producto}'");
+                }
+                if (!$variante->tieneStockSuficiente($cantidad)) {
+                    $stockDisponible = $variante->stock_disponible;
+                    $nombreVariante = $variante->nombre ?? 'variante';
+                    throw new Exception("Stock insuficiente para '{$producto->nombre_producto} ({$nombreVariante})'. Disponible: {$stockDisponible}, Solicitado: {$cantidad}");
+                }
             } else {
-                $this->validateStock($producto->stock, $cantidad, $producto->nombre_producto);
+                if (!$producto->tieneStockSuficiente($cantidad)) {
+                    $stockDisponible = $producto->stock_disponible;
+                    throw new Exception("Stock insuficiente para '{$producto->nombre_producto}'. Disponible: {$stockDisponible}, Solicitado: {$cantidad}");
+                }
             }
         }
     }

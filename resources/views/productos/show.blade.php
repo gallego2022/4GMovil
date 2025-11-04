@@ -945,7 +945,7 @@
                                 @endif
                                 <div class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-600">
                                     <span class="font-medium text-gray-700 dark:text-gray-300">{{ __('messages.product_show.stock_available') }}</span>
-                                    <span class="text-gray-600 dark:text-gray-400">{{ $producto->stock }} {{ __('messages.product_show.stock_units') }}</span>
+                                    <span class="text-gray-600 dark:text-gray-400">{{ $producto->stock_disponible }} {{ __('messages.product_show.stock_units') }}</span>
                                 </div>
                             </div>
                         </div>

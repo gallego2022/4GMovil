@@ -514,12 +514,12 @@
                             @endif
                         </div>
                         <div class="flex-1 min-w-0">
-                            <div class="flex items-center justify-between">
-                                <div>
+                            <div class="flex items-center justify-between gap-2">
+                                <div class="min-w-0 flex-1">
                                     <h4 class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $producto->nombre_producto }}</h4>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $producto->marca->nombre_marca }}</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ $producto->marca->nombre_marca }}</p>
                                 </div>
-                                <div class="text-right">
+                                <div class="text-right flex-shrink-0">
                                     <p class="text-sm font-medium text-gray-900 dark:text-white">${{ number_format($producto->precio, 0, ',', '.') }}</p>
                                     @if($producto->estado == 'Nuevo')
                                     <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-900 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-300 ring-1 ring-inset ring-green-600/20 dark:ring-green-600/30">

@@ -6,6 +6,7 @@ use App\Models\Producto;
 use App\Models\VarianteProducto;
 use App\Services\RedisCacheService;
 use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class OptimizedStockAlertService
 {
@@ -19,32 +20,116 @@ class OptimizedStockAlertService
     /**
      * Obtiene alertas de stock optimizadas agrupando variantes por producto
      */
-    public function getOptimizedStockAlerts(): array
+    public function getOptimizedStockAlerts(?string $tipo = null, int $page = 1): array
     {
-        return $this->cacheService->remember('alertas:optimizadas', 900, function () {
-            $alertas = [
-                'productos_criticos' => $this->getProductosCriticos(),
-                'productos_stock_bajo' => $this->getProductosStockBajo(),
-                'variantes_agotadas' => $this->getVariantesAgotadas(),
-                'total_alertas' => 0
+        try {
+            // Obtener estadísticas generales (sin paginación)
+            $estadisticas = $this->cacheService->remember('alertas:estadisticas', 900, function () {
+                try {
+                    return [
+                        'productos_criticos_count' => $this->getProductosCriticos()->count(),
+                        'productos_stock_bajo_count' => $this->getProductosStockBajo()->count(),
+                        'variantes_agotadas_count' => $this->getVariantesAgotadas()->count(),
+                    ];
+                } catch (\Exception $e) {
+                    return [
+                        'productos_criticos_count' => 0,
+                        'productos_stock_bajo_count' => 0,
+                        'variantes_agotadas_count' => 0,
+                    ];
+                }
+            });
+
+            // Asegurar que todas las claves existan
+            $estadisticas = array_merge([
+                'productos_criticos_count' => 0,
+                'productos_stock_bajo_count' => 0,
+                'variantes_agotadas_count' => 0,
+            ], $estadisticas);
+
+            $totalAlertas = $estadisticas['productos_criticos_count'] + 
+                           $estadisticas['productos_stock_bajo_count'] + 
+                           $estadisticas['variantes_agotadas_count'];
+
+            // Obtener datos paginados según el tipo
+            $datosPaginados = null;
+            if ($tipo) {
+                try {
+                    $datosPaginados = $this->getAlertasPaginadas($tipo, $page);
+                } catch (\Exception $e) {
+                    $datosPaginados = null;
+                }
+            }
+
+            return [
+                'productos_criticos_count' => $estadisticas['productos_criticos_count'],
+                'productos_stock_bajo_count' => $estadisticas['productos_stock_bajo_count'],
+                'variantes_agotadas_count' => $estadisticas['variantes_agotadas_count'],
+                'total_alertas' => $totalAlertas,
+                'datos_paginados' => $datosPaginados,
+                'tipo_actual' => $tipo ?? 'criticos',
+                'page_actual' => $page
             ];
+        } catch (\Exception $e) {
+            // Retornar valores por defecto en caso de error
+            return [
+                'productos_criticos_count' => 0,
+                'productos_stock_bajo_count' => 0,
+                'variantes_agotadas_count' => 0,
+                'total_alertas' => 0,
+                'datos_paginados' => null,
+                'tipo_actual' => $tipo ?? 'criticos',
+                'page_actual' => $page
+            ];
+        }
+    }
 
-            $alertas['total_alertas'] = 
-                $alertas['productos_criticos']->count() + 
-                $alertas['productos_stock_bajo']->count() + 
-                $alertas['variantes_agotadas']->count();
+    /**
+     * Obtiene alertas paginadas según el tipo
+     */
+    private function getAlertasPaginadas(string $tipo, int $page): LengthAwarePaginator
+    {
+        $perPage = 10;
+        $offset = ($page - 1) * $perPage;
 
-            return $alertas;
-        });
+        switch ($tipo) {
+            case 'criticos':
+                $productos = $this->getProductosCriticos();
+                $total = $productos->count();
+                $items = $productos->slice($offset, $perPage)->values();
+                break;
+            case 'bajo':
+                $productos = $this->getProductosStockBajo();
+                $total = $productos->count();
+                $items = $productos->slice($offset, $perPage)->values();
+                break;
+            case 'agotadas':
+                $variantes = $this->getVariantesAgotadas();
+                $total = $variantes->count();
+                $items = $variantes->slice($offset, $perPage)->values();
+                break;
+            default:
+                $productos = $this->getProductosCriticos();
+                $total = $productos->count();
+                $items = $productos->slice($offset, $perPage)->values();
+        }
+        
+        return new LengthAwarePaginator(
+            $items,
+            $total,
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
     }
 
     /**
      * Obtiene productos con stock crítico (agrupando variantes)
      */
-    private function getProductosCriticos(): Collection
+    public function getProductosCriticos(): Collection
     {
         return Producto::with(['variantes', 'categoria', 'marca', 'imagenes'])
-            ->where('disponible', true)
+            ->where('activo', true)
             ->get()
             ->filter(function ($producto) {
                 // Si el producto tiene variantes, verificar si todas están críticas
@@ -53,9 +138,19 @@ class OptimizedStockAlertService
                 }
                 
                 // Si no tiene variantes, verificar stock del producto principal
-                return $this->esStockCritico($producto->stock, $producto->stock_inicial);
+                return $this->esStockCritico($producto->stock, $producto->stock_inicial, $producto);
             })
             ->map(function ($producto) {
+                // Recargar relaciones si no están cargadas
+                if (!$producto->relationLoaded('categoria')) {
+                    $producto->load('categoria');
+                }
+                if (!$producto->relationLoaded('marca')) {
+                    $producto->load('marca');
+                }
+                if (!$producto->relationLoaded('imagenes')) {
+                    $producto->load('imagenes');
+                }
                 return $this->enriquecerProductoConAlertas($producto);
             });
     }
@@ -63,10 +158,10 @@ class OptimizedStockAlertService
     /**
      * Obtiene productos con stock bajo (agrupando variantes)
      */
-    private function getProductosStockBajo(): Collection
+    public function getProductosStockBajo(): Collection
     {
         return Producto::with(['variantes', 'categoria', 'marca', 'imagenes'])
-            ->where('disponible', true)
+            ->where('activo', true)
             ->get()
             ->filter(function ($producto) {
                 // Si el producto tiene variantes, verificar si tiene stock bajo
@@ -75,9 +170,19 @@ class OptimizedStockAlertService
                 }
                 
                 // Si no tiene variantes, verificar stock del producto principal
-                return $this->esStockBajo($producto->stock, $producto->stock_inicial);
+                return $this->esStockBajo($producto->stock, $producto->stock_inicial, $producto);
             })
             ->map(function ($producto) {
+                // Recargar relaciones si no están cargadas
+                if (!$producto->relationLoaded('categoria')) {
+                    $producto->load('categoria');
+                }
+                if (!$producto->relationLoaded('marca')) {
+                    $producto->load('marca');
+                }
+                if (!$producto->relationLoaded('imagenes')) {
+                    $producto->load('imagenes');
+                }
                 return $this->enriquecerProductoConAlertas($producto);
             });
     }
@@ -92,12 +197,24 @@ class OptimizedStockAlertService
             ->where('stock', 0)
             ->get()
             ->map(function ($variante) {
+                // Recargar relaciones del producto si no están cargadas
+                if ($variante->producto) {
+                    if (!$variante->producto->relationLoaded('categoria')) {
+                        $variante->producto->load('categoria');
+                    }
+                    if (!$variante->producto->relationLoaded('marca')) {
+                        $variante->producto->load('marca');
+                    }
+                    if (!$variante->producto->relationLoaded('imagenes')) {
+                        $variante->producto->load('imagenes');
+                    }
+                }
                 return [
                     'variante' => $variante,
                     'producto' => $variante->producto,
                     'tipo_alerta' => 'agotado',
                     'stock_actual' => 0,
-                    'stock_minimo' => $this->calcularStockMinimo($variante->producto->stock_inicial),
+                    'stock_minimo' => $variante->producto ? $this->calcularStockMinimo($variante->producto->stock_inicial) : 0,
                     'porcentaje' => 0
                 ];
             });
@@ -109,7 +226,7 @@ class OptimizedStockAlertService
     private function tieneVariantesCriticas(Producto $producto): bool
     {
         return $producto->variantes->filter(function ($variante) use ($producto) {
-            return $this->esStockCritico($variante->stock, $producto->stock_inicial);
+            return $this->esStockCritico($variante->stock, $producto->stock_inicial, $producto);
         })->isNotEmpty();
     }
 
@@ -119,15 +236,22 @@ class OptimizedStockAlertService
     private function tieneVariantesStockBajo(Producto $producto): bool
     {
         return $producto->variantes->filter(function ($variante) use ($producto) {
-            return $this->esStockBajo($variante->stock, $producto->stock_inicial);
+            return $this->esStockBajo($variante->stock, $producto->stock_inicial, $producto);
         })->isNotEmpty();
     }
 
     /**
      * Verifica si el stock es crítico
+     * Usa stock_minimo del producto si existe, sino calcula el 20% del stock_inicial
      */
-    private function esStockCritico(int $stock, ?int $stockInicial): bool
+    private function esStockCritico(int $stock, ?int $stockInicial, ?Producto $producto = null): bool
     {
+        // Si hay producto, usar su umbral crítico (stock_minimo)
+        if ($producto && $producto->stock_minimo !== null && $producto->stock_minimo > 0) {
+            return $stock <= $producto->stock_minimo && $stock > 0;
+        }
+        
+        // Fallback: calcular basado en stock_inicial
         if ($stockInicial === null || $stockInicial <= 0) {
             return $stock <= 5;
         }
@@ -138,9 +262,17 @@ class OptimizedStockAlertService
 
     /**
      * Verifica si el stock está bajo
+     * Usa stock_maximo del producto si existe, sino calcula el 60% del stock_inicial
      */
-    private function esStockBajo(int $stock, ?int $stockInicial): bool
+    private function esStockBajo(int $stock, ?int $stockInicial, ?Producto $producto = null): bool
     {
+        // Si hay producto, usar su umbral bajo (stock_maximo)
+        if ($producto && $producto->stock_maximo !== null && $producto->stock_maximo > 0) {
+            $umbralCritico = $producto->stock_minimo ?? ((int) ceil((($stockInicial ?? 0) * 20) / 100));
+            return $stock <= $producto->stock_maximo && $stock > $umbralCritico;
+        }
+        
+        // Fallback: calcular basado en stock_inicial
         if ($stockInicial === null || $stockInicial <= 0) {
             return $stock <= 10 && $stock > 5;
         }
@@ -156,8 +288,8 @@ class OptimizedStockAlertService
     private function enriquecerProductoConAlertas(Producto $producto): array
     {
         $variantesConProblemas = $producto->variantes->filter(function ($variante) use ($producto) {
-            return $this->esStockCritico($variante->stock, $producto->stock_inicial) ||
-                   $this->esStockBajo($variante->stock, $producto->stock_inicial);
+            return $this->esStockCritico($variante->stock, $producto->stock_inicial, $producto) ||
+                   $this->esStockBajo($variante->stock, $producto->stock_inicial, $producto);
         });
 
         return [
@@ -166,7 +298,7 @@ class OptimizedStockAlertService
             'total_variantes_problematicas' => $variantesConProblemas->count(),
             'tipo_alerta' => $this->determinarTipoAlerta($producto, $variantesConProblemas),
             'stock_actual' => $producto->stock,
-            'stock_minimo' => $this->calcularStockMinimo($producto->stock_inicial),
+            'stock_minimo' => $producto->stock_minimo ?? $this->calcularStockMinimo($producto->stock_inicial),
             'porcentaje' => $this->calcularPorcentaje($producto->stock, $producto->stock_inicial)
         ];
     }
@@ -178,13 +310,13 @@ class OptimizedStockAlertService
     {
         if ($producto->variantes->isNotEmpty()) {
             $tieneCriticas = $variantesProblema->filter(function ($variante) use ($producto) {
-                return $this->esStockCritico($variante->stock, $producto->stock_inicial);
+                return $this->esStockCritico($variante->stock, $producto->stock_inicial, $producto);
             })->isNotEmpty();
 
             return $tieneCriticas ? 'critico' : 'bajo';
         }
 
-        return $this->esStockCritico($producto->stock, $producto->stock_inicial) ? 'critico' : 'bajo';
+        return $this->esStockCritico($producto->stock, $producto->stock_inicial, $producto) ? 'critico' : 'bajo';
     }
 
     /**
@@ -216,17 +348,17 @@ class OptimizedStockAlertService
      */
     public function getVariantesProblematicas(int $productoId): Collection
     {
-        $producto = Producto::with(['variantes'])->findOrFail($productoId);
+        $producto = Producto::with(['variantes', 'categoria', 'marca'])->findOrFail($productoId);
         
         return $producto->variantes->filter(function ($variante) use ($producto) {
-            return $this->esStockCritico($variante->stock, $producto->stock_inicial) ||
-                   $this->esStockBajo($variante->stock, $producto->stock_inicial);
+            return $this->esStockCritico($variante->stock, $producto->stock_inicial, $producto) ||
+                   $this->esStockBajo($variante->stock, $producto->stock_inicial, $producto);
         })->map(function ($variante) use ($producto) {
             return [
                 'variante' => $variante,
-                'tipo_alerta' => $this->esStockCritico($variante->stock, $producto->stock_inicial) ? 'critico' : 'bajo',
+                'tipo_alerta' => $this->esStockCritico($variante->stock, $producto->stock_inicial, $producto) ? 'critico' : 'bajo',
                 'stock_actual' => $variante->stock,
-                'stock_minimo' => $this->calcularStockMinimo($producto->stock_inicial),
+                'stock_minimo' => $producto->stock_minimo ?? $this->calcularStockMinimo($producto->stock_inicial),
                 'porcentaje' => $this->calcularPorcentaje($variante->stock, $producto->stock_inicial)
             ];
         });

@@ -265,8 +265,15 @@ class VarianteProducto extends Model
     // Métodos para alertas automáticas
     private function verificarAlertaStockBajo(int $stockAnterior, int $stockNuevo): void
     {
+        // Obtener umbrales del producto padre
+        $producto = $this->producto;
+        $stockMinimo = $producto->stock_minimo ?? null;
+        if ($stockMinimo === null) {
+            $stockInicial = $producto->stock_inicial ?? 0;
+            $stockMinimo = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 10;
+        }
+        
         // Solo enviar alerta si el stock anterior estaba por encima del umbral y ahora está por debajo
-        $stockMinimo = 10; // Valor por defecto
         if ($stockAnterior > $stockMinimo && $stockNuevo <= $stockMinimo) {
             $tipoAlerta = $this->determinarTipoAlerta($stockNuevo);
             
@@ -283,8 +290,15 @@ class VarianteProducto extends Model
 
     private function verificarAlertaReposicion(int $stockAnterior, int $stockNuevo): void
     {
+        // Obtener umbrales del producto padre
+        $producto = $this->producto;
+        $stockMinimo = $producto->stock_minimo ?? null;
+        if ($stockMinimo === null) {
+            $stockInicial = $producto->stock_inicial ?? 0;
+            $stockMinimo = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 10;
+        }
+        
         // Si el stock anterior estaba por debajo del mínimo y ahora está por encima, enviar alerta de reposición
-        $stockMinimo = 10; // Valor por defecto
         if ($stockAnterior <= $stockMinimo && $stockNuevo > $stockMinimo) {
             Log::info('Stock repuesto para variante', [
                 'variante_id' => $this->variante_id,
@@ -301,27 +315,57 @@ class VarianteProducto extends Model
             return 'agotado';
         }
         
-        $stockMinimo = 10; // Valor por defecto
-        $porcentaje = $stockMinimo > 0 ? ($stockActual / $stockMinimo) * 100 : 0;
+        // Obtener umbrales del producto padre
+        $producto = $this->producto;
+        $stockMinimo = $producto->stock_minimo ?? null;
+        $stockMaximo = $producto->stock_maximo ?? null;
         
-        if ($porcentaje <= 20) {
+        if ($stockMinimo === null || $stockMaximo === null) {
+            $stockInicial = $producto->stock_inicial ?? 0;
+            if ($stockInicial > 0) {
+                $stockMinimo = $stockMinimo ?? (int) ceil(($stockInicial * 20) / 100);
+                $stockMaximo = $stockMaximo ?? (int) ceil(($stockInicial * 60) / 100);
+            } else {
+                $stockMinimo = $stockMinimo ?? 5;
+                $stockMaximo = $stockMaximo ?? 10;
+            }
+        }
+        
+        // Verificar tipo de alerta usando umbrales del producto
+        if ($stockActual <= $stockMinimo) {
             return 'critico';
-        } elseif ($porcentaje <= 60) {
+        } elseif ($stockActual <= $stockMaximo) {
             return 'bajo';
         }
         
         return null; // No enviar alerta
     }
 
+    // Accessors y Mutators
+    public function getStockDisponibleAttribute(): int
+    {
+        $stockReservado = $this->stock_reservado ?? 0;
+        $stockDisponible = $this->stock - $stockReservado;
+        return max(0, $stockDisponible);
+    }
+
     // Métodos de consulta
     public function tieneStockSuficiente(int $cantidad): bool
     {
-        return $this->stock >= $cantidad;
+        return $this->stock_disponible >= $cantidad;
     }
 
     public function necesitaReposicion(): bool
     {
-        $stockMinimo = 10; // Valor por defecto
+        // Obtener umbral crítico del producto padre
+        $producto = $this->producto;
+        $stockMinimo = $producto->stock_minimo ?? null;
+        
+        if ($stockMinimo === null) {
+            $stockInicial = $producto->stock_inicial ?? 0;
+            $stockMinimo = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 10;
+        }
+        
         return $this->stock <= $stockMinimo;
     }
 

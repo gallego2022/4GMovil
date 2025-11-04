@@ -222,9 +222,9 @@
                 <section id="productsSection">
                     <!-- Grid responsivo para productos -->
                     <div id="productsGrid"
-                        class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-6 mb-8">
+                        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                         @foreach ($productos as $producto)
-                            <div class="product-item min-w-[300px] flex-shrink-0 animate-fadeInUp">
+                            <div class="product-item animate-fadeInUp">
                                 <x-product-card :producto="$producto" />
                             </div>
                         @endforeach
@@ -480,9 +480,14 @@
         }
 
         /* Responsive design mejorado */
-        @media (max-width: 768px) {
-            .products-container .grid {
+        @media (max-width: 767px) {
+            #productsGrid {
                 grid-template-columns: 1fr;
+            }
+
+            .product-item {
+                width: 100%;
+                max-width: 100%;
             }
 
             .product-card {
@@ -491,15 +496,15 @@
             }
         }
 
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .products-container .grid {
+        @media (min-width: 768px) and (max-width: 1023px) {
+            #productsGrid {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
 
-        @media (min-width: 1025px) {
-            .products-container .grid {
-                grid-template-columns: repeat(4, 1fr);
+        @media (min-width: 1024px) {
+            #productsGrid {
+                grid-template-columns: repeat(3, 1fr);
             }
         }
 

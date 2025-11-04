@@ -14,6 +14,7 @@
     <!-- Alpine.js y SweetAlert2 se cargan desde Vite para mejor rendimiento -->
     <!-- CSS de animaciones de carga -->
     <link rel="stylesheet" href="{{ asset('css/loading-animations.css') }}">
+    @stack('styles')
     <style>
         [x-cloak] {
             display: none !important;
@@ -392,24 +393,24 @@
                 </a>
             </div>
 
-            <!-- Desktop Menu (desde md) -->
-            <div class="hidden md:flex items-center space-x-6">
+            <!-- Desktop Menu (desde md - 768px) -->
+            <div class="hidden md:flex items-center space-x-3 lg:space-x-6">
                 <a href="{{ route('landing') }}" data-loading-message="Cargando inicio..."
-                    class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300">{{ __('messages.nav.home') }}</a>
+                    class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300 text-sm lg:text-base">{{ __('messages.nav.home') }}</a>
 
                 <a href="{{ route('productos.lista') }}" data-loading-message="Cargando productos..."
-                    class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300">{{ __('messages.nav.products') }}</a>
+                    class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300 text-sm lg:text-base">{{ __('messages.nav.products') }}</a>
 
                 <a href="{{ route('servicios') }}" data-loading-message="Cargando servicio tecnico..."
-                    class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300">{{ __('messages.nav.technical_service') }}</a>
+                    class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300 text-sm lg:text-base">{{ __('messages.nav.technical_service') }}</a>
                 <a href="{{ route('nosotros') }}" data-loading-message="Cargando nosotros..."
-                    class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300">{{ __('messages.nav.about') }}</a>
+                    class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300 text-sm lg:text-base">{{ __('messages.nav.about') }}</a>
                 <a href="{{ route('contactanos') }}" data-loading-message="Cargando contacto..."
-                    class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300">{{ __('messages.nav.contact') }}</a>
+                    class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300 text-sm lg:text-base">{{ __('messages.nav.contact') }}</a>
             </div>
 
-            <!-- Desktop Actions (desde md) -->
-            <div class="hidden md:flex items-center space-x-4">
+            <!-- Desktop Actions (desde md - 768px) -->
+            <div class="hidden md:flex items-center space-x-2 lg:space-x-4">
                 <!-- Botón de cambio de tema -->
                 <button @click="darkMode = !darkMode"
                     class="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 p-2 rounded-lg transition-colors duration-300"
@@ -472,7 +473,7 @@
                 </a>
             </div>
 
-            <!-- Mobile Menu Button (solo < md) -->
+            <!-- Mobile Menu Button (solo < md - < 768px) -->
             <div class="md:hidden flex items-center space-x-3">
                 <!-- Botón de cambio de tema móvil -->
                 <button @click="darkMode = !darkMode"
@@ -510,7 +511,7 @@
             </div>
         </div>
 
-        <!-- Mobile Menu -->
+        <!-- Mobile Menu (< 768px) -->
         <div x-show="mobileMenuOpen" 
              x-transition:enter="transition ease-out duration-300"
              x-transition:enter-start="opacity-0 transform -translate-y-4"

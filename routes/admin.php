@@ -124,5 +124,7 @@ Route::prefix('admin/inventario')->name('admin.inventario.')->group(function () 
     Route::get('/alertas-optimizadas', [OptimizedStockAlertController::class, 'dashboard'])->name('alertas-optimizadas');
     Route::get('/alertas/variantes', [OptimizedStockAlertController::class, 'getVariantesProblematicas'])->name('alertas.variantes');
     Route::get('/alertas/estadisticas', [OptimizedStockAlertController::class, 'getEstadisticas'])->name('alertas.estadisticas');
+    Route::get('/alertas/variantes-producto', [OptimizedStockAlertController::class, 'getVariantesProducto'])->name('alertas.variantes-producto');
+    Route::post('/alertas/reponer-stock', [OptimizedStockAlertController::class, 'reponerStock'])->name('alertas.reponer-stock');
 });
 });

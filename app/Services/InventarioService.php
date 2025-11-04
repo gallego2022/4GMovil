@@ -456,13 +456,34 @@ class InventarioService
 
     /**
      * Obtener variantes con stock bajo
+     * Usa umbrales del producto (stock_maximo) si existen, sino calcula el 60% del stock_inicial
      */
     public function getVariantesStockBajo(): Collection
     {
         return VarianteProducto::with(['producto', 'imagenes'])
-            ->whereRaw('stock_disponible <= stock')
-            ->orderBy('stock_disponible')
-            ->get();
+            ->where('disponible', true)
+            ->where('stock', '>', 0)
+            ->get()
+            ->filter(function($variante) {
+                $producto = $variante->producto;
+                
+                // Usar umbrales del producto si existen, sino calcular
+                $umbralBajo = $producto->stock_maximo ?? null;
+                $umbralCritico = $producto->stock_minimo ?? null;
+                
+                if ($umbralBajo === null || $umbralCritico === null) {
+                    $stockInicial = $producto->stock_inicial ?? 0;
+                    if ($stockInicial > 0) {
+                        $umbralBajo = $umbralBajo ?? (int) ceil(($stockInicial * 60) / 100);
+                        $umbralCritico = $umbralCritico ?? (int) ceil(($stockInicial * 20) / 100);
+                    } else {
+                        $umbralBajo = $umbralBajo ?? 10;
+                        $umbralCritico = $umbralCritico ?? 5;
+                    }
+                }
+                
+                return $variante->stock <= $umbralBajo && $variante->stock > $umbralCritico;
+            });
     }
 
     /**
@@ -477,12 +498,26 @@ class InventarioService
 
     /**
      * Obtener variantes que necesitan reposición
+     * Usa umbral crítico del producto (stock_minimo) si existe, sino calcula el 20% del stock_inicial
      */
     public function getVariantesNecesitanReposicion(): Collection
     {
         return VarianteProducto::with(['producto', 'imagenes'])
-            ->whereRaw('stock_disponible <= stock')
-            ->get();
+            ->where('disponible', true)
+            ->get()
+            ->filter(function($variante) {
+                $producto = $variante->producto;
+                
+                // Usar umbral crítico del producto si existe, sino calcular
+                $umbralCritico = $producto->stock_minimo ?? null;
+                
+                if ($umbralCritico === null) {
+                    $stockInicial = $producto->stock_inicial ?? 0;
+                    $umbralCritico = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 5;
+                }
+                
+                return $variante->stock <= $umbralCritico;
+            });
     }
 
     /**
@@ -661,24 +696,17 @@ class InventarioService
         $movimientosEntrada = $movimientos->where('tipo_movimiento', 'entrada')->sum('cantidad');
         $movimientosSalida = $movimientos->where('tipo_movimiento', 'salida')->sum('cantidad');
 
-        // Cálculo de umbrales basado en la lógica documentada (60% bajo, 20% crítico del stock inicial)
-        $productosStockCritico = $productos->filter(function($producto) {
-            $stockInicial = $producto->stock_inicial ?? ($producto->stock ?? 0);
-            $umbralCritico = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 5;
-            return ($producto->stock ?? 0) <= $umbralCritico;
-        })->count();
+        // Usar el servicio OptimizedStockAlertService para obtener alertas correctas considerando variantes
+        $alertService = app(\App\Services\OptimizedStockAlertService::class);
+        
+        // Obtener alertas optimizadas
+        $alertasCriticos = $alertService->getOptimizedStockAlerts('criticos', 1);
+        $alertasBajo = $alertService->getOptimizedStockAlerts('bajo', 1);
+        $alertasAgotadas = $alertService->getOptimizedStockAlerts('agotadas', 1);
 
-        $productosStockBajo = $productos->filter(function($producto) {
-            $stockInicial = $producto->stock_inicial ?? ($producto->stock ?? 0);
-            $umbralBajo = $stockInicial > 0 ? (int) ceil(($stockInicial * 60) / 100) : 10;
-            $umbralCritico = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 5;
-            $stockActual = $producto->stock ?? 0;
-            return $stockActual <= $umbralBajo && $stockActual > $umbralCritico;
-        })->count();
-
-        $productosSinStock = $productos->filter(function($producto){
-            return ($producto->stock ?? 0) <= 0;
-        })->count();
+        $productosStockCritico = $alertasCriticos['productos_criticos_count'] ?? 0;
+        $productosStockBajo = $alertasBajo['productos_stock_bajo_count'] ?? 0;
+        $productosSinStock = $alertasAgotadas['variantes_agotadas_count'] ?? 0;
 
         return [
             'total_productos' => $totalProductos,
@@ -772,12 +800,27 @@ class InventarioService
     public function getDashboardData(): array
     {
         return $this->cacheService->remember('inventario:dashboard', 600, function () {
+            // Usar OptimizedStockAlertService para obtener productos con la misma lógica que alertas-optimizadas
+            $alertService = app(\App\Services\OptimizedStockAlertService::class);
+            
+            // Obtener estadísticas del OptimizedStockAlertService
+            $alertasOptimizadas = $alertService->getOptimizedStockAlerts();
+            
+            // Obtener alertas base del InventarioService
+            $alertasBase = $this->getAlertasInventarioCompletas();
+            
+            // Combinar alertas usando los valores del OptimizedStockAlertService para productos críticos y bajo
+            $alertas = array_merge($alertasBase, [
+                'productos_stock_critico' => $alertasOptimizadas['productos_criticos_count'] ?? 0,
+                'productos_stock_bajo' => $alertasOptimizadas['productos_stock_bajo_count'] ?? 0,
+            ]);
+            
             return [
-                'alertas' => $this->getAlertasInventarioCompletas(),
-                'productosStockBajo' => $this->getProductosStockBajo(),
-                'productosStockCritico' => $this->getProductosStockCritico(),
+                'alertas' => $alertas,
+                'productosStockBajo' => $alertService->getProductosStockBajo(),
+                'productosStockCritico' => $alertService->getProductosCriticos(),
                 'valorTotal' => $this->getValorTotalInventario(),
-                'variantesStockBajo' => $this->getVariantesStockBajo(),
+                'variantesStockBajo' => $this->getVariantesStockBajo()->take(5),
                 'variantesSinStock' => $this->getVariantesSinStock(),
                 'reporteVariantes' => $this->getReporteInventarioVariantes(),
                 'productosConVariantes' => $this->getProductosConVariantes(),

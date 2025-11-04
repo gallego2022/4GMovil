@@ -47,32 +47,54 @@ class ActualizarUmbralesProductos extends Command
 
             foreach ($productos as $producto) {
                 try {
-                    $stockInicial = $producto->stock;
+                    $stockInicial = $producto->stock_inicial ?? $producto->stock;
                     
                     if ($stockInicial > 0) {
                         $conStockInicial++;
                         
-                        // Calcular nuevos umbrales
+                        // Calcular nuevos umbrales basados en stock_inicial
                         $umbralBajo = (int) ceil(($stockInicial * 60) / 100);
                         $umbralCritico = (int) ceil(($stockInicial * 20) / 100);
                         
-                        // Verificar si hay cambios
-                        $cambioMinimo = $producto->stock_minimo != $umbralCritico;
-                        $cambioMaximo = $producto->stock_maximo != $umbralBajo;
+                        // Verificar si hay umbrales personalizados
+                        $tieneUmbralPersonalizado = ($producto->stock_minimo !== null && $producto->stock_minimo > 0) ||
+                                                     ($producto->stock_maximo !== null && $producto->stock_maximo > 0);
                         
-                        if ($cambioMinimo || $cambioMaximo) {
-                            $producto->update([
-                                'stock_minimo' => $umbralCritico,
-                                'stock_maximo' => $umbralBajo
-                            ]);
+                        // Solo actualizar si no hay umbrales personalizados o si se fuerza
+                        $forzar = $this->option('force');
+                        
+                        if (!$tieneUmbralPersonalizado || $forzar) {
+                            // Verificar si hay cambios
+                            $cambioMinimo = $producto->stock_minimo != $umbralCritico;
+                            $cambioMaximo = $producto->stock_maximo != $umbralBajo;
                             
-                            $actualizados++;
-                            
-                            $this->newLine();
-                            $this->line("Producto: {$producto->nombre_producto}");
-                            $this->line("  Stock inicial: {$stockInicial}");
-                            $this->line("  Umbral bajo (60%): {$umbralBajo} (antes: {$producto->getOriginal('stock_maximo')})");
-                            $this->line("  Umbral crítico (20%): {$umbralCritico} (antes: {$producto->getOriginal('stock_minimo')})");
+                            if ($cambioMinimo || $cambioMaximo) {
+                                $updateData = [];
+                                if ($cambioMinimo) {
+                                    $updateData['stock_minimo'] = $umbralCritico;
+                                }
+                                if ($cambioMaximo) {
+                                    $updateData['stock_maximo'] = $umbralBajo;
+                                }
+                                
+                                if (!empty($updateData)) {
+                                    $producto->update($updateData);
+                                    $actualizados++;
+                                    
+                                    $this->newLine();
+                                    $this->line("Producto: {$producto->nombre_producto}");
+                                    $this->line("  Stock inicial: {$stockInicial}");
+                                    if (isset($updateData['stock_minimo'])) {
+                                        $this->line("  Umbral crítico (20%): {$umbralCritico} (antes: {$producto->getOriginal('stock_minimo')})");
+                                    }
+                                    if (isset($updateData['stock_maximo'])) {
+                                        $this->line("  Umbral bajo (60%): {$umbralBajo} (antes: {$producto->getOriginal('stock_maximo')})");
+                                    }
+                                }
+                            }
+                        } else {
+                            // Producto tiene umbrales personalizados, no actualizar
+                            $this->line("  Producto {$producto->nombre_producto} tiene umbrales personalizados, omitiendo. Use --force para sobrescribir.");
                         }
                     }
                     

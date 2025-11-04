@@ -109,7 +109,7 @@
     @if(isset($resumen))
     <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Resumen del Período</h3>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
                 <div class="flex items-center">
                     <div class="p-2 bg-green-100 dark:bg-green-800 rounded-full">
@@ -134,21 +134,6 @@
                     <div class="ml-3">
                         <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Salidas</p>
                         <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ $resumen['total_salidas'] ?? 0 }}</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg">
-                <div class="flex items-center">
-                    <div class="p-2 bg-yellow-100 dark:bg-yellow-800 rounded-full">
-                        <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        </svg>
-                    </div>
-                    <div class="ml-3">
-                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Ajustes</p>
-                        <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ $resumen['total_ajustes'] ?? 0 }}</p>
                     </div>
                 </div>
             </div>
@@ -200,17 +185,7 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
-                                @if($movimiento->variante->producto->imagenes->isNotEmpty())
-                                    <img src="{{ asset('storage/' . $movimiento->variante->producto->imagenes[0]->ruta_imagen) }}" 
-                                         class="w-8 h-8 rounded-md object-cover" 
-                                         alt="{{ $movimiento->variante->producto->nombre_producto }}">
-                                @else
-                                    <div class="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-md flex items-center justify-center">
-                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                        </svg>
-                                    </div>
-                                @endif
+                               
                                 <div class="ml-3">
                                     <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $movimiento->variante->producto->nombre_producto }}</div>
                                     <div class="text-sm text-gray-500 dark:text-gray-400">ID: {{ $movimiento->variante->producto->producto_id }}</div>

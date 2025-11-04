@@ -51,9 +51,9 @@ class ActualizarAlertasStock extends Command
                     $stockDisponible = $producto->stock_disponible;
                     
                     if ($stockInicial > 0) {
-                        // Calcular umbrales con la nueva lógica
-                        $umbralBajo = (int) ceil(($stockInicial * 60) / 100);
-                        $umbralCritico = (int) ceil(($stockInicial * 20) / 100);
+                        // Usar umbrales del producto si existen, sino calcular
+                        $umbralBajo = $producto->stock_maximo ?? (int) ceil(($stockInicial * 60) / 100);
+                        $umbralCritico = $producto->stock_minimo ?? (int) ceil(($stockInicial * 20) / 100);
                         
                         // Verificar estado actual
                         $estadoAnterior = $this->getEstadoAnterior($producto);

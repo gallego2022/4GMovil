@@ -16,10 +16,10 @@ class LandingService
     public function getHomePageData(): array
     {
         try {
-            // Productos destacados (nuevos, con stock, activos)
+            // Productos destacados (nuevos, con stock disponible, activos)
             $productosDestacados = Producto::with(['categoria', 'marca', 'resenas.usuario', 'imagenes'])
                 ->where('estado', 'nuevo')
-                ->where('stock', '>', 0)
+                ->whereRaw('(stock - COALESCE(stock_reservado, 0)) > 0')
                 ->orderBy('created_at', 'desc')
                 ->limit(12)
                 ->get();
@@ -41,7 +41,7 @@ class LandingService
             // Productos populares
             $productosPopulares = Producto::with(['categoria', 'marca', 'resenas.usuario', 'imagenes'])
                 ->where('estado', 'nuevo')
-                ->where('stock', '>', 0)
+                ->whereRaw('(stock - COALESCE(stock_reservado, 0)) > 0')
                 ->orderBy('created_at', 'desc')
                 ->limit(4)
                 ->get();

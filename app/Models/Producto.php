@@ -450,10 +450,16 @@ class Producto extends Model
     }
 
     /**
-     * Calcular el umbral de stock bajo basado en el stock inicial (60%)
+     * Calcular el umbral de stock bajo
+     * Usa stock_maximo del producto si existe, sino calcula el 60% del stock_inicial
      */
     public function getUmbralStockBajoAttribute(): int
     {
+        // Si existe stock_maximo, usarlo directamente
+        if ($this->stock_maximo !== null && $this->stock_maximo > 0) {
+            return $this->stock_maximo;
+        }
+        
         $stockInicial = $this->stock_inicial;
         
         if ($stockInicial <= 0) {
@@ -461,15 +467,21 @@ class Producto extends Model
             return $this->stock_minimo ?? 5;
         }
         
-        // 60% del stock inicial
+        // Fallback: 60% del stock inicial
         return (int) ceil(($stockInicial * 60) / 100);
     }
 
     /**
-     * Calcular el umbral de stock crítico basado en el stock inicial (20%)
+     * Calcular el umbral de stock crítico
+     * Usa stock_minimo del producto si existe, sino calcula el 20% del stock_inicial
      */
     public function getUmbralStockCriticoAttribute(): int
     {
+        // Si existe stock_minimo, usarlo directamente
+        if ($this->stock_minimo !== null && $this->stock_minimo > 0) {
+            return $this->stock_minimo;
+        }
+        
         $stockInicial = $this->stock_inicial;
         
         if ($stockInicial <= 0) {
@@ -477,7 +489,7 @@ class Producto extends Model
             return max(1, (int) ceil(($this->stock_minimo ?? 5) * 0.2));
         }
         
-        // 20% del stock inicial
+        // Fallback: 20% del stock inicial
         return (int) ceil(($stockInicial * 20) / 100);
     }
 
@@ -569,14 +581,14 @@ class Producto extends Model
 
     public function scopeStockBajo($query)
     {
-        // Stock bajo: cuando está por debajo del 60% del stock mínimo (alta rotación)
-        return $query->whereRaw('stock <= (stock_minimo * 0.6) AND stock > 0');
+        // Stock bajo: cuando está por debajo del umbral bajo (stock_maximo) pero por encima del crítico
+        return $query->whereRaw('stock <= COALESCE(stock_maximo, (stock_inicial * 0.6)) AND stock > COALESCE(stock_minimo, (stock_inicial * 0.2)) AND stock > 0');
     }
 
     public function scopeStockCritico($query)
     {
-        // Stock crítico: cuando está por debajo del 20% del stock mínimo (alta rotación)
-        return $query->whereRaw('stock <= (stock_minimo * 0.2) AND stock > 0');
+        // Stock crítico: cuando está por debajo del umbral crítico (stock_minimo)
+        return $query->whereRaw('stock <= COALESCE(stock_minimo, (stock_inicial * 0.2)) AND stock > 0');
     }
 
     public function scopeStockExcesivo($query)

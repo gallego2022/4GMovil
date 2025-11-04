@@ -683,12 +683,26 @@ class InventarioController extends WebController
         ];
         
         // Preparar productos con stock bajo
-        // Productos con stock bajo (usar umbral 60% stock inicial si está disponible)
+        // Productos con stock bajo (usar umbrales del producto si existen, sino calcular)
         $productosStockBajo = $productos->filter(function ($producto) {
-            $stockInicial = $producto->stock_inicial ?? ($producto->stock ?? 0);
-            $umbralBajo = $stockInicial > 0 ? (int) ceil(($stockInicial * 60) / 100) : 10;
-            $umbralCritico = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 5;
             $stockActual = $producto->stock ?? 0;
+            
+            // Usar umbrales del producto si existen
+            $umbralBajo = $producto->stock_maximo ?? null;
+            $umbralCritico = $producto->stock_minimo ?? null;
+            
+            // Si no hay umbrales personalizados, calcular basado en stock_inicial
+            if ($umbralBajo === null || $umbralCritico === null) {
+                $stockInicial = $producto->stock_inicial ?? 0;
+                if ($stockInicial > 0) {
+                    $umbralBajo = $umbralBajo ?? (int) ceil(($stockInicial * 60) / 100);
+                    $umbralCritico = $umbralCritico ?? (int) ceil(($stockInicial * 20) / 100);
+                } else {
+                    $umbralBajo = $umbralBajo ?? 10;
+                    $umbralCritico = $umbralCritico ?? 5;
+                }
+            }
+            
             return $stockActual <= $umbralBajo && $stockActual > $umbralCritico;
         })->values();
         

@@ -6,17 +6,24 @@
 @section('content')
     @include('components.loading-screen')
     <!-- Hero Section (inspirado en popcorn.space) -->
-    <section id="inicio" class="min-h-screen flex items-center relative overflow-hidden pt-16 bg-gradient-to-b from-white to-gray-100 dark:from-gray-900 dark:to-black">
+    <section id="inicio" class="min-h-screen flex items-center relative pt-16 bg-gradient-to-b from-white to-gray-100 dark:from-gray-900 dark:to-black" style="overflow: visible;">
+        <!-- Partículas decorativas de fondo -->
+        <div class="absolute inset-0 pointer-events-none" style="z-index: 1; overflow: visible;">
+            <div class="hero-particle hero-particle-1 absolute top-20 left-10 w-80 h-80 rounded-full" style="background: rgba(59, 130, 246, 0.6); filter: blur(40px);"></div>
+            <div class="hero-particle hero-particle-2 absolute bottom-20 right-10 w-80 h-80 rounded-full" style="background: rgba(99, 102, 241, 0.6); filter: blur(40px);"></div>
+            <div class="hero-particle hero-particle-3 absolute top-1/3 left-1/2 -translate-x-1/2 w-72 h-72 rounded-full" style="background: rgba(147, 51, 234, 0.55); filter: blur(40px);"></div>
+            <div class="hero-particle hero-particle-4 absolute bottom-1/3 left-20 w-72 h-72 rounded-full" style="background: rgba(236, 72, 153, 0.55); filter: blur(40px);"></div>
+        </div>
 
         <!-- Contenido -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative" style="z-index: 10;">
             <div class="grid lg:grid-cols-12 gap-6 items-center">
                 <!-- Columna izquierda -->
                 <div id="hero_container" class="lg:col-span-11 text-gray-900 dark:text-white group">
-                    <div class="inline-flex items-center px-3 py-1 rounded-full bg-gray-900/5 dark:bg-white/10 border border-gray-900/10 dark:border-white backdrop-blur mb-5 motion-safe:animate-pulse group-hover:[animation-play-state:paused]">
+                    <div class="hero-fade-in hero-fade-in-1 inline-flex items-center px-3 py-1 rounded-full bg-gray-900/5 dark:bg-white/10 border border-gray-900/10 dark:border-white backdrop-blur mb-5 motion-safe:animate-pulse group-hover:[animation-play-state:paused]">
                         <span class="text-sm">{{ __('landing.hero.badge') }}</span>
                     </div>
-                    <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight">
+                    <h1 class="hero-fade-in hero-fade-in-2 text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight">
                         <span class="sr-only">Tecnología a tu alcance</span>
                         <div class="relative">
                             <svg class="block w-full max-w-none h-auto" viewBox="0 0 1600 260" aria-hidden="true" preserveAspectRatio="xMinYMid meet" style="overflow: visible;">
@@ -26,18 +33,25 @@
                                         <stop offset="50%" stop-color="#6B7280"/>
                                         <stop offset="100%" stop-color="#374151"/>
                                     </linearGradient>
+                                    <filter id="glow">
+                                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                        <feMerge>
+                                            <feMergeNode in="coloredBlur"/>
+                                            <feMergeNode in="SourceGraphic"/>
+                                        </feMerge>
+                                    </filter>
                                 </defs>
-                                <text x="0" y="180" fill="transparent" stroke="url(#heroTitleGradient)" stroke-width="4" stroke-linejoin="round" font-weight="800" font-family="'Manrope', 'Inter', 'Segoe UI', ui-sans-serif, system-ui, -apple-system, Roboto, Helvetica, Arial, Noto Sans, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji'" style="letter-spacing:-0.02em; font-size:132px;">
+                                <text x="0" y="180" fill="transparent" stroke="url(#heroTitleGradient)" stroke-width="4" stroke-linejoin="round" font-weight="800" font-family="'Manrope', 'Inter', 'Segoe UI', ui-sans-serif, system-ui, -apple-system, Roboto, Helvetica, Arial, Noto Sans, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji'" style="letter-spacing:-0.02em; font-size:132px; filter: url(#glow);" class="hero-title-stroke">
                                     {{ __('landing.hero.title') }}
                                 </text>
                             </svg>
                         </div>
                     </h1>
-                    <p class="mt-5 text-lg sm:text-xl text-gray-700 dark:text-gray-100/90 max-w-4xl">
+                    <p class="hero-fade-in hero-fade-in-3 mt-5 text-lg sm:text-xl text-gray-700 dark:text-gray-100/90 max-w-4xl">
                         <span id="hero_subtitle_text">{{ __('landing.hero.phrases')[0] ?? 'Encuentra los mejores productos y servicios de tecnología a tu alcance.' }}</span>
                         <span class="inline-block w-3 align-baseline ml-0.5 bg-gray-700 dark:bg-gray-100 animate-pulse" style="height:1.2em"></span>
                     </p>
-                    <div class="mt-8 flex flex-col sm:flex-row gap-4 sm:items-center">
+                    <div class="hero-fade-in hero-fade-in-4 mt-8 flex flex-col sm:flex-row gap-4 sm:items-center">
                         <a href="{{ route('productos.lista') }}" class="inline-flex items-center justify-center px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-indigo-600 hover:to-purple-600 text-white font-semibold shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-indigo-600/40 transform hover:-translate-y-1 hover:scale-150 transition-all duration-500 ease-in-out focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 hover:ring-4 hover:ring-blue-400/30 dark:hover:ring-indigo-400/30 border-2 border-blue-500/40 hover:border-blue-300/70 dark:border-indigo-400/40 dark:hover:border-indigo-300/70">
                             {{ __('landing.hero.cta_explore') }}
                         </a>
@@ -50,8 +64,224 @@
        
         
     </section>
+    @push('styles')
+    <style id="hero-animations-styles">
+        @keyframes heroFadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .hero-fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            will-change: opacity, transform;
+        }
+        .hero-fade-in-1.animated {
+            animation: heroFadeInUp 1s ease-out forwards !important;
+            animation-delay: 0.2s;
+        }
+        .hero-fade-in-2.animated {
+            animation: heroFadeInUp 1s ease-out forwards !important;
+            animation-delay: 0.4s;
+        }
+        .hero-fade-in-3.animated {
+            animation: heroFadeInUp 1s ease-out forwards !important;
+            animation-delay: 0.6s;
+        }
+        .hero-fade-in-4.animated {
+            animation: heroFadeInUp 1s ease-out forwards !important;
+            animation-delay: 0.8s;
+        }
+        @keyframes heroGlowPulse {
+            0%, 100% {
+                filter: drop-shadow(0 0 8px rgba(156, 163, 175, 0.4));
+            }
+            50% {
+                filter: drop-shadow(0 0 20px rgba(156, 163, 175, 0.8));
+            }
+        }
+        .hero-title-stroke {
+            filter: drop-shadow(0 0 5px rgba(156, 163, 175, 0.3));
+            will-change: filter;
+        }
+        .hero-title-stroke.animated {
+            animation: heroGlowPulse 3s ease-in-out infinite;
+        }
+        @keyframes heroFloat1 {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(30%, -20%) scale(1.1);
+            }
+            50% {
+                transform: translate(60%, 10%) scale(0.9);
+            }
+            75% {
+                transform: translate(30%, 30%) scale(1.05);
+            }
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+        }
+        @keyframes heroFloat2 {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(-25%, 20%) scale(1.1);
+            }
+            50% {
+                transform: translate(-50%, -15%) scale(0.9);
+            }
+            75% {
+                transform: translate(-25%, -25%) scale(1.05);
+            }
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+        }
+        @keyframes heroFloat3 {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(20%, 25%) scale(1.15);
+            }
+            50% {
+                transform: translate(-20%, 15%) scale(0.85);
+            }
+            75% {
+                transform: translate(15%, -20%) scale(1.1);
+            }
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+        }
+        @keyframes heroFloat4 {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(-30%, -15%) scale(1.1);
+            }
+            50% {
+                transform: translate(20%, -30%) scale(0.95);
+            }
+            75% {
+                transform: translate(-10%, 25%) scale(1.05);
+            }
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+        }
+        .hero-particle {
+            opacity: 1 !important;
+            will-change: transform, opacity;
+            mix-blend-mode: normal;
+            display: block !important;
+            visibility: visible !important;
+        }
+        .hero-particle-1.animated {
+            animation: heroFloat1 20s ease-in-out infinite;
+            opacity: 1 !important;
+            display: block !important;
+            visibility: visible !important;
+        }
+        .hero-particle-2.animated {
+            animation: heroFloat2 25s ease-in-out infinite;
+            opacity: 1 !important;
+            display: block !important;
+            visibility: visible !important;
+        }
+        .hero-particle-3.animated {
+            animation: heroFloat3 22s ease-in-out infinite;
+            opacity: 1 !important;
+            display: block !important;
+            visibility: visible !important;
+        }
+        .hero-particle-4.animated {
+            animation: heroFloat4 18s ease-in-out infinite;
+            opacity: 1 !important;
+            display: block !important;
+            visibility: visible !important;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .hero-fade-in.animated,
+            .hero-title-stroke.animated,
+            .hero-particle.animated {
+                animation: none;
+                opacity: 1;
+            }
+        }
+    </style>
+    @endpush
     @push('scripts')
     <script>
+    // Activar animaciones del hero - ejecutar una sola vez
+    (function() {
+        var animationsInitialized = false;
+        
+        function initHeroAnimations() {
+            if (animationsInitialized) return;
+            animationsInitialized = true;
+            
+            console.log('Inicializando animaciones del hero...');
+            
+            // Usar requestAnimationFrame para asegurar que los estilos estén cargados
+            requestAnimationFrame(function() {
+                var fadeElements = document.querySelectorAll('.hero-fade-in');
+                console.log('Elementos fade-in encontrados:', fadeElements.length);
+                
+                if (fadeElements.length > 0) {
+                    fadeElements.forEach(function(el) {
+                        requestAnimationFrame(function() {
+                            el.classList.add('animated');
+                            console.log('Animación activada para:', el.className);
+                        });
+                    });
+                }
+                
+                var titleStroke = document.querySelector('.hero-title-stroke');
+                if (titleStroke) {
+                    requestAnimationFrame(function() {
+                        titleStroke.classList.add('animated');
+                        console.log('Animación de brillo activada para el título');
+                    });
+                }
+                
+                var particles = document.querySelectorAll('.hero-particle');
+                console.log('Partículas encontradas:', particles.length);
+                if (particles.length > 0) {
+                    particles.forEach(function(particle, idx) {
+                        requestAnimationFrame(function() {
+                            // Forzar visibilidad
+                            particle.style.display = 'block';
+                            particle.style.visibility = 'visible';
+                            particle.style.opacity = '1';
+                            particle.classList.add('animated');
+                            console.log('Animación de partícula activada:', idx, particle.className);
+                        });
+                    });
+                } else {
+                    console.error('No se encontraron partículas');
+                }
+            });
+        }
+        
+        // Ejecutar cuando el DOM esté listo
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initHeroAnimations);
+        } else {
+            setTimeout(initHeroAnimations, 50);
+        }
+    })();
+    
     (function(){
         var phrases = @json(trans('landing.hero.phrases'));
         var el = document.getElementById('hero_subtitle_text');
@@ -519,36 +749,5 @@
 
     <!-- JavaScript optimizado para carruseles -->
     <script src="{{ asset('js/carousel-manager.js') }}"></script>
-    <script>
-        // Verificación adicional para el carrusel
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Verificando elementos del carrusel...');
-
-            // Verificar que los elementos existen
-            const carousel = document.getElementById('products-carousel');
-            const prevBtn = document.getElementById('products-prev');
-            const nextBtn = document.getElementById('products-next');
-
-            console.log('Carousel:', carousel);
-            console.log('Prev button:', prevBtn);
-            console.log('Next button:', nextBtn);
-
-            // Si los elementos existen, verificar que el script se cargó
-            if (carousel && prevBtn && nextBtn) {
-                console.log('Elementos del carrusel encontrados correctamente');
-
-                // Verificar que los event listeners están funcionando
-                prevBtn.addEventListener('click', function() {
-                    console.log('Botón prev clickeado');
-                });
-
-                nextBtn.addEventListener('click', function() {
-                    console.log('Botón next clickeado');
-                });
-            } else {
-                console.error('Algunos elementos del carrusel no se encontraron');
-            }
-        });
-    </script>
 
 @endsection

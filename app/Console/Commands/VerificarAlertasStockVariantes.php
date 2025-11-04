@@ -109,8 +109,14 @@ class VerificarAlertasStockVariantes extends Command
 
         $contador = 0;
         foreach ($variantes as $variante) {
-            $stockInicial = $variante->producto->stock_inicial ?? 0;
-            $umbralCritico = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 5;
+            $producto = $variante->producto;
+            
+            // Usar umbral crítico del producto si existe, sino calcular
+            $umbralCritico = $producto->stock_minimo ?? null;
+            if ($umbralCritico === null) {
+                $stockInicial = $producto->stock_inicial ?? 0;
+                $umbralCritico = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 5;
+            }
             
             if ($variante->stock <= $umbralCritico) {
                 $porcentaje = $stockInicial > 0 
@@ -143,9 +149,22 @@ class VerificarAlertasStockVariantes extends Command
 
         $contador = 0;
         foreach ($variantes as $variante) {
-            $stockInicial = $variante->producto->stock_inicial ?? 0;
-            $umbralBajo = $stockInicial > 0 ? (int) ceil(($stockInicial * 60) / 100) : 10;
-            $umbralCritico = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 5;
+            $producto = $variante->producto;
+            
+            // Usar umbrales del producto si existen, sino calcular
+            $umbralBajo = $producto->stock_maximo ?? null;
+            $umbralCritico = $producto->stock_minimo ?? null;
+            
+            if ($umbralBajo === null || $umbralCritico === null) {
+                $stockInicial = $producto->stock_inicial ?? 0;
+                if ($stockInicial > 0) {
+                    $umbralBajo = $umbralBajo ?? (int) ceil(($stockInicial * 60) / 100);
+                    $umbralCritico = $umbralCritico ?? (int) ceil(($stockInicial * 20) / 100);
+                } else {
+                    $umbralBajo = $umbralBajo ?? 10;
+                    $umbralCritico = $umbralCritico ?? 5;
+                }
+            }
             
             if ($variante->stock <= $umbralBajo && $variante->stock > $umbralCritico) {
                 $porcentaje = $stockInicial > 0 
