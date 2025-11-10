@@ -103,7 +103,7 @@ class CarritoService extends BaseService
     /**
      * Elimina un item del carrito
      */
-    public function removeFromCart(int $itemId): array
+    public function removeFromCart($itemId): array
     {
         $this->logOperation('eliminando_item_carrito', [
             'user_id' => Auth::id(),
@@ -112,9 +112,11 @@ class CarritoService extends BaseService
 
         return $this->executeInTransaction(function () use ($itemId) {
             if (Auth::check()) {
-                $this->removeFromUserCart($itemId);
+                // Para usuarios autenticados, el itemId es un entero
+                $this->removeFromUserCart((int)$itemId);
             } else {
-                $this->removeFromSessionCart($itemId);
+                // Para usuarios no autenticados, el itemId es un string
+                $this->removeFromSessionCart((string)$itemId);
             }
 
             $this->logOperation('item_carrito_eliminado', [
@@ -464,14 +466,18 @@ class CarritoService extends BaseService
     /**
      * Elimina item del carrito de sesión
      */
-    private function removeFromSessionCart(int $itemId): void
+    private function removeFromSessionCart(string $itemId): void
     {
         $cartItems = Session::get('cart', []);
         
         $cartItems = array_filter($cartItems, function ($item) use ($itemId) {
-            return $item['id'] != $itemId;
+            // Comparar como string para manejar tanto IDs numéricos como strings
+            return (string)$item['id'] !== (string)$itemId;
         });
 
+        // Reindexar el array para evitar gaps
+        $cartItems = array_values($cartItems);
+        
         Session::put('cart', $cartItems);
     }
 

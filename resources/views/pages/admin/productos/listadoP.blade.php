@@ -203,6 +203,15 @@
                 </div>
                 <!-- Botones de acción -->
                 <div class="mt-4 flex justify-end space-x-2">
+                    <button type="button" 
+                            onclick="abrirModalProducto({{ $producto->producto_id }})"
+                            class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-900/50 px-3 py-2 text-sm font-semibold text-green-700 dark:text-green-300 shadow-sm ring-1 ring-inset ring-green-300 dark:ring-green-600 hover:bg-green-100 dark:hover:bg-green-900">
+                        <svg class="-ml-0.5 mr-1.5 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        Ver Detalles
+                    </button>
                     <a href="{{ route('productos.edit', $producto) }}" 
                        class="inline-flex items-center rounded-md bg-white dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600">
                         <svg class="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400 dark:text-gray-300" viewBox="0 0 20 20" fill="currentColor">
@@ -210,7 +219,13 @@
                         </svg>
                         {{ __('admin.actions.edit') }}
                     </a>
-                    <form action="{{ route('productos.destroy', $producto) }}" method="POST" class="form-eliminar inline">
+                    <form action="{{ route('productos.destroy', $producto) }}" 
+                          method="POST" 
+                          class="inline confirm-action"
+                          data-title="¿Eliminar producto?"
+                          data-message="¿Estás seguro de eliminar el producto {{ $producto->nombre_producto }}?"
+                          data-confirm-text="Sí, eliminar"
+                          data-method="DELETE">
                         @csrf
                         @method('DELETE')
                         <button type="submit" 
@@ -317,7 +332,7 @@
                         </thead>
                         <tbody class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 text-sm">
                             @forelse($productos as $producto)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 ease-in-out border-b border-gray-100 dark:border-gray-800">
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 ease-in-out border-b border-gray-100 dark:border-gray-800" data-producto-id="{{ $producto->producto_id }}">
                             <td class="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">{{ $producto->producto_id }}</td>
                             <td class="px-6 py-4">
                                 @if($producto->imagenes->isNotEmpty())
@@ -333,11 +348,11 @@
                             <td class="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">{{ $producto->nombre_producto }}</td>
                             <td class="px-6 py-4 font-semibold text-gray-900 dark:text-gray-100">${{ number_format($producto->precio, 0, ',', '.') }}</td>
                             <td class="px-6 py-4">
-                                <div class="flex flex-col space-y-1">
+                                <div class="flex flex-col space-y-1" data-stock-container>
                                     <!-- Stock Total -->
                                     <div class="flex items-center space-x-2">
                                         <span class="text-xs text-gray-500 dark:text-gray-400">Total:</span>
-                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300" data-stock-total="{{ $producto->producto_id }}">
                                             {{ $producto->stock }}
                                         </span>
                                     </div>
@@ -345,37 +360,37 @@
                                     <!-- Stock Disponible -->
                                     <div class="flex items-center space-x-2">
                                         <span class="text-xs text-gray-500 dark:text-gray-400">Disponible:</span>
-                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ $producto->stock_disponible > 10 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : ($producto->stock_disponible > 5 ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' : ($producto->stock_disponible > 0 ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300')) }}">
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ $producto->stock_disponible > 10 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : ($producto->stock_disponible > 5 ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' : ($producto->stock_disponible > 0 ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300')) }}" data-stock-disponible="{{ $producto->producto_id }}">
                                             {{ $producto->stock_disponible }}
                                         </span>
                                     </div>
                                     
                                     <!-- Stock Reservado (solo si hay) -->
-                                    @if($producto->stock_reservado > 0)
-                                    <div class="flex items-center space-x-2">
+                                    <div class="flex items-center space-x-2" data-stock-reservado-container="{{ $producto->producto_id }}" style="{{ $producto->stock_reservado > 0 ? '' : 'display: none;' }}">
                                         <span class="text-xs text-gray-500 dark:text-gray-400">Reservado:</span>
-                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300" data-stock-reservado="{{ $producto->producto_id }}">
                                             {{ $producto->stock_reservado }}
                                         </span>
                                     </div>
-                                    @endif
                                     
                                     <!-- Indicador de estado -->
-                                    @if($producto->stock_disponible <= 0)
-                                        <div class="flex items-center space-x-1">
-                                            <svg class="w-3 h-3 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                            </svg>
-                                            <span class="text-xs text-red-600 dark:text-red-400">Sin stock disponible</span>
-                                        </div>
-                                    @elseif($producto->stock_reservado > $producto->stock * 0.5)
-                                        <div class="flex items-center space-x-1">
-                                            <svg class="w-3 h-3 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                            </svg>
-                                            <span class="text-xs text-yellow-600 dark:text-yellow-400">Alto stock reservado</span>
-                                        </div>
-                                    @endif
+                                    <div data-stock-indicador="{{ $producto->producto_id }}">
+                                        @if($producto->stock_disponible <= 0)
+                                            <div class="flex items-center space-x-1">
+                                                <svg class="w-3 h-3 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                                </svg>
+                                                <span class="text-xs text-red-600 dark:text-red-400">Sin stock disponible</span>
+                                            </div>
+                                        @elseif($producto->stock_reservado > $producto->stock * 0.5)
+                                            <div class="flex items-center space-x-1">
+                                                <svg class="w-3 h-3 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                                </svg>
+                                                <span class="text-xs text-yellow-600 dark:text-yellow-400">Alto stock reservado</span>
+                                            </div>
+                                        @endif
+                                    </div>
                                 </div>
                             </td>
                             <td class="px-6 py-4">
@@ -390,7 +405,26 @@
                             <td class="px-6 py-4 text-gray-700 dark:text-gray-300">{{ $producto->marca->nombre ?? 'Sin marca' }}</td>
                             <td class="px-6 py-4 text-center">
                                 <div class="flex items-center justify-center gap-3">
-                                    <!-- Botón {{ __('admin.actions.edit') }} -->
+                                    <!-- Botón Ver Detalles -->
+                                    <div class="relative group">
+                                        <button type="button" 
+                                                onclick="abrirModalProducto({{ $producto->producto_id }})"
+                                                class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-green-50 hover:bg-green-100 dark:bg-green-900/50 dark:hover:bg-green-900 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 transition-all duration-200 ease-in-out transform hover:scale-110">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                                                stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                        </button>
+                                        <div
+                                            class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 text-white text-xs rounded-lg px-3 py-2 shadow-lg dark:bg-gray-700 z-10 whitespace-nowrap">
+                                            Ver Detalles
+                                        </div>
+                                    </div>
+
+                                    <!-- Botón Editar -->
                                     <div class="relative group">
                                         <a href="{{ route('productos.edit', $producto) }}" 
                                            class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/50 dark:hover:bg-blue-900 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-all duration-200 ease-in-out transform hover:scale-110">
@@ -406,9 +440,15 @@
                                         </div>
                                     </div>
 
-                                    <!-- Botón {{ __('admin.actions.edit') }} -->
+                                    <!-- Botón Eliminar -->
                                     <div class="relative group">
-                                        <form action="{{ route('productos.destroy', $producto) }}" method="POST" class="form-eliminar inline">
+                                        <form action="{{ route('productos.destroy', $producto) }}" 
+                                              method="POST" 
+                                              class="inline confirm-action"
+                                              data-title="¿Eliminar producto?"
+                                              data-message="¿Estás seguro de eliminar el producto {{ $producto->nombre_producto }}?"
+                                              data-confirm-text="Sí, eliminar"
+                                              data-method="DELETE">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" 
@@ -644,13 +684,16 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
+        // Variable global para la tabla
+        var table = null;
+        
         // Verificar si hay datos antes de inicializar DataTables
         var hasData = {{ $productos->count() > 0 ? 'true' : 'false' }};
         
         if (hasData) {
             // Inicializar DataTable solo si hay datos
-            var table = $('#tablaProductos').DataTable({
-                dom: 'rtip', // Removido 'f' para ocultar el campo de búsqueda por defecto
+            table = $('#tablaProductos').DataTable({
+                dom: 'Brtip', // 'B' para botones, 'r' para processing, 't' para tabla, 'i' para info, 'p' para paginación
                 buttons: [
                     {
                         extend: 'excelHtml5',
@@ -669,12 +712,148 @@
                         extend: 'pdfHtml5',
                         title: 'Productos - 4GMovil',
                         text: 'Exportar a PDF',
-                        className: 'buttons-pdf', 
+                        className: 'buttons-pdf',
+                        orientation: 'landscape',
+                        pageSize: 'A4',
                         exportOptions: {
                             columns: [0, 2, 3, 4, 5, 6, 7]
                         },
                         customize: function(doc) {
-                            doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                            try {
+                                // Obtener fecha actual
+                                var fecha = new Date().toLocaleDateString('es-CO', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                });
+                                
+                                // Estilos personalizados
+                                doc.defaultStyle.fontSize = 9;
+                                // No especificar fuente para usar la fuente por defecto de pdfmake
+                                
+                                // Buscar la tabla en el contenido y guardar su referencia
+                                var tableObj = null;
+                                var tableIndex = -1;
+                                
+                                for (var i = 0; i < doc.content.length; i++) {
+                                    if (doc.content[i] && doc.content[i].table) {
+                                        tableObj = doc.content[i].table;
+                                        tableIndex = i;
+                                        break;
+                                    }
+                                }
+                                
+                                // Si no se encuentra la tabla, salir
+                                if (!tableObj || !tableObj.body) {
+                                    console.warn('No se encontró la tabla en el contenido del PDF');
+                                    return;
+                                }
+                                
+                                // Guardar referencia al body de la tabla antes de modificar el contenido
+                                var tableBody = tableObj.body;
+                                
+                                // Verificar que tableBody tenga al menos una fila
+                                if (!tableBody || tableBody.length === 0) {
+                                    console.error('La tabla está vacía');
+                                    return;
+                                }
+                                
+                                // Encabezado personalizado (insertar antes de la tabla)
+                                doc.content.splice(tableIndex, 0, {
+                                    margin: [0, 0, 0, 12],
+                                    alignment: 'center',
+                                    fontSize: 18,
+                                    text: '4GMovil',
+                                    bold: true,
+                                    color: '#1f2937'
+                                });
+                                
+                                doc.content.splice(tableIndex + 1, 0, {
+                                    margin: [0, 0, 0, 8],
+                                    alignment: 'center',
+                                    fontSize: 14,
+                                    text: 'Listado de Productos',
+                                    bold: true,
+                                    color: '#4b5563'
+                                });
+                                
+                                doc.content.splice(tableIndex + 2, 0, {
+                                    margin: [0, 0, 0, 12],
+                                    alignment: 'center',
+                                    fontSize: 10,
+                                    text: 'Generado el: ' + fecha,
+                                    color: '#6b7280'
+                                });
+                                
+                                // Ahora trabajar con la referencia guardada de la tabla
+                                // Estilo para el encabezado de la tabla
+                                if (tableBody[0] && Array.isArray(tableBody[0]) && tableBody[0].length > 0) {
+                                    for (var i = 0; i < tableBody[0].length; i++) {
+                                        if (tableBody[0][i]) {
+                                            tableBody[0][i].fillColor = '#3b82f6';
+                                            tableBody[0][i].color = '#ffffff';
+                                            tableBody[0][i].bold = true;
+                                            tableBody[0][i].fontSize = 10;
+                                            tableBody[0][i].alignment = 'center';
+                                        }
+                                    }
+                                }
+                                
+                                // Estilos alternados para las filas
+                                for (var i = 1; i < tableBody.length; i++) {
+                                    if (tableBody[i] && Array.isArray(tableBody[i]) && tableBody[i].length > 0) {
+                                        if (i % 2 === 0) {
+                                            for (var j = 0; j < tableBody[i].length; j++) {
+                                                if (tableBody[i][j]) {
+                                                    tableBody[i][j].fillColor = '#f3f4f6';
+                                                }
+                                            }
+                                        }
+                                        // Alineación de columnas
+                                        if (tableBody[i][0]) tableBody[i][0].alignment = 'left'; // ID
+                                        if (tableBody[i][1]) tableBody[i][1].alignment = 'left'; // Nombre
+                                        if (tableBody[i][2]) tableBody[i][2].alignment = 'left'; // Categoría
+                                        if (tableBody[i][3]) tableBody[i][3].alignment = 'right'; // Precio
+                                        if (tableBody[i][4]) tableBody[i][4].alignment = 'center'; // Stock
+                                        if (tableBody[i][5]) tableBody[i][5].alignment = 'center'; // Estado
+                                        if (tableBody[i][6]) tableBody[i][6].alignment = 'left'; // Fecha
+                                    }
+                                }
+                                
+                                // Anchos de columnas
+                                if (tableBody[0] && Array.isArray(tableBody[0]) && tableBody[0].length > 0) {
+                                    tableObj.widths = ['8%', '25%', '15%', '12%', '10%', '12%', '18%'];
+                                }
+                                
+                                // Pie de página
+                                doc['footer'] = function(page, pages) {
+                                    return {
+                                        margin: [40, 0, 40, 0],
+                                        columns: [
+                                            {
+                                                alignment: 'left',
+                                                text: 'Página ' + page + ' de ' + pages,
+                                                fontSize: 9,
+                                                color: '#6b7280'
+                                            },
+                                            {
+                                                alignment: 'right',
+                                                text: '4GMovil - Sistema de Gestión',
+                                                fontSize: 9,
+                                                color: '#6b7280'
+                                            }
+                                        ]
+                                    };
+                                };
+                                
+                                // Márgenes
+                                doc.pageMargins = [40, 100, 40, 60];
+                            } catch (error) {
+                                console.error('Error al personalizar el PDF:', error);
+                                console.error('Stack:', error.stack);
+                            }
                         }
                     }
                 ],
@@ -813,35 +992,83 @@
                  });
              }, 500);
 
-            // Botones personalizados de exportación (escritorio)
+             // Botones personalizados de exportación (escritorio)
              setTimeout(function() {
-                 $('#exportExcelEscritorio').on('click', function () {
+                 $('#exportExcelEscritorio').off('click').on('click', function (e) {
+                     e.preventDefault();
+                     e.stopPropagation();
+                     
+                     console.log('Exportar Excel - Escritorio clickeado');
+                     
                      if (table && table.buttons) {
-                         table.buttons('.buttons-excel').trigger();
+                         try {
+                             table.buttons('.buttons-excel').trigger();
+                             console.log('Botón Excel activado');
+                         } catch (error) {
+                             console.error('Error al exportar Excel:', error);
+                         }
+                     } else {
+                         console.error('Tabla o botones no disponibles');
                      }
                  });
      
-                 $('#exportPDFEscritorio').on('click', function () {
+                 $('#exportPDFEscritorio').off('click').on('click', function (e) {
+                     e.preventDefault();
+                     e.stopPropagation();
+                     
+                     console.log('Exportar PDF - Escritorio clickeado');
+                     
                      if (table && table.buttons) {
-                         table.buttons('.buttons-pdf').trigger();
+                         try {
+                             table.buttons('.buttons-pdf').trigger();
+                             console.log('Botón PDF activado');
+                         } catch (error) {
+                             console.error('Error al exportar PDF:', error);
+                         }
+                     } else {
+                         console.error('Tabla o botones no disponibles');
                      }
                  });
-             }, 100);
+             }, 500);
              
              // Botones personalizados de exportación (móvil)
              setTimeout(function() {
-                 $('#exportExcelMovil').on('click', function () {
+                 $('#exportExcelMovil').off('click').on('click', function (e) {
+                     e.preventDefault();
+                     e.stopPropagation();
+                     
+                     console.log('Exportar Excel - Móvil clickeado');
+                     
                      if (table && table.buttons) {
-                         table.buttons('.buttons-excel').trigger();
+                         try {
+                             table.buttons('.buttons-excel').trigger();
+                             console.log('Botón Excel activado');
+                         } catch (error) {
+                             console.error('Error al exportar Excel:', error);
+                         }
+                     } else {
+                         console.error('Tabla o botones no disponibles');
                      }
                  });
      
-                 $('#exportPDFMovil').on('click', function () {
+                 $('#exportPDFMovil').off('click').on('click', function (e) {
+                     e.preventDefault();
+                     e.stopPropagation();
+                     
+                     console.log('Exportar PDF - Móvil clickeado');
+                     
                      if (table && table.buttons) {
-                         table.buttons('.buttons-pdf').trigger();
+                         try {
+                             table.buttons('.buttons-pdf').trigger();
+                             console.log('Botón PDF activado');
+                         } catch (error) {
+                             console.error('Error al exportar PDF:', error);
+                         }
+                     } else {
+                         console.error('Tabla o botones no disponibles');
                      }
                  });
-             }, 100);
+             }, 500);
         } else {
             // Si no hay datos, ocultar elementos de DataTables
             $('.dataTables_paginate').hide();
@@ -942,6 +1169,461 @@
                 searchMobileCards(searchTerm);
             }, 300);
         });
+    });
+</script>
+@endpush
+
+<!-- Modal de Detalles del Producto -->
+<div id="modalProducto" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Fondo oscuro -->
+        <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75" onclick="cerrarModalProducto()"></div>
+
+        <!-- Contenedor del modal -->
+        <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-5xl sm:w-full">
+            <!-- Header del modal -->
+            <div class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white" id="modalProductoTitulo">
+                        Detalles del Producto
+                    </h3>
+                    <button type="button" onclick="cerrarModalProducto()" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Contenido del modal -->
+            <div class="px-6 py-4 max-h-[calc(100vh-200px)] overflow-y-auto">
+                <!-- Loading -->
+                <div id="modalProductoLoading" class="text-center py-8">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-white"></div>
+                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Cargando información...</p>
+                </div>
+
+                <!-- Contenido -->
+                <div id="modalProductoContenido" class="hidden">
+                    <!-- Información Principal -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <!-- Imágenes del Producto -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Imágenes del Producto</h4>
+                            <div id="modalProductoImagenes" class="grid grid-cols-2 gap-3">
+                                <!-- Las imágenes se cargarán aquí -->
+                            </div>
+                        </div>
+
+                        <!-- Información Básica -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Información Básica</h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Nombre:</span>
+                                    <p id="modalProductoNombre" class="text-base font-semibold text-gray-900 dark:text-white"></p>
+                                </div>
+                                <div>
+                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Descripción:</span>
+                                    <p id="modalProductoDescripcion" class="text-sm text-gray-700 dark:text-gray-300"></p>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Precio:</span>
+                                        <p id="modalProductoPrecio" class="text-lg font-bold text-gray-900 dark:text-white"></p>
+                                    </div>
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-500 dark:text-gray-400">SKU:</span>
+                                        <p id="modalProductoSKU" class="text-sm text-gray-700 dark:text-gray-300"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Categoría y Marca -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Categoría</h4>
+                            <div id="modalProductoCategoria" class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <!-- Información de categoría -->
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Marca</h4>
+                            <div id="modalProductoMarca" class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <!-- Información de marca -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stock -->
+                    <div class="mb-6">
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Información de Stock</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                                <span class="text-sm font-medium text-blue-600 dark:text-blue-400">Stock Total</span>
+                                <p id="modalProductoStock" class="text-2xl font-bold text-blue-900 dark:text-blue-100"></p>
+                            </div>
+                            <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                                <span class="text-sm font-medium text-green-600 dark:text-green-400">Disponible</span>
+                                <p id="modalProductoStockDisponible" class="text-2xl font-bold text-green-900 dark:text-green-100"></p>
+                            </div>
+                            <div class="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                                <span class="text-sm font-medium text-yellow-600 dark:text-yellow-400">Reservado</span>
+                                <p id="modalProductoStockReservado" class="text-2xl font-bold text-yellow-900 dark:text-yellow-100"></p>
+                            </div>
+                            <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Estado</span>
+                                <p id="modalProductoEstado" class="text-lg font-semibold text-gray-900 dark:text-white"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Variantes -->
+                    <div id="modalProductoVariantesSection" class="mb-6">
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Variantes del Producto</h4>
+                        <div id="modalProductoVariantes" class="space-y-4">
+                            <!-- Las variantes se cargarán aquí -->
+                        </div>
+                    </div>
+
+                    <!-- Especificaciones -->
+                    <div id="modalProductoEspecificacionesSection" class="mb-6">
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Especificaciones Técnicas</h4>
+                        <div id="modalProductoEspecificaciones" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Las especificaciones se cargarán aquí -->
+                        </div>
+                    </div>
+
+                    <!-- Información Adicional -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Código de Barras:</span>
+                            <p id="modalProductoCodigoBarras" class="text-sm text-gray-700 dark:text-gray-300"></p>
+                        </div>
+                        <div>
+                            <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Costo Unitario:</span>
+                            <p id="modalProductoCostoUnitario" class="text-sm text-gray-700 dark:text-gray-300"></p>
+                        </div>
+                        <div>
+                            <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Peso:</span>
+                            <p id="modalProductoPeso" class="text-sm text-gray-700 dark:text-gray-300"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error -->
+                <div id="modalProductoError" class="hidden text-center py-8">
+                    <svg class="mx-auto h-12 w-12 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p class="mt-2 text-sm text-red-600 dark:text-red-400" id="modalProductoErrorMessage"></p>
+                </div>
+            </div>
+
+            <!-- Footer del modal -->
+            <div class="bg-gray-50 dark:bg-gray-800 px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+                <button type="button" onclick="cerrarModalProducto()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600">
+                    Cerrar
+                </button>
+                <a id="modalProductoEditar" href="#" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+                    Editar Producto
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+    function abrirModalProducto(productoId) {
+        const modal = document.getElementById('modalProducto');
+        const loading = document.getElementById('modalProductoLoading');
+        const contenido = document.getElementById('modalProductoContenido');
+        const error = document.getElementById('modalProductoError');
+        
+        // Mostrar modal y loading
+        modal.classList.remove('hidden');
+        loading.classList.remove('hidden');
+        contenido.classList.add('hidden');
+        error.classList.add('hidden');
+        
+        // Cargar datos del producto
+        fetch(`/productos/${productoId}/detalles`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    cargarDatosProducto(data.producto);
+                    loading.classList.add('hidden');
+                    contenido.classList.remove('hidden');
+                } else {
+                    throw new Error(data.message || 'Error al cargar los datos');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                loading.classList.add('hidden');
+                error.classList.remove('hidden');
+                document.getElementById('modalProductoErrorMessage').textContent = error.message || 'Error al cargar los datos del producto';
+            });
+    }
+
+    function cargarDatosProducto(producto) {
+        // Información básica
+        document.getElementById('modalProductoTitulo').textContent = producto.nombre;
+        document.getElementById('modalProductoNombre').textContent = producto.nombre;
+        document.getElementById('modalProductoDescripcion').textContent = producto.descripcion || 'Sin descripción';
+        document.getElementById('modalProductoPrecio').textContent = `$${parseFloat(producto.precio).toLocaleString('es-CO')}`;
+        document.getElementById('modalProductoSKU').textContent = producto.sku || 'N/A';
+        document.getElementById('modalProductoCodigoBarras').textContent = producto.codigo_barras || 'N/A';
+        document.getElementById('modalProductoCostoUnitario').textContent = producto.costo_unitario ? `$${parseFloat(producto.costo_unitario).toLocaleString('es-CO')}` : 'N/A';
+        document.getElementById('modalProductoPeso').textContent = producto.peso ? `${producto.peso} kg` : 'N/A';
+        
+        // Stock
+        document.getElementById('modalProductoStock').textContent = producto.stock || 0;
+        document.getElementById('modalProductoStockDisponible').textContent = producto.stock_disponible || 0;
+        document.getElementById('modalProductoStockReservado').textContent = producto.stock_reservado || 0;
+        document.getElementById('modalProductoEstado').textContent = producto.activo ? 'Activo' : 'Inactivo';
+        
+        // Categoría
+        const categoriaDiv = document.getElementById('modalProductoCategoria');
+        if (producto.categoria) {
+            categoriaDiv.innerHTML = `
+                <p class="font-semibold text-gray-900 dark:text-white">${producto.categoria.nombre}</p>
+                ${producto.categoria.descripcion ? `<p class="text-sm text-gray-600 dark:text-gray-400 mt-1">${producto.categoria.descripcion}</p>` : ''}
+            `;
+        } else {
+            categoriaDiv.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Sin categoría</p>';
+        }
+        
+        // Marca
+        const marcaDiv = document.getElementById('modalProductoMarca');
+        if (producto.marca) {
+            marcaDiv.innerHTML = `
+                <p class="font-semibold text-gray-900 dark:text-white">${producto.marca.nombre}</p>
+                ${producto.marca.descripcion ? `<p class="text-sm text-gray-600 dark:text-gray-400 mt-1">${producto.marca.descripcion}</p>` : ''}
+            `;
+        } else {
+            marcaDiv.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Sin marca</p>';
+        }
+        
+        // Imágenes del producto
+        const imagenesDiv = document.getElementById('modalProductoImagenes');
+        if (producto.imagenes && producto.imagenes.length > 0) {
+            imagenesDiv.innerHTML = producto.imagenes.map(imagen => `
+                <div class="relative group">
+                    <img src="${imagen.ruta}" alt="${imagen.alt_text || producto.nombre}" 
+                         class="w-full h-32 object-cover rounded-lg border border-gray-200 dark:border-gray-700">
+                    ${imagen.principal ? '<span class="absolute top-2 right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">Principal</span>' : ''}
+                </div>
+            `).join('');
+        } else {
+            imagenesDiv.innerHTML = '<p class="text-gray-500 dark:text-gray-400 col-span-2">No hay imágenes disponibles</p>';
+        }
+        
+        // Variantes
+        const variantesSection = document.getElementById('modalProductoVariantesSection');
+        const variantesDiv = document.getElementById('modalProductoVariantes');
+        if (producto.variantes && producto.variantes.length > 0) {
+            variantesSection.classList.remove('hidden');
+            variantesDiv.innerHTML = producto.variantes.map(variante => `
+                <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                    <div class="flex items-start justify-between mb-3">
+                        <div>
+                            <h5 class="font-semibold text-gray-900 dark:text-white">${variante.nombre}</h5>
+                            ${variante.descripcion ? `<p class="text-sm text-gray-600 dark:text-gray-400 mt-1">${variante.descripcion}</p>` : ''}
+                        </div>
+                        <span class="px-2 py-1 text-xs font-medium rounded ${variante.disponible ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'}">
+                            ${variante.disponible ? 'Disponible' : 'No Disponible'}
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
+                        <div>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Precio Adicional:</span>
+                            <p class="text-sm font-semibold text-gray-900 dark:text-white">$${parseFloat(variante.precio_adicional || 0).toLocaleString('es-CO')}</p>
+                        </div>
+                        <div>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Stock:</span>
+                            <p class="text-sm font-semibold text-gray-900 dark:text-white">${variante.stock || 0}</p>
+                        </div>
+                        <div>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Disponible:</span>
+                            <p class="text-sm font-semibold text-gray-900 dark:text-white">${variante.stock_disponible || 0}</p>
+                        </div>
+                        <div>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Reservado:</span>
+                            <p class="text-sm font-semibold text-gray-900 dark:text-white">${variante.stock_reservado || 0}</p>
+                        </div>
+                    </div>
+                    ${variante.sku ? `<p class="text-xs text-gray-500 dark:text-gray-400">SKU: ${variante.sku}</p>` : ''}
+                    ${variante.codigo_color ? `<p class="text-xs text-gray-500 dark:text-gray-400">Código Color: ${variante.codigo_color}</p>` : ''}
+                    ${variante.imagenes && variante.imagenes.length > 0 ? `
+                        <div class="mt-3">
+                            <span class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 block">Imágenes:</span>
+                            <div class="flex gap-2">
+                                ${variante.imagenes.map(img => `
+                                    <img src="${img.url}" alt="${img.alt_text || variante.nombre}" 
+                                         class="w-16 h-16 object-cover rounded border border-gray-200 dark:border-gray-600">
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        } else {
+            variantesSection.classList.add('hidden');
+        }
+        
+        // Especificaciones
+        const especificacionesSection = document.getElementById('modalProductoEspecificacionesSection');
+        const especificacionesDiv = document.getElementById('modalProductoEspecificaciones');
+        if (producto.especificaciones && producto.especificaciones.length > 0) {
+            especificacionesSection.classList.remove('hidden');
+            // Filtrar y ordenar especificaciones
+            const especificacionesValidas = producto.especificaciones
+                .filter(esp => esp.especificacion !== null)
+                .sort((a, b) => {
+                    const ordenA = a.especificacion.orden ?? 999;
+                    const ordenB = b.especificacion.orden ?? 999;
+                    return ordenA - ordenB;
+                });
+            
+            if (especificacionesValidas.length > 0) {
+                especificacionesDiv.innerHTML = especificacionesValidas.map(especificacion => {
+                    const espec = especificacion.especificacion;
+                    
+                    let valor = especificacion.valor;
+                    // Formatear el valor según el tipo
+                    if (espec.unidad) {
+                        valor = `${valor} ${espec.unidad}`;
+                    }
+                    
+                    return `
+                        <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <h5 class="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+                                        ${espec.etiqueta}
+                                    </h5>
+                                    <p class="text-base text-gray-700 dark:text-gray-300 font-medium">
+                                        ${valor}
+                                    </p>
+                                    ${espec.descripcion ? `<p class="text-xs text-gray-500 dark:text-gray-400 mt-1">${espec.descripcion}</p>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                especificacionesSection.classList.add('hidden');
+            }
+        } else {
+            especificacionesSection.classList.add('hidden');
+        }
+        
+        // Link de editar
+        document.getElementById('modalProductoEditar').href = `/productos/${producto.id}/edit`;
+    }
+
+    function cerrarModalProducto() {
+        document.getElementById('modalProducto').classList.add('hidden');
+    }
+
+    // Cerrar modal con ESC
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            cerrarModalProducto();
+        }
+    });
+
+    // Función para actualizar el stock en la tabla
+    function actualizarStockTabla() {
+        fetch('/productos/stock/actualizado')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.productos) {
+                    data.productos.forEach(producto => {
+                        const fila = document.querySelector(`tr[data-producto-id="${producto.id}"]`);
+                        if (fila) {
+                            // Actualizar stock total
+                            const stockTotal = fila.querySelector(`[data-stock-total="${producto.id}"]`);
+                            if (stockTotal) {
+                                stockTotal.textContent = producto.stock;
+                            }
+
+                            // Actualizar stock disponible
+                            const stockDisponible = fila.querySelector(`[data-stock-disponible="${producto.id}"]`);
+                            if (stockDisponible) {
+                                stockDisponible.textContent = producto.stock_disponible;
+                                
+                                // Actualizar clases según el stock disponible
+                                stockDisponible.className = 'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ';
+                                if (producto.stock_disponible > 10) {
+                                    stockDisponible.className += 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+                                } else if (producto.stock_disponible > 5) {
+                                    stockDisponible.className += 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
+                                } else if (producto.stock_disponible > 0) {
+                                    stockDisponible.className += 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
+                                } else {
+                                    stockDisponible.className += 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
+                                }
+                            }
+
+                            // Actualizar stock reservado
+                            const stockReservado = fila.querySelector(`[data-stock-reservado="${producto.id}"]`);
+                            const stockReservadoContainer = fila.querySelector(`[data-stock-reservado-container="${producto.id}"]`);
+                            if (stockReservado && stockReservadoContainer) {
+                                if (producto.stock_reservado > 0) {
+                                    stockReservado.textContent = producto.stock_reservado;
+                                    stockReservadoContainer.style.display = '';
+                                } else {
+                                    stockReservadoContainer.style.display = 'none';
+                                }
+                            }
+
+                            // Actualizar indicador de estado
+                            const indicador = fila.querySelector(`[data-stock-indicador="${producto.id}"]`);
+                            if (indicador) {
+                                let html = '';
+                                if (producto.stock_disponible <= 0) {
+                                    html = `
+                                        <div class="flex items-center space-x-1">
+                                            <svg class="w-3 h-3 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                            </svg>
+                                            <span class="text-xs text-red-600 dark:text-red-400">Sin stock disponible</span>
+                                        </div>
+                                    `;
+                                } else if (producto.stock_reservado > producto.stock * 0.5) {
+                                    html = `
+                                        <div class="flex items-center space-x-1">
+                                            <svg class="w-3 h-3 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                            </svg>
+                                            <span class="text-xs text-yellow-600 dark:text-yellow-400">Alto stock reservado</span>
+                                        </div>
+                                    `;
+                                }
+                                indicador.innerHTML = html;
+                            }
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error al actualizar el stock:', error);
+            });
+    }
+
+    // Actualizar el stock cada 30 segundos
+    setInterval(actualizarStockTabla, 30000);
+
+    // Actualizar el stock cuando la página gana el foco
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            actualizarStockTabla();
+        }
     });
 </script>
 @endpush

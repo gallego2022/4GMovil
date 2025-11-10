@@ -2,18 +2,18 @@
 
 namespace App\Services\Business;
 
-use App\Services\Base\BaseService;
-use App\Models\Producto;
-use App\Models\VarianteProducto;
 use App\Models\Direccion;
 use App\Models\MetodoPago;
-use App\Services\ReservaStockService;
+use App\Models\Producto;
+use App\Models\VarianteProducto;
+use App\Services\Base\BaseService;
 use App\Services\PedidoNotificationService;
+use App\Services\ReservaStockService;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
-use Exception;
 
 class CheckoutService extends BaseService
 {
@@ -34,38 +34,38 @@ class CheckoutService extends BaseService
         try {
             // Obtener carrito
             $cart = $this->getCartFromRequest($request);
-            
+
             // Validar carrito
             $this->validateCart($cart);
-            
+
             // Validar productos y variantes
             $this->validateProductsAvailability($cart);
-            
+
             // Obtener datos necesarios
             $direcciones = $this->getUserAddresses();
             $metodosPago = $this->getActivePaymentMethods();
-            
+
             // Guardar carrito en sesión
             Session::put('cart', $cart);
-            
+
             $this->logOperation('checkout_preparado_exitosamente', [
                 'cart_items' => count($cart),
-                'user_id' => Auth::id()
+                'user_id' => Auth::id(),
             ]);
 
             return [
                 'success' => true,
                 'cart' => $cart,
                 'direcciones' => $direcciones,
-                'metodosPago' => $metodosPago
+                'metodosPago' => $metodosPago,
             ];
 
         } catch (Exception $e) {
             $this->logOperation('error_preparando_checkout', [
                 'error' => $e->getMessage(),
-                'user_id' => Auth::id()
+                'user_id' => Auth::id(),
             ], 'error');
-            
+
             throw $e;
         }
     }
@@ -78,7 +78,7 @@ class CheckoutService extends BaseService
         return $this->executeInTransaction(function () use ($request) {
             // Validar datos del checkout
             $checkoutData = $this->validateCheckoutData($request);
-            
+
             // Obtener carrito de sesión
             $cart = Session::get('cart', []);
             if (empty($cart)) {
@@ -87,28 +87,28 @@ class CheckoutService extends BaseService
 
             // Validar disponibilidad de stock
             $this->validateStockAvailability($cart);
-            
+
             // Verificar que solo se use Stripe
             $metodoPago = MetodoPago::find($checkoutData['metodo_pago_id']);
-            if (!$metodoPago || strtolower($metodoPago->nombre) !== 'stripe') {
+            if (! $metodoPago || strtolower($metodoPago->nombre) !== 'stripe') {
                 throw new Exception('Solo se acepta pago con Stripe');
             }
-            
+
             // Crear pedido con estado pendiente
             $pedido = $this->createOrder($checkoutData, $cart);
-            
+
             // Crear detalles del pedido
             $this->createOrderDetails($pedido, $cart);
-            
+
             // Crear pago con estado pendiente
             $pago = $this->createPayment($pedido, $checkoutData);
-            
+
             // Reservar stock temporalmente
             $this->reservarStockParaPedido($cart, $pedido->pedido_id);
-            
+
             $this->logOperation('checkout_stripe_preparado', [
                 'pedido_id' => $pedido->pedido_id,
-                'user_id' => Auth::id()
+                'user_id' => Auth::id(),
             ]);
 
             return [
@@ -116,7 +116,7 @@ class CheckoutService extends BaseService
                 'pedido_id' => $pedido->pedido_id,
                 'pago_id' => $pago->pago_id,
                 'redirect_to_stripe' => true,
-                'message' => 'Pedido creado, redirigiendo a Stripe'
+                'message' => 'Pedido creado, redirigiendo a Stripe',
             ];
 
         }, 'procesamiento de checkout');
@@ -156,20 +156,20 @@ class CheckoutService extends BaseService
         foreach ($cart as $item) {
             // Manejar tanto 'id' como 'producto_id' para compatibilidad
             $productoId = $item['producto_id'] ?? $item['id'] ?? null;
-            
-            if (!$productoId) {
+
+            if (! $productoId) {
                 throw new Exception('ID de producto no encontrado en item del carrito');
             }
-            
+
             $producto = Producto::find($productoId);
-            if (!$producto) {
+            if (! $producto) {
                 throw new Exception('Uno o más productos ya no están disponibles');
             }
 
             // Si tiene variante, validar que la variante exista
             if (isset($item['variante_id'])) {
                 $variante = VarianteProducto::find($item['variante_id']);
-                if (!$variante || $variante->producto_id != $producto->producto_id) {
+                if (! $variante || $variante->producto_id != $producto->producto_id) {
                     throw new Exception('Uno o más productos ya no están disponibles');
                 }
             }
@@ -200,20 +200,20 @@ class CheckoutService extends BaseService
         $rules = [
             'direccion_id' => 'required|exists:direcciones,direccion_id',
             'metodo_pago_id' => 'required|exists:metodos_pago,metodo_id',
-            'notas' => 'nullable|string|max:500'
+            'notas' => 'nullable|string|max:500',
         ];
 
         $messages = [
             'direccion_id.required' => 'Debes seleccionar una dirección de envío',
             'direccion_id.exists' => 'La dirección seleccionada no es válida',
             'metodo_pago_id.required' => 'Debes seleccionar un método de pago',
-            'metodo_pago_id.exists' => 'El método de pago seleccionado no es válido'
+            'metodo_pago_id.exists' => 'El método de pago seleccionado no es válido',
         ];
 
         $validator = validator($request->all(), $rules, $messages);
-        
+
         if ($validator->fails()) {
-            throw new Exception('Datos de checkout inválidos: ' . implode(', ', $validator->errors()->all()));
+            throw new Exception('Datos de checkout inválidos: '.implode(', ', $validator->errors()->all()));
         }
 
         return $validator->validated();
@@ -227,28 +227,28 @@ class CheckoutService extends BaseService
         foreach ($cart as $item) {
             // Manejar tanto 'id' como 'producto_id' para compatibilidad
             $productoId = $item['producto_id'] ?? $item['id'] ?? null;
-            
-            if (!$productoId) {
+
+            if (! $productoId) {
                 throw new Exception('ID de producto no encontrado en item del carrito');
             }
-            
+
             $producto = Producto::find($productoId);
-            
+
             // Manejar tanto 'cantidad' como 'quantity' para compatibilidad
             $cantidad = $item['cantidad'] ?? $item['quantity'] ?? 1;
-            
+
             if (isset($item['variante_id'])) {
                 $variante = VarianteProducto::find($item['variante_id']);
-                if (!$variante) {
+                if (! $variante) {
                     throw new Exception("Variante no encontrada para el producto '{$producto->nombre_producto}'");
                 }
-                if (!$variante->tieneStockSuficiente($cantidad)) {
+                if (! $variante->tieneStockSuficiente($cantidad)) {
                     $stockDisponible = $variante->stock_disponible;
                     $nombreVariante = $variante->nombre ?? 'variante';
                     throw new Exception("Stock insuficiente para '{$producto->nombre_producto} ({$nombreVariante})'. Disponible: {$stockDisponible}, Solicitado: {$cantidad}");
                 }
             } else {
-                if (!$producto->tieneStockSuficiente($cantidad)) {
+                if (! $producto->tieneStockSuficiente($cantidad)) {
                     $stockDisponible = $producto->stock_disponible;
                     throw new Exception("Stock insuficiente para '{$producto->nombre_producto}'. Disponible: {$stockDisponible}, Solicitado: {$cantidad}");
                 }
@@ -267,7 +267,7 @@ class CheckoutService extends BaseService
             'estado_id' => 1, // Estado pendiente
             'fecha_pedido' => now(),
             'total' => $this->calculateTotal($cart),
-            'notas' => $checkoutData['notas'] ?? null
+            'notas' => $checkoutData['notas'] ?? null,
         ]);
 
         return $pedido;
@@ -281,14 +281,14 @@ class CheckoutService extends BaseService
         foreach ($cart as $item) {
             // Manejar tanto 'id' como 'producto_id' para compatibilidad
             $productoId = $item['producto_id'] ?? $item['id'] ?? null;
-            
-            if (!$productoId) {
+
+            if (! $productoId) {
                 throw new Exception('ID de producto no encontrado en item del carrito');
             }
-            
+
             $producto = Producto::find($productoId);
             $precio = $producto->precio;
-            
+
             if (isset($item['variante_id'])) {
                 $variante = VarianteProducto::find($item['variante_id']);
                 $precio += $variante->precio_adicional ?? 0;
@@ -296,14 +296,14 @@ class CheckoutService extends BaseService
 
             // Manejar tanto 'cantidad' como 'quantity' para compatibilidad
             $cantidad = $item['cantidad'] ?? $item['quantity'] ?? 1;
-            
+
             \App\Models\DetallePedido::create([
                 'pedido_id' => $pedido->pedido_id,
                 'producto_id' => $producto->producto_id,
                 'variante_id' => $item['variante_id'] ?? null,
                 'cantidad' => $cantidad,
                 'precio_unitario' => $precio,
-                'subtotal' => $precio * $cantidad
+                'subtotal' => $precio * $cantidad,
             ]);
         }
     }
@@ -318,7 +318,7 @@ class CheckoutService extends BaseService
             'metodo_id' => $checkoutData['metodo_pago_id'],
             'monto' => $pedido->total,
             'estado' => 'pendiente',
-            'fecha_pago' => now()
+            'fecha_pago' => now(),
         ]);
     }
 
@@ -328,28 +328,28 @@ class CheckoutService extends BaseService
     private function calculateTotal(array $cart): float
     {
         $total = 0;
-        
+
         foreach ($cart as $item) {
             // Manejar tanto 'id' como 'producto_id' para compatibilidad
             $productoId = $item['producto_id'] ?? $item['id'] ?? null;
-            
-            if (!$productoId) {
+
+            if (! $productoId) {
                 throw new Exception('ID de producto no encontrado en item del carrito');
             }
-            
+
             $producto = Producto::find($productoId);
             $precio = $producto->precio;
-            
+
             if (isset($item['variante_id'])) {
                 $variante = VarianteProducto::find($item['variante_id']);
                 $precio += $variante->precio_adicional ?? 0;
             }
-            
+
             // Manejar tanto 'cantidad' como 'quantity' para compatibilidad
             $cantidad = $item['cantidad'] ?? $item['quantity'] ?? 1;
             $total += $precio * $cantidad;
         }
-        
+
         return $total;
     }
 
@@ -360,43 +360,43 @@ class CheckoutService extends BaseService
     {
         $items = [];
         $total = 0;
-        
+
         foreach ($cart as $item) {
             // Manejar tanto 'id' como 'producto_id' para compatibilidad
             $productoId = $item['producto_id'] ?? $item['id'] ?? null;
-            
-            if (!$productoId) {
+
+            if (! $productoId) {
                 throw new Exception('ID de producto no encontrado en item del carrito');
             }
-            
+
             $producto = Producto::find($productoId);
             $precio = $producto->precio;
             $nombre = $producto->nombre_producto;
-            
+
             if (isset($item['variante_id'])) {
                 $variante = VarianteProducto::find($item['variante_id']);
                 $precio += $variante->precio_adicional ?? 0;
-                $nombre .= ' - ' . $variante->nombre;
+                $nombre .= ' - '.$variante->nombre;
             }
-            
+
             // Manejar tanto 'cantidad' como 'quantity' para compatibilidad
             $cantidad = $item['cantidad'] ?? $item['quantity'] ?? 1;
             $subtotal = $precio * $cantidad;
             $total += $subtotal;
-            
+
             $items[] = [
                 'producto' => $producto,
                 'variante' => $variante ?? null,
                 'cantidad' => $cantidad,
                 'precio_unitario' => $precio,
-                'subtotal' => $subtotal
+                'subtotal' => $subtotal,
             ];
         }
-        
+
         return [
             'items' => $items,
             'total' => $total,
-            'total_items' => count($items)
+            'total_items' => count($items),
         ];
     }
 
@@ -417,12 +417,13 @@ class CheckoutService extends BaseService
         try {
             // Obtener información del método de pago
             $metodoPago = MetodoPago::find($metodoPagoId);
-            
-            if (!$metodoPago) {
+
+            if (! $metodoPago) {
                 Log::warning('Método de pago no encontrado', [
                     'metodo_pago_id' => $metodoPagoId,
-                    'pedido_id' => $pedido->pedido_id
+                    'pedido_id' => $pedido->pedido_id,
                 ]);
+
                 return;
             }
 
@@ -430,32 +431,33 @@ class CheckoutService extends BaseService
             if (strtolower($metodoPago->nombre) === 'stripe') {
                 Log::info('Método Stripe seleccionado, no se envía correo en checkout', [
                     'pedido_id' => $pedido->pedido_id,
-                    'metodo_pago' => $metodoPago->nombre
+                    'metodo_pago' => $metodoPago->nombre,
                 ]);
+
                 return;
             }
 
             // Verificar si es un método que requiere confirmación manual
             $requiereConfirmacionManual = $this->metodoRequiereConfirmacionManual($metodoPago);
-            
-            if (!$requiereConfirmacionManual) {
+
+            if (! $requiereConfirmacionManual) {
                 // Para métodos como efectivo o transferencia, enviar correo inmediatamente
                 // ya que el pedido se confirma automáticamente
-                $notificationService = new PedidoNotificationService();
+                $notificationService = new PedidoNotificationService;
                 $notificationService->confirmarPedidoMetodoNoStripe($pedido, $metodoPago->nombre);
-                
+
                 Log::info('Correo de confirmación enviado para método no-Stripe', [
                     'pedido_id' => $pedido->pedido_id,
-                    'metodo_pago' => $metodoPago->nombre
+                    'metodo_pago' => $metodoPago->nombre,
                 ]);
             } else {
                 // Para métodos que requieren confirmación manual, también enviar notificación al administrador
                 // pero no el correo de confirmación al cliente
                 $this->notificarAdministradores($pedido, $metodoPago->nombre);
-                
+
                 Log::info('Método de pago requiere confirmación manual, notificación enviada al administrador', [
                     'pedido_id' => $pedido->pedido_id,
-                    'metodo_pago' => $metodoPago->nombre
+                    'metodo_pago' => $metodoPago->nombre,
                 ]);
             }
 
@@ -463,7 +465,7 @@ class CheckoutService extends BaseService
             Log::error('Error al enviar correo de confirmación en checkout', [
                 'pedido_id' => $pedido->pedido_id,
                 'metodo_pago_id' => $metodoPagoId,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             // No lanzar excepción para no afectar el flujo del checkout
         }
@@ -474,15 +476,15 @@ class CheckoutService extends BaseService
      */
     private function metodoRequiereConfirmacionManual($metodoPago): bool
     {
-        if (!$metodoPago) {
+        if (! $metodoPago) {
             return false;
         }
 
         // Métodos que requieren confirmación manual (efectivo, transferencia)
         // Stripe NO requiere confirmación manual porque se confirma automáticamente
         $metodosManuales = ['Efectivo', 'Transferencia Bancaria', 'efectivo', 'transferencia bancaria', 'transferencia'];
-        
-        return in_array($metodoPago->nombre, $metodosManuales) || 
+
+        return in_array($metodoPago->nombre, $metodosManuales) ||
                in_array(strtolower($metodoPago->nombre), $metodosManuales);
     }
 
@@ -492,12 +494,12 @@ class CheckoutService extends BaseService
     private function notificarAdministradores($pedido, $metodoPagoNombre)
     {
         try {
-            $adminNotificationService = new \App\Services\AdminNotificationService();
+            $adminNotificationService = new \App\Services\AdminNotificationService;
             $adminNotificationService->notificarPedidoNuevo($pedido, $metodoPagoNombre);
         } catch (\Exception $e) {
             Log::error('Error al notificar administradores', [
                 'pedido_id' => $pedido->pedido_id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -511,8 +513,8 @@ class CheckoutService extends BaseService
             // Manejar tanto 'id' como 'producto_id' para compatibilidad
             $productoId = $item['producto_id'] ?? $item['id'] ?? null;
             $cantidad = $item['cantidad'] ?? $item['quantity'] ?? 1;
-            
-            if (!$productoId) {
+
+            if (! $productoId) {
                 continue; // Saltar si no hay ID de producto
             }
 
@@ -522,9 +524,9 @@ class CheckoutService extends BaseService
                 if ($variante) {
                     $variante->registrarSalida(
                         $cantidad,
-                        "Venta - Checkout",
+                        'Venta - Checkout',
                         \Illuminate\Support\Facades\Auth::id(),
-                        "checkout_venta"
+                        'checkout_venta'
                     );
                 }
             } else {
@@ -533,7 +535,7 @@ class CheckoutService extends BaseService
                 if ($producto) {
                     $producto->registrarSalida(
                         $cantidad,
-                        "Venta - Checkout",
+                        'Venta - Checkout',
                         \Illuminate\Support\Facades\Auth::id(),
                         null // No hay pedido_id en este punto
                     );
@@ -551,8 +553,8 @@ class CheckoutService extends BaseService
             // Manejar tanto 'id' como 'producto_id' para compatibilidad
             $productoId = $item['producto_id'] ?? $item['id'] ?? null;
             $cantidad = $item['cantidad'] ?? $item['quantity'] ?? 1;
-            
-            if (!$productoId) {
+
+            if (! $productoId) {
                 continue; // Saltar si no hay ID de producto
             }
 
@@ -581,7 +583,6 @@ class CheckoutService extends BaseService
         }
     }
 
-
     /**
      * Confirma un pedido y descuenta el stock definitivamente
      */
@@ -590,29 +591,49 @@ class CheckoutService extends BaseService
         return $this->executeInTransaction(function () use ($pedidoId) {
             // Obtener el pedido
             $pedido = \App\Models\Pedido::findOrFail($pedidoId);
-            
+
             // Verificar que el pedido pertenece al usuario autenticado
             if ($pedido->usuario_id !== Auth::id()) {
                 throw new Exception('No tienes permisos para confirmar este pedido');
             }
-            
+
             // Verificar que el pedido está en estado pendiente
             if ($pedido->estado_id !== 1) { // 1 = pendiente
                 throw new Exception('El pedido no está en estado pendiente');
             }
-            
+
             // Obtener los detalles del pedido
             $detalles = $pedido->detalles;
-            
+
+            // Verificar si el pedido tiene variantes antes de confirmar reservas
+            $tieneVariantes = $detalles->contains(function ($detalle) {
+                return $detalle->variante_id !== null;
+            });
+
+            // Si tiene variantes, confirmar todas las reservas del pedido una sola vez
+            if ($tieneVariantes) {
+                $this->reservaStockService->confirmarReservasPedido($pedidoId, Auth::id());
+            }
+
             // Descontar stock definitivamente
             foreach ($detalles as $detalle) {
                 if ($detalle->variante_id) {
-                    // Para variantes, confirmar reservas y descontar stock
-                    $this->reservaStockService->confirmarReservasPedido($pedidoId, Auth::id());
+                    // Para variantes, las reservas ya se confirmaron arriba
+                    // No hacer nada más aquí
                 } else {
-                    // Para productos sin variantes, descontar stock directamente
+                    // Para productos sin variantes, liberar stock reservado y registrar salida
                     $producto = \App\Models\Producto::find($detalle->producto_id);
                     if ($producto) {
+                        // Liberar stock reservado primero
+                        if ($producto->stock_reservado > 0) {
+                            $producto->liberarStockReservado(
+                                $detalle->cantidad,
+                                "Confirmación de pedido #{$pedidoId}",
+                                Auth::id(),
+                                (int) $pedidoId
+                            );
+                        }
+                        // Registrar salida
                         $producto->registrarSalida(
                             $detalle->cantidad,
                             "Venta Confirmada - Pedido #{$pedidoId}",
@@ -622,29 +643,29 @@ class CheckoutService extends BaseService
                     }
                 }
             }
-            
+
             // Actualizar estado del pedido a confirmado
             $pedido->update(['estado_id' => 2]); // 2 = confirmado
-            
+
             // Actualizar estado del pago
             $pago = $pedido->pago;
             if ($pago) {
                 $pago->update(['estado' => 'confirmado']);
             }
-            
+
             // Enviar notificaciones
             $this->enviarCorreoConfirmacionSiEsNecesario($pedido, $pago->metodo_id);
-            
+
             $this->logOperation('pedido_confirmado_exitosamente', [
                 'pedido_id' => $pedidoId,
-                'user_id' => Auth::id()
+                'user_id' => Auth::id(),
             ]);
 
             return [
                 'success' => true,
-                'message' => 'Pedido confirmado exitosamente. El stock ha sido descontado definitivamente.'
+                'message' => 'Pedido confirmado exitosamente. El stock ha sido descontado definitivamente.',
             ];
-            
+
         }, 'confirmación de pedido');
     }
 }

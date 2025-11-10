@@ -4,16 +4,15 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Base\WebController;
 use App\Models\Pedido;
-use App\Models\EstadoPedido;
 use App\Services\PedidoNotificationService;
+use App\Services\ReservaStockService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\View;
 
 class PedidoAdminController extends WebController
 {
@@ -31,7 +30,8 @@ class PedidoAdminController extends WebController
 
             return View::make('pages.admin.pedidos.index', compact('pedidos'));
         } catch (\Exception $e) {
-            Log::error('Error en PedidoAdminController@index: ' . $e->getMessage());
+            Log::error('Error en PedidoAdminController@index: '.$e->getMessage());
+
             return Redirect::back()->with('error', 'Hubo un error al cargar los pedidos.');
         }
     }
@@ -40,16 +40,17 @@ class PedidoAdminController extends WebController
     {
         try {
             $pedido = Pedido::with([
-                'usuario', 
-                'estado', 
-                'pago.metodoPago', 
+                'usuario',
+                'estado',
+                'pago.metodoPago',
                 'direccion',
-                'detalles.producto'
+                'detalles.producto',
             ])->findOrFail($id);
 
             return View::make('pages.admin.pedidos.show', compact('pedido'));
         } catch (\Exception $e) {
-            Log::error('Error en PedidoAdminController@show: ' . $e->getMessage());
+            Log::error('Error en PedidoAdminController@show: '.$e->getMessage());
+
             return Redirect::back()->with('error', 'Hubo un error al cargar el detalle del pedido.');
         }
     }
@@ -58,34 +59,34 @@ class PedidoAdminController extends WebController
     {
         try {
             $request->validate([
-                'estado_id' => 'required|exists:estados_pedido,estado_id'
+                'estado_id' => 'required|exists:estados_pedido,estado_id',
             ]);
 
             $pedido = Pedido::with(['detalles.producto', 'usuario', 'estado'])->findOrFail($id);
             $estadoAnterior = $pedido->estado_id;
             $nuevoEstado = (int) $request->estado_id;
-            
+
             // Validar que el pedido no esté cancelado o confirmado
             if ($this->pedidoNoPermiteCambioEstado($pedido)) {
                 $estadoActual = $pedido->estado->nombre ?? 'Desconocido';
                 $mensaje = "No se puede cambiar el estado de un pedido que ya está {$estadoActual}";
-                
+
                 Log::warning('Intento de cambio de estado en pedido finalizado', [
                     'pedido_id' => $pedido->pedido_id,
                     'estado_actual' => $estadoActual,
                     'nuevo_estado' => $nuevoEstado,
-                    'admin_id' => auth()->id()
+                    'admin_id' => auth()->id(),
                 ]);
-                
+
                 return Redirect::back()
                     ->with('mensaje', $mensaje)
                     ->with('tipo', 'warning');
             }
-            
+
             Log::info('Cambiando estado de pedido', [
                 'pedido_id' => $pedido->pedido_id,
                 'estado_anterior' => $estadoAnterior,
-                'nuevo_estado' => $nuevoEstado
+                'nuevo_estado' => $nuevoEstado,
             ]);
 
             // Manejar stock reservado según el cambio de estado
@@ -99,16 +100,17 @@ class PedidoAdminController extends WebController
 
             Log::info('Estado de pedido actualizado', [
                 'pedido_id' => $pedido->pedido_id,
-                'nuevo_estado' => $nuevoEstado
+                'nuevo_estado' => $nuevoEstado,
             ]);
 
             return Redirect::back()->with('mensaje', 'Estado del Pedido Actualizado')->with('tipo', 'success');
 
         } catch (\Exception $e) {
-            Log::error('Error en PedidoAdminController@updateEstado: ' . $e->getMessage(), [
+            Log::error('Error en PedidoAdminController@updateEstado: '.$e->getMessage(), [
                 'pedido_id' => $id,
-                'estado_id' => $request->estado_id ?? 'no_provisto'
+                'estado_id' => $request->estado_id ?? 'no_provisto',
             ]);
+
             return Redirect::back()->with('mensaje', 'Hubo un error al actualizar el estado del pedido.')->with('tipo', 'error');
         }
     }
@@ -120,10 +122,10 @@ class PedidoAdminController extends WebController
     {
         // Estados pendientes
         $estadosPendientes = [1]; // Pendiente
-        
+
         // Estados que confirman la venta
         $estadosConfirmados = [2]; // Confirmado
-        
+
         // Estados que cancelan la venta
         $estadosCancelados = [3]; // Cancelado
 
@@ -148,10 +150,10 @@ class PedidoAdminController extends WebController
     {
         // Estados pendientes
         $estadosPendientes = [1]; // Pendiente
-        
+
         // Estados que confirman la venta
         $estadosConfirmados = [2]; // Confirmado
-        
+
         // Solo enviar correo si pasa de pendiente a confirmado
         return in_array($estadoAnterior, $estadosPendientes) && in_array($nuevoEstado, $estadosConfirmados);
     }
@@ -162,19 +164,19 @@ class PedidoAdminController extends WebController
     private function enviarCorreoConfirmacion(Pedido $pedido): void
     {
         try {
-            $notificationService = new PedidoNotificationService();
+            $notificationService = new PedidoNotificationService;
             $notificationService->enviarCorreoConfirmacion($pedido);
-            
+
             Log::info('Correo de confirmación enviado', [
                 'pedido_id' => $pedido->pedido_id,
                 'usuario_id' => $pedido->usuario_id,
-                'email' => $pedido->usuario->correo_electronico
+                'email' => $pedido->usuario->correo_electronico,
             ]);
-            
+
         } catch (\Exception $e) {
             Log::error('Error enviando correo de confirmación', [
                 'pedido_id' => $pedido->pedido_id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -188,21 +190,21 @@ class PedidoAdminController extends WebController
             // Por ahora, para cancelaciones usamos el mailable existente
             // En el futuro se puede crear un método específico en PedidoNotificationService
             $pedidoUrl = Route::route('pedidos.show', $pedido->pedido_id);
-            
+
             // Enviar correo de cancelación usando el mailable existente
             Mail::to($pedido->usuario->correo_electronico)
                 ->send(new \App\Mail\PedidoCancelado($pedido->usuario, $pedido, $pedidoUrl));
-            
+
             Log::info('Correo de cancelación enviado', [
                 'pedido_id' => $pedido->pedido_id,
                 'usuario_id' => $pedido->usuario_id,
-                'email' => $pedido->usuario->correo_electronico
+                'email' => $pedido->usuario->correo_electronico,
             ]);
-            
+
         } catch (\Exception $e) {
             Log::error('Error enviando correo de cancelación', [
                 'pedido_id' => $pedido->pedido_id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -214,22 +216,43 @@ class PedidoAdminController extends WebController
     {
         // Estados que confirman la venta (liberan stock reservado y registran salida)
         $estadosConfirmados = [2]; // Confirmado
-        
+
         // Estados que cancelan la venta (liberan stock reservado sin registrar salida)
         $estadosCancelados = [3]; // Cancelado
-        
+
         // Estados pendientes (mantienen stock reservado)
         $estadosPendientes = [1]; // Pendiente
 
         Log::info('Manejando stock reservado', [
             'pedido_id' => $pedido->pedido_id,
             'estado_anterior' => $estadoAnterior,
-            'nuevo_estado' => $nuevoEstado
+            'nuevo_estado' => $nuevoEstado,
         ]);
+
+        // Si el pedido se cancela (pasa de pendiente a cancelado/rechazado), cancelar reservas de variantes primero
+        if (in_array($estadoAnterior, $estadosPendientes) && in_array($nuevoEstado, $estadosCancelados)) {
+            $tieneVariantes = $pedido->detalles->contains(function ($detalle) {
+                return $detalle->variante_id !== null;
+            });
+
+            if ($tieneVariantes) {
+                // Usar el servicio de reservas para cancelar todas las reservas activas del pedido
+                $reservaStockService = new ReservaStockService;
+                $reservaStockService->cancelarReservasPedido(
+                    $pedido->pedido_id,
+                    \Illuminate\Support\Facades\Auth::id(),
+                    "Cancelación de pedido #{$pedido->pedido_id}"
+                );
+
+                Log::info('Reservas de variantes canceladas por cancelación de pedido', [
+                    'pedido_id' => $pedido->pedido_id,
+                ]);
+            }
+        }
 
         foreach ($pedido->detalles as $detalle) {
             $producto = $detalle->producto;
-            
+
             // Si el pedido se confirma (pasa de pendiente a confirmado/enviado/entregado)
             if (in_array($estadoAnterior, $estadosPendientes) && in_array($nuevoEstado, $estadosConfirmados)) {
                 // Verificar si el detalle tiene una variante específica
@@ -243,74 +266,67 @@ class PedidoAdminController extends WebController
                             \Illuminate\Support\Facades\Auth::id(),
                             "Pedido #{$pedido->pedido_id}"
                         );
-                        
+
                         Log::info('Venta de variante confirmada', [
                             'producto_id' => $producto->producto_id,
                             'variante_id' => $variante->variante_id,
                             'variante_nombre' => $variante->nombre,
                             'cantidad' => $detalle->cantidad,
-                            'pedido_id' => $pedido->pedido_id
+                            'pedido_id' => $pedido->pedido_id,
                         ]);
                     }
                 } else {
-                    // Registrar movimiento de confirmación de venta para el producto (sin descontar stock)
+                    // Liberar stock reservado primero
+                    if ($producto->stock_reservado > 0) {
+                        $producto->liberarStockReservado(
+                            $detalle->cantidad,
+                            "Confirmación de pedido #{$pedido->pedido_id}",
+                            \Illuminate\Support\Facades\Auth::id(),
+                            $pedido->pedido_id
+                        );
+                    }
+                    // Registrar movimiento de confirmación de venta para el producto
                     \App\Models\MovimientoInventario::create([
                         'producto_id' => $producto->producto_id,
                         'tipo_movimiento' => 'salida',
                         'cantidad' => $detalle->cantidad,
                         'stock_anterior' => $producto->stock,
-                        'stock_nuevo' => $producto->stock, // No cambia el stock físico
+                        'stock_nuevo' => $producto->stock, // No cambia el stock físico porque ya se reservó
                         'motivo' => "Confirmación de pedido #{$pedido->pedido_id}",
                         'usuario_id' => \Illuminate\Support\Facades\Auth::id(),
                         'pedido_id' => $pedido->pedido_id,
                         'costo_unitario' => $producto->costo_unitario,
-                        'fecha_movimiento' => Carbon::now()
+                        'fecha_movimiento' => Carbon::now(),
                     ]);
-                    
+
                     Log::info('Venta de producto confirmada', [
                         'producto_id' => $producto->producto_id,
                         'cantidad' => $detalle->cantidad,
-                        'pedido_id' => $pedido->pedido_id
+                        'pedido_id' => $pedido->pedido_id,
                     ]);
                 }
             }
             // Si el pedido se cancela (pasa de pendiente a cancelado/rechazado)
             elseif (in_array($estadoAnterior, $estadosPendientes) && in_array($nuevoEstado, $estadosCancelados)) {
-                // Verificar si el detalle tiene una variante específica
-                if ($detalle->variante_id) {
-                    // Liberar stock reservado de la variante
-                    $variante = $detalle->variante;
-                    if ($variante) {
-                        $variante->liberarReserva(
+                // Para productos sin variantes, liberar stock reservado
+                if (! $detalle->variante_id) {
+                    // Liberar stock reservado del producto padre
+                    if ($producto->stock_reservado > 0) {
+                        $producto->liberarStockReservado(
                             $detalle->cantidad,
                             "Cancelación de pedido #{$pedido->pedido_id}",
                             \Illuminate\Support\Facades\Auth::id(),
-                            "Pedido #{$pedido->pedido_id}"
+                            $pedido->pedido_id
                         );
-                        
-                        Log::info('Stock de variante liberado por cancelación', [
-                            'producto_id' => $producto->producto_id,
-                            'variante_id' => $variante->variante_id,
-                            'variante_nombre' => $variante->nombre,
-                            'cantidad' => $detalle->cantidad,
-                            'pedido_id' => $pedido->pedido_id
-                        ]);
                     }
-                } else {
-                    // Liberar stock reservado del producto padre
-                    $producto->liberarStockReservado(
-                        $detalle->cantidad,
-                        "Cancelación de pedido #{$pedido->pedido_id}",
-                        \Illuminate\Support\Facades\Auth::id(),
-                        $pedido->pedido_id
-                    );
-                    
+
                     Log::info('Stock de producto liberado por cancelación', [
                         'producto_id' => $producto->producto_id,
                         'cantidad' => $detalle->cantidad,
-                        'pedido_id' => $pedido->pedido_id
+                        'pedido_id' => $pedido->pedido_id,
                     ]);
                 }
+                // Las variantes ya se cancelaron antes del bucle
             }
             // Si el pedido se cancela después de estar confirmado
             elseif (in_array($estadoAnterior, $estadosConfirmados) && in_array($nuevoEstado, $estadosCancelados)) {
@@ -325,13 +341,13 @@ class PedidoAdminController extends WebController
                             \Illuminate\Support\Facades\Auth::id(),
                             "Pedido #{$pedido->pedido_id}"
                         );
-                        
+
                         Log::info('Stock de variante devuelto por cancelación post-confirmación', [
                             'producto_id' => $producto->producto_id,
                             'variante_id' => $variante->variante_id,
                             'variante_nombre' => $variante->nombre,
                             'cantidad' => $detalle->cantidad,
-                            'pedido_id' => $pedido->pedido_id
+                            'pedido_id' => $pedido->pedido_id,
                         ]);
                     }
                 } else {
@@ -342,11 +358,11 @@ class PedidoAdminController extends WebController
                         \Illuminate\Support\Facades\Auth::id(),
                         "Pedido #{$pedido->pedido_id}"
                     );
-                    
+
                     Log::info('Stock de producto devuelto por cancelación post-confirmación', [
                         'producto_id' => $producto->producto_id,
                         'cantidad' => $detalle->cantidad,
-                        'pedido_id' => $pedido->pedido_id
+                        'pedido_id' => $pedido->pedido_id,
                     ]);
                 }
             }
@@ -361,9 +377,10 @@ class PedidoAdminController extends WebController
     {
         // Estados que no permiten cambios
         $estadosFinales = ['cancelado', 'confirmado', 'entregado'];
-        
+
         $estadoActual = strtolower($pedido->estado->nombre ?? '');
-        
+
         return in_array($estadoActual, $estadosFinales);
     }
-} 
+
+}

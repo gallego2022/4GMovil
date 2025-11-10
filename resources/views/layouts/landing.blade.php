@@ -14,6 +14,16 @@
     <!-- Alpine.js y SweetAlert2 se cargan desde Vite para mejor rendimiento -->
     <!-- CSS de animaciones de carga -->
     <link rel="stylesheet" href="{{ asset('css/loading-animations.css') }}">
+    <!-- SweetAlert2 desde CDN como fallback si no está disponible desde Vite -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Asegurar que SweetAlert2 esté disponible globalmente
+        if (typeof Swal !== 'undefined') {
+            window.Swal = Swal;
+            console.log('SweetAlert2 cargado desde CDN');
+        }
+    </script>
     @stack('styles')
     <style>
         [x-cloak] {
@@ -450,9 +460,23 @@
                                 class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-150 ease-in-out">
                                 <i class="fas fa-user-circle mr-2"></i> Ver Perfil
                             </a>
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="block" data-loading-message="Cerrando sesión...">
+                            <a href="{{ route('pedidos.historial') }}" data-loading-message="Cargando pedidos..."
+                                class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-150 ease-in-out">
+                                <i class="fas fa-shopping-bag mr-2"></i> Ver Pedidos
+                            </a>
+                            <form id="logout-form" 
+                                  action="{{ route('logout') }}" 
+                                  method="POST" 
+                                  class="block confirm-action"
+                                  data-title="¿Cerrar sesión?"
+                                  data-message="¿Estás seguro de que deseas cerrar tu sesión?"
+                                  data-confirm-text="Sí, cerrar sesión"
+                                  data-cancel-text="Cancelar"
+                                  data-confirm-color="blue"
+                                  data-show-warning="false"
+                                  data-loading-message="Cerrando sesión...">
                                 @csrf
-                                <button type="button"
+                                <button type="submit"
                                     class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-150 ease-in-out">
                                     <i class="fas fa-sign-out-alt mr-2"></i> Cerrar Sesión
                                 </button>
@@ -562,9 +586,19 @@
                             class="block text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 py-2">
                             <i class="fas fa-user mr-3"></i>Mi Perfil
                         </a>
-                        <form id="logout-form-mobile" action="{{ route('logout') }}" method="POST" class="block" data-loading-message="Cerrando sesión...">
+                        <form id="logout-form-mobile" 
+                              action="{{ route('logout') }}" 
+                              method="POST" 
+                              class="block confirm-action"
+                              data-title="¿Cerrar sesión?"
+                              data-message="¿Estás seguro de que deseas cerrar tu sesión?"
+                              data-confirm-text="Sí, cerrar sesión"
+                              data-cancel-text="Cancelar"
+                              data-confirm-color="blue"
+                              data-show-warning="false"
+                              data-loading-message="Cerrando sesión...">
                             @csrf
-                            <button type="button"
+                            <button type="submit"
                                 class="w-full text-left text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 py-2">
                                 <i class="fas fa-sign-out-alt mr-3"></i>Cerrar Sesión
                             </button>
@@ -908,16 +942,74 @@
 
     <!-- Script del carrito -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             // DOM Content Loaded
 
-            // Variables globales
+            // Variables globales - inicializar desde localStorage primero
             let cart = JSON.parse(localStorage.getItem('cart')) || [];
-            // Cart inicial
+            
+            // Si el usuario está autenticado, sincronizar con el servidor al cargar
+            // Esto asegura que el carrito esté actualizado y sin duplicados
+            try {
+                const cartResponse = await fetch('/carrito/obtener', {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (cartResponse.ok) {
+                    const cartData = await cartResponse.json();
+                    if (cartData.success && cartData.data && cartData.data.items && cartData.data.items.length > 0) {
+                        // Reconstruir carrito desde el servidor para evitar duplicados
+                        cart = [];
+                        cartData.data.items.forEach(item => {
+                            if (item.producto) {
+                                const cartItem = {
+                                    id: item.producto.producto_id,
+                                    name: item.producto.nombre_producto,
+                                    price: parseFloat(item.producto.precio),
+                                    quantity: item.cantidad,
+                                    itemId: item.id // Guardar el ID del item del servidor para poder eliminarlo
+                                };
+                                
+                                if (item.variante) {
+                                    cartItem.variante_id = item.variante.variante_id;
+                                    cartItem.variante_nombre = item.variante.nombre;
+                                    cartItem.precio_adicional = parseFloat(item.variante.precio_adicional || 0);
+                                    cartItem.name = `${item.producto.nombre_producto} (${item.variante.nombre})`;
+                                    cartItem.price = parseFloat(item.producto.precio) + parseFloat(item.variante.precio_adicional || 0);
+                                }
+                                
+                                cart.push(cartItem);
+                            }
+                        });
+                        
+                        // Actualizar localStorage con datos del servidor
+                        localStorage.setItem('cart', JSON.stringify(cart));
+                        console.log('Carrito sincronizado desde servidor al cargar:', cart);
+                    } else if (cartData.success && cartData.data && (!cartData.data.items || cartData.data.items.length === 0)) {
+                        // Si el carrito del servidor está vacío, limpiar localStorage también
+                        cart = [];
+                        localStorage.setItem('cart', JSON.stringify(cart));
+                        console.log('Carrito del servidor vacío, localStorage limpiado');
+                    }
+                }
+            } catch (error) {
+                console.error('Error al sincronizar carrito al cargar:', error);
+                // Continuar con localStorage si hay error
+            }
+            
+            // Sincronizar window.cart con la variable local
+            window.cart = cart;
 
             // Funciones del carrito
             function updateCartCount() {
                 // Actualizando contador del carrito
+                // Sincronizar con window.cart si existe
+                const currentCart = window.cart || cart;
+                
                 const cartCount = document.getElementById('cart-count');
                 const cartCountMobile = document.getElementById('cart-count-mobile');
                 
@@ -926,14 +1018,17 @@
                     return;
                 }
                 
-                const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+                const totalItems = currentCart.reduce((total, item) => total + (parseInt(item.quantity) || 0), 0);
+                
+                // Asegurar que sea un número entero sin formateo adicional
+                const count = parseInt(totalItems) || 0;
                 
                 if (cartCount) {
-                    cartCount.textContent = totalItems;
+                    cartCount.textContent = count.toString();
                 }
                 
                 if (cartCountMobile) {
-                    cartCountMobile.textContent = totalItems;
+                    cartCountMobile.textContent = count.toString();
                 }
                 
                 // Total items calculado
@@ -949,6 +1044,9 @@
 
             function updateCartDisplay() {
                 // Actualizando display del carrito
+                // Sincronizar con window.cart si existe
+                const currentCart = window.cart || cart;
+                
                 const cartItems = document.getElementById('cart-items');
                 const cartSubtotal = document.getElementById('cart-subtotal');
                 const cartTotal = document.getElementById('cart-total');
@@ -962,12 +1060,12 @@
                     return;
                 }
 
-                const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+                const totalItems = currentCart.reduce((total, item) => total + item.quantity, 0);
                 if (cartItemsCount) {
                     cartItemsCount.textContent = `${totalItems} producto${totalItems !== 1 ? 's' : ''}`;
                 }
 
-                if (cart.length === 0) {
+                if (currentCart.length === 0) {
                     cartItems.innerHTML = '';
                     if (emptyCart) {
                         emptyCart.style.display = 'block';
@@ -984,12 +1082,12 @@
                     emptyCart.style.display = 'none';
                 }
                 // Actualizar el campo oculto con los datos del carrito
-                cartData.value = JSON.stringify(cart);
+                cartData.value = JSON.stringify(currentCart);
 
                 let html = '';
                 let subtotal = 0;
 
-                cart.forEach(item => {
+                currentCart.forEach(item => {
                     const itemTotal = item.price * item.quantity;
                     subtotal += itemTotal;
 
@@ -1096,6 +1194,8 @@
                     console.log('Nuevo producto agregado al carrito');
                 }
 
+                // Sincronizar con window.cart
+                window.cart = cart;
                 localStorage.setItem('cart', JSON.stringify(cart));
                 console.log('Cart actualizado:', cart); // Debug
                 updateCartCount();
@@ -1132,21 +1232,63 @@
                     if (product.quantity <= 0) {
                         removeFromCart(productId, varianteId);
                     } else {
-                        localStorage.setItem('cart', JSON.stringify(cart));
+                        // Sincronizar con window.cart
+                    window.cart = cart;
+                    localStorage.setItem('cart', JSON.stringify(cart));
                         updateCartCount();
                         updateCartDisplay();
                     }
                 }
             }
 
-            function removeFromCart(productId, varianteId) {
+            async function removeFromCart(productId, varianteId) {
                 console.log('Eliminando del carrito:', { productId, varianteId }); // Debug
+                
+                // Buscar el item en el carrito para obtener su itemId del servidor
+                const itemToRemove = cart.find(item => {
+                    if (varianteId) {
+                        return item.id === productId && item.variante_id === varianteId;
+                    }
+                    return item.id === productId && !item.variante_id;
+                });
+                
+                // Si el item tiene itemId del servidor, eliminarlo del servidor también
+                if (itemToRemove && itemToRemove.itemId) {
+                    try {
+                        // Usar la ruta correcta según si el usuario está autenticado o no
+                        // Ambas rutas funcionan, pero la ruta /carrito/eliminar/{itemId} funciona para ambos casos
+                        const route = `/carrito/eliminar/${itemToRemove.itemId}`;
+                        
+                        const response = await fetch(route, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                                'Accept': 'application/json'
+                            }
+                        });
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            console.log('Item eliminado del servidor:', data);
+                        } else {
+                            const errorData = await response.json().catch(() => ({ message: 'Error desconocido' }));
+                            console.error('Error al eliminar del servidor:', response.status, errorData);
+                        }
+                    } catch (error) {
+                        console.error('Error al eliminar del servidor:', error);
+                    }
+                }
+                
+                // Eliminar del carrito local
                 cart = cart.filter(item => {
                     if (varianteId) {
                         return !(item.id === productId && item.variante_id === varianteId);
                     }
                     return !(item.id === productId && !item.variante_id);
                 });
+                
+                // Sincronizar con window.cart
+                window.cart = cart;
                 localStorage.setItem('cart', JSON.stringify(cart));
                 updateCartCount();
                 updateCartDisplay();
@@ -1325,10 +1467,26 @@
             updateCartCount();
             updateCartDisplay();
 
+            // Función para sincronizar cart desde window.cart
+            window.syncCart = function() {
+                if (window.cart) {
+                    cart = window.cart;
+                    // Actualizar localStorage también
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    // Actualizar UI después de sincronizar
+                    updateCartCount();
+                    updateCartDisplay();
+                    console.log('Carrito sincronizado y UI actualizada:', cart);
+                }
+            };
+            
             // Hacer las funciones accesibles globalmente
             window.addToCart = addToCart;
             window.updateQuantity = updateQuantity;
             window.removeFromCart = removeFromCart;
+            window.updateCartCount = updateCartCount;
+            window.updateCartDisplay = updateCartDisplay;
+            window.cart = cart; // Exponer cart globalmente
 
             console.log('Inicialización del carrito completada'); // Debug
         });
@@ -1535,6 +1693,9 @@
         });
     </script>
 
+    <!-- Sistema de confirmación modal (debe cargarse antes que otros scripts) -->
+    <script src="{{ asset('js/confirm-modal.js') }}"></script>
+    
     @stack('scripts')
     
     <!-- Modal para selección de variantes -->

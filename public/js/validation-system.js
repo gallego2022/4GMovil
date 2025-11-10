@@ -82,13 +82,60 @@ class ValidationSystem {
         });
 
         // Validador de SKU único
-        this.addValidator('uniqueSku', async (value) => {
+        this.addValidator('uniqueSku', async (value, productId = null) => {
             if (!value) return true;
             try {
-                const response = await fetch(`/admin/api/check-sku?sku=${encodeURIComponent(value)}`);
+                let url = `/admin/api/check-sku?sku=${encodeURIComponent(value)}`;
+                if (productId) {
+                    url += `&product_id=${encodeURIComponent(productId)}`;
+                }
+                
+                // Obtener token CSRF
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                
+                // Función auxiliar para obtener cookie
+                const getCookie = (name) => {
+                    const value = `; ${document.cookie}`;
+                    const parts = value.split(`; ${name}=`);
+                    if (parts.length === 2) return parts.pop().split(';').shift();
+                    return null;
+                };
+                
+                // Obtener token JWT de la cookie
+                const jwtToken = getCookie('jwt_token');
+                
+                // Preparar headers
+                const headers = {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                };
+                
+                // Agregar token JWT si existe
+                if (jwtToken) {
+                    headers['Authorization'] = `Bearer ${jwtToken}`;
+                }
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: headers,
+                    credentials: 'same-origin'
+                });
+                
+                if (!response.ok) {
+                    // Si es 401 o 403, podría ser un problema de autenticación
+                    if (response.status === 401 || response.status === 403) {
+                        console.warn('Error de autenticación al verificar SKU:', response.status);
+                    } else {
+                        console.warn('Error al verificar SKU:', response.status, response.statusText);
+                    }
+                    return true; // Si hay error, permitir el valor
+                }
+                
                 const data = await response.json();
                 return !data.exists;
-            } catch {
+            } catch (error) {
+                console.warn('Error al verificar SKU:', error);
                 return true; // Si hay error, permitir el valor
             }
         });
@@ -239,17 +286,17 @@ class ValidationSystem {
     /**
      * Aplicar una regla de validación específica
      */
-    async applyRule(field, rule, value, messages = {}) {
+    async applyRule(field, rule, value, customMessages = {}) {
         const fieldName = field.name;
         const defaultMessages = this.messages.get(fieldName) || {};
-        const messages = { ...defaultMessages, ...messages };
+        const mergedMessages = { ...defaultMessages, ...customMessages };
 
         // Regla requerido
         if (rule === 'required') {
             if (!value || value.trim() === '') {
                 return {
                     isValid: false,
-                    message: messages.required || `${this.getFieldLabel(field)} es requerido`
+                    message: mergedMessages.required || `${this.getFieldLabel(field)} es requerido`
                 };
             }
         }
@@ -259,7 +306,7 @@ class ValidationSystem {
             if (value && !this.validators.get('email')(value)) {
                 return {
                     isValid: false,
-                    message: messages.email || 'Ingresa un email válido'
+                    message: mergedMessages.email || 'Ingresa un email válido'
                 };
             }
         }
@@ -269,7 +316,7 @@ class ValidationSystem {
             if (value && !this.validators.get('phone')(value)) {
                 return {
                     isValid: false,
-                    message: messages.phone || 'Ingresa un teléfono válido'
+                    message: mergedMessages.phone || 'Ingresa un teléfono válido'
                 };
             }
         }
@@ -279,7 +326,7 @@ class ValidationSystem {
             if (value && !this.validators.get('url')(value)) {
                 return {
                     isValid: false,
-                    message: messages.url || 'Ingresa una URL válida'
+                    message: mergedMessages.url || 'Ingresa una URL válida'
                 };
             }
         }
@@ -289,7 +336,7 @@ class ValidationSystem {
             if (value && !this.validators.get('decimal')(value)) {
                 return {
                     isValid: false,
-                    message: messages.decimal || 'Ingresa un número decimal válido'
+                    message: mergedMessages.decimal || 'Ingresa un número decimal válido'
                 };
             }
         }
@@ -299,7 +346,7 @@ class ValidationSystem {
             if (value && !this.validators.get('integer')(value)) {
                 return {
                     isValid: false,
-                    message: messages.integer || 'Ingresa un número entero válido'
+                    message: mergedMessages.integer || 'Ingresa un número entero válido'
                 };
             }
         }
@@ -310,7 +357,7 @@ class ValidationSystem {
             if (value && !this.validators.get('minLength')(value, minLength)) {
                 return {
                     isValid: false,
-                    message: messages.minLength || `Mínimo ${minLength} caracteres`
+                    message: mergedMessages.minLength || `Mínimo ${minLength} caracteres`
                 };
             }
         }
@@ -321,7 +368,7 @@ class ValidationSystem {
             if (value && !this.validators.get('maxLength')(value, maxLength)) {
                 return {
                     isValid: false,
-                    message: messages.maxLength || `Máximo ${maxLength} caracteres`
+                    message: mergedMessages.maxLength || `Máximo ${maxLength} caracteres`
                 };
             }
         }
@@ -332,7 +379,7 @@ class ValidationSystem {
             if (value && !this.validators.get('range')(value, min, max)) {
                 return {
                     isValid: false,
-                    message: messages.range || `Debe estar entre ${min} y ${max}`
+                    message: mergedMessages.range || `Debe estar entre ${min} y ${max}`
                 };
             }
         }
@@ -342,18 +389,27 @@ class ValidationSystem {
             if (value && !this.validators.get('priceColombian')(value)) {
                 return {
                     isValid: false,
-                    message: messages.priceColombian || 'El precio debe estar entre $10,000 y $20,000,000 COP'
+                    message: mergedMessages.priceColombian || 'El precio debe estar entre $10,000 y $20,000,000 COP'
                 };
             }
         }
 
         // Regla SKU único
         if (rule === 'uniqueSku') {
-            if (value && !(await this.validators.get('uniqueSku')(value))) {
-                return {
-                    isValid: false,
-                    message: messages.uniqueSku || 'Este SKU ya existe'
-                };
+            if (value) {
+                // Obtener product_id del formulario si existe (para edición)
+                let productId = null;
+                const productIdInput = document.querySelector('input[name="producto_id"], input[name="product_id"]');
+                if (productIdInput && productIdInput.value) {
+                    productId = productIdInput.value;
+                }
+                
+                if (!(await this.validators.get('uniqueSku')(value, productId))) {
+                    return {
+                        isValid: false,
+                        message: mergedMessages.uniqueSku || 'Este SKU ya existe'
+                    };
+                }
             }
         }
 
@@ -363,7 +419,7 @@ class ValidationSystem {
             if (value && categoryId && !(await this.validators.get('uniqueFieldName')(value, categoryId))) {
                 return {
                     isValid: false,
-                    message: messages.uniqueFieldName || 'Este nombre de campo ya existe en esta categoría'
+                    message: mergedMessages.uniqueFieldName || 'Este nombre de campo ya existe en esta categoría'
                 };
             }
         }

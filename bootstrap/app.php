@@ -15,6 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'email.verified' => \App\Http\Middleware\RequireEmailVerification::class,
             'admin' => \App\Http\Middleware\RequireAdminRole::class,
+            'jwt.auth' => \App\Http\Middleware\JwtAuthMiddleware::class,
+            'jwt.admin' => \App\Http\Middleware\JwtAdminMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

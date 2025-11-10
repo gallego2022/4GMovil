@@ -108,7 +108,12 @@
                                 </svg>
                                {{ __('admin.actions.edit') }}                            </a>
                             <form action="{{ route('admin.especificaciones.destroy', $especificacion->especificacion_id) }}"
-                                method="POST" class="form-eliminar inline">
+                                  method="POST" 
+                                  class="inline confirm-action"
+                                  data-title="¿Eliminar especificación?"
+                                  data-message="¿Estás seguro de eliminar la especificación {{ $especificacion->nombre }}?"
+                                  data-confirm-text="Sí, eliminar"
+                                  data-method="DELETE">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit"
@@ -247,7 +252,12 @@
                                             <div class="relative group">
                                                 <form
                                                     action="{{ route('admin.especificaciones.destroy', $especificacion->especificacion_id) }}"
-                                                    method="POST" class="form-eliminar inline">
+                                                    method="POST" 
+                                                    class="inline confirm-action"
+                                                    data-title="¿Eliminar especificación?"
+                                                    data-message="¿Estás seguro de eliminar esta especificación?"
+                                                    data-confirm-text="Sí, eliminar"
+                                                    data-method="DELETE">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit"

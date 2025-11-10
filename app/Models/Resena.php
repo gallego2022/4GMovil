@@ -11,8 +11,14 @@ class Resena extends Model
     public $timestamps = true;
 
     protected $fillable = [
-        'usuario_id', 'producto_id', 'calificacion',
-        'comentario'
+        'usuario_id', 'producto_id', 'pedido_id', 'calificacion',
+        'comentario', 'verificada', 'activa'
+    ];
+
+    protected $casts = [
+        'verificada' => 'boolean',
+        'activa' => 'boolean',
+        'calificacion' => 'integer',
     ];
 
     public function usuario()
@@ -23,5 +29,10 @@ class Resena extends Model
     public function producto()
     {
         return $this->belongsTo(Producto::class, 'producto_id');
+    }
+
+    public function pedido()
+    {
+        return $this->belongsTo(Pedido::class, 'pedido_id');
     }
 }

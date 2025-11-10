@@ -123,10 +123,10 @@
                                 </svg>
                                 Editar
                             </a>
-                            <form action="{{ route('direcciones.destroy', $direccion->direccion_id) }}" method="POST" class="inline">
+                            <form action="{{ route('direcciones.destroy', $direccion->direccion_id) }}" method="POST" class="inline form-eliminar-direccion" id="form-eliminar-{{ $direccion->direccion_id }}" data-nombre="{{ $direccion->nombre_destinatario }}">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar la dirección de {{ $direccion->nombre_destinatario }}? Esta acción no se puede deshacer.')" class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                <button type="button" onclick="confirmarEliminacion({{ $direccion->direccion_id }}, {{ json_encode($direccion->nombre_destinatario) }})" class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                                     <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                     </svg>
@@ -140,4 +140,74 @@
         @endif
     </div>
 </div>
+
+@push('scripts')
+<script>
+    function confirmarEliminacion(direccionId, nombreDestinatario) {
+        // Verificar que SweetAlert2 esté disponible
+        if (typeof window.Swal === 'undefined' || typeof window.Swal.fire !== 'function') {
+            console.warn('SweetAlert2 no disponible, usando confirm nativo');
+            // Fallback a confirm nativo si SweetAlert no está disponible
+            if (confirm('¿Estás seguro de que deseas eliminar la dirección de ' + nombreDestinatario + '? Esta acción no se puede deshacer.')) {
+                const form = document.getElementById('form-eliminar-' + direccionId);
+                if (form) {
+                    form.submit();
+                } else {
+                    console.error('Formulario no encontrado: form-eliminar-' + direccionId);
+                }
+            }
+            return;
+        }
+
+        // Mostrar modal de confirmación con SweetAlert2
+        window.Swal.fire({
+            title: '¿Estás seguro?',
+            html: '¿Estás seguro de que deseas eliminar la dirección de <strong>' + nombreDestinatario + '</strong>?<br><br>Esta acción no se puede deshacer.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true,
+            background: document.documentElement.classList.contains('dark') ? '#374151' : '#fff',
+            color: document.documentElement.classList.contains('dark') ? '#fff' : '#000'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Mostrar loading
+                window.Swal.fire({
+                    title: 'Eliminando...',
+                    text: 'Por favor espera',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        window.Swal.showLoading();
+                    }
+                });
+                
+                // Enviar el formulario
+                const form = document.getElementById('form-eliminar-' + direccionId);
+                if (form) {
+                    form.submit();
+                } else {
+                    console.error('Formulario no encontrado: form-eliminar-' + direccionId);
+                }
+            }
+        }).catch((error) => {
+            console.error('Error al mostrar SweetAlert2:', error);
+            // Fallback a confirm nativo en caso de error
+            if (confirm('¿Estás seguro de que deseas eliminar la dirección de ' + nombreDestinatario + '? Esta acción no se puede deshacer.')) {
+                const form = document.getElementById('form-eliminar-' + direccionId);
+                if (form) {
+                    form.submit();
+                }
+            }
+        });
+    }
+
+    // Asegurar que la función esté disponible globalmente
+    window.confirmarEliminacion = confirmarEliminacion;
+</script>
+@endpush
 @endsection 

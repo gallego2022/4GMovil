@@ -76,13 +76,50 @@ class ValidationSystem {
         });
 
         // Validador de SKU único
-        this.addValidator('uniqueSku', async (value) => {
+        this.addValidator('uniqueSku', async (value, productId = null) => {
             if (!value) return true;
             try {
-                const response = await fetch(`/admin/api/check-sku?sku=${encodeURIComponent(value)}`);
+                let url = `/admin/api/check-sku?sku=${encodeURIComponent(value)}`;
+                if (productId) {
+                    url += `&producto_id=${encodeURIComponent(productId)}`;
+                }
+                
+                // Obtener token JWT de la cookie para la petición
+                const getCookie = (name) => {
+                    const value = `; ${document.cookie}`;
+                    const parts = value.split(`; ${name}=`);
+                    if (parts.length === 2) return parts.pop().split(';').shift();
+                    return null;
+                };
+                
+                const jwtToken = getCookie('jwt_token');
+                const headers = {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                };
+                
+                // Agregar token JWT si existe
+                if (jwtToken) {
+                    headers['Authorization'] = `Bearer ${jwtToken}`;
+                }
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: headers,
+                    credentials: 'same-origin'
+                });
+                
+                // Si hay error de autenticación o red, permitir el valor para no bloquear el formulario
+                if (!response.ok) {
+                    console.warn('Error al validar SKU:', response.status);
+                    return true; // Si hay error, permitir el valor
+                }
+                
                 const data = await response.json();
                 return !data.exists;
-            } catch {
+            } catch (error) {
+                console.warn('Error al validar SKU:', error);
                 return true; // Si hay error, permitir el valor
             }
         });
@@ -332,11 +369,23 @@ class ValidationSystem {
 
         // Regla SKU único
         if (rule === 'uniqueSku') {
-            if (value && !(await this.validators.get('uniqueSku')(value))) {
-                return {
-                    isValid: false,
-                    message: customMessages.uniqueSku || 'Este SKU ya existe'
-                };
+            // Obtener product_id del formulario si existe (para edición)
+            const productIdInput = document.querySelector('input[name="producto_id"], input[name="product_id"]');
+            const productId = productIdInput ? productIdInput.value : null;
+            
+            try {
+                if (value && !(await this.validators.get('uniqueSku')(value, productId))) {
+                    return {
+                        isValid: false,
+                        message: customMessages.uniqueSku || 'Este SKU ya existe'
+                    };
+                }
+            } catch (error) {
+                // Si hay un error en la validación del SKU (por ejemplo, error de red),
+                // no bloquear el envío del formulario, solo registrar el error
+                console.warn('Error al validar SKU único:', error);
+                // Permitir el valor si hay error para no bloquear el formulario
+                return { isValid: true };
             }
         }
 
@@ -432,9 +481,16 @@ class ValidationSystem {
         let isValid = true;
 
         for (const field of fields) {
-            const fieldValid = await this.validateField(field);
-            if (!fieldValid) {
-                isValid = false;
+            try {
+                const fieldValid = await this.validateField(field);
+                if (!fieldValid) {
+                    isValid = false;
+                }
+            } catch (error) {
+                // Si hay un error en la validación (por ejemplo, error de red en validación de SKU),
+                // no bloquear el envío del formulario, solo registrar el error
+                console.warn('Error al validar campo:', field.name, error);
+                // Continuar con la validación de otros campos
             }
         }
 

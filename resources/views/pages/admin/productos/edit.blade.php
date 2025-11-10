@@ -14,6 +14,35 @@
     </div>
 
     <!-- Debug Info -->
+    @if(config('app.debug'))
+    <div class="rounded-md bg-blue-50 dark:bg-blue-900/50 p-4 mb-4">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-blue-400 dark:text-blue-300" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-sm font-medium text-blue-800 dark:text-blue-200">Debug Info:</h3>
+                <div class="mt-2 text-sm text-blue-700 dark:text-blue-300">
+                    <p><strong>Producto ID:</strong> {{ $producto->producto_id ?? 'N/A' }}</p>
+                    <p><strong>Nombre:</strong> {{ $producto->nombre_producto ?? 'N/A' }}</p>
+                    <p><strong>Descripción:</strong> {{ isset($producto->descripcion) && $producto->descripcion ? (strlen($producto->descripcion) > 50 ? substr($producto->descripcion, 0, 50) . '...' : $producto->descripcion) : 'NULL o VACÍO' }}</p>
+                    <p><strong>Categoría ID:</strong> {{ $producto->categoria_id ?? 'N/A' }} (Tipo: {{ isset($producto->categoria_id) ? gettype($producto->categoria_id) : 'N/A' }})</p>
+                    <p><strong>Marca ID:</strong> {{ $producto->marca_id ?? 'N/A' }} (Tipo: {{ isset($producto->marca_id) ? gettype($producto->marca_id) : 'N/A' }})</p>
+                    <p><strong>Estado:</strong> {{ $producto->estado ?? 'N/A' }}</p>
+                    <p><strong>Precio:</strong> {{ $producto->precio ?? 'N/A' }}</p>
+                    <p><strong>Stock:</strong> {{ $producto->stock ?? 'N/A' }}</p>
+                    <p><strong>Variantes:</strong> {{ $producto->variantes->count() ?? 0 }}</p>
+                    <p><strong>Especificaciones:</strong> {{ $producto->especificaciones->count() ?? 0 }}</p>
+                    <p><strong>Categorías disponibles:</strong> {{ $categorias->count() ?? 0 }}</p>
+                    <p><strong>Marcas disponibles:</strong> {{ $marcas->count() ?? 0 }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
     @if($errors->any())
     <div class="rounded-md bg-red-50 dark:bg-red-900/50 p-4">
         <div class="flex">
@@ -47,6 +76,7 @@
             
             <!-- Campos ocultos para debug -->
             <input type="hidden" name="debug_id" value="{{ $producto->producto_id }}">
+            <input type="hidden" name="producto_id" value="{{ $producto->producto_id }}">
             
             @include('pages.admin.productos.form')
 
@@ -157,24 +187,49 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Debug info
-    console.log('Producto ID:', '{{ $producto->producto_id }}');
-    
     // Formulario principal
     const formEditarProducto = document.getElementById('formEditarProducto');
-    formEditarProducto.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Log form data
-        const formData = new FormData(this);
-        console.log('Enviando datos de actualización:');
-        for (let pair of formData.entries()) {
-            console.log(pair[0] + ': ' + pair[1]);
-        }
-        
-        // Submit form
-        this.submit();
-    });
+    
+    // Interceptor para manejar errores 419 (CSRF token expired)
+    if (formEditarProducto) {
+        formEditarProducto.addEventListener('submit', function(e) {
+            // Asegurar que el token CSRF esté presente
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (!csrfToken) {
+                console.error('Token CSRF no encontrado');
+                e.preventDefault();
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Token CSRF no encontrado. Por favor, recarga la página.',
+                        icon: 'error',
+                        confirmButtonText: 'Recargar Página',
+                        confirmButtonColor: '#3B82F6'
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    alert('Error: Token CSRF no encontrado. Por favor, recarga la página.');
+                    window.location.reload();
+                }
+                return false;
+            }
+            
+            // Verificar que el campo _token esté presente
+            let tokenInput = formEditarProducto.querySelector('input[name="_token"]');
+            if (!tokenInput) {
+                // Crear el campo _token si no existe
+                tokenInput = document.createElement('input');
+                tokenInput.type = 'hidden';
+                tokenInput.name = '_token';
+                tokenInput.value = csrfToken;
+                formEditarProducto.appendChild(tokenInput);
+            } else {
+                // Actualizar el valor del token
+                tokenInput.value = csrfToken;
+            }
+        });
+    }
 
     // Manejo de eliminación de imágenes
     const formEliminarImagen = document.getElementById('formEliminarImagen');
@@ -196,9 +251,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Log para depuración
-                    console.log('Eliminando imagen:', imagenId);
-                    
                     // Configurar y enviar el formulario de eliminación
                     formEliminarImagen.action = "{{ url('imagenes') }}/" + imagenId;
                     formEliminarImagen.submit();

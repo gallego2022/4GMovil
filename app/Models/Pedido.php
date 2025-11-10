@@ -51,5 +51,36 @@ class Pedido extends Model
     {
         return $this->hasOne(Pago::class, 'pedido_id');
     }
+
+    public function resenas()
+    {
+        return $this->hasMany(Resena::class, 'pedido_id');
+    }
+
+    /**
+     * Verificar si el pedido está confirmado
+     */
+    public function isConfirmado(): bool
+    {
+        return $this->estado_id === 2; // ID 2 = Confirmado
+    }
+
+    /**
+     * Verificar si el pedido puede ser calificado
+     * Permite calificar si está confirmado y no todos los productos tienen reseñas
+     */
+    public function puedeCalificar(): bool
+    {
+        if (!$this->isConfirmado()) {
+            return false;
+        }
+        
+        // Verificar si hay productos sin calificar
+        $productosConResena = $this->resenas->pluck('producto_id')->unique();
+        $productosEnPedido = $this->detalles->pluck('producto_id')->unique();
+        
+        // Si hay productos sin reseña, se puede calificar
+        return $productosConResena->count() < $productosEnPedido->count();
+    }
 }
 

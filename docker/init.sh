@@ -66,6 +66,24 @@ chmod -R 777 /var/www/html/bootstrap/cache
 chmod -R 755 /var/www/html/public/storage
 echo "✅ Permisos configurados"
 
+# Crear enlace simbólico de storage si no existe
+echo "🔗 Creando enlace simbólico de storage..."
+if [ ! -L /var/www/html/public/storage ] && [ ! -d /var/www/html/public/storage ]; then
+    php artisan storage:link || echo "⚠️  Error creando enlace simbólico, continuando..."
+    echo "✅ Enlace simbólico creado"
+elif [ -L /var/www/html/public/storage ]; then
+    echo "✅ Enlace simbólico ya existe"
+else
+    # Si existe como directorio, intentar sincronizar
+    echo "📦 Sincronizando storage (enlace simbólico no disponible)..."
+    php artisan storage:sync --force || echo "⚠️  Error sincronizando storage, continuando..."
+    echo "✅ Storage sincronizado"
+fi
+
+# Asegurar permisos finales después de crear el enlace
+chown -R www-data:www-data /var/www/html/public/storage
+chmod -R 755 /var/www/html/public/storage
+
 echo "🎉 Configuración de Laravel completada!"
 
 # Ejecutar el comando original

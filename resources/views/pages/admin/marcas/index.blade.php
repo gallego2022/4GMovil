@@ -128,7 +128,13 @@
                         </svg>
                        {{ __('admin.actions.edit') }}
                     </a>
-                    <form action="{{ route('marcas.destroy', $marca) }}" method="POST" class="form-eliminar inline">
+                    <form action="{{ route('marcas.destroy', $marca) }}" 
+                          method="POST" 
+                          class="inline confirm-action"
+                          data-title="¿Eliminar marca?"
+                          data-message="¿Estás seguro de eliminar la marca {{ $marca->nombre }}?"
+                          data-confirm-text="Sí, eliminar"
+                          data-method="DELETE">
                         @csrf
                         @method('DELETE')
                         <button type="submit" 
@@ -250,7 +256,13 @@
 
                                 <!-- Botón eliminar -->
                                 <div class="relative group">
-                                    <form action="{{ route('marcas.destroy', $marca) }}" method="POST" class="form-eliminar inline">
+                                    <form action="{{ route('marcas.destroy', $marca) }}" 
+                                          method="POST" 
+                                          class="inline confirm-action"
+                                          data-title="¿Eliminar marca?"
+                                          data-message="¿Estás seguro de eliminar la marca {{ $marca->nombre }}?"
+                                          data-confirm-text="Sí, eliminar"
+                                          data-method="DELETE">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" 

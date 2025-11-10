@@ -113,7 +113,7 @@ class CarritoController extends WebController
     /**
      * Elimina un item del carrito
      */
-    public function removeItem(int $itemId)
+    public function removeItem($itemId)
     {
         try {
             $result = $this->carritoService->removeFromCart($itemId);

@@ -434,31 +434,31 @@
         </nav>
     </div>
 
-    <!-- Product Details Section - Diseño Mejorado -->
-    <section id="producto" class="py-16 bg-gradient-to-br from-slate-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-        <div class="container mx-auto px-4">
+    <!-- Product Details Section - Diseño Completamente Nuevo -->
+    <section id="producto" class="py-12 bg-white dark:bg-gray-900">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="max-w-7xl mx-auto">
-                <!-- Product Card -->
-                <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-3xl">
+                <!-- Product Main Container -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
                     
-                    <div class="grid lg:grid-cols-2 gap-6 lg:gap-8 p-4 sm:p-6 lg:p-8">
+                    <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 p-6 sm:p-8 lg:p-12">
                         <!-- Left Section - Product Images -->
-                        <div class="space-y-4 sm:space-y-6">
+                        <div class="space-y-6">
                             <!-- Main Image Container -->
-                            <div class="relative group">
-                                <div class="aspect-square w-full max-w-sm sm:max-w-md lg:max-w-lg mx-auto bg-gray-50 dark:bg-gray-700 rounded-2xl overflow-hidden shadow-lg">
+                            <div class="relative group bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-600 shadow-inner">
+                                <div class="aspect-square w-full flex items-center justify-center p-8">
                                     @if ($producto->imagenes->count() > 0)
                                         <img id="mainImage"
                                             src="{{ $producto->imagenes->first()->url_completa }}"
                                             alt="{{ $producto->nombre_producto }}"
-                                            class="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
+                                            class="w-full h-full object-contain transition-all duration-500 group-hover:scale-110"
                                             loading="lazy"
                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                        <div class="hidden w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-600 dark:to-gray-700 flex items-center justify-center">
+                                        <div class="hidden w-full h-full flex items-center justify-center">
                                             <i class="fas fa-image text-6xl text-gray-400 dark:text-gray-500"></i>
                                         </div>
                                     @else
-                                        <div class="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-600 dark:to-gray-700 flex items-center justify-center">
+                                        <div class="w-full h-full flex items-center justify-center">
                                             <i class="fas fa-image text-6xl text-gray-400 dark:text-gray-500"></i>
                                         </div>
                                     @endif
@@ -466,25 +466,26 @@
 
                                 <!-- Navigation Arrows -->
                                 @if ($producto->imagenes->count() > 1)
-                                    <button id="prevImage" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm p-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white dark:hover:bg-gray-700">
-                                        <i class="fas fa-chevron-left text-gray-600 dark:text-gray-300"></i>
+                                    <button id="prevImage" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white dark:bg-gray-800 p-3 rounded-full shadow-xl border border-gray-200 dark:border-gray-600 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:scale-110 z-10">
+                                        <i class="fas fa-chevron-left text-gray-700 dark:text-gray-300 text-lg"></i>
                                     </button>
-                                    <button id="nextImage" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm p-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white dark:hover:bg-gray-700">
-                                        <i class="fas fa-chevron-right text-gray-600 dark:text-gray-300"></i>
+                                    <button id="nextImage" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white dark:bg-gray-800 p-3 rounded-full shadow-xl border border-gray-200 dark:border-gray-600 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:scale-110 z-10">
+                                        <i class="fas fa-chevron-right text-gray-700 dark:text-gray-300 text-lg"></i>
                                     </button>
                                 @endif
 
                                 <!-- Zoom Button -->
-                                <button onclick="openImageZoom()" class="absolute top-4 right-4 bg-black/50 backdrop-blur-sm text-white px-3 py-2 rounded-full text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-black/70">
-                                    <i class="fas fa-search-plus mr-1"></i>Zoom
+                                <button onclick="openImageZoom()" class="absolute top-4 right-4 bg-white dark:bg-gray-800 px-4 py-2 rounded-full text-sm font-medium shadow-lg border border-gray-200 dark:border-gray-600 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-gray-50 dark:hover:bg-gray-700 z-10">
+                                    <i class="fas fa-search-plus mr-2 text-gray-700 dark:text-gray-300"></i>
+                                    <span class="text-gray-700 dark:text-gray-300">Zoom</span>
                                 </button>
                             </div>
 
                             <!-- Thumbnail Gallery -->
                             @if ($producto->imagenes->count() > 1)
-                                <div class="flex space-x-2 sm:space-x-3 overflow-x-auto pb-2">
+                                <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
                                     @foreach ($producto->imagenes->take(5) as $index => $imagen)
-                                        <button class="thumbnail-btn flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border-2 {{ $index === 0 ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200 dark:border-gray-600' }} hover:border-blue-400 transition-all duration-200"
+                                        <button class="thumbnail-btn flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-300 {{ $index === 0 ? 'border-blue-600 ring-4 ring-blue-200 dark:ring-blue-800 shadow-lg scale-105' : 'border-gray-200 dark:border-gray-600 hover:border-blue-400 hover:scale-105' }}"
                                                 data-image-index="{{ $index }}"
                                                 data-image-url="{{ $imagen->url_completa }}">
                                             <img src="{{ $imagen->url_completa }}" 
@@ -502,87 +503,92 @@
                         </div>
 
                         <!-- Right Section - Product Details -->
-                        <div class="space-y-6">
-                            <!-- Action Icons -->
-                            <div class="flex items-center space-x-3">
-                                <button class="p-3 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200 group shadow-sm hover:shadow-md border border-gray-200 dark:border-gray-600">
-                                    <i class="fas fa-heart text-gray-600 dark:text-gray-400 group-hover:text-red-500 transition-colors duration-200"></i>
-                                </button>
-                                <button class="p-3 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200 group shadow-sm hover:shadow-md border border-gray-200 dark:border-gray-600">
-                                    <i class="fas fa-share-alt text-gray-600 dark:text-gray-400 group-hover:text-blue-500 transition-colors duration-200"></i>
-                                </button>
-                            </div>
-
-                            <!-- Product Title -->
-                            <div>
-                                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white leading-tight mb-4">
-                                    {{ $producto->nombre_producto }}
-                                </h1>
+                        <div class="space-y-6 lg:space-y-8">
+                            <!-- Product Title and Badges -->
+                            <div class="space-y-4">
+                                <div class="flex items-start justify-between gap-4">
+                                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight flex-1">
+                                        {{ $producto->nombre_producto }}
+                                    </h1>
+                                    <!-- Action Icons -->
+                                    <div class="flex items-center gap-2 flex-shrink-0">
+                                        <button class="p-3 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200 group border border-gray-200 dark:border-gray-600">
+                                            <i class="fas fa-heart text-gray-600 dark:text-gray-400 group-hover:text-red-500 transition-colors duration-200"></i>
+                                        </button>
+                                        <button class="p-3 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200 group border border-gray-200 dark:border-gray-600">
+                                            <i class="fas fa-share-alt text-gray-600 dark:text-gray-400 group-hover:text-blue-500 transition-colors duration-200"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Badges -->
                                 <div class="flex flex-wrap items-center gap-3">
-                                    <span class="inline-flex items-center px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-full border border-gray-200 dark:border-gray-600">
-                                        <i class="fas fa-barcode mr-2"></i>
-                                        SKU: {{ $producto->sku ?? 'N/A' }}
+                                    <span class="inline-flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm font-semibold rounded-lg border border-gray-200 dark:border-gray-600">
+                                        <i class="fas fa-barcode mr-2 text-gray-600 dark:text-gray-400"></i>
+                                        SKU: <span class="ml-1 font-mono">{{ $producto->sku ?? 'N/A' }}</span>
                                     </span>
-                                    <span class="inline-flex items-center px-3 py-1 bg-green-100 dark:bg-green-700 text-green-700 dark:text-green-300 text-sm font-medium rounded-full border border-green-200 dark:border-green-600">
+                                    <span class="inline-flex items-center px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-sm font-semibold rounded-lg border border-green-200 dark:border-green-700">
                                         <i class="fas fa-check-circle mr-2"></i>
                                         {{ __('messages.product_show.available') }}
                                     </span>
                                 </div>
                             </div>
 
-                            <!-- Pricing -->
-                            <div class="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-600">
-                                <div class="flex items-baseline space-x-4 mb-4">
-                                    <span class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white">
-                                        {{ \App\Helpers\CurrencyHelper::formatPrice($producto->precio ?? 0) }}
-                                    </span>
-                                    @if (isset($producto->precio_anterior) && $producto->precio_anterior > $producto->precio)
-                                        <div class="flex flex-col items-start space-y-1">
-                                            <span class="text-lg text-gray-500 line-through">
-                                                {{ \App\Helpers\CurrencyHelper::formatPrice($producto->precio_anterior) }}
-                                            </span>
-                                            <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-                                                -{{ round((($producto->precio_anterior - $producto->precio) / $producto->precio_anterior) * 100) }}% OFF
-                                            </span>
-                                        </div>
-                                    @endif
-                                </div>
-                                
-                                <!-- Información adicional -->
-                                <div class="space-y-2 pt-4 border-t border-gray-200 dark:border-gray-600">
-                                    <div class="flex items-center justify-between text-sm">
-                                        <span class="text-gray-600 dark:text-gray-400">Envío:</span>
-                                        <span class="text-green-600 dark:text-green-400 font-semibold">GRATIS</span>
+                            <!-- Pricing Section -->
+                            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6 border-2 border-blue-200 dark:border-blue-800">
+                                <div class="space-y-4">
+                                    <div class="flex items-baseline gap-4 flex-wrap">
+                                        <span class="text-5xl sm:text-6xl font-black text-gray-900 dark:text-white">
+                                            {{ \App\Helpers\CurrencyHelper::formatPrice($producto->precio ?? 0) }}
+                                        </span>
+                                        @if (isset($producto->precio_anterior) && $producto->precio_anterior > $producto->precio)
+                                            <div class="flex flex-col gap-1">
+                                                <span class="text-xl text-gray-500 dark:text-gray-400 line-through font-semibold">
+                                                    {{ \App\Helpers\CurrencyHelper::formatPrice($producto->precio_anterior) }}
+                                                </span>
+                                                <span class="bg-red-600 text-white px-4 py-1.5 rounded-lg text-sm font-bold shadow-lg">
+                                                    -{{ round((($producto->precio_anterior - $producto->precio) / $producto->precio_anterior) * 100) }}% OFF
+                                                </span>
+                                            </div>
+                                        @endif
                                     </div>
-                                    <div class="flex items-center justify-between text-sm">
-                                        <span class="text-gray-600 dark:text-gray-400">{{ __('messages.product_show.warranty') }}:</span>
-                                        <span class="text-gray-700 dark:text-gray-300 font-semibold">{{ __('messages.product_show.warranty_period') }}</span>
+                                    
+                                    <!-- Quick Info -->
+                                    <div class="grid grid-cols-2 gap-4 pt-4 border-t border-blue-200 dark:border-blue-700">
+                                        <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-blue-100 dark:border-blue-800">
+                                            <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Envío</span>
+                                            <span class="text-sm font-bold text-green-600 dark:text-green-400">GRATIS</span>
+                                        </div>
+                                        <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-blue-100 dark:border-blue-800">
+                                            <span class="text-sm font-medium text-gray-600 dark:text-gray-400">{{ __('messages.product_show.warranty') }}</span>
+                                            <span class="text-sm font-bold text-gray-700 dark:text-gray-300">{{ __('messages.product_show.warranty_period') }}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Selected Variant Info -->
                             @if ($producto->variantes->count() > 0)
-                                <div class="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-6 border border-blue-200 dark:border-blue-700/30">
-                                    <div class="flex items-center space-x-4">
-                                        <div class="w-10 h-10 rounded-full border-2 border-blue-500 shadow-lg" id="selectedColorPreview"
+                                <div class="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl p-6 border-2 border-purple-200 dark:border-purple-800">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-16 h-16 rounded-2xl border-4 border-purple-500 shadow-xl flex-shrink-0" id="selectedColorPreview"
                                             style="background-color: {{ $producto->variantes->first()->codigo_color ?? '#000000' }};">
                                         </div>
-                                        <div class="flex-1">
-                                            <div class="flex items-center space-x-2 mb-1">
-                                                <i class="fas fa-palette text-blue-500"></i>
-                                                <p class="text-sm font-bold text-blue-900 dark:text-blue-100">
-                                                    {{ __('messages.product_show.color') }}: <span id="selectedColorText" class="text-blue-700 dark:text-blue-300">{{ $producto->variantes->first()->nombre }}</span>
+                                        <div class="flex-1 space-y-2">
+                                            <div class="flex items-center gap-2">
+                                                <i class="fas fa-palette text-purple-600 dark:text-purple-400 text-lg"></i>
+                                                <p class="text-base font-bold text-gray-900 dark:text-white">
+                                                    {{ __('messages.product_show.color') }}: <span id="selectedColorText" class="text-purple-700 dark:text-purple-300">{{ $producto->variantes->first()->nombre }}</span>
                                                 </p>
                                             </div>
-                                            <div class="flex items-center space-x-2 mb-1">
-                                                <i class="fas fa-boxes text-green-500"></i>
-                                                <p class="text-xs text-green-700 dark:text-green-300" id="selectedColorStock">
-                                                    {{ __('messages.product_show.stock_available') }}: <span class="font-bold">{{ $producto->variantes->first()->stock }} {{ __('messages.product_show.stock_units') }}</span>
+                                            <div class="flex items-center gap-2">
+                                                <i class="fas fa-boxes text-green-600 dark:text-green-400"></i>
+                                                <p class="text-sm text-gray-700 dark:text-gray-300" id="selectedColorStock">
+                                                    {{ __('messages.product_show.stock_available') }}: <span class="font-bold text-green-700 dark:text-green-400">{{ $producto->variantes->first()->stock }} {{ __('messages.product_show.stock_units') }}</span>
                                                 </p>
                                             </div>
                                             @if ($producto->variantes->first()->precio_adicional > 0)
-                                                <p class="text-xs text-purple-600 dark:text-purple-400 font-medium" id="selectedColorPrice">
+                                                <p class="text-sm text-purple-700 dark:text-purple-400 font-semibold" id="selectedColorPrice">
                                                     <i class="fas fa-plus-circle mr-1"></i>
                                                     {{ __('messages.product_show.additional_price') }}: <span id="precioAdicional" class="font-bold">{{ \App\Helpers\CurrencyHelper::formatPrice($producto->variantes->first()->precio_adicional) }}</span>
                                                 </p>
@@ -595,42 +601,35 @@
                             <!-- Color Variants -->
                             @if ($producto->variantes->count() > 0)
                                 <div class="space-y-4">
-                                    <div class="flex items-center space-x-3">
-                                        <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                                            <i class="fas fa-palette text-white text-sm"></i>
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                                            <i class="fas fa-palette text-white"></i>
                                         </div>
-                                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ __('messages.product_show.select_color') }}</h3>
+                                        <h3 class="text-xl font-bold text-gray-900 dark:text-white">{{ __('messages.product_show.select_color') }}</h3>
                                     </div>
                                     
-                                    <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+                                    <div class="flex flex-wrap items-center gap-3">
                                         @foreach ($producto->variantes as $index => $variante)
                                             <div class="relative group">
-                                                <button class="color-variant w-14 h-14 rounded-xl border-2 transition-all duration-200 {{ $index === 0 ? 'border-blue-500 ring-2 ring-blue-200 shadow-lg' : 'border-gray-300 dark:border-gray-600' }} {{ !$variante->disponible ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 hover:shadow-lg hover:border-blue-400' }}"
+                                                <button class="color-variant w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 transition-all duration-300 {{ $index === 0 ? 'border-blue-600 ring-2 ring-blue-200 dark:ring-blue-800 shadow-lg scale-110' : 'border-gray-300 dark:border-gray-600 hover:border-blue-500 hover:scale-110 hover:shadow-md' }} {{ !$variante->disponible ? 'opacity-50 cursor-not-allowed grayscale' : '' }}"
                                                         style="background-color: {{ $variante->codigo_color ?? '#CCCCCC' }};"
+                                                        data-variante-id="{{ $variante->variante_id }}"
+                                                        data-variant-stock="{{ $variante->stock }}"
                                                         data-color="{{ $variante->nombre }}"
-                                                        data-available="{{ $variante->disponible ? 'true' : 'false' }}"
-                                                        data-stock="{{ $variante->stock }}"
                                                         data-precio-adicional="{{ $variante->precio_adicional }}"
                                                         data-descripcion="{{ $variante->descripcion }}"
                                                         data-codigo-color="{{ $variante->codigo_color }}"
                                                         data-has-images="{{ $variante->imagenes->count() > 0 ? 'true' : 'false' }}"
-                                                        {{ !$variante->disponible ? 'disabled' : '' }}
                                                         title="{{ $variante->nombre }} - Stock: {{ $variante->stock }}">
-                                                    
-                                                    @if (!$variante->disponible)
-                                                        <div class="w-full h-full flex items-center justify-center">
-                                                            <i class="fas fa-times text-gray-400 text-sm"></i>
-                                                        </div>
-                                                    @endif
                                                 </button>
 
-                                                <!-- Stock indicator -->
+                                                <!-- Stock indicator badge -->
                                                 @if ($variante->stock <= 5 && $variante->stock > 0)
-                                                    <div class="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold shadow-lg border border-white">
+                                                    <div class="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold shadow-lg border-2 border-white dark:border-gray-800 z-10">
                                                         {{ $variante->stock }}
                                                     </div>
                                                 @elseif($variante->stock == 0)
-                                                    <div class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-lg border border-white">
+                                                    <div class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-lg border-2 border-white dark:border-gray-800 z-10">
                                                         <i class="fas fa-times text-xs"></i>
                                                     </div>
                                                 @endif
@@ -642,13 +641,13 @@
 
                             <!-- Color Description -->
                             @if ($producto->variantes->count() > 0 && $producto->variantes->first()->descripcion)
-                                <div class="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-4 border border-blue-200 dark:border-blue-700/30">
-                                    <div class="flex items-start space-x-3">
-                                        <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                                            <i class="fas fa-info-circle text-white text-sm"></i>
+                                <div class="bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 rounded-2xl p-5 border-2 border-indigo-200 dark:border-indigo-800">
+                                    <div class="flex items-start gap-4">
+                                        <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                                            <i class="fas fa-info-circle text-white"></i>
                                         </div>
                                         <div class="flex-1">
-                                            <h4 class="text-sm font-bold text-blue-900 dark:text-blue-100 mb-1">{{ __('messages.product_show.color_description') }}</h4>
+                                            <h4 class="text-sm font-bold text-indigo-900 dark:text-indigo-100 mb-2">{{ __('messages.product_show.color_description') }}</h4>
                                             <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed" id="colorDescription">
                                                 {{ $producto->variantes->first()->descripcion }}
                                             </p>
@@ -657,36 +656,63 @@
                                 </div>
                             @endif
 
-                            <!-- Action Buttons -->
-                            <div class="space-y-4">
+                            <!-- Quantity Selector and Add to Cart -->
+                            <div class="space-y-5">
                                 @php
                                     $tieneVariantes = $producto->variantes && $producto->variantes->count() > 0;
                                     $stockDisponible = $producto->stock_disponible;
+                                    $primeraVariante = $producto->variantes->first();
                                 @endphp
 
                                 @if ($stockDisponible > 0)
-                                    @if ($tieneVariantes)
-                                        <button type="button"
-                                            class="select-variant w-full bg-gray-800 hover:bg-gray-900 text-white py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 hover:shadow-lg"
-                                            data-producto-id="{{ $producto->producto_id }}" 
-                                            data-producto-nombre="{{ $producto->nombre_producto }}" 
-                                            data-producto-precio="{{ $producto->precio }}">
-                                            <i class="fas fa-palette mr-3"></i>
-                                            {{ __('messages.product_show.select_variant') }}
-                                        </button>
-                                    @else
-                                        <button type="button"
-                                            class="add-to-cart w-full bg-green-600 hover:bg-green-700 text-white py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 hover:shadow-lg"
+                                    <!-- Quantity Selector -->
+                                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-2xl p-5 border-2 border-gray-200 dark:border-gray-600">
+                                        <div class="flex items-center justify-between">
+                                            <label class="text-base font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                                                <i class="fas fa-shopping-bag text-gray-600 dark:text-gray-400"></i>
+                                                Cantidad:
+                                            </label>
+                                            <div class="flex items-center gap-3">
+                                                <button type="button" 
+                                                        id="decrementQuantity" 
+                                                        class="quantity-btn w-12 h-12 rounded-xl bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-blue-500 transition-all duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-gray-300 shadow-md"
+                                                        disabled>
+                                                    <i class="fas fa-minus"></i>
+                                                </button>
+                                                <input type="number" 
+                                                       id="productQuantity" 
+                                                       name="cantidad" 
+                                                       value="1" 
+                                                       min="1" 
+                                                       max="{{ $tieneVariantes ? ($primeraVariante->stock ?? 100) : ($producto->stock_disponible ?? 100) }}" 
+                                                       class="w-24 text-center text-xl font-bold text-gray-900 dark:text-white bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 rounded-xl py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-md">
+                                                <button type="button" 
+                                                        id="incrementQuantity" 
+                                                        class="quantity-btn w-12 h-12 rounded-xl bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-blue-500 transition-all duration-200 flex items-center justify-center shadow-md">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+<br>
+
+                                    <!-- Add to Cart Button -->
+                                    <button type="button"
+                                            id="addToCartBtn"
+                                            class="add-to-cart w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white py-5 px-6 rounded-2xl font-bold text-lg transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-xl border-2 border-green-700 dark:border-green-600"
                                             data-id="{{ $producto->producto_id }}" 
                                             data-name="{{ $producto->nombre_producto }}" 
-                                            data-price="{{ $producto->precio }}">
-                                            <i class="fas fa-shopping-cart mr-3"></i>
-                                            {{ __('messages.product_show.add_to_cart') }}
-                                        </button>
-                                    @endif
+                                            data-price="{{ $producto->precio }}"
+                                            data-producto-id="{{ $producto->producto_id }}" 
+                                            data-producto-nombre="{{ $producto->nombre_producto }}" 
+                                            data-producto-precio="{{ $producto->precio }}"
+                                            @if($tieneVariantes) data-variante-id="{{ $primeraVariante->variante_id }}" @endif>
+                                        <i class="fas fa-shopping-cart mr-3"></i>
+                                        {{ __('messages.product_show.add_to_cart') }}
+                                    </button>
                                 @else
                                     <button type="button"
-                                        class="w-full bg-gray-400 text-white py-4 px-6 rounded-xl font-bold text-lg cursor-not-allowed opacity-75" disabled>
+                                        class="w-full bg-gray-400 dark:bg-gray-600 text-white py-5 px-6 rounded-2xl font-bold text-lg cursor-not-allowed opacity-75 shadow-lg" disabled>
                                         <i class="fas fa-times mr-3"></i>
                                         {{ __('messages.product_show.out_of_stock') }}
                                     </button>
@@ -694,52 +720,54 @@
                             </div>
 
                             <!-- Quick Actions -->
-                            <div class="flex flex-wrap gap-3">
-                                <a href="#reseñas" class="inline-flex items-center px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-lg hover:bg-yellow-200 dark:hover:bg-yellow-800/30 transition-colors duration-200">
-                                    <i class="fas fa-star mr-2 text-yellow-500"></i>
-                                    <span class="font-medium">{{ __('messages.product_show.view_reviews') }} ({{ $producto->resenas->count() }})</span>
+                            <div class="flex flex-wrap gap-3 pt-2">
+                                <a href="#reseñas" class="inline-flex items-center px-5 py-3 bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30 text-yellow-800 dark:text-yellow-300 rounded-xl hover:from-yellow-200 hover:to-orange-200 dark:hover:from-yellow-800/30 dark:hover:to-orange-800/30 transition-all duration-200 font-semibold border-2 border-yellow-200 dark:border-yellow-800 shadow-md">
+                                    <i class="fas fa-star mr-2 text-yellow-600 dark:text-yellow-400"></i>
+                                    <span>{{ __('messages.product_show.view_reviews') }} ({{ $producto->resenas->where('activa', true)->count() }})</span>
                                 </a>
-                                <button onclick="openReviewModal()" class="inline-flex items-center px-4 py-2 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-lg hover:bg-orange-200 dark:hover:bg-orange-800/30 transition-colors duration-200">
-                                    <i class="fas fa-edit mr-2 text-orange-500"></i>
-                                    <span class="font-medium">Escribir Reseña</span>
+                                <button onclick="openReviewModal()" class="inline-flex items-center px-5 py-3 bg-gradient-to-r from-orange-100 to-red-100 dark:from-orange-900/30 dark:to-red-900/30 text-orange-800 dark:text-orange-300 rounded-xl hover:from-orange-200 hover:to-red-200 dark:hover:from-orange-800/30 dark:hover:to-red-800/30 transition-all duration-200 font-semibold border-2 border-orange-200 dark:border-orange-800 shadow-md">
+                                    <i class="fas fa-edit mr-2 text-orange-600 dark:text-orange-400"></i>
+                                    <span>Escribir Reseña</span>
                                 </button>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Additional Info -->
-                    <div class="px-8 pb-8">
-                        <div class="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-600">
-                            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                                <i class="fas fa-shield-halved text-gray-600 dark:text-gray-400 mr-3"></i>
+                    <div class="px-6 sm:px-8 lg:px-12 pb-8 lg:pb-12">
+                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-2xl p-6 lg:p-8 border-2 border-gray-200 dark:border-gray-600">
+                            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                                    <i class="fas fa-shield-halved text-white"></i>
+                                </div>
                                 Información Adicional
                             </h3>
-                            <div class="grid md:grid-cols-3 gap-4">
-                                <div class="flex items-center space-x-3 p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
-                                    <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
-                                        <i class="fas fa-check text-white"></i>
+                            <div class="grid md:grid-cols-3 gap-5">
+                                <div class="flex items-start gap-4 p-5 bg-white dark:bg-gray-800 rounded-xl border-2 border-green-200 dark:border-green-800 shadow-md hover:shadow-lg transition-shadow duration-200">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                                        <i class="fas fa-check text-white text-lg"></i>
                                     </div>
                                     <div>
-                                        <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ __('messages.product_show.warranty_official') }}</span>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('messages.product_show.warranty_description') }}</p>
+                                        <span class="text-base font-bold text-gray-800 dark:text-gray-200 block mb-1">{{ __('messages.product_show.warranty_official') }}</span>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{{ __('messages.product_show.warranty_description') }}</p>
                                     </div>
                                 </div>
-                                <div class="flex items-center space-x-3 p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
-                                    <div class="w-10 h-10 bg-gray-500 rounded-lg flex items-center justify-center">
-                                        <i class="fas fa-undo text-white"></i>
+                                <div class="flex items-start gap-4 p-5 bg-white dark:bg-gray-800 rounded-xl border-2 border-blue-200 dark:border-blue-800 shadow-md hover:shadow-lg transition-shadow duration-200">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                                        <i class="fas fa-undo text-white text-lg"></i>
                                     </div>
                                     <div>
-                                        <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ __('messages.product_show.return_policy') }}</span>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('messages.product_show.return_description') }}</p>
+                                        <span class="text-base font-bold text-gray-800 dark:text-gray-200 block mb-1">{{ __('messages.product_show.return_policy') }}</span>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{{ __('messages.product_show.return_description') }}</p>
                                     </div>
                                 </div>
-                                <div class="flex items-center space-x-3 p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
-                                    <div class="w-10 h-10 bg-gray-500 rounded-lg flex items-center justify-center">
-                                        <i class="fas fa-headset text-white"></i>
+                                <div class="flex items-start gap-4 p-5 bg-white dark:bg-gray-800 rounded-xl border-2 border-purple-200 dark:border-purple-800 shadow-md hover:shadow-lg transition-shadow duration-200">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                                        <i class="fas fa-headset text-white text-lg"></i>
                                     </div>
                                     <div>
-                                        <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Soporte Técnico</span>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">Incluido 24/7</p>
+                                        <span class="text-base font-bold text-gray-800 dark:text-gray-200 block mb-1">Soporte Técnico</span>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">Incluido 24/7</p>
                                     </div>
                                 </div>
                             </div>
@@ -903,7 +931,7 @@
                                 </div>
                                 <div class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-600">
                                     <span class="font-medium text-gray-700 dark:text-gray-300">Marca</span>
-                                    <span class="text-gray-600 dark:text-gray-400">{{ $producto->marca->nombre_marca ?? 'No especificado' }}</span>
+                                    <span class="text-gray-600 dark:text-gray-400">{{ $producto->marca->nombre ?? 'No especificado' }}</span>
                                 </div>
                                 <div class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-600">
                                     <span class="font-medium text-gray-700 dark:text-gray-300">Estado</span>
@@ -973,33 +1001,44 @@
                 </div>
 
                 <!-- Reviews Summary -->
+                @php
+                    $resenasActivas = $producto->resenas->where('activa', true);
+                    $promedioCalificacion = $resenasActivas->avg('calificacion') ?? 0;
+                    $totalResenas = $resenasActivas->count();
+                @endphp
                 <div
                     class="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-2xl p-8 mb-12">
                     <div class="grid md:grid-cols-3 gap-8 items-center">
                         <!-- Overall Rating -->
                         <div class="text-center">
                             <div class="text-5xl font-bold text-yellow-600 dark:text-yellow-400 mb-2">
-                                {{ number_format($producto->resenas->avg('calificacion') ?? 0, 1) }}
+                                {{ number_format($promedioCalificacion, 1) }}
                             </div>
                             <div class="flex justify-center mb-2">
                                 @for ($i = 1; $i <= 5; $i++)
                                     <i
-                                        class="fas fa-star {{ $i <= ($producto->resenas->avg('calificacion') ?? 0) ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600' }}"></i>
+                                        class="fas fa-star {{ $i <= $promedioCalificacion ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600' }}"></i>
                                 @endfor
                             </div>
                             <p class="text-gray-600 dark:text-gray-400">
-                                Basado en {{ $producto->resenas->count() }} reseñas
+                                Basado en {{ $totalResenas }} {{ $totalResenas === 1 ? 'reseña' : 'reseñas' }}
                             </p>
+                            @if($resenasActivas->where('verificada', true)->count() > 0)
+                                <p class="text-sm text-purple-600 dark:text-purple-400 mt-1">
+                                    <i class="fas fa-check-circle mr-1"></i>
+                                    {{ $resenasActivas->where('verificada', true)->count() }} {{ $resenasActivas->where('verificada', true)->count() === 1 ? 'verificada' : 'verificadas' }}
+                                </p>
+                            @endif
                         </div>
 
                         <!-- Rating Breakdown -->
                         <div class="space-y-2">
                             @for ($rating = 5; $rating >= 1; $rating--)
                                 @php
-                                    $count = $producto->resenas->where('calificacion', $rating)->count();
+                                    $count = $resenasActivas->where('calificacion', $rating)->count();
                                     $percentage =
-                                        $producto->resenas->count() > 0
-                                            ? ($count / $producto->resenas->count()) * 100
+                                        $totalResenas > 0
+                                            ? ($count / $totalResenas) * 100
                                             : 0;
                                 @endphp
                                 <div class="flex items-center space-x-3">
@@ -1025,34 +1064,64 @@
 
                 <!-- Reviews List -->
                 <div class="space-y-6">
-                    @forelse ($producto->resenas->take(5) as $resena)
+                    @forelse ($producto->resenas->where('activa', true)->take(5) as $resena)
                         <div
-                            class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-600 p-6">
+                            class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-600 p-6 {{ $resena->verificada ? 'ring-2 ring-purple-200 dark:ring-purple-800' : '' }}">
                             <div class="flex items-start justify-between mb-4">
                                 <div class="flex items-center space-x-3">
                                     <div
-                                        class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+                                        class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold relative">
                                         {{ strtoupper(substr($resena->usuario->nombre ?? 'U', 0, 1)) }}
+                                        @if($resena->verificada)
+                                            <div class="absolute -top-1 -right-1 bg-purple-600 dark:bg-purple-500 rounded-full p-1" title="Reseña verificada">
+                                                <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                                </svg>
+                                            </div>
+                                        @endif
                                     </div>
                                     <div>
-                                        <h4 class="font-semibold text-gray-900 dark:text-white">
-                                            {{ $resena->usuario->nombre ?? 'Usuario' }}
-                                        </h4>
-                                        <div class="flex items-center space-x-1">
+                                        <div class="flex items-center space-x-2">
+                                            <h4 class="font-semibold text-gray-900 dark:text-white">
+                                                {{ $resena->usuario->nombre ?? 'Usuario' }}
+                                            </h4>
+                                            @if($resena->verificada)
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200" title="Reseña verificada">
+                                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    Verificada
+                                                </span>
+                                            @endif
+                                        </div>
+                                        <div class="flex items-center space-x-1 mt-1">
                                             @for ($i = 1; $i <= 5; $i++)
                                                 <i
                                                     class="fas fa-star {{ $i <= $resena->calificacion ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600' }} text-sm"></i>
                                             @endfor
+                                            <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                                                {{ $resena->calificacion }}/5
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
-                                <span class="text-sm text-gray-500 dark:text-gray-400">
-                                    {{ $resena->created_at->diffForHumans() }}
-                                </span>
+                                <div class="flex flex-col items-end space-y-1">
+                                    <span class="text-sm text-gray-500 dark:text-gray-400">
+                                        {{ $resena->created_at->diffForHumans() }}
+                                    </span>
+                                    @if($resena->pedido_id)
+                                        <span class="text-xs text-gray-400 dark:text-gray-500" title="Reseña de pedido confirmado">
+                                            <i class="fas fa-shopping-bag mr-1"></i>
+                                            Pedido #{{ $resena->pedido_id }}
+                                        </span>
+                                    @endif
+                                </div>
                             </div>
-                            <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
-                                {{ $resena->comentario }}
-                            </p>
+                            @if($resena->comentario)
+                                <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                                    {{ $resena->comentario }}
+                                </p>
+                            @endif
                         </div>
                     @empty
                         <div class="text-center pprey-12">
@@ -1071,11 +1140,14 @@
                     @endforelse
                 </div>
 
-                @if ($producto->resenas->count() > 5)
+                @php
+                    $totalResenasActivas = $producto->resenas->where('activa', true)->count();
+                @endphp
+                @if ($totalResenasActivas > 5)
                     <div class="text-center mt-8">
                         <button
                             class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold transition-colors duration-200">
-                            Ver todas las {{ $producto->resenas->count() }} reseñas
+                            Ver todas las {{ $totalResenasActivas }} reseñas
                             <i class="fas fa-chevron-down ml-2"></i>
                         </button>
                     </div>
@@ -1208,7 +1280,7 @@
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Comentario
                         </label>
-                        <textarea name="comentario" rows="4"
+                        <textarea name="comentario" id="comentarioReview" rows="4"
                             class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white resize-none"
                             placeholder="Comparte tu experiencia con este producto..."></textarea>
                     </div>
@@ -1218,8 +1290,9 @@
                             class="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
                             Cancelar
                         </button>
-                        <button type="submit"
-                            class="flex-1 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white px-4 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105">
+                        <button type="submit" id="submitReviewBtn"
+                            class="flex-1 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white px-4 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:from-yellow-500 disabled:hover:to-orange-500"
+                            disabled>
                             Enviar Reseña
                         </button>
                     </div>
@@ -1662,11 +1735,16 @@
                 addDotClickHandlers();
             }
 
-            // Smooth scroll for anchor links
+            // Smooth scroll for anchor links (exclude links with only "#" as href)
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    // Skip if href is only "#" (like cart buttons)
+                    if (href === '#' || href === '#!') {
+                        return; // Let the default handler manage it
+                    }
                     e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
+                    const target = document.querySelector(href);
                     if (target) {
                         target.scrollIntoView({
                             behavior: 'smooth',
@@ -1680,22 +1758,444 @@
             addThumbnailClickHandlers();
             addDotClickHandlers();
 
-            // Add to cart functionality
-            const addCartBtn = document.querySelector('button:has(i.fa-shopping-cart)');
-            if (addCartBtn) {
-                addCartBtn.addEventListener('click', function() {
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            title: '¡Producto Agregado!',
-                            text: 'El producto se ha agregado al carrito exitosamente.',
-                            icon: 'success',
-                            confirmButtonText: '{{ __('messages.product_show.continue_shopping') }}',
-                            confirmButtonColor: '#3B82F6'
-                        });
-                    } else {
-                        alert('Producto agregado al carrito');
+            // ===== SISTEMA MODERNO DE SELECTOR DE CANTIDAD =====
+            
+            // Clase para manejar el selector de cantidad
+            class QuantitySelector {
+                constructor() {
+                    this.input = document.getElementById('productQuantity');
+                    this.incrementBtn = document.getElementById('incrementQuantity');
+                    this.decrementBtn = document.getElementById('decrementQuantity');
+                    this.init();
+                }
+
+                init() {
+                    if (!this.input) {
+                        console.error('QuantitySelector: No se encontró el input #productQuantity');
+                        return;
                     }
-                });
+                    
+                    if (!this.incrementBtn) {
+                        console.error('QuantitySelector: No se encontró el botón #incrementQuantity');
+                    }
+                    
+                    if (!this.decrementBtn) {
+                        console.error('QuantitySelector: No se encontró el botón #decrementQuantity');
+                    }
+                    
+                    this.setupButtons();
+                    this.updateButtons();
+                }
+
+                setupButtons() {
+                    if (this.incrementBtn) {
+                        // Remover cualquier listener previo para evitar duplicados
+                        const newIncrementBtn = this.incrementBtn.cloneNode(true);
+                        this.incrementBtn.parentNode.replaceChild(newIncrementBtn, this.incrementBtn);
+                        this.incrementBtn = newIncrementBtn;
+                        
+                        this.incrementBtn.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log('Increment button clicked');
+                            this.increment();
+                        });
+                        console.log('Increment button listener added');
+                    } else {
+                        console.error('QuantitySelector: incrementBtn no encontrado');
+                    }
+
+                    if (this.decrementBtn) {
+                        // Remover cualquier listener previo para evitar duplicados
+                        const newDecrementBtn = this.decrementBtn.cloneNode(true);
+                        this.decrementBtn.parentNode.replaceChild(newDecrementBtn, this.decrementBtn);
+                        this.decrementBtn = newDecrementBtn;
+                        
+                        this.decrementBtn.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log('Decrement button clicked');
+                            this.decrement();
+                        });
+                        console.log('Decrement button listener added');
+                    } else {
+                        console.error('QuantitySelector: decrementBtn no encontrado');
+                    }
+
+                    // Permitir cambio manual del input
+                    if (this.input) {
+                        this.input.addEventListener('change', () => this.validate());
+                        this.input.addEventListener('input', () => this.updateButtons());
+                    }
+                }
+
+                increment() {
+                    if (!this.input) {
+                        console.error('QuantitySelector: input no encontrado en increment()');
+                        return;
+                    }
+                    
+                    const currentValue = parseInt(this.input.value) || 1;
+                    const maxValue = parseInt(this.input.max) || 100;
+                    
+                    console.log('Increment:', { currentValue, maxValue });
+                    
+                    if (currentValue < maxValue) {
+                        this.input.value = currentValue + 1;
+                        this.updateButtons();
+                        this.animateChange();
+                        console.log('Cantidad incrementada a:', this.input.value);
+                    } else {
+                        console.log('No se puede incrementar: ya está en el máximo');
+                    }
+                }
+
+                decrement() {
+                    if (!this.input) {
+                        console.error('QuantitySelector: input no encontrado en decrement()');
+                        return;
+                    }
+                    
+                    const currentValue = parseInt(this.input.value) || 1;
+                    const minValue = parseInt(this.input.min) || 1;
+                    
+                    console.log('Decrement:', { currentValue, minValue });
+                    
+                    if (currentValue > minValue) {
+                        this.input.value = currentValue - 1;
+                        this.updateButtons();
+                        this.animateChange();
+                        console.log('Cantidad decrementada a:', this.input.value);
+                    } else {
+                        console.log('No se puede decrementar: ya está en el mínimo');
+                    }
+                }
+
+                validate() {
+                    const currentValue = parseInt(this.input.value) || 1;
+                    const maxValue = parseInt(this.input.max) || 100;
+                    const minValue = parseInt(this.input.min) || 1;
+                    
+                    if (currentValue > maxValue) {
+                        this.input.value = maxValue;
+                    } else if (currentValue < minValue) {
+                        this.input.value = minValue;
+                    }
+                    
+                    this.updateButtons();
+                }
+
+                updateButtons() {
+                    const currentValue = parseInt(this.input.value) || 1;
+                    const maxValue = parseInt(this.input.max) || 100;
+                    const minValue = parseInt(this.input.min) || 1;
+
+                    if (this.decrementBtn) {
+                        this.decrementBtn.disabled = currentValue <= minValue;
+                        if (currentValue <= minValue) {
+                            this.decrementBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                        } else {
+                            this.decrementBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                        }
+                    }
+
+                    if (this.incrementBtn) {
+                        this.incrementBtn.disabled = currentValue >= maxValue;
+                        if (currentValue >= maxValue) {
+                            this.incrementBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                        } else {
+                            this.incrementBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                        }
+                    }
+                }
+
+                animateChange() {
+                    this.input.style.transform = 'scale(1.1)';
+                    setTimeout(() => {
+                        this.input.style.transform = 'scale(1)';
+                    }, 200);
+                }
+
+                setMax(maxValue) {
+                    if (this.input) {
+                        this.input.max = maxValue;
+                        this.validate();
+                    }
+                }
+            }
+
+            // Inicializar selector de cantidad
+            let quantitySelector;
+            
+            // Intentar inicializar inmediatamente si el DOM ya está listo
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initializeQuantitySelector);
+            } else {
+                // DOM ya está listo
+                initializeQuantitySelector();
+            }
+            
+            function initializeQuantitySelector() {
+                // Esperar un poco para asegurar que el DOM esté completamente cargado
+                setTimeout(() => {
+                    console.log('Inicializando QuantitySelector...');
+                    const input = document.getElementById('productQuantity');
+                    const incrementBtn = document.getElementById('incrementQuantity');
+                    const decrementBtn = document.getElementById('decrementQuantity');
+                    
+                    console.log('Elementos encontrados:', {
+                        input: !!input,
+                        incrementBtn: !!incrementBtn,
+                        decrementBtn: !!decrementBtn
+                    });
+                    
+                    if (input && incrementBtn && decrementBtn) {
+                        quantitySelector = new QuantitySelector();
+                        window.quantitySelector = quantitySelector; // Hacerlo global para debugging
+                        console.log('QuantitySelector inicializado correctamente');
+                    } else {
+                        console.error('QuantitySelector: No se pudieron encontrar todos los elementos necesarios');
+                    }
+                    
+                    // Función global para compatibilidad
+                    window.updateQuantityButtons = function() {
+                        if (quantitySelector) {
+                            quantitySelector.updateButtons();
+                        }
+                    };
+                }, 100);
+            }
+
+            // Add to cart functionality (must execute before landing.blade.php handler)
+            if (addToCartBtn) {
+                // Use capture phase to execute before landing.blade.php handler
+                addToCartBtn.addEventListener('click', async function(e) {
+                    // Prevent default behavior and stop propagation to avoid conflicts with landing.blade.php
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    
+                    // Get product data from button attributes
+                    const productoId = this.getAttribute('data-producto-id') || this.dataset.productoId;
+                    const varianteId = this.getAttribute('data-variante-id') || this.dataset.varianteId || null;
+                    
+                    // Get quantity from the quantity input selector
+                    const qtyInput = document.getElementById('productQuantity');
+                    const cantidad = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
+                    
+                    console.log('Agregando al carrito:', {
+                        productoId,
+                        varianteId,
+                        cantidad,
+                        quantityInputValue: qtyInput ? qtyInput.value : 'no encontrado'
+                    });
+
+                    // Validate product data
+                    if (!productoId || isNaN(parseInt(productoId))) {
+                        console.error('Error: productoId inválido', productoId);
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'Error al obtener los datos del producto. Por favor, recarga la página.',
+                                icon: 'error',
+                                confirmButtonText: 'Entendido',
+                                confirmButtonColor: '#3B82F6'
+                            });
+                        } else {
+                            alert('Error al obtener los datos del producto');
+                        }
+                        return;
+                    }
+
+                    // Disable button during request
+                    this.disabled = true;
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i> Agregando...';
+
+                    try {
+                        const formData = new FormData();
+                        formData.append('producto_id', productoId);
+                        formData.append('cantidad', cantidad);
+                        if (varianteId) {
+                            formData.append('variante_id', varianteId);
+                        }
+                        formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+
+                        console.log('Enviando petición al servidor:', {
+                            producto_id: productoId,
+                            variante_id: varianteId,
+                            cantidad: cantidad
+                        });
+
+                        const response = await fetch('/carrito/agregar', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                'Accept': 'application/json'
+                            },
+                            body: formData
+                        });
+
+                        console.log('Respuesta del servidor:', {
+                            status: response.status,
+                            statusText: response.statusText,
+                            ok: response.ok
+                        });
+
+                        // Check if response is ok before parsing JSON
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            console.error('Error en la respuesta del servidor:', errorText);
+                            throw new Error(`Error del servidor: ${response.status} ${response.statusText}`);
+                        }
+
+                        const data = await response.json();
+                        console.log('Datos de respuesta:', data);
+
+                        if (data.success) {
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    title: '¡Producto Agregado!',
+                                    text: 'El producto se ha agregado al carrito exitosamente.',
+                                    icon: 'success',
+                                    confirmButtonText: '{{ __('messages.product_show.continue_shopping') }}',
+                                    confirmButtonColor: '#3B82F6',
+                                    timer: 2000,
+                                    showConfirmButton: true
+                                });
+                            } else {
+                                alert('Producto agregado al carrito');
+                            }
+
+                            // Update cart counter if exists (for admin/authenticated users)
+                            if (window.carritoController) {
+                                await window.carritoController.cargarCarrito();
+                            }
+
+                            // Update client-side cart (localStorage) for landing page
+                            console.log('Verificando funciones del carrito:', {
+                                updateCartCount: typeof updateCartCount,
+                                updateCartDisplay: typeof updateCartDisplay,
+                                windowCart: typeof window.cart
+                            });
+                            
+                            // Reload cart from server to sync with localStorage
+                            try {
+                                const cartResponse = await fetch('/carrito/obtener', {
+                                    method: 'GET',
+                                    headers: {
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                        'Accept': 'application/json'
+                                    }
+                                });
+                                
+                                console.log('Respuesta del carrito:', cartResponse.status);
+                                
+                                if (cartResponse.ok) {
+                                    const cartData = await cartResponse.json();
+                                    console.log('Datos del carrito completos:', cartData);
+                                    console.log('Items del carrito:', cartData.data?.items);
+                                    
+                                    if (cartData.success && cartData.data && cartData.data.items) {
+                                        // Clear and rebuild cart from server data to avoid duplicates
+                                        window.cart = [];
+                                        
+                                        // Add items from server to client cart
+                                        const items = Array.isArray(cartData.data.items) ? cartData.data.items : [];
+                                        console.log('Procesando items:', items.length);
+                                        
+                                        items.forEach(item => {
+                                            console.log('Procesando item:', item);
+                                            if (item.producto) {
+                                                const cartItem = {
+                                                    id: item.producto.producto_id,
+                                                    name: item.producto.nombre_producto,
+                                                    price: parseFloat(item.producto.precio),
+                                                    quantity: item.cantidad,
+                                                    itemId: item.id // Guardar el ID del item del servidor para poder eliminarlo
+                                                };
+                                                
+                                                if (item.variante) {
+                                                    cartItem.variante_id = item.variante.variante_id;
+                                                    cartItem.variante_nombre = item.variante.nombre;
+                                                    cartItem.precio_adicional = parseFloat(item.variante.precio_adicional || 0);
+                                                    cartItem.name = `${item.producto.nombre_producto} (${item.variante.nombre})`;
+                                                    cartItem.price = parseFloat(item.producto.precio) + parseFloat(item.variante.precio_adicional || 0);
+                                                }
+                                                
+                                                window.cart.push(cartItem);
+                                                console.log('Item agregado al carrito cliente:', cartItem);
+                                            }
+                                        });
+                                        
+                                        // Update localStorage first
+                                        localStorage.setItem('cart', JSON.stringify(window.cart));
+                                        console.log('Carrito actualizado en localStorage:', window.cart);
+                                        console.log('Total items en carrito:', window.cart.length);
+                                        
+                                        // Force sync with landing.blade.php cart variable if it exists
+                                        if (typeof window.syncCart === 'function') {
+                                            console.log('Sincronizando carrito con landing.blade.php');
+                                            window.syncCart();
+                                        } else {
+                                            // Si syncCart no existe, actualizar UI directamente
+                                            const updateCountFn = window.updateCartCount || (typeof updateCartCount !== 'undefined' ? updateCartCount : null);
+                                            const updateDisplayFn = window.updateCartDisplay || (typeof updateCartDisplay !== 'undefined' ? updateCartDisplay : null);
+                                            
+                                            if (updateCountFn && typeof updateCountFn === 'function') {
+                                                console.log('Llamando updateCartCount()');
+                                                updateCountFn();
+                                            }
+                                            
+                                            if (updateDisplayFn && typeof updateDisplayFn === 'function') {
+                                                console.log('Llamando updateCartDisplay()');
+                                                updateDisplayFn();
+                                            }
+                                        }
+                                    } else {
+                                        console.warn('Estructura de datos del carrito no válida:', cartData);
+                                    }
+                                } else {
+                                    console.error('Error al obtener carrito:', cartResponse.status);
+                                    const errorText = await cartResponse.text();
+                                    console.error('Error detallado:', errorText);
+                                }
+                            } catch (error) {
+                                console.error('Error al sincronizar carrito:', error);
+                                console.error('Stack trace:', error.stack);
+                            }
+                        } else {
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: data.message || 'Error al agregar el producto al carrito',
+                                    icon: 'error',
+                                    confirmButtonText: 'Entendido',
+                                    confirmButtonColor: '#3B82F6'
+                                });
+                            } else {
+                                alert(data.message || 'Error al agregar el producto al carrito');
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error al agregar al carrito:', error);
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'Error al agregar el producto al carrito. Por favor, intenta nuevamente.',
+                                icon: 'error',
+                                confirmButtonText: 'Entendido',
+                                confirmButtonColor: '#3B82F6'
+                            });
+                        } else {
+                            alert('Error al agregar el producto al carrito');
+                        }
+                    } finally {
+                        // Re-enable button
+                        this.disabled = false;
+                        this.innerHTML = originalText;
+                    }
+                }, { capture: true }); // Execute in capture phase to run before landing.blade.php handler
             }
 
             // Buy now functionality - Not implemented yet, so we'll remove this for now
@@ -1739,223 +2239,95 @@
                 });
             }
 
-            // Color Variants functionality - More robust initialization
-            console.log('=== INITIALIZING COLOR VARIANT SELECTOR ===');
-            
-            // Wait a bit to ensure DOM is fully loaded
-            setTimeout(() => {
+          
+
+            // Función mejorada para limpiar todos los botones de variantes
+            function cleanAllVariantButtons() {
                 const colorVariants = document.querySelectorAll('.color-variant');
-                const selectedColorName = document.getElementById('selectedColorName');
-                const colorDescription = document.getElementById('colorDescription');
-
-                console.log('Color variants found:', colorVariants.length);
-                console.log('Selected color name element:', selectedColorName);
-                console.log('Color description element:', colorDescription);
-
-                if (colorVariants.length === 0) {
-                    console.error('No color variants found!');
-                    return;
-                }
-
-                // Color data will be populated dynamically from the database
-                const colorData = {};
-
-                // Populate color data from the DOM
-                colorVariants.forEach((variant, index) => {
-                    const colorName = variant.dataset.color;
-                    console.log(`Processing variant ${index + 1}:`, colorName, 'Dataset:', variant.dataset);
-                    
-                    if (!colorName) {
-                        console.error('Variant has no color name!', variant);
-                        return;
-                    }
-                    
-                    colorData[colorName] = {
-                        description: variant.dataset.descripcion || '{{ __('messages.product_show.color_default_description') }}',
-                        code: variant.dataset.codigoColor || '#CCCCCC',
-                        stock: parseInt(variant.dataset.stock) || 0,
-                        precioAdicional: parseFloat(variant.dataset.precioAdicional) || 0,
-                        imagenes: [] // Will be populated from database
-                    };
-                });
-
-                console.log('Initial colorData:', colorData);
-
-                // Load images for each variant from the database
-                @foreach ($producto->variantes as $variante)
-                    console.log('Loading images for variant: {{ $variante->nombre }}');
-                    if (colorData['{{ $variante->nombre }}']) {
-                        colorData['{{ $variante->nombre }}'].imagenes = [
-                            @foreach ($variante->imagenes as $imagen)
-                                '{{ $imagen->url_completa }}',
-                            @endforeach
-                        ];
-                        console.log('Images loaded for {{ $variante->nombre }}:', colorData['{{ $variante->nombre }}'].imagenes);
-                        console.log('Image URLs for {{ $variante->nombre }}:');
-                        @foreach ($variante->imagenes as $imagen)
-                            console.log('  - {{ $imagen->url_completa }}');
-                        @endforeach
-                    } else {
-                        console.log('No colorData found for variant: {{ $variante->nombre }}');
-                    }
-                @endforeach
-
-                console.log('Final colorData with images:', colorData);
-
-                // Initialize with first variant if available
-                const firstVariant = colorVariants[0];
-                console.log('First variant:', firstVariant);
-                if (firstVariant && firstVariant.dataset.available === 'true') {
-                    const firstColorName = firstVariant.dataset.color;
-                    const firstColorInfo = colorData[firstColorName];
-                    console.log('First color name:', firstColorName);
-                    console.log('First color info:', firstColorInfo);
-
-                    if (firstColorInfo && firstColorInfo.imagenes && firstColorInfo.imagenes.length > 0) {
-                        console.log('Updating gallery with first variant images');
-                        // Update gallery with first variant images
-                        updateGalleryWithVariantImages(firstColorInfo.imagenes);
-                    } else {
-                        console.log('No images found for first variant');
-                    }
-                } else {
-                    console.log('First variant not available or not found');
-                }
-
                 colorVariants.forEach(variant => {
-                    variant.addEventListener('click', function() {
-                        console.log('Variant clicked:', this.dataset.color);
-                        console.log('Available:', this.dataset.available);
-                        
-                        if (this.dataset.available === 'false') {
-                            console.log('Variant not available');
-                            if (typeof Swal !== 'undefined') {
-                                Swal.fire({
-                                    title: '{{ __('messages.product_show.color_not_available_title') }}',
-                                    text: '{{ __('messages.product_show.color_not_available_text') }}',
-                                    icon: 'warning',
-                                    confirmButtonText: '{{ __('messages.product_show.understood') }}',
-                                    confirmButtonColor: '#3B82F6'
-                                });
-                            } else {
-                                alert('Este color no está disponible actualmente.');
-                            }
-                            return;
+                    // Limpiar cualquier texto que contenga "disponibles" o números
+                    const textNodes = Array.from(variant.childNodes).filter(node => {
+                        if (node.nodeType === Node.TEXT_NODE) {
+                            const text = node.textContent.trim();
+                            // Eliminar cualquier texto que contenga el stock o "disponibles"
+                            const stockValue = variant.dataset.variantStock;
+                            return text && (
+                                text.includes('disponibles') || 
+                                /^\d+$/.test(text) || 
+                                text.match(/\d+\s*disponibles?/i) ||
+                                (stockValue && text.includes(stockValue))
+                            );
                         }
-
-                // Update selected color
-                const colorName = this.dataset.color;
-                const colorInfo = colorData[colorName];
-                console.log('Selected color name:', colorName);
-                console.log('Color info:', colorInfo);
-
-                // Update selected color preview and info
-                const selectedColorPreview = document.getElementById('selectedColorPreview');
-                const selectedColorText = document.getElementById('selectedColorText');
-                const selectedColorStock = document.getElementById('selectedColorStock');
-                const colorDescription = document.getElementById('colorDescription');
-
-                if (selectedColorPreview) {
-                    selectedColorPreview.style.backgroundColor = colorInfo.code;
-                }
-                if (selectedColorText) {
-                    selectedColorText.textContent = colorName;
-                }
-                if (selectedColorStock) {
-                    selectedColorStock.innerHTML = 
-                        `{{ __('messages.product_show.stock_available') }}: <span class="font-bold">${colorInfo.stock} {{ __('messages.product_show.stock_units') }}</span>`;
-                }
-                if (colorDescription) {
-                    colorDescription.textContent = colorInfo.description;
-                }
-
-                        // Actualizar el indicador de stock en la tarjeta del producto
-                        if (window.stockSync) {
-                            window.stockSync.updateStock(colorInfo.stock);
-                        } else {
-                            updateProductCardStock(colorInfo.stock);
-                        }
-
-                        // Update price additional info
-                        const selectedColorPrice = document.getElementById('selectedColorPrice');
-                        const precioAdicional = document.getElementById('precioAdicional');
-                        if (selectedColorPrice && precioAdicional) {
-                            if (colorInfo.precioAdicional > 0) {
-                                // Formatear precio adicional
-                                const formattedPrice = new Intl.NumberFormat('es-CO', {
-                                    style: 'currency',
-                                    currency: 'COP',
-                                    minimumFractionDigits: 0
-                                }).format(colorInfo.precioAdicional);
-                                precioAdicional.textContent = formattedPrice;
-                                selectedColorPrice.style.display = 'block';
-                            } else {
-                                selectedColorPrice.style.display = 'none';
-                            }
-                        }
-
-                        // Update price if there's an additional cost
-                        const priceElement = document.querySelector('.text-4xl.md\\:text-5xl.font-bold.text-gray-900.dark\\:text-white');
-                        if (priceElement) {
-                            const basePrice = parseFloat('{{ $producto->precio ?? 0 }}');
-                            const totalPrice = basePrice + colorInfo.precioAdicional;
-                            const formattedPrice = new Intl.NumberFormat('es-CO', {
-                                style: 'currency',
-                                currency: 'COP',
-                                minimumFractionDigits: 0
-                            }).format(totalPrice);
-                            priceElement.textContent = formattedPrice;
-                        }
-
-                        // Update visual selection
-                        colorVariants.forEach(v => {
-                            v.classList.remove('border-blue-500', 'ring-2', 'ring-blue-200');
-                            v.classList.add('border-gray-300', 'dark:border-gray-600');
-                        });
-
-                        this.classList.remove('border-gray-300', 'dark:border-gray-600');
-                        this.classList.add('border-blue-500', 'ring-2', 'ring-blue-200');
-
-                        // Update gallery with variant images if available
-                        console.log('Checking variant images:', colorInfo.imagenes);
-                        if (colorInfo.imagenes && colorInfo.imagenes.length > 0) {
-                            console.log('Updating gallery with variant images');
-                            updateGalleryWithVariantImages(colorInfo.imagenes);
-                        } else {
-                            console.log('No variant images, keeping original product images');
-                            // Keep original product images if no variant images
-                            // No need to restore, just keep current state
-                        }
-
-                        // Show success message with stock info and image status
-                        const stock = parseInt(this.dataset.stock);
-                        const hasImages = this.dataset.hasImages === 'true';
-                        let stockMessage = `Has seleccionado el color ${colorName}`;
-
-                        if (stock <= 5 && stock > 0) {
-                            stockMessage += ` (Solo quedan ${stock} disponibles)`;
-                        }
-
-                        if (!hasImages) {
-                            stockMessage += ` - Se muestran las imágenes generales del producto`;
-                        }
-
-                        if (typeof Swal !== 'undefined') {
-                            Swal.fire({
-                                title: 'Color Seleccionado',
-                                text: stockMessage,
-                                icon: stock <= 3 ? 'warning' : (hasImages ? 'success' : 'info'),
-                                timer: 3000,
-                                showConfirmButton: false,
-                                toast: true,
-                                position: 'top-end'
+                        return false;
+                    });
+                    textNodes.forEach(node => node.remove());
+                    
+                    // Si el botón está disponible y no tiene el icono de deshabilitado, asegurar que esté vacío
+                    if (variant.dataset.available === 'true') {
+                        const hasDisabledIcon = variant.querySelector('i.fa-times');
+                        if (!hasDisabledIcon) {
+                            // Limpiar cualquier contenido que no sea necesario
+                            const children = Array.from(variant.children);
+                            children.forEach(child => {
+                                // Solo mantener el icono de deshabilitado si existe
+                                if (!child.classList.contains('fa-times')) {
+                                    // Verificar si el contenido del hijo contiene el stock
+                                    const childText = child.textContent || '';
+                                    const stockValue = variant.dataset.variantStock;
+                                    if (childText.includes('disponibles') || 
+                                        childText.match(/\d+\s*disponibles?/i) ||
+                                        (stockValue && childText.includes(stockValue))) {
+                                        child.remove();
+                                    }
+                                }
                             });
                         }
+                    }
+                });
+            }
+
+            // Limpiar cuando el DOM esté listo
+            document.addEventListener('DOMContentLoaded', function() {
+                cleanAllVariantButtons();
+                
+                // Limpiar después de un pequeño delay para asegurar que cualquier otro código haya terminado
+                setTimeout(cleanAllVariantButtons, 500);
+                setTimeout(cleanAllVariantButtons, 1000);
+            });
+
+            // Limpiar cuando se detecten cambios en los botones (MutationObserver)
+            document.addEventListener('DOMContentLoaded', function() {
+                const colorVariants = document.querySelectorAll('.color-variant');
+                colorVariants.forEach(variant => {
+                    const observer = new MutationObserver(function(mutations) {
+                        mutations.forEach(function(mutation) {
+                            if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                                // Limpiar cualquier texto que se haya agregado
+                                const textNodes = Array.from(variant.childNodes).filter(node => {
+                                    if (node.nodeType === Node.TEXT_NODE) {
+                                        const text = node.textContent.trim();
+                                        const stockValue = variant.dataset.variantStock;
+                                        return text && (
+                                            text.includes('disponibles') || 
+                                            /^\d+$/.test(text) || 
+                                            text.match(/\d+\s*disponibles?/i) ||
+                                            (stockValue && text.includes(stockValue))
+                                        );
+                                    }
+                                    return false;
+                                });
+                                textNodes.forEach(node => node.remove());
+                            }
+                        });
+                    });
+                    
+                    observer.observe(variant, {
+                        childList: true,
+                        characterData: true,
+                        subtree: true
                     });
                 });
-
-            console.log('=== COLOR VARIANT SELECTOR INITIALIZATION COMPLETE ===');
-        }, 100); // Small delay to ensure DOM is fully loaded
+            });
 
         // Review Modal functionality
         let selectedRating = 0;
@@ -1981,6 +2353,11 @@
                         starIcon.style.color = '#d1d5db'; // gray-300
                     }
                 });
+                
+                // Validar formulario después de seleccionar calificación
+                if (typeof validateReviewForm === 'function') {
+                    validateReviewForm();
+                }
             });
         });
 
@@ -1993,6 +2370,66 @@
             console.error('❌ No se encontró el formulario de reseñas');
             return;
         }
+        
+        // Función para validar el formulario de reseñas
+        function validateReviewForm() {
+            const submitBtn = document.getElementById('submitReviewBtn');
+            if (!submitBtn) return;
+            
+            // Validar calificación
+            const hasRating = selectedRating > 0;
+            
+            // Validar comentario (al menos 3 letras)
+            const comentarioInput = document.getElementById('comentarioReview');
+            const comentario = comentarioInput ? comentarioInput.value.trim() : '';
+            const letrasComentario = comentario.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]/g, '').length;
+            const hasValidComment = letrasComentario >= 3;
+            
+            // Validar nombre de usuario (solo si no está autenticado)
+            @guest
+            const nombreUsuarioInput = document.getElementById('nombreUsuario');
+            const nombreUsuario = nombreUsuarioInput ? nombreUsuarioInput.value.trim() : '';
+            const hasValidName = nombreUsuario.length >= 2;
+            @else
+            const hasValidName = true; // Usuario autenticado no necesita nombre
+            @endguest
+            
+            // Habilitar/deshabilitar botón según validación
+            const isValid = hasRating && hasValidComment && hasValidName;
+            
+            if (isValid) {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+            
+            console.log('Validación del formulario:', {
+                hasRating,
+                hasValidComment,
+                hasValidName,
+                isValid
+            });
+        }
+        
+        // Event listeners para validación en tiempo real
+        const comentarioInput = document.getElementById('comentarioReview');
+        if (comentarioInput) {
+            comentarioInput.addEventListener('input', validateReviewForm);
+            comentarioInput.addEventListener('keyup', validateReviewForm);
+        }
+        
+        @guest
+        const nombreUsuarioInput = document.getElementById('nombreUsuario');
+        if (nombreUsuarioInput) {
+            nombreUsuarioInput.addEventListener('input', validateReviewForm);
+            nombreUsuarioInput.addEventListener('keyup', validateReviewForm);
+        }
+        @endguest
+        
+        // Validar inicialmente (el botón debe estar deshabilitado)
+        validateReviewForm();
         
         reviewForm.addEventListener('submit', function(e) {
             console.log('=== ENVIANDO RESEÑA ===');
@@ -2029,6 +2466,24 @@
                     });
                 } else {
                     alert('Por favor escribe un comentario');
+                }
+                return;
+            }
+            
+            // Validar que el comentario tenga al menos 3 letras
+            const letrasComentario = comentario.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]/g, '').length;
+            if (letrasComentario < 3) {
+                console.log('❌ El comentario debe tener al menos 3 letras');
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'El comentario debe tener al menos 3 letras',
+                        icon: 'error',
+                        confirmButtonText: 'Entendido',
+                        confirmButtonColor: '#ef4444'
+                    });
+                } else {
+                    alert('El comentario debe tener al menos 3 letras');
                 }
                 return;
             }
@@ -2097,8 +2552,10 @@
                             confirmButtonColor: '#3B82F6'
                         }).then(() => {
                             closeReviewModal();
-                            // Recargar la página para mostrar la nueva reseña
-                            location.reload();
+                            // Recargar la página para mostrar la nueva reseña después de un breve delay
+                            setTimeout(() => {
+                                location.reload();
+                            }, 500);
                         });
                     } else {
                         alert(data.message);
@@ -2138,6 +2595,21 @@
             console.log('Modal encontrado:', modal);
             modal.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
+            
+            // Asegurar que el botón esté deshabilitado al abrir
+            const submitBtn = document.getElementById('submitReviewBtn');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+            
+            // Validar formulario después de abrir (por si hay valores pre-existentes)
+            if (typeof validateReviewForm === 'function') {
+                setTimeout(() => {
+                    validateReviewForm();
+                }, 100);
+            }
+            
             console.log('✅ Modal abierto');
         }
 
@@ -2156,6 +2628,14 @@
             document.querySelectorAll('.star-rating i').forEach(star => {
                 star.style.color = '#d1d5db';
             });
+            
+            // Deshabilitar botón de envío
+            const submitBtn = document.getElementById('submitReviewBtn');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+            
             console.log('✅ Modal cerrado y formulario reseteado');
         }
 
@@ -2455,11 +2935,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('=== PRODUCTO SHOW PAGE INITIALIZATION ===');
             
-            // Verificar botones de variantes
-            const selectVariantButtons = document.querySelectorAll('.select-variant');
+            // Verificar botones de agregar al carrito
             const addToCartButtons = document.querySelectorAll('.add-to-cart');
             
-            console.log('Botones select-variant encontrados:', selectVariantButtons.length);
             console.log('Botones add-to-cart encontrados:', addToCartButtons.length);
             
             // Verificar datos del producto
@@ -2584,202 +3062,464 @@
             }
         });
 
-        // ===== JAVASCRIPT SIMPLIFICADO PARA IMÁGENES =====
+        // ===== SISTEMA MODERNO DE GALERÍA DE IMÁGENES =====
         
-        // Variables globales para el manejo de imágenes
-        let currentImageIndex = 0;
-        let productImages = [
-            @foreach ($producto->imagenes as $imagen)
-                '{{ $imagen->url_completa }}',
-            @endforeach
-        ];
+        // Clase para manejar la galería de imágenes del producto
+        class ProductImageGallery {
+            constructor() {
+                this.currentIndex = 0;
+                this.images = [
+                    @foreach ($producto->imagenes as $imagen)
+                        '{{ $imagen->url_completa }}',
+                    @endforeach
+                ];
+                this.mainImage = document.getElementById('mainImage');
+                this.thumbnails = [];
+                this.init();
+            }
 
-        // Función para cambiar la imagen principal
-        function changeMainImage(imageUrl) {
-            const mainImage = document.getElementById('mainImage');
-            if (mainImage && imageUrl) {
-                // Asegurar que la imagen mantenga object-contain
-                mainImage.style.objectFit = 'contain';
-                mainImage.style.objectPosition = 'center';
+            init() {
+                if (!this.mainImage || this.images.length === 0) return;
                 
-                mainImage.src = imageUrl;
-                mainImage.onerror = function() {
-                    console.error('Error loading image:', imageUrl);
-                    this.style.display = 'none';
-                    const placeholder = this.nextElementSibling;
-                    if (placeholder) placeholder.style.display = 'flex';
-                };
-                mainImage.onload = function() {
-                    console.log('Image loaded successfully:', imageUrl);
-                    this.style.display = 'block';
-                    const placeholder = this.nextElementSibling;
-                    if (placeholder) placeholder.style.display = 'none';
-                };
-            }
-        }
-
-        // Función para navegar entre imágenes
-        function navigateImage(direction) {
-            if (productImages.length <= 1) return;
-            
-            if (direction === 'next') {
-                currentImageIndex = (currentImageIndex + 1) % productImages.length;
-            } else {
-                currentImageIndex = (currentImageIndex - 1 + productImages.length) % productImages.length;
-            }
-            
-            changeMainImage(productImages[currentImageIndex]);
-            updateThumbnailSelection();
-        }
-
-        // Función para actualizar la selección de thumbnails
-        function updateThumbnailSelection() {
-            const thumbnails = document.querySelectorAll('.thumbnail-btn');
-            thumbnails.forEach((btn, index) => {
-                if (index === currentImageIndex) {
-                    btn.classList.add('border-blue-500', 'ring-2', 'ring-blue-200');
-                    btn.classList.remove('border-gray-300', 'dark:border-gray-600');
-                } else {
-                    btn.classList.remove('border-blue-500', 'ring-2', 'ring-blue-200');
-                    btn.classList.add('border-gray-300', 'dark:border-gray-600');
-                }
-            });
-        }
-
-        // Event listeners para navegación de imágenes
-        document.addEventListener('DOMContentLoaded', function() {
-            // Botones de navegación
-            const prevBtn = document.getElementById('prevImage');
-            const nextBtn = document.getElementById('nextImage');
-            
-            if (prevBtn) {
-                prevBtn.addEventListener('click', () => navigateImage('prev'));
-            }
-            
-            if (nextBtn) {
-                nextBtn.addEventListener('click', () => navigateImage('next'));
+                this.setupThumbnails();
+                this.setupNavigation();
+                this.setupKeyboardNavigation();
+                this.updateDisplay();
             }
 
-            // Thumbnails
-            const thumbnails = document.querySelectorAll('.thumbnail-btn');
-            thumbnails.forEach((btn, index) => {
-                btn.addEventListener('click', function() {
-                    currentImageIndex = index;
-                    const imageUrl = this.dataset.imageUrl;
-                    changeMainImage(imageUrl);
-                    updateThumbnailSelection();
+            setupThumbnails() {
+                const thumbnailContainer = document.querySelector('.thumbnail-btn')?.parentElement;
+                if (!thumbnailContainer) return;
+
+                this.thumbnails = Array.from(document.querySelectorAll('.thumbnail-btn'));
+                this.thumbnails.forEach((btn, index) => {
+                    btn.addEventListener('click', () => this.selectImage(index));
+                    btn.addEventListener('mouseenter', () => {
+                        btn.style.transform = 'scale(1.05)';
+                    });
+                    btn.addEventListener('mouseleave', () => {
+                        if (index !== this.currentIndex) {
+                            btn.style.transform = 'scale(1)';
+                        }
+                    });
                 });
-            });
+            }
 
-            // Inicializar selección de thumbnails
-            updateThumbnailSelection();
+            setupNavigation() {
+                const prevBtn = document.getElementById('prevImage');
+                const nextBtn = document.getElementById('nextImage');
+
+                if (prevBtn) {
+                    prevBtn.addEventListener('click', () => this.navigate('prev'));
+                }
+
+                if (nextBtn) {
+                    nextBtn.addEventListener('click', () => this.navigate('next'));
+                }
+            }
+
+            setupKeyboardNavigation() {
+                document.addEventListener('keydown', (e) => {
+                    if (this.images.length <= 1) return;
+                    
+                    if (e.key === 'ArrowLeft') {
+                        this.navigate('prev');
+                    } else if (e.key === 'ArrowRight') {
+                        this.navigate('next');
+                    }
+                });
+            }
+
+            selectImage(index) {
+                if (index < 0 || index >= this.images.length) return;
+                
+                this.currentIndex = index;
+                this.updateDisplay();
+            }
+
+            navigate(direction) {
+                if (this.images.length <= 1) return;
+                
+                if (direction === 'next') {
+                    this.currentIndex = (this.currentIndex + 1) % this.images.length;
+                } else {
+                    this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
+                }
+                
+                this.updateDisplay();
+            }
+
+            updateDisplay() {
+                if (!this.mainImage || this.images.length === 0) return;
+
+                const currentImageUrl = this.images[this.currentIndex];
+                
+                // Actualizar imagen principal con efecto de transición
+                this.mainImage.style.opacity = '0';
+                this.mainImage.style.transition = 'opacity 0.3s ease-in-out';
+                
+                setTimeout(() => {
+                    this.mainImage.src = currentImageUrl;
+                    this.mainImage.onload = () => {
+                        this.mainImage.style.opacity = '1';
+                    };
+                    this.mainImage.onerror = () => {
+                        console.error('Error loading image:', currentImageUrl);
+                        this.mainImage.style.opacity = '1';
+                    };
+                }, 150);
+
+                // Actualizar thumbnails
+                this.updateThumbnails();
+            }
+
+            updateThumbnails() {
+                this.thumbnails.forEach((btn, index) => {
+                    if (index === this.currentIndex) {
+                        // Thumbnail activo
+                        btn.classList.remove('border-gray-200', 'dark:border-gray-600');
+                        btn.classList.add('border-blue-600', 'ring-4', 'ring-blue-200', 'dark:ring-blue-800', 'shadow-lg', 'scale-105');
+                    } else {
+                        // Thumbnails inactivos
+                        btn.classList.remove('border-blue-600', 'ring-4', 'ring-blue-200', 'dark:ring-blue-800', 'shadow-lg', 'scale-105');
+                        btn.classList.add('border-gray-200', 'dark:border-gray-600');
+                        btn.style.transform = 'scale(1)';
+                    }
+                });
+            }
+
+            updateWithVariantImages(imagenes) {
+                if (!imagenes || imagenes.length === 0) return;
+                
+                this.images = imagenes;
+                this.currentIndex = 0;
+                this.updateDisplay();
+            }
+
+            restoreOriginalImages() {
+                this.images = [
+                    @foreach ($producto->imagenes as $imagen)
+                        '{{ $imagen->url_completa }}',
+                    @endforeach
+                ];
+                this.currentIndex = 0;
+                this.updateDisplay();
+            }
+        }
+
+        // Inicializar galería cuando el DOM esté listo
+        let productGallery;
+        document.addEventListener('DOMContentLoaded', function() {
+            productGallery = new ProductImageGallery();
         });
 
-        // Función para abrir zoom de imagen (simplificada)
+        // Función mejorada para abrir zoom de imagen
         function openImageZoom() {
-            if (productImages.length > 0) {
-                // Implementar modal de zoom simple
-                const zoomModal = document.createElement('div');
-                zoomModal.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50';
-                zoomModal.innerHTML = `
-                    <div class="relative max-w-4xl max-h-full p-4">
-                        <button onclick="this.parentElement.parentElement.remove()" class="absolute top-4 right-4 text-white text-2xl hover:text-gray-300">×</button>
-                        <img src="${productImages[currentImageIndex]}" alt="Zoom" class="max-w-full max-h-full object-contain rounded-lg">
-                    </div>
-                `;
-                document.body.appendChild(zoomModal);
-                
-                // Cerrar con ESC
-                zoomModal.addEventListener('keydown', function(e) {
-                    if (e.key === 'Escape') {
-                        zoomModal.remove();
-                    }
-                });
-                zoomModal.focus();
-            }
-        }
-
-        // ===== MANEJO SIMPLIFICADO DE SELECCIÓN DE COLORES =====
-        
-        // Función para actualizar la información del color seleccionado
-        function updateColorInfo(colorName, colorData) {
-            console.log('Updating color info for:', colorName, colorData);
+            if (!productGallery || productGallery.images.length === 0) return;
             
-            // Actualizar preview del color
-            const selectedColorPreview = document.getElementById('selectedColorPreview');
-            if (selectedColorPreview && colorData.code) {
-                selectedColorPreview.style.backgroundColor = colorData.code;
-            }
+            const currentImage = productGallery.images[productGallery.currentIndex];
             
-            // Actualizar texto del color
-            const selectedColorText = document.getElementById('selectedColorText');
-            if (selectedColorText) {
-                selectedColorText.textContent = colorName;
-            }
+            // Crear modal de zoom moderno
+            const zoomModal = document.createElement('div');
+            zoomModal.className = 'fixed inset-0 bg-black bg-opacity-95 backdrop-blur-sm flex items-center justify-center z-50';
+            zoomModal.style.transition = 'opacity 0.3s ease-in-out';
+            zoomModal.style.opacity = '0';
             
-            // Actualizar stock
-            const selectedColorStock = document.getElementById('selectedColorStock');
-            if (selectedColorStock) {
-                selectedColorStock.innerHTML = 
-                    `{{ __('messages.product_show.stock_available') }}: <span class="font-bold">${colorData.stock} {{ __('messages.product_show.stock_units') }}</span>`;
-            }
+            zoomModal.innerHTML = `
+                <div class="relative max-w-6xl max-h-full p-4 w-full h-full flex items-center justify-center">
+                    <button onclick="this.closest('.fixed').remove()" 
+                            class="absolute top-4 right-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 p-3 rounded-full shadow-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 hover:scale-110 z-10">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                    <img src="${currentImage}" 
+                         alt="Zoom" 
+                         class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
+                         style="animation: fadeIn 0.3s ease-in-out;">
+                </div>
+            `;
             
-            // Actualizar descripción
-            const colorDescription = document.getElementById('colorDescription');
-            if (colorDescription) {
-                colorDescription.textContent = colorData.description || '{{ __('messages.product_show.color_default_description') }}';
-            }
+            document.body.appendChild(zoomModal);
             
-            // Actualizar precio adicional
-            const selectedColorPrice = document.getElementById('selectedColorPrice');
-            const precioAdicional = document.getElementById('precioAdicional');
-            if (selectedColorPrice && precioAdicional) {
-                if (colorData.precioAdicional > 0) {
-                    const formattedPrice = new Intl.NumberFormat('es-CO', {
-                        style: 'currency',
-                        currency: 'COP',
-                        minimumFractionDigits: 0
-                    }).format(colorData.precioAdicional);
-                    precioAdicional.textContent = formattedPrice;
-                    selectedColorPrice.style.display = 'block';
-                } else {
-                    selectedColorPrice.style.display = 'none';
+            // Animación de entrada
+            setTimeout(() => {
+                zoomModal.style.opacity = '1';
+            }, 10);
+            
+            // Cerrar con ESC o click fuera
+            const closeModal = () => {
+                zoomModal.style.opacity = '0';
+                setTimeout(() => zoomModal.remove(), 300);
+            };
+            
+            zoomModal.addEventListener('click', (e) => {
+                if (e.target === zoomModal) {
+                    closeModal();
                 }
-            }
-        }
-
-        // Event listener simplificado para selección de colores
-        document.addEventListener('DOMContentLoaded', function() {
-            const colorVariants = document.querySelectorAll('.color-variant');
+            });
             
-            colorVariants.forEach(variant => {
-                variant.addEventListener('click', function() {
-                    if (this.dataset.available === 'false') {
-                        alert('Este color no está disponible actualmente.');
-                        return;
-                    }
+            document.addEventListener('keydown', function escHandler(e) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                    document.removeEventListener('keydown', escHandler);
+                }
+            });
+        }
+        
+        // Hacer la función globalmente accesible
+        window.openImageZoom = openImageZoom;
+
+        // ===== SISTEMA MODERNO DE VARIANTES DE COLOR =====
+        
+        // Clase para manejar la selección de variantes de color
+        class ColorVariantSelector {
+            constructor() {
+                this.variants = [];
+                this.selectedVariant = null;
+                this.colorData = {};
+                this.init();
+            }
+
+            init() {
+                this.setupVariants();
+                this.loadVariantData();
+                this.selectFirstAvailable();
+            }
+
+            setupVariants() {
+                this.variants = Array.from(document.querySelectorAll('.color-variant'));
+                
+                this.variants.forEach((variant, index) => {
+                    // Limpiar cualquier texto que pueda estar dentro del botón
+                    this.cleanVariantButton(variant);
                     
-                    // Remover selección anterior
-                    colorVariants.forEach(v => {
-                        v.classList.remove('border-blue-500', 'ring-2', 'ring-blue-200');
-                        v.classList.add('border-gray-300', 'dark:border-gray-600');
+                    variant.addEventListener('click', () => this.selectVariant(variant, index));
+                    
+                    // Efectos hover mejorados
+                    variant.addEventListener('mouseenter', () => {
+                        if (variant.dataset.available === 'true' && !variant.classList.contains('border-blue-600')) {
+                            variant.style.transform = 'scale(1.05)';
+                        }
                     });
                     
-                    // Agregar selección actual
-                    this.classList.remove('border-gray-300', 'dark:border-gray-600');
-                    this.classList.add('border-blue-500', 'ring-2', 'ring-blue-200');
-                    
-                    // Actualizar información
-                    const colorData = {
-                        code: this.dataset.codigoColor || '#CCCCCC',
-                        stock: parseInt(this.dataset.stock) || 0,
-                        precioAdicional: parseFloat(this.dataset.precioAdicional) || 0,
-                        description: this.dataset.descripcion || '{{ __('messages.product_show.color_default_description') }}'
-                    };
-                    
-                    updateColorInfo(this.dataset.color, colorData);
+                    variant.addEventListener('mouseleave', () => {
+                        if (!variant.classList.contains('border-blue-600')) {
+                            variant.style.transform = 'scale(1)';
+                        }
+                    });
                 });
-            });
+            }
+
+            cleanVariantButton(variant) {
+                // Remover todos los nodos de texto que contengan "disponibles" o números
+                const textNodes = Array.from(variant.childNodes).filter(node => {
+                    if (node.nodeType === Node.TEXT_NODE) {
+                        const text = node.textContent.trim();
+                        // Eliminar cualquier texto que contenga el stock o "disponibles"
+                        const stockValue = variant.dataset.variantStock;
+                        return text && (
+                            text.includes('disponibles') || 
+                            /^\d+$/.test(text) || 
+                            text.match(/\d+\s*disponibles?/i) ||
+                            (stockValue && text.includes(stockValue))
+                        );
+                    }
+                    return false;
+                });
+                textNodes.forEach(node => node.remove());
+                
+                // Si el botón está disponible y no tiene el icono de deshabilitado, asegurar que esté vacío
+                if (variant.dataset.available === 'true') {
+                    const hasDisabledIcon = variant.querySelector('i.fa-times');
+                    if (!hasDisabledIcon) {
+                        // Limpiar cualquier contenido que no sea necesario
+                        const children = Array.from(variant.children);
+                        children.forEach(child => {
+                            // Solo mantener el icono de deshabilitado si existe
+                            if (!child.classList.contains('fa-times')) {
+                                // Verificar si el contenido del hijo contiene el stock
+                                const childText = child.textContent || '';
+                                const stockValue = variant.dataset.variantStock;
+                                if (childText.includes('disponibles') || 
+                                    childText.match(/\d+\s*disponibles?/i) ||
+                                    (stockValue && childText.includes(stockValue))) {
+                                    child.remove();
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+
+            loadVariantData() {
+                this.variants.forEach((variant) => {
+                    const colorName = variant.dataset.color;
+                    if (!colorName) return;
+
+                    this.colorData[colorName] = {
+                        description: variant.dataset.descripcion || '{{ __('messages.product_show.color_default_description') }}',
+                        code: variant.dataset.codigoColor || '#CCCCCC',
+                        stock: parseInt(variant.dataset.variantStock) || 0,
+                        precioAdicional: parseFloat(variant.dataset.precioAdicional) || 0,
+                        imagenes: []
+                    };
+                });
+
+                // Cargar imágenes de variantes desde el servidor
+                @foreach ($producto->variantes as $variante)
+                    if (this.colorData['{{ $variante->nombre }}']) {
+                        this.colorData['{{ $variante->nombre }}'].imagenes = [
+                            @foreach ($variante->imagenes as $imagen)
+                                '{{ $imagen->url_completa }}',
+                            @endforeach
+                        ];
+                    }
+                @endforeach
+            }
+
+            selectFirstAvailable() {
+                const firstAvailable = this.variants.find(v => v.dataset.available === 'true');
+                if (firstAvailable) {
+                    const index = this.variants.indexOf(firstAvailable);
+                    this.selectVariant(firstAvailable, index, false);
+                }
+            }
+
+            selectVariant(variant, index, showMessage = true) {
+                if (variant.dataset.available === 'false') {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            title: '{{ __('messages.product_show.color_not_available_title') }}',
+                            text: '{{ __('messages.product_show.color_not_available_text') }}',
+                            icon: 'warning',
+                            confirmButtonText: '{{ __('messages.product_show.understood') }}',
+                            confirmButtonColor: '#3B82F6',
+                            timer: 2000,
+                            showConfirmButton: false,
+                            toast: true,
+                            position: 'top-end'
+                        });
+                    } else {
+                        alert('Este color no está disponible actualmente.');
+                    }
+                    return;
+                }
+
+                // Limpiar el botón antes de seleccionarlo
+                this.cleanVariantButton(variant);
+
+                // Remover selección anterior con animación
+                this.variants.forEach(v => {
+                    // Limpiar cada variante también
+                    this.cleanVariantButton(v);
+                    v.classList.remove('border-blue-600', 'ring-4', 'ring-blue-200', 'dark:ring-blue-800', 'shadow-2xl', 'scale-110');
+                    v.classList.add('border-gray-300', 'dark:border-gray-600');
+                    v.style.transform = 'scale(1)';
+                });
+
+                // Agregar selección actual con animación
+                variant.classList.remove('border-gray-300', 'dark:border-gray-600');
+                variant.classList.add('border-blue-600', 'ring-4', 'ring-blue-200', 'dark:ring-blue-800', 'shadow-2xl', 'scale-110');
+                variant.style.transform = 'scale(1.1)';
+
+                // Actualizar variante seleccionada
+                this.selectedVariant = variant;
+                const colorName = variant.dataset.color;
+                const colorInfo = this.colorData[colorName];
+
+                if (colorInfo) {
+                    this.updateColorInfo(colorName, colorInfo);
+                    this.updateQuantitySelector(colorInfo.stock);
+                    this.updateAddToCartButton(variant.dataset.varianteId);
+                    
+                    // Actualizar galería con imágenes de la variante
+                    if (colorInfo.imagenes && colorInfo.imagenes.length > 0 && productGallery) {
+                        productGallery.updateWithVariantImages(colorInfo.imagenes);
+                    }
+                }
+            }
+
+            updateColorInfo(colorName, colorData) {
+                // Actualizar preview del color
+                const selectedColorPreview = document.getElementById('selectedColorPreview');
+                if (selectedColorPreview && colorData.code) {
+                    selectedColorPreview.style.backgroundColor = colorData.code;
+                    selectedColorPreview.style.transition = 'background-color 0.3s ease';
+                }
+
+                // Actualizar texto del color
+                const selectedColorText = document.getElementById('selectedColorText');
+                if (selectedColorText) {
+                    selectedColorText.textContent = colorName;
+                    selectedColorText.style.transition = 'color 0.3s ease';
+                }
+
+                // Actualizar stock
+                const selectedColorStock = document.getElementById('selectedColorStock');
+                if (selectedColorStock) {
+                    selectedColorStock.innerHTML = 
+                        `{{ __('messages.product_show.stock_available') }}: <span class="font-bold text-green-700 dark:text-green-400">${colorData.stock} {{ __('messages.product_show.stock_units') }}</span>`;
+                }
+
+                // Actualizar descripción
+                const colorDescription = document.getElementById('colorDescription');
+                if (colorDescription) {
+                    colorDescription.textContent = colorData.description || '{{ __('messages.product_show.color_default_description') }}';
+                    colorDescription.style.transition = 'opacity 0.3s ease';
+                }
+
+                // Actualizar precio adicional
+                const selectedColorPrice = document.getElementById('selectedColorPrice');
+                const precioAdicional = document.getElementById('precioAdicional');
+                if (selectedColorPrice && precioAdicional) {
+                    if (colorData.precioAdicional > 0) {
+                        const formattedPrice = new Intl.NumberFormat('es-CO', {
+                            style: 'currency',
+                            currency: 'COP',
+                            minimumFractionDigits: 0
+                        }).format(colorData.precioAdicional);
+                        precioAdicional.textContent = formattedPrice;
+                        selectedColorPrice.style.display = 'block';
+                    } else {
+                        selectedColorPrice.style.display = 'none';
+                    }
+                }
+            }
+
+            updateQuantitySelector(stock) {
+                if (typeof quantitySelector !== 'undefined' && quantitySelector) {
+                    quantitySelector.setMax(stock);
+                } else {
+                    // Fallback si quantitySelector no está disponible
+                    const quantityInput = document.getElementById('productQuantity');
+                    if (quantityInput) {
+                        const currentValue = parseInt(quantityInput.value) || 1;
+                        quantityInput.max = stock;
+                        
+                        if (currentValue > stock) {
+                            quantityInput.value = stock;
+                        }
+                        
+                        if (typeof window.updateQuantityButtons === 'function') {
+                            window.updateQuantityButtons();
+                        }
+                    }
+                }
+            }
+
+            updateAddToCartButton(varianteId) {
+                const addToCartBtn = document.getElementById('addToCartBtn');
+                if (addToCartBtn && varianteId) {
+                    addToCartBtn.dataset.varianteId = varianteId;
+                    addToCartBtn.setAttribute('data-variante-id', varianteId);
+                }
+            }
+
+        }
+
+        // Inicializar selector de variantes cuando el DOM esté listo
+        let colorVariantSelector;
+        document.addEventListener('DOMContentLoaded', function() {
+            colorVariantSelector = new ColorVariantSelector();
         });
     </script>
 @endpush

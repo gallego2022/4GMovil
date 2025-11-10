@@ -18,6 +18,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 use Illuminate\Validation\ValidationException;
 
 class ProductoPublicoController extends WebController
@@ -66,11 +67,22 @@ class ProductoPublicoController extends WebController
 
             $producto = $data['producto'];
             
-            // Cargar relaciones necesarias incluyendo reseñas
-            $producto->load(['categoria', 'marca', 'imagenes', 'variantes.imagenes', 'resenas.usuario']);
+            // Cargar relaciones necesarias incluyendo solo reseñas públicas (sin pedido_id)
+            $producto->load(['categoria', 'marca', 'imagenes', 'variantes.imagenes']);
+            
+            // Cargar solo reseñas públicas (sin pedido_id) para mostrar en el show del producto
+            $producto->load(['resenas' => function($query) {
+                $query->whereNull('pedido_id')
+                      ->where('activa', true)
+                      ->with('usuario');
+            }]);
             
             // Obtener productos relacionados (misma categoría y marca)
-            $productosRelacionados = Producto::with(['categoria', 'marca', 'imagenes', 'resenas'])
+            // Solo cargar reseñas públicas (sin pedido_id)
+            $productosRelacionados = Producto::with(['categoria', 'marca', 'imagenes', 'resenas' => function($query) {
+                $query->whereNull('pedido_id')
+                      ->where('activa', true);
+            }])
                 ->where('producto_id', '!=', $producto->producto_id) // Excluir el producto actual
                 ->where('estado', 'nuevo') // Solo productos activos
                 ->where('stock', '>', 0) // Solo productos con stock
@@ -84,7 +96,10 @@ class ProductoPublicoController extends WebController
             
             // Si no hay suficientes productos relacionados, agregar productos de la misma categoría
             if ($productosRelacionados->count() < 4) {
-                $productosAdicionales = Producto::with(['categoria', 'marca', 'imagenes', 'resenas'])
+                $productosAdicionales = Producto::with(['categoria', 'marca', 'imagenes', 'resenas' => function($query) {
+                    $query->whereNull('pedido_id')
+                          ->where('activa', true);
+                }])
                     ->where('producto_id', '!=', $producto->producto_id)
                     ->where('estado', 'nuevo')
                     ->where('stock', '>', 0)
@@ -99,7 +114,10 @@ class ProductoPublicoController extends WebController
             
             // Si aún no hay suficientes, agregar productos populares
             if ($productosRelacionados->count() < 4) {
-                $productosPopulares = Producto::with(['categoria', 'marca', 'imagenes', 'resenas'])
+                $productosPopulares = Producto::with(['categoria', 'marca', 'imagenes', 'resenas' => function($query) {
+                    $query->whereNull('pedido_id')
+                          ->where('activa', true);
+                }])
                     ->where('producto_id', '!=', $producto->producto_id)
                     ->where('estado', 'nuevo')
                     ->where('stock', '>', 0)
@@ -136,7 +154,7 @@ class ProductoPublicoController extends WebController
             // Validar los datos de la reseña
             $validationRules = [
                 'calificacion' => 'required|integer|min:1|max:5',
-                'comentario' => 'required|string|min:10|max:1000',
+                'comentario' => 'required|string|min:3|max:1000',
             ];
 
             $validationMessages = [
@@ -149,7 +167,7 @@ class ProductoPublicoController extends WebController
                 // Mensajes para comentario
                 'comentario.required' => '📝 Debes escribir un comentario',
                 'comentario.string' => '❌ El comentario debe ser un texto válido',
-                'comentario.min' => '📝 El comentario debe tener al menos 10 caracteres',
+                'comentario.min' => '📝 El comentario debe tener al menos 3 letras',
                 'comentario.max' => '📝 El comentario no puede exceder 1000 caracteres',
                 
                 // Mensajes para nombre de usuario (cuando no está autenticado)
@@ -165,16 +183,10 @@ class ProductoPublicoController extends WebController
 
             $request->validate($validationRules, $validationMessages);
 
-            // Crear la reseña
-            $resenaData = [
-                'producto_id' => $productoId,
-                'calificacion' => $request->calificacion,
-                'comentario' => $request->comentario,
-            ];
-
             // Si hay usuario autenticado, usar su ID
+            $usuarioId = null;
             if (Auth::check()) {
-                $resenaData['usuario_id'] = Auth::id();
+                $usuarioId = Auth::id();
             } else {
                 // Si no hay usuario autenticado, crear o usar un usuario anónimo
                 $usuarioAnonimo = Usuario::firstOrCreate(
@@ -188,17 +200,65 @@ class ProductoPublicoController extends WebController
                         'fecha_registro' => Carbon::now()
                     ]
                 );
-                $resenaData['usuario_id'] = $usuarioAnonimo->usuario_id;
+                $usuarioId = $usuarioAnonimo->usuario_id;
             }
 
-            $resena = Resena::create($resenaData);
+            // Buscar reseña pública existente del usuario para este producto (sin pedido_id)
+            // Las reseñas desde el show de productos son públicas y no tienen pedido_id
+            $resenaExistente = Resena::where('usuario_id', $usuarioId)
+                ->where('producto_id', $productoId)
+                ->whereNull('pedido_id') // Solo reseñas públicas
+                ->first();
 
-            Log::info('Reseña creada exitosamente', [
+            if ($resenaExistente) {
+                // Actualizar reseña pública existente
+                $resenaExistente->update([
+                    'calificacion' => $request->calificacion,
+                    'comentario' => $request->comentario,
+                    'activa' => true,
+                    'verificada' => false, // Resetear verificación al actualizar
+                    'pedido_id' => null, // Asegurar que sea pública
+                ]);
+                $resena = $resenaExistente;
+                $esActualizacion = true;
+            } else {
+                // Verificar cuántas reseñas públicas tiene el usuario para este producto
+                $resenasExistentes = Resena::where('usuario_id', $usuarioId)
+                    ->where('producto_id', $productoId)
+                    ->whereNull('pedido_id') // Solo contar reseñas públicas
+                    ->count();
+
+                // Permitir hasta 2 reseñas públicas por usuario/producto
+                if ($resenasExistentes >= 2) {
+                    return Response::json([
+                        'success' => false,
+                        'message' => '⚠️ Ya has escrito el máximo de 2 reseñas públicas para este producto',
+                        'error_type' => 'limit_reached',
+                        'suggestion' => 'Solo puedes escribir hasta 2 reseñas públicas por producto'
+                    ], 422);
+                }
+
+                // Crear nueva reseña pública (sin pedido_id)
+                $resenaData = [
+                    'usuario_id' => $usuarioId,
+                    'producto_id' => $productoId,
+                    'pedido_id' => null, // Reseña pública, no asociada a un pedido
+                    'calificacion' => $request->calificacion,
+                    'comentario' => $request->comentario,
+                    'verificada' => false,
+                    'activa' => true,
+                ];
+                $resena = Resena::create($resenaData);
+                $esActualizacion = false;
+            }
+
+            Log::info('Reseña ' . ($esActualizacion ? 'actualizada' : 'creada') . ' exitosamente', [
                 'producto_id' => $productoId,
-                'usuario_id' => $resenaData['usuario_id'],
+                'usuario_id' => $usuarioId,
                 'calificacion' => $request->calificacion,
                 'resena_id' => $resena->resena_id,
-                'usuario_autenticado' => Auth::check()
+                'usuario_autenticado' => Auth::check(),
+                'actualizada' => $esActualizacion ?? false
             ]);
 
             return Response::json([
@@ -245,16 +305,44 @@ class ProductoPublicoController extends WebController
                 'error_type' => 'validation',
                 'suggestions' => [
                     'calificacion' => 'Selecciona una calificación de 1 a 5 estrellas',
-                    'comentario' => 'Escribe un comentario de al menos 10 caracteres',
+                    'comentario' => 'Escribe un comentario de al menos 3 letras',
                     'nombre_usuario' => 'Ingresa tu nombre completo',
                 ]
             ], 422);
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            Log::error('Error de base de datos al crear reseña', [
+                'producto_id' => $productoId,
+                'error' => $e->getMessage(),
+                'sql' => $e->getSql() ?? null,
+                'bindings' => $e->getBindings() ?? null,
+            ]);
+            
+            // Verificar si es un error de restricción única
+            if ($e->getCode() == 23000 || str_contains($e->getMessage(), 'Duplicate entry') || str_contains($e->getMessage(), 'UNIQUE constraint')) {
+                return Response::json([
+                    'success' => false,
+                    'message' => '⚠️ Ya has enviado una reseña para este producto. Puedes actualizarla desde tu perfil.',
+                    'error_type' => 'duplicate',
+                    'suggestion' => 'Si deseas modificar tu reseña, puedes actualizarla desde tu cuenta'
+                ], 409);
+            }
+            
+            return Response::json([
+                'success' => false,
+                'message' => '❌ Error al guardar la reseña',
+                'error_type' => 'database_error',
+                'suggestion' => 'Por favor, intenta nuevamente en unos minutos',
+                'debug_info' => Config::get('app.debug') ? $e->getMessage() : null
+            ], 500);
+            
         } catch (\Exception $e) {
             Log::error('Error al crear reseña', [
                 'producto_id' => $productoId,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
             ]);
             
             return Response::json([
@@ -282,7 +370,7 @@ class ProductoPublicoController extends WebController
             'comentario' => [
                 'required' => '📝 Debes escribir un comentario',
                 'string' => '❌ El comentario debe ser un texto válido',
-                'min' => '📝 El comentario debe tener al menos 10 caracteres',
+                'min' => '📝 El comentario debe tener al menos 3 letras',
                 'max' => '📝 El comentario no puede exceder 1000 caracteres',
             ],
             'nombre_usuario' => [

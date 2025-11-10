@@ -128,7 +128,13 @@
                         </svg>
                        {{ __('admin.actions.edit') }}
                     </a>
-                    <form action="{{ route('categorias.destroy', $categoria) }}" method="POST" class="form-eliminar inline">
+                    <form action="{{ route('categorias.destroy', $categoria) }}" 
+                          method="POST" 
+                          class="inline confirm-action"
+                          data-title="¿Eliminar categoría?"
+                          data-message="¿Estás seguro de eliminar la categoría {{ $categoria->nombre }}?"
+                          data-confirm-text="Sí, eliminar"
+                          data-method="DELETE">
                         @csrf
                         @method('DELETE')
                         <button type="submit" 
@@ -251,7 +257,13 @@
 
                                 <!-- Botón eliminar -->
                                 <div class="relative group">
-                                    <form action="{{ route('categorias.destroy', $categoria) }}" method="POST" class="form-eliminar inline">
+                                    <form action="{{ route('categorias.destroy', $categoria) }}" 
+                                          method="POST" 
+                                          class="inline confirm-action"
+                                          data-title="¿Eliminar categoría?"
+                                          data-message="¿Estás seguro de eliminar la categoría {{ $categoria->nombre }}?"
+                                          data-confirm-text="Sí, eliminar"
+                                          data-method="DELETE">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" 

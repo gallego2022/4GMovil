@@ -148,15 +148,35 @@ class ProductoServiceOptimizadoCorregido extends BaseService
             $producto = Producto::findOrFail($productoId);
             
             // Validar datos de actualización
-            $updateData = $this->validateProductUpdateData($request);
+            $updateData = $this->validateProductUpdateData($request, $productoId);
             
             // Actualizar producto
             $producto->update($updateData);
             
             // Actualizar variantes si se proporcionan
+            $variantesNoEliminadas = [];
             if ($request->has('variantes')) {
                 $variantesFiles = $request->file('variantes') ?? [];
-                $this->updateVariantes($producto, $request->input('variantes'), $variantesFiles);
+                $variantesData = $request->input('variantes', []);
+                
+                // Log para depuración
+                Log::info('Datos de variantes recibidos en updateProduct', [
+                    'producto_id' => $productoId,
+                    'variantes_count' => count($variantesData),
+                    'variantes_data' => $variantesData
+                ]);
+                
+                $variantesNoEliminadas = $this->updateVariantes($producto, $variantesData, $variantesFiles);
+            } else {
+                // Si no se proporcionan variantes, eliminar todas las existentes (solo si no tienen pedidos)
+                Log::info('No se proporcionaron variantes, eliminando todas las existentes', [
+                    'producto_id' => $productoId
+                ]);
+                $producto->variantes()->each(function ($variante) {
+                    if ($variante->detallesPedido()->count() == 0) {
+                        $variante->delete();
+                    }
+                });
             }
             
             // Actualizar especificaciones
@@ -174,7 +194,16 @@ class ProductoServiceOptimizadoCorregido extends BaseService
                 'user_id' => auth()->id() ?? 0
             ]);
 
-            return $this->formatSuccessResponse($producto, 'Producto actualizado exitosamente');
+            // Construir mensaje de respuesta
+            $mensaje = 'Producto actualizado exitosamente';
+            if (!empty($variantesNoEliminadas)) {
+                $nombresVariantes = array_map(function ($v) {
+                    return $v['nombre'];
+                }, $variantesNoEliminadas);
+                $mensaje .= '. Nota: ' . count($variantesNoEliminadas) . ' variante(s) no se pudieron eliminar porque tienen pedidos asociados: ' . implode(', ', $nombresVariantes);
+            }
+
+            return $this->formatSuccessResponse($producto, $mensaje);
 
         }, 'actualización de producto');
     }
@@ -250,6 +279,13 @@ class ProductoServiceOptimizadoCorregido extends BaseService
             'estado' => 'required|in:nuevo,usado',
             'categoria_id' => 'required|exists:categorias,categoria_id',
             'marca_id' => 'required|exists:marcas,marca_id',
+            'peso' => 'nullable|numeric|min:0|max:999.99',
+            'dimensiones' => 'nullable|string|max:100',
+            'codigo_barras' => 'nullable|string|max:50',
+            'costo_unitario' => 'nullable|numeric|min:0',
+            'stock_minimo' => 'nullable|integer|min:0',
+            'stock_maximo' => 'nullable|integer|min:0',
+            'activo' => 'nullable|boolean',
             'imagenes.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
             'variantes.*.nombre' => 'required|string|max:100',
             'variantes.*.codigo_color' => 'nullable|string|max:7',
@@ -284,7 +320,7 @@ class ProductoServiceOptimizadoCorregido extends BaseService
     /**
      * Valida los datos de actualización del producto
      */
-    private function validateProductUpdateData(Request $request): array
+    private function validateProductUpdateData(Request $request, int $productoId): array
     {
         $rules = [
             'nombre_producto' => 'sometimes|required|string|max:255',
@@ -294,6 +330,14 @@ class ProductoServiceOptimizadoCorregido extends BaseService
             'estado' => 'sometimes|required|in:nuevo,usado',
             'categoria_id' => 'sometimes|required|exists:categorias,categoria_id',
             'marca_id' => 'sometimes|required|exists:marcas,marca_id',
+            'peso' => 'nullable|numeric|min:0|max:999.99',
+            'dimensiones' => 'nullable|string|max:100',
+            'codigo_barras' => 'nullable|string|max:50',
+            'sku' => 'nullable|string|max:50|unique:productos,sku,' . $productoId . ',producto_id',
+            'costo_unitario' => 'nullable|numeric|min:0',
+            'stock_minimo' => 'nullable|integer|min:0',
+            'stock_maximo' => 'nullable|integer|min:0',
+            'activo' => 'nullable|boolean',
         ];
 
         $validator = validator($request->all(), $rules);
@@ -319,6 +363,13 @@ class ProductoServiceOptimizadoCorregido extends BaseService
             'estado' => $data['estado'],
             'categoria_id' => $data['categoria_id'],
             'marca_id' => $data['marca_id'],
+            'peso' => $data['peso'] ?? null,
+            'dimensiones' => $data['dimensiones'] ?? null,
+            'codigo_barras' => $data['codigo_barras'] ?? null,
+            'costo_unitario' => $data['costo_unitario'] ?? null,
+            'stock_minimo' => $data['stock_minimo'] ?? null,
+            'stock_maximo' => $data['stock_maximo'] ?? null,
+            'activo' => $data['activo'] ?? true,
         ]);
     }
 
@@ -419,13 +470,115 @@ class ProductoServiceOptimizadoCorregido extends BaseService
 
     /**
      * Actualiza las variantes del producto
+     * 
+     * @return array Información sobre variantes que no se pudieron eliminar
      */
-    private function updateVariantes(Producto $producto, array $variantesData, array $variantesFiles = []): void
+    private function updateVariantes(Producto $producto, array $variantesData, array $variantesFiles = []): array
     {
         // Obtener variantes existentes
         $variantesExistentes = $producto->variantes()->get()->keyBy('variante_id');
         
+        // Array para almacenar variantes que no se pudieron eliminar
+        $variantesNoEliminadas = [];
+        
+        // Log para depuración
+        Log::info('Actualizando variantes', [
+            'producto_id' => $producto->producto_id,
+            'variantes_recibidas' => count($variantesData),
+            'variantes_existentes' => $variantesExistentes->count(),
+            'variantes_existentes_ids' => $variantesExistentes->keys()->toArray(),
+            'datos_variantes' => $variantesData
+        ]);
+        
+        // Contar variantes marcadas para eliminar
+        $variantesParaEliminar = 0;
+        foreach ($variantesData as $varianteData) {
+            $deleteValue = $varianteData['_delete'] ?? null;
+            if (($deleteValue === '1' || $deleteValue === 1 || $deleteValue === true || $deleteValue === 'true' || $deleteValue === 'on')
+                && isset($varianteData['variante_id']) && !empty($varianteData['variante_id'])) {
+                $variantesParaEliminar++;
+            }
+        }
+        Log::info('Variantes marcadas para eliminar encontradas', [
+            'count' => $variantesParaEliminar
+        ]);
+        
+        // Procesar variantes marcadas para eliminar primero
         foreach ($variantesData as $index => $varianteData) {
+            // Verificar si la variante está marcada para eliminar
+            // Aceptar '1', 1, true, 'true', 'on' (checkbox checked)
+            $deleteValue = $varianteData['_delete'] ?? null;
+            $debeEliminar = $deleteValue === '1' 
+                || $deleteValue === 1 
+                || $deleteValue === true 
+                || $deleteValue === 'true'
+                || $deleteValue === 'on';
+            
+            $tieneVarianteId = isset($varianteData['variante_id']) && !empty($varianteData['variante_id']);
+            
+            Log::info('Procesando variante en updateVariantes', [
+                'index' => $index,
+                'variante_id' => $varianteData['variante_id'] ?? 'no definido',
+                '_delete' => $deleteValue,
+                'debeEliminar' => $debeEliminar,
+                'tieneVarianteId' => $tieneVarianteId,
+                'datos_completos' => $varianteData
+            ]);
+            
+            if ($debeEliminar && $tieneVarianteId) {
+                $varianteId = $varianteData['variante_id'];
+                Log::info('Variante marcada para eliminar', [
+                    'variante_id' => $varianteId,
+                    'index' => $index,
+                    '_delete' => $varianteData['_delete'] ?? 'no definido',
+                    'tipo_delete' => gettype($varianteData['_delete'] ?? null)
+                ]);
+                
+                if ($variantesExistentes->has($varianteId)) {
+                    $variante = $variantesExistentes->get($varianteId);
+                    // Solo eliminar si no tiene pedidos asociados
+                    $tienePedidos = $variante->detallesPedido()->count() > 0;
+                    if (!$tienePedidos) {
+                        try {
+                            $variante->delete();
+                            Log::info('Variante eliminada exitosamente', [
+                                'variante_id' => $varianteId,
+                                'nombre' => $variante->nombre ?? 'N/A'
+                            ]);
+                        } catch (\Exception $e) {
+                            Log::error('Error al eliminar variante', [
+                                'variante_id' => $varianteId,
+                                'error' => $e->getMessage(),
+                                'trace' => $e->getTraceAsString()
+                            ]);
+                        }
+                    } else {
+                        $pedidosCount = $variante->detallesPedido()->count();
+                        Log::warning('Variante no eliminada porque tiene pedidos asociados', [
+                            'variante_id' => $varianteId,
+                            'pedidos_count' => $pedidosCount
+                        ]);
+                        
+                        // Agregar a la lista de variantes no eliminadas
+                        $variantesNoEliminadas[] = [
+                            'variante_id' => $varianteId,
+                            'nombre' => $variante->nombre ?? 'N/A',
+                            'pedidos_count' => $pedidosCount
+                        ];
+                    }
+                    // Marcar como procesada
+                    $variantesExistentes->forget($varianteId);
+                } else {
+                    Log::warning('Variante a eliminar no encontrada en existentes', [
+                        'variante_id' => $varianteId,
+                        'variantes_existentes_ids' => $variantesExistentes->keys()->toArray()
+                    ]);
+                }
+                // Continuar con la siguiente variante sin procesar esta
+                continue;
+            }
+            
+            // Procesar variantes normales (no marcadas para eliminar)
             if (isset($varianteData['variante_id']) && $variantesExistentes->has($varianteData['variante_id'])) {
                 // Actualizar variante existente
                 $variante = $variantesExistentes->get($varianteData['variante_id']);
@@ -440,31 +593,65 @@ class ProductoServiceOptimizadoCorregido extends BaseService
                 // Marcar como procesada
                 $variantesExistentes->forget($varianteData['variante_id']);
             } else {
-                // Crear nueva variante
-                $variante = $producto->variantes()->create([
-                    'nombre' => $varianteData['nombre'],
-                    'codigo_color' => $varianteData['codigo_color'] ?? null,
-                    'stock' => $varianteData['stock'],
-                    'precio_adicional' => $varianteData['precio_adicional'] ?? 0,
-                    'descripcion' => $varianteData['descripcion'] ?? null,
-                ]);
+                // Crear nueva variante (solo si no está marcada para eliminar)
+                if (!isset($varianteData['_delete']) || $varianteData['_delete'] != '1') {
+                    $variante = $producto->variantes()->create([
+                        'nombre' => $varianteData['nombre'],
+                        'codigo_color' => $varianteData['codigo_color'] ?? null,
+                        'stock' => $varianteData['stock'],
+                        'precio_adicional' => $varianteData['precio_adicional'] ?? 0,
+                        'descripcion' => $varianteData['descripcion'] ?? null,
+                    ]);
+                }
             }
             
-            // Procesar imágenes de la variante si se proporcionan
-            if (isset($variantesFiles[$index]['imagenes'])) {
-                $this->processVarianteImages($variante, $variantesFiles[$index]['imagenes']);
+            // Procesar imágenes de la variante si se proporcionan (solo si no está marcada para eliminar)
+            if (!isset($varianteData['_delete']) || $varianteData['_delete'] != '1') {
+                if (isset($variantesFiles[$index]['imagenes'])) {
+                    // Obtener la variante correcta para procesar imágenes
+                    $varianteParaImagenes = null;
+                    if (isset($varianteData['variante_id']) && $variantesExistentes->has($varianteData['variante_id'])) {
+                        $varianteParaImagenes = $variantesExistentes->get($varianteData['variante_id']);
+                    } elseif (isset($variante)) {
+                        // Usar la variante que acabamos de crear o actualizar
+                        $varianteParaImagenes = $variante;
+                    }
+                    
+                    if ($varianteParaImagenes) {
+                        $this->processVarianteImages($varianteParaImagenes, $variantesFiles[$index]['imagenes']);
+                    }
+                }
             }
         }
         
-        // Eliminar solo las variantes que ya no están en los datos
+        // Eliminar solo las variantes que ya no están en los datos (fallback para variantes que no se enviaron)
         if ($variantesExistentes->isNotEmpty()) {
-            $variantesExistentes->each(function ($variante) {
+            $variantesExistentes->each(function ($variante) use (&$variantesNoEliminadas) {
                 // Solo eliminar si no tiene pedidos asociados
-                if ($variante->detallesPedido()->count() == 0) {
+                $pedidosCount = $variante->detallesPedido()->count();
+                if ($pedidosCount == 0) {
                     $variante->delete();
+                } else {
+                    // Agregar a la lista de variantes no eliminadas si no está ya incluida
+                    $existe = false;
+                    foreach ($variantesNoEliminadas as $noEliminada) {
+                        if ($noEliminada['variante_id'] == $variante->variante_id) {
+                            $existe = true;
+                            break;
+                        }
+                    }
+                    if (!$existe) {
+                        $variantesNoEliminadas[] = [
+                            'variante_id' => $variante->variante_id,
+                            'nombre' => $variante->nombre ?? 'N/A',
+                            'pedidos_count' => $pedidosCount
+                        ];
+                    }
                 }
             });
         }
+        
+        return $variantesNoEliminadas;
     }
 
     /**

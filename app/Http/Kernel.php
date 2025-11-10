@@ -66,5 +66,7 @@ class Kernel extends HttpKernel
         'admin' => \App\Http\Middleware\RequireAdminRole::class,
         'email.verification' => \App\Http\Middleware\RequireEmailVerification::class,
         'cache.invalidation' => \App\Http\Middleware\CacheInvalidationMiddleware::class,
+        'jwt.auth' => \App\Http\Middleware\JwtAuthMiddleware::class,
+        'jwt.admin' => \App\Http\Middleware\JwtAdminMiddleware::class,
     ];
 }

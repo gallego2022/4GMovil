@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Direccion extends Model
 {
     protected $table = 'direcciones';
+
     protected $primaryKey = 'direccion_id';
+
     public $timestamps = true;
 
     protected $fillable = [
@@ -25,7 +27,7 @@ class Direccion extends Model
         'referencias',
         'predeterminada',
         'activo',
-        'tipo_direccion'
+        'tipo_direccion',
     ];
 
     public function usuario()
@@ -41,16 +43,16 @@ class Direccion extends Model
     // Accessor para la dirección completa
     public function getDireccionCompletaAttribute()
     {
-        $direccion = $this->calle . ' ' . $this->numero;
-        
+        $direccion = $this->calle.' '.$this->numero;
+
         if ($this->piso) {
-            $direccion .= ', Piso ' . $this->piso;
+            $direccion .= ', Piso '.$this->piso;
         }
-        
+
         if ($this->departamento) {
-            $direccion .= ', Depto ' . $this->departamento;
+            $direccion .= ', Depto '.$this->departamento;
         }
-        
+
         return $direccion;
     }
 
@@ -59,5 +61,19 @@ class Direccion extends Model
     {
         return $value ?: 'casa';
     }
-}
 
+    /**
+     * Marca esta dirección como predeterminada y desmarca las demás del usuario.
+     */
+    public function marcarComoPredeterminada(): void
+    {
+        // Desmarcar todas las direcciones del usuario
+        Direccion::where('usuario_id', $this->usuario_id)
+            ->where('direccion_id', '!=', $this->direccion_id)
+            ->update(['predeterminada' => false]);
+
+        // Marcar esta dirección como predeterminada
+        $this->predeterminada = true;
+        $this->save();
+    }
+}

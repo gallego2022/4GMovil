@@ -70,6 +70,11 @@
         @endif
 
         @if($type === 'textarea')
+            @php
+                $textareaValue = old($name, $value);
+                // Asegurar que el valor sea una cadena
+                $textareaValue = $textareaValue !== null ? (string)$textareaValue : '';
+            @endphp
             <textarea 
                 name="{{ $name }}" 
                 id="{{ $fieldId }}"
@@ -77,8 +82,13 @@
                 class="{{ $finalClass }} {{ $icon && $iconPosition === 'left' ? 'pl-10' : '' }}"
                 placeholder="{{ $placeholder }}"
                 @foreach($htmlAttributes as $attr => $value) {{ $attr }}="{{ $value }}" @endforeach
-            >{{ old($name, $value) }}</textarea>
+            >{{ $textareaValue }}</textarea>
         @elseif($type === 'select')
+            @php
+                $selectedValue = old($name, $value);
+                // Convertir a string para comparación estricta
+                $selectedValue = $selectedValue !== null && $selectedValue !== '' ? (string)$selectedValue : '';
+            @endphp
             <select 
                 name="{{ $name }}" 
                 id="{{ $fieldId }}"
@@ -87,7 +97,10 @@
             >
                 <option value="">{{ $placeholder ?: 'Selecciona una opción' }}</option>
                 @foreach($options as $optionValue => $optionLabel)
-                    <option value="{{ $optionValue }}" {{ old($name, $value) == $optionValue ? 'selected' : '' }}>
+                    @php
+                        $optionValueStr = (string)$optionValue;
+                    @endphp
+                    <option value="{{ $optionValue }}" {{ $selectedValue === $optionValueStr ? 'selected' : '' }}>
                         {{ $optionLabel }}
                     </option>
                 @endforeach
@@ -127,50 +140,53 @@
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Configurar validación para este campo
-    const field = document.querySelector('[data-field-name="{{ $name }}"]');
-    if (field && window.ValidationSystem) {
-        const rules = {!! $jsRules !!};
-        const messages = {!! $jsMessages !!};
-        
-        if (rules.length > 0) {
-            window.ValidationSystem.addRule('{{ $name }}', rules);
-            if (Object.keys(messages).length > 0) {
-                window.ValidationSystem.addMessage('{{ $name }}', messages);
-            }
-        }
-        
-        // Marcar campo como requerido si tiene la regla 'required'
-        if (rules.includes('required')) {
-            field.setAttribute('data-required', 'true');
-        }
-        
-        // Configurar validación en tiempo real
-        const isRequired = rules.includes('required');
-        if (isRequired) {
-            const events = ['input', 'blur', 'change'];
-            events.forEach(event => {
-                field.addEventListener(event, (e) => {
-                    window.ValidationSystem.validateField(field, rules, messages);
-                });
-            });
+(function() {
+    // Usar IIFE para crear un scope único y evitar conflictos de variables
+    document.addEventListener('DOMContentLoaded', function() {
+        // Configurar validación para este campo
+        const field = document.querySelector('[data-field-name="{{ $name }}"]');
+        if (field && window.ValidationSystem) {
+            const rules = {!! $jsRules !!};
+            const fieldMessages = {!! $jsMessages !!};
             
-            // Validación inicial si el campo tiene valor
-            if (field.value) {
-                window.ValidationSystem.validateField(field, rules, messages);
+            if (rules.length > 0) {
+                window.ValidationSystem.addRule('{{ $name }}', rules);
+                if (Object.keys(fieldMessages).length > 0) {
+                    window.ValidationSystem.addMessage('{{ $name }}', fieldMessages);
+                }
             }
-        } else {
-            // Para campos opcionales, solo validar al salir del campo (blur)
-            field.addEventListener('blur', (e) => {
-                window.ValidationSystem.validateField(field, rules, messages);
-            });
+            
+            // Marcar campo como requerido si tiene la regla 'required'
+            if (rules.includes('required')) {
+                field.setAttribute('data-required', 'true');
+            }
+            
+            // Configurar validación en tiempo real
+            const isRequired = rules.includes('required');
+            if (isRequired) {
+                const events = ['input', 'blur', 'change'];
+                events.forEach(event => {
+                    field.addEventListener(event, (e) => {
+                        window.ValidationSystem.validateField(field, rules, fieldMessages);
+                    });
+                });
+                
+                // Validación inicial si el campo tiene valor
+                if (field.value) {
+                    window.ValidationSystem.validateField(field, rules, fieldMessages);
+                }
+            } else {
+                // Para campos opcionales, solo validar al salir del campo (blur)
+                field.addEventListener('blur', (e) => {
+                    window.ValidationSystem.validateField(field, rules, fieldMessages);
+                });
+            }
+            
+            // Agregar restricciones de entrada basadas en el tipo y reglas
+            addInputRestrictions(field, '{{ $type }}', rules);
         }
-        
-        // Agregar restricciones de entrada basadas en el tipo y reglas
-        addInputRestrictions(field, '{{ $type }}', rules);
-    }
-});
+    });
+})();
 
 // Función para agregar restricciones de entrada
 function addInputRestrictions(field, type, rules) {

@@ -256,58 +256,192 @@
 
     
 
-    <!-- Productos con stock reservado alto -->
+    <!-- Productos con stock reservado -->
     <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
         <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Stock Reservado Alto</h3>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Stock Reservado</h3>
+            @php
+                // Contar total de productos con stock reservado activo
+                // Usa la misma lógica que la lista de productos para consistencia
+                $todosProductos = \Illuminate\Support\Facades\DB::table('productos')
+                    ->where('activo', true)
+                    ->select('producto_id', 'stock_reservado')
+                    ->get();
+                
+                $totalStockReservado = 0;
+                foreach ($todosProductos as $producto) {
+                    $stockReservadoTotal = 0;
+                    
+                    // Verificar si el producto tiene stock_reservado directo
+                    if ($producto->stock_reservado > 0) {
+                        $stockReservadoTotal = $producto->stock_reservado;
+                    } else {
+                        // SOLO calcular stock reservado desde reservas activas (fuente de verdad)
+                        // Excluir completamente cualquier variante que tenga reservas confirmadas
+                        $stockReservadoVariantes = \Illuminate\Support\Facades\DB::table('variantes_producto as vp')
+                            ->join('reservas_stock_variantes as rsv', 'vp.variante_id', '=', 'rsv.variante_id')
+                            ->leftJoin('pedidos as p', 'rsv.referencia_pedido', '=', 'p.pedido_id')
+                            ->where('vp.producto_id', $producto->producto_id)
+                            ->where('rsv.estado', 'activa')
+                            ->where('rsv.fecha_expiracion', '>', now())
+                            // Excluir reservas de pedidos confirmados (estado_id = 2)
+                            ->where(function($query) {
+                                $query->whereNull('p.estado_id')
+                                      ->orWhere('p.estado_id', '!=', 2);
+                            })
+                            // Verificar que no haya reservas confirmadas para estas variantes
+                            ->whereNotExists(function($query) use ($producto) {
+                                $query->select(\Illuminate\Support\Facades\DB::raw(1))
+                                      ->from('reservas_stock_variantes as rsv2')
+                                      ->join('variantes_producto as vp2', 'rsv2.variante_id', '=', 'vp2.variante_id')
+                                      ->whereColumn('vp2.variante_id', 'vp.variante_id')
+                                      ->where('rsv2.estado', 'confirmada')
+                                      ->whereNotNull('rsv2.referencia_pedido');
+                            })
+                            ->sum('rsv.cantidad');
+                        
+                        $stockReservadoTotal = $stockReservadoVariantes ?? 0;
+                    }
+                    
+                    // Solo contar productos que realmente tienen stock reservado activo
+                    if ($stockReservadoTotal > 0) {
+                        $totalStockReservado++;
+                    }
+                }
+            @endphp
             <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded-full">
-                {{ $alertas['stock_reservado_alto'] ?? 0 }} productos
+                {{ $totalStockReservado }} productos
             </span>
         </div>
         
         @php
-            // Obtener productos con stock reservado alto usando consulta directa
-            $productosStockReservadoAlto = \Illuminate\Support\Facades\DB::table('productos')
+            // Obtener todos los productos con stock reservado activo (máximo 5 para la alerta)
+            // Solo incluye productos que realmente tienen stock reservado activo
+            $productosStockReservado = \Illuminate\Support\Facades\DB::table('productos')
                 ->where('activo', true)
-                ->where('stock_reservado', '>', 0)
-                ->whereRaw('stock_reservado > stock * 0.3')
                 ->select('producto_id', 'nombre_producto', 'stock', 'stock_reservado', 'stock_disponible')
-                ->take(5)
                 ->get();
+            
+            // Para cada producto, calcular el stock reservado total activo (incluyendo variantes)
+            $productosConReserva = collect();
+            foreach ($productosStockReservado as $producto) {
+                $stockReservadoTotal = 0;
+                $variantesConReserva = collect();
+                
+                // Verificar si el producto tiene stock_reservado directo
+                if ($producto->stock_reservado > 0) {
+                    $stockReservadoTotal = $producto->stock_reservado;
+                } else {
+                    // SOLO calcular stock reservado desde reservas activas (fuente de verdad)
+                    // Excluir completamente cualquier variante que tenga reservas confirmadas
+                    $reservasActivas = \Illuminate\Support\Facades\DB::table('variantes_producto as vp')
+                        ->join('reservas_stock_variantes as rsv', 'vp.variante_id', '=', 'rsv.variante_id')
+                        ->leftJoin('pedidos as p', 'rsv.referencia_pedido', '=', 'p.pedido_id')
+                        ->where('vp.producto_id', $producto->producto_id)
+                        ->where('rsv.estado', 'activa')
+                        ->where('rsv.fecha_expiracion', '>', now())
+                        // Excluir reservas de pedidos confirmados (estado_id = 2)
+                        ->where(function($query) {
+                            $query->whereNull('p.estado_id')
+                                  ->orWhere('p.estado_id', '!=', 2);
+                        })
+                        // Verificar que no haya reservas confirmadas para estas variantes
+                        ->whereNotExists(function($query) use ($producto) {
+                            $query->select(\Illuminate\Support\Facades\DB::raw(1))
+                                  ->from('reservas_stock_variantes as rsv2')
+                                  ->join('variantes_producto as vp2', 'rsv2.variante_id', '=', 'vp2.variante_id')
+                                  ->whereColumn('vp2.variante_id', 'vp.variante_id')
+                                  ->where('rsv2.estado', 'confirmada')
+                                  ->whereNotNull('rsv2.referencia_pedido');
+                        })
+                        ->select('vp.variante_id', 'vp.nombre', 'vp.stock', 'rsv.cantidad as stock_reservado')
+                        ->distinct()
+                        ->get();
+                    
+                    if ($reservasActivas->count() > 0) {
+                        $stockReservadoTotal = $reservasActivas->sum('stock_reservado');
+                        foreach ($reservasActivas as $reserva) {
+                            $variantesConReserva->push([
+                                'variante_id' => $reserva->variante_id,
+                                'nombre' => $reserva->nombre,
+                                'stock_reservado' => $reserva->stock_reservado,
+                                'stock' => $reserva->stock
+                            ]);
+                        }
+                    }
+                }
+                
+                // Solo agregar productos que realmente tienen stock reservado activo
+                if ($stockReservadoTotal > 0) {
+                    $producto->stock_reservado = $stockReservadoTotal;
+                    $producto->variantes = $variantesConReserva;
+                    $productosConReserva->push($producto);
+                }
+            }
+            
+            // Ordenar por stock_reservado descendente y tomar máximo 5
+            $productosStockReservado = $productosConReserva
+                ->sortByDesc('stock_reservado')
+                ->take(5)
+                ->values();
         @endphp
         
-        @if($productosStockReservadoAlto->count() > 0)
+        @if($productosStockReservado->count() > 0)
             <div class="space-y-3">
-                @foreach($productosStockReservadoAlto as $producto)
-                    <div class="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-md flex items-center justify-center">
-                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                </svg>
+                @foreach($productosStockReservado as $producto)
+                    <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-md flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $producto->nombre_producto }}</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">ID: {{ $producto->producto_id }}</div>
+                                </div>
                             </div>
-                            <div>
-                                <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $producto->nombre_producto }}</div>
-                                <div class="text-xs text-gray-500 dark:text-gray-400">ID: {{ $producto->producto_id }}</div>
+                            <div class="text-right">
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                    Stock: {{ $producto->stock }}
+                                </div>
+                                <div class="text-xs text-blue-600 dark:text-blue-400">
+                                    Reservado: {{ $producto->stock_reservado }}
+                                </div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400">
+                                    Disponible: {{ $producto->stock_disponible }}
+                                </div>
                             </div>
                         </div>
-                        <div class="text-right">
-                            <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                Stock: {{ $producto->stock }}
+                        @if(isset($producto->variantes) && $producto->variantes->count() > 0)
+                            <div class="mt-2 pt-2 border-t border-blue-200 dark:border-blue-800">
+                                <div class="text-xs font-medium text-blue-700 dark:text-blue-300 mb-1">Variantes con stock reservado:</div>
+                                <div class="space-y-1">
+                                    @foreach($producto->variantes as $variante)
+                                        <div class="flex items-center justify-between text-xs pl-4">
+                                            <span class="text-gray-700 dark:text-gray-300">
+                                                • {{ $variante['nombre'] }}
+                                            </span>
+                                            <span class="text-blue-600 dark:text-blue-400 font-medium">
+                                                Reservado: {{ $variante['stock_reservado'] }}
+                                            </span>
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
-                            <div class="text-xs text-blue-600 dark:text-blue-400">
-                                Reservado: {{ $producto->stock_reservado }}
-                            </div>
-                            <div class="text-xs text-gray-500 dark:text-gray-400">
-                                Disponible: {{ $producto->stock_disponible }}
-                            </div>
-                        </div>
+                        @endif
                     </div>
                 @endforeach
+                @if($totalStockReservado > 5)
+                    <div class="text-center py-2 text-xs text-gray-500 dark:text-gray-400 italic">
+                        Mostrando 5 de {{ $totalStockReservado }} productos con stock reservado
+                    </div>
+                @endif
             </div>
         @else
             <div class="text-center py-4 text-sm text-gray-500 dark:text-gray-400">
-                No hay productos con alto stock reservado
+                No hay productos con stock reservado
             </div>
         @endif
     </div>

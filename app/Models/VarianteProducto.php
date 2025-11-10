@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 class VarianteProducto extends Model
 {
     protected $table = 'variantes_producto';
+
     protected $primaryKey = 'variante_id';
 
     protected $fillable = [
@@ -23,14 +24,14 @@ class VarianteProducto extends Model
         'stock_reservado',
         'disponible',
         'sku',
-        'referencia'
+        'referencia',
     ];
 
     protected $casts = [
         'disponible' => 'boolean',
         'precio_adicional' => 'decimal:2',
         'stock' => 'integer',
-        'stock_reservado' => 'integer'
+        'stock_reservado' => 'integer',
     ];
 
     // Relaciones
@@ -77,7 +78,7 @@ class VarianteProducto extends Model
                 'motivo' => $motivo,
                 'usuario_id' => $usuarioId,
                 'referencia' => $referencia,
-                'fecha_movimiento' => now()
+                'fecha_movimiento' => now(),
             ]);
 
             Log::info('Entrada de stock registrada para variante', [
@@ -86,7 +87,7 @@ class VarianteProducto extends Model
                 'cantidad' => $cantidad,
                 'stock_anterior' => $stockAnterior,
                 'stock_nuevo' => $stockNuevo,
-                'motivo' => $motivo
+                'motivo' => $motivo,
             ]);
 
             // Verificar si se debe enviar alerta de reposición
@@ -100,7 +101,7 @@ class VarianteProducto extends Model
     {
         return DB::transaction(function () use ($cantidad, $motivo, $usuarioId, $referencia) {
             $stockAnterior = $this->stock;
-            
+
             // Verificar stock disponible
             if ($stockAnterior < $cantidad) {
                 throw new \Exception("Stock insuficiente. Disponible: {$stockAnterior}, Solicitado: {$cantidad}");
@@ -124,7 +125,7 @@ class VarianteProducto extends Model
                 'motivo' => $motivo,
                 'usuario_id' => $usuarioId,
                 'referencia' => $referencia,
-                'fecha_movimiento' => now()
+                'fecha_movimiento' => now(),
             ]);
 
             Log::info('Salida de stock registrada para variante', [
@@ -133,7 +134,7 @@ class VarianteProducto extends Model
                 'cantidad' => $cantidad,
                 'stock_anterior' => $stockAnterior,
                 'stock_nuevo' => $stockNuevo,
-                'motivo' => $motivo
+                'motivo' => $motivo,
             ]);
 
             // Verificar si se debe enviar alerta de stock bajo
@@ -148,22 +149,36 @@ class VarianteProducto extends Model
     {
         return DB::transaction(function () use ($cantidad, $motivo, $usuarioId, $referencia) {
             $stockAnterior = $this->stock;
-            
+
             // Verificar stock disponible
             if ($stockAnterior < $cantidad) {
                 Log::warning('Stock insuficiente para reserva', [
                     'variante_id' => $this->variante_id,
                     'color' => $this->nombre,
                     'stock' => $stockAnterior,
-                    'cantidad_solicitada' => $cantidad
+                    'cantidad_solicitada' => $cantidad,
                 ]);
+
                 return false;
             }
 
             $stockNuevo = $stockAnterior - $cantidad;
 
-            // Actualizar stock (reserva = salida temporal)
-            $this->update(['stock' => $stockNuevo]);
+            // Incrementar stock_reservado
+            $stockReservadoAnterior = $this->stock_reservado ?? 0;
+            $nuevoStockReservado = $stockReservadoAnterior + $cantidad;
+
+            // Actualizar stock (reserva = salida temporal) y stock_reservado usando consulta directa
+            \Illuminate\Support\Facades\DB::table('variantes_producto')
+                ->where('variante_id', $this->variante_id)
+                ->update([
+                    'stock' => $stockNuevo,
+                    'stock_reservado' => $nuevoStockReservado,
+                ]);
+
+            // Actualizar el modelo localmente
+            $this->stock = $stockNuevo;
+            $this->stock_reservado = $nuevoStockReservado;
 
             // Sincronizar stock del producto padre
             $this->sincronizarStockProducto();
@@ -178,7 +193,7 @@ class VarianteProducto extends Model
                 'motivo' => $motivo,
                 'usuario_id' => $usuarioId,
                 'referencia' => $referencia,
-                'fecha_movimiento' => now()
+                'fecha_movimiento' => now(),
             ]);
 
             Log::info('Stock reservado para variante', [
@@ -187,7 +202,7 @@ class VarianteProducto extends Model
                 'cantidad' => $cantidad,
                 'stock_anterior' => $stockAnterior,
                 'stock_nuevo' => $stockNuevo,
-                'motivo' => $motivo
+                'motivo' => $motivo,
             ]);
 
             // Verificar si se debe enviar alerta de stock bajo
@@ -201,6 +216,25 @@ class VarianteProducto extends Model
     {
         // La reserva ya se hizo, solo registrar como venta confirmada
         return DB::transaction(function () use ($cantidad, $motivo, $usuarioId, $referencia) {
+            // Obtener el stock_reservado actual desde la base de datos para evitar inconsistencias
+            $varianteActual = DB::table('variantes_producto')
+                ->where('variante_id', $this->variante_id)
+                ->first();
+
+            $stockReservadoAnterior = $varianteActual->stock_reservado ?? 0;
+            $nuevoStockReservado = max(0, $stockReservadoAnterior - $cantidad);
+
+            // Actualizar stock_reservado usando consulta directa para asegurar actualización
+            DB::table('variantes_producto')
+                ->where('variante_id', $this->variante_id)
+                ->update(['stock_reservado' => $nuevoStockReservado]);
+
+            // Actualizar el modelo localmente
+            $this->stock_reservado = $nuevoStockReservado;
+
+            // Refrescar el modelo para obtener los valores actualizados
+            $this->refresh();
+
             MovimientoInventario::create([
                 'variante_id' => $this->variante_id,
                 'tipo_movimiento' => 'salida',
@@ -210,14 +244,17 @@ class VarianteProducto extends Model
                 'motivo' => $motivo,
                 'usuario_id' => $usuarioId,
                 'referencia' => $referencia,
-                'fecha_movimiento' => now()
+                'fecha_movimiento' => now(),
             ]);
 
             Log::info('Venta confirmada para variante', [
                 'variante_id' => $this->variante_id,
                 'color' => $this->nombre,
                 'cantidad' => $cantidad,
-                'motivo' => $motivo
+                'stock_reservado_anterior' => $stockReservadoAnterior,
+                'stock_reservado_nuevo' => $nuevoStockReservado,
+                'stock_actual' => $this->stock,
+                'motivo' => $motivo,
             ]);
 
             return true;
@@ -230,8 +267,21 @@ class VarianteProducto extends Model
             $stockAnterior = $this->stock;
             $stockNuevo = $stockAnterior + $cantidad;
 
-            // Restaurar stock (liberar reserva)
-            $this->update(['stock' => $stockNuevo]);
+            // Decrementar stock_reservado
+            $stockReservadoAnterior = $this->stock_reservado ?? 0;
+            $nuevoStockReservado = max(0, $stockReservadoAnterior - $cantidad);
+
+            // Restaurar stock (liberar reserva) y decrementar stock_reservado usando consulta directa
+            \Illuminate\Support\Facades\DB::table('variantes_producto')
+                ->where('variante_id', $this->variante_id)
+                ->update([
+                    'stock' => $stockNuevo,
+                    'stock_reservado' => $nuevoStockReservado,
+                ]);
+
+            // Actualizar el modelo localmente
+            $this->stock = $stockNuevo;
+            $this->stock_reservado = $nuevoStockReservado;
 
             // Sincronizar stock del producto padre
             $this->sincronizarStockProducto();
@@ -246,7 +296,7 @@ class VarianteProducto extends Model
                 'motivo' => $motivo,
                 'usuario_id' => $usuarioId,
                 'referencia' => $referencia,
-                'fecha_movimiento' => now()
+                'fecha_movimiento' => now(),
             ]);
 
             Log::info('Reserva liberada para variante', [
@@ -255,7 +305,7 @@ class VarianteProducto extends Model
                 'cantidad' => $cantidad,
                 'stock_anterior' => $stockAnterior,
                 'stock_nuevo' => $stockNuevo,
-                'motivo' => $motivo
+                'motivo' => $motivo,
             ]);
 
             return true;
@@ -272,16 +322,16 @@ class VarianteProducto extends Model
             $stockInicial = $producto->stock_inicial ?? 0;
             $stockMinimo = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 10;
         }
-        
+
         // Solo enviar alerta si el stock anterior estaba por encima del umbral y ahora está por debajo
         if ($stockAnterior > $stockMinimo && $stockNuevo <= $stockMinimo) {
             $tipoAlerta = $this->determinarTipoAlerta($stockNuevo);
-            
+
             if ($tipoAlerta) {
                 dispatch(new \App\Jobs\ProcesarAlertaStockVariante(
-                    $this, 
-                    $tipoAlerta, 
-                    $stockAnterior, 
+                    $this,
+                    $tipoAlerta,
+                    $stockAnterior,
                     $stockNuevo
                 ));
             }
@@ -297,14 +347,14 @@ class VarianteProducto extends Model
             $stockInicial = $producto->stock_inicial ?? 0;
             $stockMinimo = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 10;
         }
-        
+
         // Si el stock anterior estaba por debajo del mínimo y ahora está por encima, enviar alerta de reposición
         if ($stockAnterior <= $stockMinimo && $stockNuevo > $stockMinimo) {
             Log::info('Stock repuesto para variante', [
                 'variante_id' => $this->variante_id,
                 'color' => $this->nombre,
                 'stock_anterior' => $stockAnterior,
-                'stock_nuevo' => $stockNuevo
+                'stock_nuevo' => $stockNuevo,
             ]);
         }
     }
@@ -314,12 +364,12 @@ class VarianteProducto extends Model
         if ($stockActual <= 0) {
             return 'agotado';
         }
-        
+
         // Obtener umbrales del producto padre
         $producto = $this->producto;
         $stockMinimo = $producto->stock_minimo ?? null;
         $stockMaximo = $producto->stock_maximo ?? null;
-        
+
         if ($stockMinimo === null || $stockMaximo === null) {
             $stockInicial = $producto->stock_inicial ?? 0;
             if ($stockInicial > 0) {
@@ -330,14 +380,14 @@ class VarianteProducto extends Model
                 $stockMaximo = $stockMaximo ?? 10;
             }
         }
-        
+
         // Verificar tipo de alerta usando umbrales del producto
         if ($stockActual <= $stockMinimo) {
             return 'critico';
         } elseif ($stockActual <= $stockMaximo) {
             return 'bajo';
         }
-        
+
         return null; // No enviar alerta
     }
 
@@ -346,6 +396,7 @@ class VarianteProducto extends Model
     {
         $stockReservado = $this->stock_reservado ?? 0;
         $stockDisponible = $this->stock - $stockReservado;
+
         return max(0, $stockDisponible);
     }
 
@@ -360,12 +411,12 @@ class VarianteProducto extends Model
         // Obtener umbral crítico del producto padre
         $producto = $this->producto;
         $stockMinimo = $producto->stock_minimo ?? null;
-        
+
         if ($stockMinimo === null) {
             $stockInicial = $producto->stock_inicial ?? 0;
             $stockMinimo = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 10;
         }
-        
+
         return $this->stock <= $stockMinimo;
     }
 
@@ -404,7 +455,7 @@ class VarianteProducto extends Model
             Log::error('Error al sincronizar stock del producto padre', [
                 'variante_id' => $this->variante_id,
                 'producto_id' => $this->producto_id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -446,14 +497,14 @@ class VarianteProducto extends Model
                 'motivo' => $motivo,
                 'usuario_id' => $usuarioId,
                 'referencia' => $referencia,
-                'fecha_movimiento' => now()
+                'fecha_movimiento' => now(),
             ]);
 
             Log::info('Venta confirmada para variante', [
                 'variante_id' => $this->variante_id,
                 'color' => $this->nombre,
                 'cantidad' => $cantidad,
-                'motivo' => $motivo
+                'motivo' => $motivo,
             ]);
 
             return true;

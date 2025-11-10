@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Base\WebController;
 use App\Services\AuthService;
+use App\Services\JwtService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
@@ -23,10 +24,12 @@ use App\Models\OtpCode;
 class AuthController extends WebController
 {
     protected $authService;
+    protected $jwtService;
 
-    public function __construct(AuthService $authService)
+    public function __construct(AuthService $authService, JwtService $jwtService)
     {
         $this->authService = $authService;
+        $this->jwtService = $jwtService;
     }
 
     // Esta función muestra el formulario de inicio de sesión
@@ -131,16 +134,52 @@ class AuthController extends WebController
             $result = $this->authService->logear($request);
 
             if ($result['success']) {
-                if ($result['usuario']->rol === 'admin') {
-                return Redirect::route('admin.index')
-                    ->with('status', trans('auth.login_success'))
-                    ->with('status_type', 'success');
-            } else {
-                return Redirect::route('landing')
-                    ->with('status', trans('auth.login_success'))
-                    ->with('status_type', 'success');
+                // Generar token JWT para el usuario autenticado
+                try {
+                    $jwtToken = $this->jwtService->generateToken($result['usuario']);
+                    
+                    // Guardar token JWT en cookie (httpOnly para seguridad)
+                    // En desarrollo, Secure debe ser false para HTTP
+                    $isSecure = config('app.env') === 'production' && config('app.url', 'http://localhost') !== 'http://localhost';
+                    
+                    $cookie = cookie(
+                        'jwt_token',           // Nombre de la cookie
+                        $jwtToken,             // Valor (token JWT)
+                        config('jwt.expiration', 3600) / 60, // Tiempo de expiración en minutos
+                        '/',                   // Ruta
+                        null,                  // Dominio
+                        $isSecure,             // Secure (HTTPS solo en producción)
+                        true,                  // HttpOnly (no accesible desde JavaScript)
+                        false,                 // Raw
+                        'Lax'                  // SameSite
+                    );
+                    
+                    // Si es admin, redirigir con cookie JWT
+                    if ($result['usuario']->rol === 'admin') {
+                        return Redirect::route('admin.index')
+                            ->withCookie($cookie)
+                            ->with('status', trans('auth.login_success'))
+                            ->with('status_type', 'success');
+                    } else {
+                        return Redirect::route('landing')
+                            ->withCookie($cookie)
+                            ->with('status', trans('auth.login_success'))
+                            ->with('status_type', 'success');
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Error generando token JWT en login: ' . $e->getMessage());
+                    // Continuar sin token JWT (fallback)
+                    if ($result['usuario']->rol === 'admin') {
+                        return Redirect::route('admin.index')
+                            ->with('status', trans('auth.login_success'))
+                            ->with('status_type', 'success');
+                    } else {
+                        return Redirect::route('landing')
+                            ->with('status', trans('auth.login_success'))
+                            ->with('status_type', 'success');
+                    }
+                }
             }
-        }
 
             // Manejar diferentes tipos de error
             switch ($result['error_type']) {
@@ -168,9 +207,9 @@ class AuthController extends WebController
 
         } catch (\Exception $e) {
             Log::error('Error en login: ' . $e->getMessage());
-        return Redirect::back()
-            ->with('error_login', trans('auth.login_error'))
-            ->withInput(['correo_electronico' => $request->correo_electronico]);
+            return Redirect::back()
+                ->with('error_login', trans('auth.login_error'))
+                ->withInput(['correo_electronico' => $request->correo_electronico]);
         }
     }
 
@@ -181,8 +220,12 @@ class AuthController extends WebController
             $result = $this->authService->logout($request);
         
             if ($result['success']) {
+                // Eliminar cookie JWT al hacer logout
+                $cookie = cookie()->forget('jwt_token');
+                
                 return redirect()
                     ->route('landing')
+                    ->withCookie($cookie)
                     ->with('status', $result['message'])
                     ->with('status_type', 'info');
             }

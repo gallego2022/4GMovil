@@ -1,17 +1,15 @@
-@extends('layouts.app')
-
-@section('title', 'Mi Carrito')
+@extends('layouts.landing')
 
 @section('content')
-<div class="container py-5">
-    <div class="row">
-        <div class="col-12">
-            <h2 class="mb-4">
-                <i class="fas fa-shopping-cart me-2"></i>
-                Mi Carrito de Compras
-            </h2>
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Encabezado -->
+        <div class="mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h1 class="text-2xl font-bold text-gray-800">Mi Carrito de Compras</h1>
+                <p class="text-gray-600">Gestiona tus productos en el carrito de compras.</p>
+            </div>
         </div>
-    </div>
 
     <div class="row">
         <div class="col-lg-8">

@@ -3,18 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Base\WebController;
-use App\Services\InventarioService;
 use App\Models\Producto;
-use App\Models\MovimientoInventario;
 use App\Models\Usuario;
-use Illuminate\Http\Request;
+use App\Services\InventarioService;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\View;
 
 class InventarioController extends WebController
 {
@@ -42,6 +41,7 @@ class InventarioController extends WebController
             ]);
         } catch (\Exception $e) {
             Log::error('Error en valor por categoría', ['error' => $e->getMessage()]);
+
             return Redirect::route('admin.inventario.dashboard')
                 ->with('mensaje', 'Error al cargar Valor por Categoría')
                 ->with('tipo', 'error');
@@ -55,17 +55,17 @@ class InventarioController extends WebController
     {
         try {
             $data = $this->inventarioService->getDashboardData();
-            
+
             return View::make('pages.admin.inventario.dashboard', $data);
         } catch (\Exception $e) {
             Log::error('Error en dashboard de inventario', ['error' => $e->getMessage()]);
-            
+
             // Datos de fallback
             $data = $this->inventarioService->getDashboardDataFallback();
+
             return View::make('pages.admin.inventario.dashboard', $data);
         }
     }
-
 
     /**
      * Movimientos de inventario
@@ -75,10 +75,11 @@ class InventarioController extends WebController
         try {
             $filtros = $this->getFiltrosMovimientos($request);
             $data = $this->inventarioService->getMovimientosData($filtros);
-            
+
             return View::make('pages.admin.inventario.movimientos', $data);
         } catch (\Exception $e) {
             Log::error('Error al cargar movimientos', ['error' => $e->getMessage()]);
+
             return Redirect::back()->with('mensaje', 'Error al cargar los movimientos de inventario')->with('tipo', 'error');
         }
     }
@@ -93,18 +94,18 @@ class InventarioController extends WebController
             'cantidad' => 'required|integer|min:1',
             'motivo' => 'required|string|max:255',
             'referencia' => 'nullable|string|max:100',
-            'tipo' => 'required|in:producto,variante'
+            'tipo' => 'required|in:producto,variante',
         ]);
 
         try {
             $success = false;
-            
+
             if ($validated['tipo'] === 'variante') {
                 // Validar que la variante existe
                 $request->validate([
-                    'producto_id' => 'required|exists:variantes_producto,variante_id'
+                    'producto_id' => 'required|exists:variantes_producto,variante_id',
                 ]);
-                
+
                 $success = $this->inventarioService->registrarEntradaVariante(
                     $validated['producto_id'],
                     $validated['cantidad'],
@@ -115,43 +116,46 @@ class InventarioController extends WebController
             } else {
                 // Validar que el producto existe
                 $request->validate([
-                    'producto_id' => 'required|exists:productos,producto_id'
+                    'producto_id' => 'required|exists:productos,producto_id',
                 ]);
-                
-            $success = $this->inventarioService->registrarEntrada(
-                $validated['producto_id'],
-                $validated['cantidad'],
-                $validated['motivo'],
-                Auth::id(),
-                $validated['referencia'] ?? null
-            );
+
+                $success = $this->inventarioService->registrarEntrada(
+                    $validated['producto_id'],
+                    $validated['cantidad'],
+                    $validated['motivo'],
+                    Auth::id(),
+                    $validated['referencia'] ?? null
+                );
             }
 
             if ($success) {
                 if ($request->ajax()) {
                     return Response::json([
                         'success' => true,
-                        'message' => 'Entrada de inventario registrada correctamente.'
+                        'message' => 'Entrada de inventario registrada correctamente.',
                     ]);
                 }
+
                 return Redirect::back()->with('mensaje', 'Entrada de Inventario Registrada')->with('tipo', 'success');
             }
 
             if ($request->ajax()) {
                 return Response::json([
                     'success' => false,
-                    'message' => 'Error al registrar la entrada de inventario.'
+                    'message' => 'Error al registrar la entrada de inventario.',
                 ], 400);
             }
+
             return Redirect::back()->with('mensaje', 'Error al registrar la entrada de inventario.')->with('tipo', 'error');
         } catch (\Exception $e) {
             Log::error('Error al registrar entrada', ['error' => $e->getMessage()]);
             if ($request->ajax()) {
                 return Response::json([
                     'success' => false,
-                    'message' => 'Error interno del servidor: ' . $e->getMessage()
+                    'message' => 'Error interno del servidor: '.$e->getMessage(),
                 ], 500);
             }
+
             return Redirect::back()->with('mensaje', 'Error interno del servidor')->with('tipo', 'error');
         }
     }
@@ -165,7 +169,7 @@ class InventarioController extends WebController
             'producto_id' => 'required|exists:productos,producto_id',
             'cantidad' => 'required|integer|min:1',
             'motivo' => 'required|string|max:255',
-            'pedido_id' => 'nullable|exists:pedidos,pedido_id'
+            'pedido_id' => 'nullable|exists:pedidos,pedido_id',
         ]);
 
         try {
@@ -184,6 +188,7 @@ class InventarioController extends WebController
             return Redirect::back()->with('mensaje', 'Error al registrar la salida de inventario. Verifique el stock disponible.')->with('tipo', 'error');
         } catch (\Exception $e) {
             Log::error('Error al registrar salida', ['error' => $e->getMessage()]);
+
             return Redirect::back()->with('mensaje', 'Error interno del servidor')->with('tipo', 'error');
         }
     }
@@ -196,7 +201,7 @@ class InventarioController extends WebController
         $validated = $request->validate([
             'producto_id' => 'required|exists:productos,producto_id',
             'nuevo_stock' => 'required|integer|min:0',
-            'motivo' => 'required|string|max:255'
+            'motivo' => 'required|string|max:255',
         ]);
 
         try {
@@ -214,6 +219,7 @@ class InventarioController extends WebController
             return Redirect::back()->with('mensaje', 'Error al ajustar el stock.')->with('tipo', 'error');
         } catch (\Exception $e) {
             Log::error('Error al ajustar stock', ['error' => $e->getMessage()]);
+
             return Redirect::back()->with('mensaje', 'Error interno del servidor')->with('tipo', 'error');
         }
     }
@@ -226,10 +232,11 @@ class InventarioController extends WebController
         try {
             $filtros = $this->getFiltrosReporte($request);
             $data = $this->inventarioService->getReporteData($filtros);
-            
+
             return View::make('pages.admin.inventario.reporte', $data);
         } catch (\Exception $e) {
             Log::error('Error al generar reporte', ['error' => $e->getMessage()]);
+
             return Redirect::back()->with('mensaje', 'Error al generar el reporte de inventario')->with('tipo', 'error');
         }
     }
@@ -242,10 +249,10 @@ class InventarioController extends WebController
         try {
             $filtros = $this->getFiltrosReporte($request);
             $data = $this->inventarioService->getReporteData($filtros);
-            
+
             // Generar archivo Excel o PDF según el formato solicitado
             $formato = $request->get('formato', 'excel');
-            
+
             if ($formato === 'pdf') {
                 return $this->generarReportePDF($data);
             } else {
@@ -253,7 +260,70 @@ class InventarioController extends WebController
             }
         } catch (\Exception $e) {
             Log::error('Error al exportar reporte', ['error' => $e->getMessage()]);
+
             return Redirect::back()->with('mensaje', 'Error al exportar el reporte')->with('tipo', 'error');
+        }
+    }
+
+    /**
+     * Productos más vendidos
+     */
+    public function productosMasVendidos(Request $request)
+    {
+        try {
+            $fechaInicio = $request->get('fecha_inicio') ? Carbon::parse($request->fecha_inicio) : Carbon::now()->subMonth();
+            $fechaFin = $request->get('fecha_fin') ? Carbon::parse($request->fecha_fin) : Carbon::now();
+
+            $productos = $this->inventarioService->getProductosMasVendidos(20, $fechaInicio, $fechaFin);
+
+            return View::make('pages.admin.inventario.productos-mas-vendidos', [
+                'productos' => $productos,
+                'fechaInicio' => $fechaInicio,
+                'fechaFin' => $fechaFin,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error al cargar productos más vendidos', ['error' => $e->getMessage()]);
+
+            return Redirect::back()->with('mensaje', 'Error al cargar los productos más vendidos')->with('tipo', 'error');
+        }
+    }
+
+    /**
+     * Generar reporte de inventario en PDF usando DomPDF
+     */
+    public function reportePDF(Request $request)
+    {
+        try {
+            $filtros = $this->getFiltrosReporte($request);
+            $data = $this->inventarioService->getReporteData($filtros);
+
+            // Generar HTML de la vista
+            $html = View::make('pages.admin.inventario.reporte-pdf', $data)->render();
+
+            // Crear instancia de DomPDF
+            $dompdf = new \Dompdf\Dompdf;
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
+
+            // Configurar el nombre del archivo
+            $filename = 'reporte_inventario_'.date('Y-m-d_H-i-s').'.pdf';
+
+            // Descargar el PDF
+            return response($dompdf->output(), 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Pragma' => 'no-cache',
+                'Expires' => '0',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error al generar reporte PDF: '.$e->getMessage(), [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return Redirect::back()->with('mensaje', 'Error al generar el reporte PDF')->with('tipo', 'error');
         }
     }
 
@@ -265,74 +335,74 @@ class InventarioController extends WebController
         // Validar fechas
         $fechaInicio = null;
         $fechaFin = null;
-        
+
         if ($request->has('fecha_inicio') && $request->fecha_inicio) {
             try {
                 $fechaInicio = Carbon::parse($request->fecha_inicio)->startOfDay();
             } catch (\Exception $e) {
                 Log::warning('Fecha de inicio inválida en filtros de movimientos', [
                     'fecha_inicio' => $request->fecha_inicio,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
             }
         }
-        
+
         if ($request->has('fecha_fin') && $request->fecha_fin) {
             try {
                 $fechaFin = Carbon::parse($request->fecha_fin)->endOfDay();
             } catch (\Exception $e) {
                 Log::warning('Fecha de fin inválida en filtros de movimientos', [
                     'fecha_fin' => $request->fecha_fin,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
             }
         }
-        
+
         // Validar que la fecha de inicio no sea mayor que la fecha de fin
         if ($fechaInicio && $fechaFin && $fechaInicio->gt($fechaFin)) {
             Log::warning('Fecha de inicio mayor que fecha de fin en filtros de movimientos', [
                 'fecha_inicio' => $fechaInicio->format('Y-m-d'),
-                'fecha_fin' => $fechaFin->format('Y-m-d')
+                'fecha_fin' => $fechaFin->format('Y-m-d'),
             ]);
             // Intercambiar las fechas si están invertidas
             $temp = $fechaInicio;
             $fechaInicio = $fechaFin;
             $fechaFin = $temp;
         }
-        
+
         // Validar que el rango de fechas no sea mayor a 1 año
         if ($fechaInicio && $fechaFin) {
             $diferenciaDias = $fechaInicio->diffInDays($fechaFin);
             if ($diferenciaDias > 365) {
                 Log::warning('Rango de fechas mayor a 1 año en filtros de movimientos', [
-                    'diferencia_dias' => $diferenciaDias
+                    'diferencia_dias' => $diferenciaDias,
                 ]);
                 // Limitar a 1 año desde la fecha de inicio
                 $fechaFin = $fechaInicio->copy()->addYear();
             }
         }
-        
+
         // Establecer valores por defecto si no se proporcionaron fechas válidas
-        if (!$fechaInicio) {
+        if (! $fechaInicio) {
             $fechaInicio = Carbon::now()->subMonth()->startOfDay();
         }
-        if (!$fechaFin) {
+        if (! $fechaFin) {
             $fechaFin = Carbon::now()->endOfDay();
         }
-        
+
         // Validar producto_id
         $productoId = null;
         if ($request->has('producto_id') && $request->producto_id) {
             $productoId = (int) $request->producto_id;
             // Verificar que el producto existe
-            if (!\App\Models\Producto::where('producto_id', $productoId)->exists()) {
+            if (! \App\Models\Producto::where('producto_id', $productoId)->exists()) {
                 Log::warning('Producto no encontrado en filtros de movimientos', [
-                    'producto_id' => $productoId
+                    'producto_id' => $productoId,
                 ]);
                 $productoId = null;
             }
         }
-        
+
         // Validar tipo de movimiento
         $tipo = null;
         if ($request->has('tipo') && $request->tipo) {
@@ -341,30 +411,30 @@ class InventarioController extends WebController
                 $tipo = $request->tipo;
             } else {
                 Log::warning('Tipo de movimiento inválido en filtros de movimientos', [
-                    'tipo' => $request->tipo
+                    'tipo' => $request->tipo,
                 ]);
             }
         }
-        
+
         // Validar usuario_id
         $usuarioId = null;
         if ($request->has('usuario_id') && $request->usuario_id) {
             $usuarioId = (int) $request->usuario_id;
             // Verificar que el usuario existe
-            if (!\App\Models\Usuario::where('usuario_id', $usuarioId)->exists()) {
+            if (! \App\Models\Usuario::where('usuario_id', $usuarioId)->exists()) {
                 Log::warning('Usuario no encontrado en filtros de movimientos', [
-                    'usuario_id' => $usuarioId
+                    'usuario_id' => $usuarioId,
                 ]);
                 $usuarioId = null;
             }
         }
-        
+
         return [
             'fecha_inicio' => $fechaInicio,
             'fecha_fin' => $fechaFin,
             'producto_id' => $productoId,
             'tipo' => $tipo,
-            'usuario_id' => $usuarioId
+            'usuario_id' => $usuarioId,
         ];
     }
 
@@ -379,7 +449,7 @@ class InventarioController extends WebController
             'categoria_id' => $request->get('categoria_id'),
             'marca_id' => $request->get('marca_id'),
             'tipo_reporte' => $request->get('tipo_reporte', 'general'),
-            'incluir_variantes' => $request->boolean('incluir_variantes', true)
+            'incluir_variantes' => $request->boolean('incluir_variantes', true),
         ];
     }
 
@@ -388,24 +458,24 @@ class InventarioController extends WebController
      */
     private function generarReportePDF(array $data)
     {
-        $filename = 'reporte_inventario_' . date('Y-m-d_H-i-s') . '.pdf';
-        
+        $filename = 'reporte_inventario_'.date('Y-m-d_H-i-s').'.pdf';
+
         // Preparar datos para la vista
         $reporte = $this->prepararDatosParaVista($data);
         $secciones = ['resumen', 'alertas', 'productos', 'categorias']; // Secciones por defecto
-        
+
         // Generar PDF usando la vista existente
         $html = View::make('pages.admin.inventario.pdf.reporte', compact('reporte', 'secciones'))->render();
-        
+
         // Generar HTML optimizado para impresión (más confiable)
         $htmlOptimizado = $this->optimizarHTMLParaImpresion($html);
-        
+
         return response($htmlOptimizado, 200, [
             'Content-Type' => 'text/html; charset=utf-8',
-            'Content-Disposition' => 'attachment; filename="' . str_replace('.pdf', '.html', $filename) . '"',
+            'Content-Disposition' => 'attachment; filename="'.str_replace('.pdf', '.html', $filename).'"',
             'Cache-Control' => 'no-cache, no-store, must-revalidate',
             'Pragma' => 'no-cache',
-            'Expires' => '0'
+            'Expires' => '0',
         ]);
     }
 
@@ -414,142 +484,18 @@ class InventarioController extends WebController
      */
     private function generarReporteExcel(array $data)
     {
-        $filename = 'reporte_inventario_' . date('Y-m-d_H-i-s') . '.csv';
-        
+        $filename = 'reporte_inventario_'.date('Y-m-d_H-i-s').'.csv';
+
         // Generar contenido CSV
         $csv = $this->generarCSVReporte($data);
-        
+
         return response($csv, 200, [
             'Content-Type' => 'text/csv; charset=utf-8',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
             'Cache-Control' => 'no-cache, no-store, must-revalidate',
             'Pragma' => 'no-cache',
-            'Expires' => '0'
+            'Expires' => '0',
         ]);
-    }
-
-    /**
-     * Generar HTML para reporte PDF
-     */
-    private function generarHTMLReporte(array $data): string
-    {
-        $estadisticas = $data['estadisticas'] ?? [];
-        $productos = $data['productos'] ?? Collection::make();
-        $movimientos = $data['movimientos'] ?? Collection::make();
-        
-        $html = '<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Reporte de Inventario - 4GMovil</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .stats { display: flex; justify-content: space-around; margin: 20px 0; }
-        .stat-box { border: 1px solid #ddd; padding: 15px; text-align: center; width: 200px; }
-        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .footer { margin-top: 30px; text-align: center; font-size: 12px; color: #666; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>Reporte de Inventario - 4GMovil</h1>
-        <p>Generado el: ' . Carbon::now()->format('d/m/Y H:i:s') . '</p>';
-        
-        if (isset($estadisticas['periodo'])) {
-            $html .= '<p>Período: ' . $estadisticas['periodo']['inicio'] . ' - ' . $estadisticas['periodo']['fin'] . '</p>';
-        }
-        
-        $html .= '</div>
-    
-    <div class="stats">
-        <div class="stat-box">
-            <h3>Total Productos</h3>
-            <p>' . ($estadisticas['total_productos'] ?? 0) . '</p>
-        </div>
-        <div class="stat-box">
-            <h3>Stock Total</h3>
-            <p>' . number_format($estadisticas['stock_total'] ?? 0) . '</p>
-        </div>
-        <div class="stat-box">
-            <h3>Valor Inventario</h3>
-            <p>$' . number_format($estadisticas['valor_inventario'] ?? 0, 0, ',', '.') . '</p>
-        </div>
-        <div class="stat-box">
-            <h3>Stock Crítico</h3>
-            <p>' . ($estadisticas['productos_stock_critico'] ?? 0) . '</p>
-        </div>
-        <div class="stat-box">
-            <h3>Stock Bajo</h3>
-            <p>' . ($estadisticas['productos_stock_bajo'] ?? 0) . '</p>
-        </div>
-    </div>
-    
-    <h2>Productos en Inventario</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Producto</th>
-                <th>Categoría</th>
-                <th>Marca</th>
-                <th>Stock</th>
-                <th>Precio</th>
-                <th>Valor Total</th>
-            </tr>
-        </thead>
-        <tbody>';
-        
-        foreach ($productos as $producto) {
-            $html .= '<tr>
-                <td>' . htmlspecialchars($producto->nombre_producto) . '</td>
-                <td>' . htmlspecialchars($producto->categoria->nombre ?? 'Sin categoría') . '</td>
-                <td>' . htmlspecialchars($producto->marca->nombre ?? 'Sin marca') . '</td>
-                <td>' . $producto->stock . '</td>
-                <td>$' . number_format($producto->precio, 0, ',', '.') . '</td>
-                <td>$' . number_format($producto->stock * $producto->precio, 0, ',', '.') . '</td>
-            </tr>';
-        }
-        
-        $html .= '</tbody>
-    </table>
-    
-    <h2>Movimientos Recientes</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>Producto</th>
-                <th>Variante</th>
-                <th>Tipo</th>
-                <th>Cantidad</th>
-                <th>Motivo</th>
-            </tr>
-        </thead>
-        <tbody>';
-        
-        foreach ($movimientos->take(50) as $movimiento) {
-            $html .= '<tr>
-                <td>' . ($movimiento->fecha_movimiento ? $movimiento->fecha_movimiento->format('d/m/Y H:i') : '') . '</td>
-                <td>' . htmlspecialchars($movimiento->variante->producto->nombre_producto ?? 'N/A') . '</td>
-                <td>' . htmlspecialchars($movimiento->variante->nombre ?? 'N/A') . '</td>
-                <td>' . ucfirst($movimiento->tipo_movimiento ?? $movimiento->tipo ?? '') . '</td>
-                <td>' . $movimiento->cantidad . '</td>
-                <td>' . htmlspecialchars($movimiento->motivo) . '</td>
-            </tr>';
-        }
-        
-        $html .= '</tbody>
-    </table>
-    
-    <div class="footer">
-        <p>Reporte generado automáticamente por el sistema 4GMovil</p>
-    </div>
-</body>
-</html>';
-        
-        return $html;
     }
 
     /**
@@ -560,102 +506,69 @@ class InventarioController extends WebController
         $estadisticas = $data['estadisticas'] ?? [];
         $productos = $data['productos'] ?? Collection::make();
         $movimientos = $data['movimientos'] ?? Collection::make();
-        
+
         // Encabezado del reporte
         $csv = "REPORTE DE INVENTARIO - 4GMOVIL\n";
         $csv .= "=====================================\n";
-        $csv .= "Generado el: " . Carbon::now()->format('d/m/Y H:i:s') . "\n";
-        
+        $csv .= 'Generado el: '.Carbon::now()->format('d/m/Y H:i:s')."\n";
+
         if (isset($estadisticas['periodo'])) {
-            $csv .= "Período: " . $estadisticas['periodo']['inicio'] . " - " . $estadisticas['periodo']['fin'] . "\n";
+            $csv .= 'Período: '.$estadisticas['periodo']['inicio'].' - '.$estadisticas['periodo']['fin']."\n";
         }
-        
+
         $csv .= "\n";
         $csv .= "ESTADÍSTICAS GENERALES\n";
         $csv .= "======================\n";
         $csv .= "Concepto,Valor\n";
-        $csv .= "Total de Productos," . number_format($estadisticas['total_productos'] ?? 0) . "\n";
-        $csv .= "Total de Variantes," . number_format($estadisticas['total_variantes'] ?? 0) . "\n";
-        $csv .= "Stock Total (unidades)," . number_format($estadisticas['stock_total'] ?? 0) . "\n";
-        $csv .= "Valor Total del Inventario,$" . number_format($estadisticas['valor_inventario'] ?? 0, 0, ',', '.') . "\n";
-        $csv .= "Productos con Stock Crítico," . number_format($estadisticas['productos_stock_critico'] ?? 0) . "\n";
-        $csv .= "Productos con Stock Bajo," . number_format($estadisticas['productos_stock_bajo'] ?? 0) . "\n";
-        $csv .= "Productos Sin Stock," . number_format($estadisticas['productos_sin_stock'] ?? 0) . "\n";
-        $csv .= "Movimientos de Entrada," . number_format($estadisticas['movimientos_entrada'] ?? 0) . "\n";
-        $csv .= "Movimientos de Salida," . number_format($estadisticas['movimientos_salida'] ?? 0) . "\n";
-        
+        $csv .= 'Total de Productos,'.number_format($estadisticas['total_productos'] ?? 0)."\n";
+        $csv .= 'Total de Variantes,'.number_format($estadisticas['total_variantes'] ?? 0)."\n";
+        $csv .= 'Stock Total (unidades),'.number_format($estadisticas['stock_total'] ?? 0)."\n";
+        $csv .= 'Valor Total del Inventario,$'.number_format($estadisticas['valor_inventario'] ?? 0, 0, ',', '.')."\n";
+        $csv .= 'Productos con Stock Crítico,'.number_format($estadisticas['productos_stock_critico'] ?? 0)."\n";
+        $csv .= 'Productos con Stock Bajo,'.number_format($estadisticas['productos_stock_bajo'] ?? 0)."\n";
+        $csv .= 'Productos Sin Stock,'.number_format($estadisticas['productos_sin_stock'] ?? 0)."\n";
+        $csv .= 'Movimientos de Entrada,'.number_format($estadisticas['movimientos_entrada'] ?? 0)."\n";
+        $csv .= 'Movimientos de Salida,'.number_format($estadisticas['movimientos_salida'] ?? 0)."\n";
+
         $csv .= "\n";
         $csv .= "PRODUCTOS EN INVENTARIO\n";
         $csv .= "=======================\n";
         $csv .= "ID,Producto,Categoría,Marca,Stock,Precio Unitario,Valor Total\n";
-        
+
         foreach ($productos as $producto) {
-            $csv .= $producto->producto_id . ',';
-            $csv .= '"' . str_replace('"', '""', $producto->nombre_producto) . '",';
-            $csv .= '"' . str_replace('"', '""', $producto->categoria->nombre ?? 'Sin categoría') . '",';
-            $csv .= '"' . str_replace('"', '""', $producto->marca->nombre ?? 'Sin marca') . '",';
-            $csv .= number_format($producto->stock) . ',';
-            $csv .= '$' . number_format($producto->precio, 0, ',', '.') . ',';
-            $csv .= '$' . number_format($producto->stock * $producto->precio, 0, ',', '.') . "\n";
+            $csv .= $producto->producto_id.',';
+            $csv .= '"'.str_replace('"', '""', $producto->nombre_producto).'",';
+            $csv .= '"'.str_replace('"', '""', $producto->categoria->nombre ?? 'Sin categoría').'",';
+            $csv .= '"'.str_replace('"', '""', $producto->marca->nombre ?? 'Sin marca').'",';
+            $csv .= number_format($producto->stock).',';
+            $csv .= '$'.number_format($producto->precio, 0, ',', '.').',';
+            $csv .= '$'.number_format($producto->stock * $producto->precio, 0, ',', '.')."\n";
         }
-        
+
         if ($movimientos->count() > 0) {
             $csv .= "\n";
             $csv .= "MOVIMIENTOS RECIENTES\n";
             $csv .= "=====================\n";
             $csv .= "Fecha,Producto,Variante,Tipo,Cantidad,Motivo,Usuario\n";
-            
+
             foreach ($movimientos->take(100) as $movimiento) {
-                $csv .= $movimiento->fecha_movimiento ? $movimiento->fecha_movimiento->format('d/m/Y H:i') : 'Sin fecha' . ',';
-                $csv .= '"' . str_replace('"', '""', $movimiento->variante->producto->nombre_producto ?? 'N/A') . '",';
-                $csv .= '"' . str_replace('"', '""', $movimiento->variante->nombre ?? 'N/A') . '",';
-                $csv .= ucfirst($movimiento->tipo) . ',';
-                $csv .= number_format($movimiento->cantidad) . ',';
-                $csv .= '"' . str_replace('"', '""', $movimiento->motivo) . '",';
-                $csv .= '"' . str_replace('"', '""', $movimiento->usuario->nombre_usuario ?? 'Sistema') . '"' . "\n";
+                $csv .= $movimiento->fecha_movimiento ? $movimiento->fecha_movimiento->format('d/m/Y H:i') : 'Sin fecha'.',';
+                $csv .= '"'.str_replace('"', '""', $movimiento->variante->producto->nombre_producto ?? 'N/A').'",';
+                $csv .= '"'.str_replace('"', '""', $movimiento->variante->nombre ?? 'N/A').'",';
+                $csv .= ucfirst($movimiento->tipo).',';
+                $csv .= number_format($movimiento->cantidad).',';
+                $csv .= '"'.str_replace('"', '""', $movimiento->motivo).'",';
+                $csv .= '"'.str_replace('"', '""', $movimiento->usuario->nombre_usuario ?? 'Sistema').'"'."\n";
             }
         }
-        
+
         $csv .= "\n";
         $csv .= "=====================================\n";
         $csv .= "Reporte generado automáticamente por el sistema 4GMovil\n";
         $csv .= "Para más información, contacte al administrador del sistema\n";
-        
+
         return $csv;
     }
-
-    /**
-     * Generar PDF usando DomPDF
-     */
-    private function generarPDFConDomPDF(string $html, string $filename)
-    {
-        try {
-            $dompdf = new \Dompdf\Dompdf();
-            $dompdf->loadHtml($html);
-            $dompdf->setPaper('A4', 'portrait');
-            $dompdf->render();
-            
-            return response($dompdf->output(), 200, [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-                'Cache-Control' => 'no-cache, no-store, must-revalidate',
-                'Pragma' => 'no-cache',
-                'Expires' => '0'
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Error al generar PDF con DomPDF', ['error' => $e->getMessage()]);
-            
-            // Fallback a HTML
-            return response($html, 200, [
-                'Content-Type' => 'text/html; charset=utf-8',
-                'Content-Disposition' => 'attachment; filename="' . str_replace('.pdf', '.html', $filename) . '"',
-                'Cache-Control' => 'no-cache, no-store, must-revalidate',
-                'Pragma' => 'no-cache',
-                'Expires' => '0'
-            ]);
-        }
-    }
-
 
     /**
      * Preparar datos para la vista de PDF
@@ -665,7 +578,7 @@ class InventarioController extends WebController
         $estadisticas = $data['estadisticas'] ?? [];
         $productos = $data['productos'] ?? Collection::make();
         $movimientos = $data['movimientos'] ?? Collection::make();
-        
+
         // Preparar resumen general
         $resumenGeneral = [
             'total_productos' => $estadisticas['total_productos'] ?? 0,
@@ -673,7 +586,7 @@ class InventarioController extends WebController
             'valor_total_inventario' => $estadisticas['valor_inventario'] ?? 0,
             'stock_total' => $estadisticas['stock_total'] ?? 0,
         ];
-        
+
         // Preparar alertas (usar conteos separados del servicio)
         $alertas = [
             'stock_critico' => $estadisticas['productos_stock_critico'] ?? 0,
@@ -681,16 +594,16 @@ class InventarioController extends WebController
             'sin_stock' => $estadisticas['productos_sin_stock'] ?? 0,
             'stock_excesivo' => 0, // No tenemos esta métrica en los datos actuales
         ];
-        
+
         // Preparar productos con stock bajo
         // Productos con stock bajo (usar umbrales del producto si existen, sino calcular)
         $productosStockBajo = $productos->filter(function ($producto) {
             $stockActual = $producto->stock ?? 0;
-            
+
             // Usar umbrales del producto si existen
             $umbralBajo = $producto->stock_maximo ?? null;
             $umbralCritico = $producto->stock_minimo ?? null;
-            
+
             // Si no hay umbrales personalizados, calcular basado en stock_inicial
             if ($umbralBajo === null || $umbralCritico === null) {
                 $stockInicial = $producto->stock_inicial ?? 0;
@@ -702,10 +615,10 @@ class InventarioController extends WebController
                     $umbralCritico = $umbralCritico ?? 5;
                 }
             }
-            
+
             return $stockActual <= $umbralBajo && $stockActual > $umbralCritico;
         })->values();
-        
+
         // Preparar valor por categoría
         $valorPorCategoria = $productos->groupBy('categoria_id')->map(function ($productosCategoria) {
             $categoria = $productosCategoria->first()->categoria;
@@ -713,7 +626,7 @@ class InventarioController extends WebController
             $valorTotal = $productosCategoria->sum(function ($producto) {
                 return $producto->stock * $producto->precio;
             });
-            
+
             return [
                 'categoria' => $categoria,
                 'productos_count' => $productosCategoria->count(),
@@ -721,7 +634,7 @@ class InventarioController extends WebController
                 'valor_total' => $valorTotal,
             ];
         })->values();
-        
+
         return [
             'resumen_general' => $resumenGeneral,
             'alertas' => $alertas,
@@ -828,10 +741,10 @@ class InventarioController extends WebController
                 padding-top: 10px;
             }
         </style>';
-        
+
         // Insertar estilos en el head
-        $html = str_replace('</head>', $estilosImpresion . '</head>', $html);
-        
+        $html = str_replace('</head>', $estilosImpresion.'</head>', $html);
+
         // Agregar script mejorado para impresión
         $scriptImpresion = '
         <script>
@@ -863,21 +776,9 @@ class InventarioController extends WebController
         <div style="position: fixed; top: 10px; right: 10px; z-index: 1000; background: #007bff; color: white; padding: 10px; border-radius: 5px; cursor: pointer; font-size: 12px;" onclick="window.print()">
             🖨️ Imprimir/Guardar PDF
         </div>';
-        
-        $html = str_replace('</body>', $scriptImpresion . '</body>', $html);
-        
-        return $html;
-    }
 
-    /**
-     * Obtener filtros para variantes
-     */
-    private function getFiltrosVariantes(Request $request): array
-    {
-        return [
-            'producto_id' => $request->get('producto_id'),
-            'estado_stock' => $request->get('estado_stock'),
-            'disponible' => $request->get('disponible')
-        ];
+        $html = str_replace('</body>', $scriptImpresion.'</body>', $html);
+
+        return $html;
     }
 }

@@ -17,6 +17,16 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- SweetAlert2 desde CDN como fallback si no está disponible desde Vite -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Asegurar que SweetAlert2 esté disponible globalmente
+        if (typeof Swal !== 'undefined') {
+            window.Swal = Swal;
+        }
+    </script>
+
     <!-- Critical Scripts -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
@@ -168,9 +178,132 @@
             z-index: 40;
             width: 320px;
             background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 50%, #e2e8f0 100%);
-            border-right: 1px solid rgba(0, 255, 255, 0.2);
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
+        }
+
+        /* Asegurar que el sidebar se muestre en pantallas grandes */
+        @media (min-width: 1024px) {
+            .sidebar-wrapper.hidden.lg\:flex {
+                display: flex !important;
+            }
+        }
+
+        .sidebar-wrapper.collapsed {
+            width: 80px !important;
+        }
+
+        .sidebar-wrapper.collapsed .sidebar-logo img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .sidebar-wrapper.collapsed .sidebar-logo {
+            padding: 1rem 0.5rem;
+            justify-content: center;
+        }
+
+        .sidebar-wrapper.collapsed .sidebar-logo a {
+            justify-content: center;
+            width: 100%;
+        }
+
+        .sidebar-wrapper.collapsed .sidebar-logo {
+            position: relative;
+        }
+
+        .sidebar-wrapper.collapsed .sidebar-logo button {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .sidebar-wrapper.collapsed .sidebar-nav {
+            padding: 1rem 0.5rem;
+        }
+
+        .sidebar-wrapper.collapsed .sidebar-nav-item span:not(.icon-only),
+        .sidebar-wrapper.collapsed .sidebar-nav-item .flex-1 {
+            opacity: 0;
+            width: 0;
+            max-width: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .sidebar-wrapper.collapsed .sidebar-nav-item {
+            justify-content: center;
+            padding: 1rem 0.5rem;
+            position: relative;
+        }
+
+        .sidebar-wrapper.collapsed .sidebar-nav-item svg {
+            margin-right: 0;
+        }
+
+        .sidebar-wrapper.collapsed .sidebar-submenu {
+            display: none;
+        }
+
+        .sidebar-wrapper.collapsed .sidebar-nav-item .ml-auto {
+            display: none;
+        }
+
+        .sidebar-wrapper.collapsed.hover-expanded {
+            width: 320px !important;
+            z-index: 50;
+        }
+
+        .sidebar-wrapper.collapsed.hover-expanded .sidebar-logo img {
+            width: auto;
+            height: 64px;
+        }
+
+        .sidebar-wrapper.collapsed.hover-expanded .sidebar-logo {
+            padding: 1.5rem;
+            justify-content: space-between;
+        }
+
+        .sidebar-wrapper.collapsed.hover-expanded .sidebar-logo a {
+            justify-content: flex-start;
+            width: auto;
+        }
+
+        .sidebar-wrapper.collapsed.hover-expanded .sidebar-logo button {
+            position: static;
+            transform: none;
+        }
+
+        .sidebar-wrapper.collapsed.hover-expanded .sidebar-nav {
+            padding: 2rem 1.5rem;
+        }
+
+        .sidebar-wrapper.collapsed.hover-expanded .sidebar-nav-item span:not(.icon-only),
+        .sidebar-wrapper.collapsed.hover-expanded .sidebar-nav-item .flex-1 {
+            opacity: 1;
+            width: auto;
+            max-width: none;
+            overflow: visible;
+        }
+
+        .sidebar-wrapper.collapsed.hover-expanded .sidebar-nav-item {
+            justify-content: flex-start;
+            padding: 1rem 1.25rem;
+        }
+
+        .sidebar-wrapper.collapsed.hover-expanded .sidebar-nav-item svg {
+            margin-right: 0.75rem;
+        }
+
+        .sidebar-wrapper.collapsed.hover-expanded .sidebar-submenu {
+            display: flex;
+        }
+
+        .sidebar-wrapper.collapsed.hover-expanded .sidebar-nav-item .ml-auto {
+            display: block;
         }
 
         .sidebar-wrapper.dark {
@@ -186,6 +319,10 @@
             flex-direction: column;
             background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             transition: all 0.3s ease;
+        }
+
+        .main-content.sidebar-collapsed {
+            margin-left: 80px !important;
         }
 
         .main-content.dark {
@@ -254,26 +391,26 @@
 
         /* Modo claro para sidebar */
         .sidebar-wrapper:not(.dark) .sidebar-nav-item {
-            color: rgba(0, 100, 200, 0.8);
+            color: #1f2937;
         }
 
         .sidebar-wrapper:not(.dark) .sidebar-nav-item:hover {
-            background: rgba(0, 100, 200, 0.1);
-            color: #0064c8;
-            border-color: rgba(0, 100, 200, 0.3);
-            box-shadow: 0 0 15px rgba(0, 100, 200, 0.2);
+            background: rgba(59, 130, 246, 0.1);
+            color: #2563eb;
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
         }
 
         .sidebar-wrapper:not(.dark) .sidebar-nav-item.active {
-            background: rgba(0, 100, 200, 0.15);
-            color: #0064c8;
-            border-color: rgba(0, 100, 200, 0.5);
-            box-shadow: 0 0 20px rgba(0, 100, 200, 0.3);
+            background: rgba(59, 130, 246, 0.15);
+            color: #2563eb;
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
         }
 
         .sidebar-wrapper:not(.dark) .sidebar-nav-item.active::before {
-            background: #0064c8;
-            box-shadow: 0 0 10px #0064c8;
+            background: #2563eb;
+            box-shadow: 0 0 10px #2563eb;
         }
 
         /* Modo oscuro para sidebar */
@@ -422,39 +559,37 @@
         .sidebar-logo {
             padding: 2rem 1.5rem;
             text-align: center;
-            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
             margin-bottom: 1.5rem;
+        }
+
+        .sidebar-wrapper.dark .sidebar-logo {
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
         }
 
         .sidebar-logo img {
             height: 3.5rem;
-            filter: brightness(0) invert(1) sepia(1) hue-rotate(180deg) saturate(2);
             transition: all 0.3s ease;
         }
 
         .sidebar-logo:hover img {
-            filter: brightness(0) invert(1) sepia(1) hue-rotate(180deg) saturate(3);
             transform: scale(1.05);
         }
 
         /* Modo claro para logo */
         .sidebar-wrapper:not(.dark) .sidebar-logo {
-            border-bottom: 1px solid rgba(0, 100, 200, 0.2);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
 
         .sidebar-wrapper:not(.dark) .sidebar-logo img {
-            filter: brightness(0) saturate(0) hue-rotate(200deg) saturate(2);
+            filter: none;
         }
 
         .sidebar-wrapper:not(.dark) .sidebar-logo:hover img {
-            filter: brightness(0) saturate(0) hue-rotate(200deg) saturate(3);
+            filter: none;
         }
 
         /* Modo oscuro para logo */
-        .sidebar-wrapper.dark .sidebar-logo {
-            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
-        }
-
         .sidebar-wrapper.dark .sidebar-logo img {
             filter: brightness(0) invert(1) sepia(1) hue-rotate(180deg) saturate(2);
         }
@@ -932,7 +1067,22 @@
 </head>
 
 <body class="bg-gray-100 dark:bg-gray-900">
-    <div class="main-container" x-data="{ sidebarOpen: false }">
+    <div class="main-container" x-data="{ 
+            sidebarOpen: false, 
+            sidebarCollapsed: false, 
+            sidebarHovered: false,
+            darkMode: $root.darkMode || localStorage.getItem('darkMode') === 'true'
+        }" 
+        x-init="
+            darkMode = $root.darkMode || localStorage.getItem('darkMode') === 'true';
+            $watch('darkMode', val => {
+                localStorage.setItem('darkMode', val);
+                $root.darkMode = val;
+            });
+            $watch('sidebarCollapsed', val => {
+                console.log('Sidebar collapsed:', val);
+            });
+        ">
         <!-- Sidebar Móvil (offcanvas) -->
         <div x-show="sidebarOpen" class="fixed inset-0 z-50 lg:hidden"
             x-transition:enter="transition-opacity ease-linear duration-300" x-transition:enter-start="opacity-0"
@@ -973,12 +1123,24 @@
         </div>
 
         <!-- Sidebar Desktop -->
-        <div class="sidebar-wrapper hidden lg:block flex flex-col" :class="{ 'dark': darkMode }">
-            <!-- Logo -->
-            <div class="sidebar-logo">
-                <a href="{{ route('admin.index') }}" class="text-2xl font-bold text-blue-600">
-                    <img src="{{ asset('img/Logo_2.png') }}" alt="4GMovil " class="h-16">
+        <div class="sidebar-wrapper hidden lg:flex flex-col"
+             :class="{ 'dark': darkMode, 'collapsed': sidebarCollapsed, 'hover-expanded': sidebarHovered && sidebarCollapsed }"
+             @mouseenter="sidebarHovered = true"
+             @mouseleave="sidebarHovered = false">
+            <!-- Logo y botón de colapsar -->
+            <div class="sidebar-logo flex items-center justify-between px-4 py-4">
+                <a href="{{ route('admin.index') }}" class="text-2xl font-bold text-blue-600 flex items-center">
+                    <img src="{{ asset('img/Logo_2.png') }}" alt="4GMovil " class="h-16 transition-all duration-300">
                 </a>
+                <button @click="sidebarCollapsed = !sidebarCollapsed" 
+                        class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex-shrink-0 z-10"
+                        :title="sidebarCollapsed ? 'Expandir sidebar' : 'Colapsar sidebar'">
+                    <svg class="w-5 h-5 text-gray-600 dark:text-gray-300 transition-transform duration-300" 
+                         :class="{ 'rotate-180': !sidebarCollapsed }"
+                         fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                    </svg>
+                </button>
             </div>
 
             <!-- Navegación -->
@@ -988,7 +1150,7 @@
         </div>
 
         <!-- Contenido principal -->
-        <div class="main-content" :class="{ 'dark': darkMode }">
+        <div class="main-content" :class="{ 'dark': darkMode, 'sidebar-collapsed': sidebarCollapsed }">
             <!-- Barra superior -->
             <header class="header-wrapper sticky top-0 z-10 flex h-16 flex-shrink-0" :class="{ 'dark': darkMode }">
                 <button type="button"
@@ -1062,7 +1224,15 @@
                                             role="menuitem">
                                             <i class="fa-solid fa-user mr-3 text-blue-600 dark:text-cyan-400"></i>Mi perfil
                                         </a>
-                                        <form action="{{ route('logout') }}" method="POST">
+                                        <form action="{{ route('logout') }}" 
+                                              method="POST" 
+                                              class="confirm-action"
+                                              data-title="¿Cerrar sesión?"
+                                              data-message="¿Estás seguro de que deseas cerrar tu sesión?"
+                                              data-confirm-text="Sí, cerrar sesión"
+                                              data-cancel-text="Cancelar"
+                                              data-confirm-color="blue"
+                                              data-show-warning="false">
                                             @csrf
                                             <button type="submit"
                                                 class="block w-full text-left px-6 py-3 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/50 transition-all duration-300 font-medium"
@@ -1113,13 +1283,153 @@
     <!-- Load DataTables only when needed -->
     @stack('datatables-script')
 
+    <!-- Sistema de confirmación modal (debe cargarse antes que sweet-alerts) -->
+    <script src="{{ asset('js/confirm-modal.js') }}"></script>
+
     <!-- SweetAlert2 Scripts -->
     @include('layouts.partials.sweet-alerts')
-
+    
     <!-- Sistema de Validación -->
     <script src="{{ asset('js/validation-system.js') }}" defer></script>
     
     @stack('scripts')
+
+    <!-- Interceptor global para detectar expiración de token JWT -->
+    <script>
+        (function() {
+            'use strict';
+            
+            // Función para manejar la expiración del token
+            function handleTokenExpiration(message) {
+                // Eliminar cookie JWT del cliente
+                document.cookie = 'jwt_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                
+                // Mostrar modal de expiración
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: 'Sesión Expirada',
+                        html: '<p class="text-gray-700 dark:text-gray-300 mb-4">' + (message || 'Tu sesión ha expirado por seguridad. Por favor, inicia sesión nuevamente.') + '</p>',
+                        icon: 'warning',
+                        confirmButtonText: 'Ir al Login',
+                        confirmButtonColor: '#3B82F6',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showCancelButton: false,
+                        background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                        color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+                    }).then(() => {
+                        // Redirigir al login
+                        window.location.href = '{{ route("login") }}';
+                    });
+                } else {
+                    // Si SweetAlert2 no está disponible, usar confirm y redirigir
+                    if (confirm(message || 'Tu sesión ha expirado. Serás redirigido al login.')) {
+                        window.location.href = '{{ route("login") }}';
+                    } else {
+                        window.location.href = '{{ route("login") }}';
+                    }
+                }
+            }
+            
+            // Interceptor para fetch
+            const originalFetch = window.fetch;
+            window.fetch = function(...args) {
+                return originalFetch.apply(this, args)
+                    .then(response => {
+                        // Manejar error 419 (CSRF token expired)
+                        if (response.status === 419) {
+                            // Intentar refrescar el token CSRF
+                            const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+                            if (csrfMeta) {
+                                // Recargar la página para obtener un nuevo token CSRF
+                                if (typeof Swal !== 'undefined') {
+                                    Swal.fire({
+                                        title: 'Sesión Expirada',
+                                        html: '<p class="text-gray-700 dark:text-gray-300 mb-4">Tu sesión ha expirado. La página se recargará para obtener un nuevo token de seguridad.</p>',
+                                        icon: 'warning',
+                                        confirmButtonText: 'Recargar Página',
+                                        confirmButtonColor: '#3B82F6',
+                                        allowOutsideClick: false,
+                                        allowEscapeKey: false,
+                                        showCancelButton: false,
+                                        background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                                        color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000'
+                                    }).then(() => {
+                                        window.location.reload();
+                                    });
+                                } else {
+                                    alert('Tu sesión ha expirado. La página se recargará.');
+                                    window.location.reload();
+                                }
+                            }
+                            return response;
+                        }
+                        
+                        // Solo verificar si es una respuesta de error de autenticación
+                        if (response.status === 401 || response.status === 403) {
+                            // Clonar la respuesta para poder leerla sin consumirla
+                            const clonedResponse = response.clone();
+                            
+                            // Verificar si es una respuesta JSON
+                            const contentType = response.headers.get('content-type');
+                            if (contentType && contentType.includes('application/json')) {
+                                clonedResponse.json().then(data => {
+                                    // Verificar si el token expiró
+                                    if (data && (data.expired === true || data.error === 'unauthorized')) {
+                                        handleTokenExpiration(data.message || 'Token JWT inválido o expirado. Por favor, inicia sesión nuevamente.');
+                                    }
+                                }).catch(() => {
+                                    // Si no se puede parsear como JSON, verificar si es una redirección
+                                    if (response.redirected && response.url.includes('login')) {
+                                        handleTokenExpiration('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+                                    }
+                                });
+                            } else {
+                                // Si no es JSON pero es 401/403, verificar si es una redirección
+                                if (response.redirected && response.url.includes('login')) {
+                                    handleTokenExpiration('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+                                }
+                            }
+                        }
+                        
+                        return response;
+                    })
+                    .catch(error => {
+                        console.error('Error en fetch:', error);
+                        throw error;
+                    });
+            };
+            
+            // Interceptor para XMLHttpRequest (para compatibilidad con código antiguo)
+            const originalOpen = XMLHttpRequest.prototype.open;
+            const originalSend = XMLHttpRequest.prototype.send;
+            
+            XMLHttpRequest.prototype.open = function(...args) {
+                this._url = args[1];
+                return originalOpen.apply(this, args);
+            };
+            
+            XMLHttpRequest.prototype.send = function(...args) {
+                this.addEventListener('loadend', function() {
+                    if (this.status === 401 || this.status === 403) {
+                        try {
+                            const response = JSON.parse(this.responseText);
+                            if (response && (response.expired === true || response.error === 'unauthorized')) {
+                                handleTokenExpiration(response.message || 'Token JWT inválido o expirado. Por favor, inicia sesión nuevamente.');
+                            }
+                        } catch (e) {
+                            // Si no es JSON, verificar si es una redirección
+                            if (this.responseURL && this.responseURL.includes('login')) {
+                                handleTokenExpiration('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+                            }
+                        }
+                    }
+                });
+                
+                return originalSend.apply(this, args);
+            };
+        })();
+    </script>
 
     <!-- Lazy loading script -->
     <script>

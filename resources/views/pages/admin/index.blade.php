@@ -41,6 +41,7 @@
                 </svg>
                 {{ __('admin.inventory.title') }}
             </a>
+            
             <a href="{{ route('productos.create') }}" 
                class="inline-flex items-center rounded-lg bg-gradient-to-r from-slate-600 to-gray-700 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:from-slate-700 hover:to-gray-800 transform hover:scale-105 transition-all duration-200 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600 hover:shadow-xl">
                 <svg class="-ml-0.5 mr-1.5 h-5 w-5 transition-transform duration-200 group-hover:rotate-90" viewBox="0 0 20 20" fill="currentColor">

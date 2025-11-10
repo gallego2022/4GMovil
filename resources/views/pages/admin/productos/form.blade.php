@@ -81,7 +81,7 @@
                     'maxLength' => 'Máximo 255 caracteres'
                 ]"
                 help-text="Nombre descriptivo del producto"
-                :value="old('nombre_producto', $producto->nombre_producto ?? '')"
+                :value="old('nombre_producto', isset($producto) && isset($producto->nombre_producto) ? $producto->nombre_producto : '')"
             />
 
             <!-- SKU -->
@@ -97,7 +97,7 @@
                     'uniqueSku' => 'Este SKU ya existe'
                 ]"
                 help-text="Código único del producto (opcional)"
-                :value="old('sku', $producto->sku ?? '')"
+                :value="old('sku', isset($producto) && isset($producto->sku) ? $producto->sku : '')"
             />
         </div>
 
@@ -117,7 +117,7 @@
                 ]"
                 help-text="Descripción detallada del producto"
                 :rows="4"
-                :value="old('descripcion', $producto->descripcion ?? '')"
+                :value="old('descripcion', isset($producto) && isset($producto->descripcion) ? $producto->descripcion : '')"
             />
         </div>
     </div>
@@ -151,7 +151,7 @@
                 step="100"
                 icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />'
                 icon-position="left"
-                :value="old('precio', $producto->precio ?? '')"
+                :value="old('precio', isset($producto) && isset($producto->precio) ? $producto->precio : '')"
             />
 
             <!-- Costo Unitario -->
@@ -170,7 +170,7 @@
                            placeholder="Se calcula automáticamente"
                            disabled
                            class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 pl-7 shadow-sm bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400 sm:text-sm cursor-not-allowed transition-colors duration-200 @error('costo_unitario') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
-                           value="{{ old('costo_unitario', $producto->costo_unitario ?? '') }}">
+                           value="{{ old('costo_unitario', isset($producto) && isset($producto->costo_unitario) ? $producto->costo_unitario : '') }}">
                 </div>
                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Se calcula automáticamente como el 70% del precio de venta</p>
                 @error('costo_unitario')
@@ -202,7 +202,7 @@
                         placeholder="0"
                         class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200 @error('stock_inicial') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
                         required 
-                        value="{{ old('stock_inicial', $producto->stock_inicial ?? '') }}">
+                        value="{{ old('stock_inicial', isset($producto) && isset($producto->stock_inicial) ? $producto->stock_inicial : '') }}">
                  <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Stock inicial para calcular alertas (60% = bajo, 20% = crítico)</p>
                  @error('stock_inicial')
                      <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -221,7 +221,7 @@
                         placeholder="0"
                         readonly
                         class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400 sm:text-sm cursor-not-allowed transition-colors duration-200 @error('stock') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
-                        value="{{ old('stock', $producto->stock ?? 0) }}">
+                        value="{{ old('stock', isset($producto) && isset($producto->stock) ? $producto->stock : 0) }}">
                  <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Se calcula automáticamente desde las variantes de color</p>
                  @error('stock')
                      <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -240,7 +240,7 @@
                         placeholder="0"
                         disabled
                         class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 sm:text-sm cursor-not-allowed transition-colors duration-200 @error('stock_minimo') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
-                        value="{{ old('stock_minimo', $producto->stock_minimo ?? 0) }}">
+                        value="{{ old('stock_minimo', isset($producto) && isset($producto->stock_minimo) ? $producto->stock_minimo : 0) }}">
                  <p class="mt-1 text-xs text-blue-600 dark:text-blue-400">
                      <span class="font-medium">Se calcula automáticamente:</span> 20% del stock inicial
                      @if(isset($producto) && $producto->stock > 0)
@@ -264,7 +264,7 @@
                         placeholder="0"
                         disabled
                         class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 sm:text-sm cursor-not-allowed transition-colors duration-200 @error('stock_maximo') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
-                        value="{{ old('stock_maximo', $producto->stock_maximo ?? 0) }}">
+                        value="{{ old('stock_maximo', isset($producto) && isset($producto->stock_maximo) ? $producto->stock_maximo : 0) }}">
                  <p class="mt-1 text-xs text-yellow-600 dark:text-yellow-400">
                      <span class="font-medium">Se calcula automáticamente:</span> 60% del stock inicial
                      @if(isset($producto) && $producto->stock > 0)
@@ -286,7 +286,7 @@
                             name="activo" 
                             id="activo"
                             value="1"
-                            {{ old('activo', $producto->activo ?? true) ? 'checked' : '' }}
+                            {{ old('activo', isset($producto) && isset($producto->activo) ? (bool)$producto->activo : true) ? 'checked' : '' }}
                             class="h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300 rounded transition-colors duration-200">
                      <label for="activo" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
                          Producto disponible para venta
@@ -322,7 +322,7 @@
                 ]"
                 help-text="Categoría del producto"
                 :options="$categorias->pluck('nombre', 'categoria_id')->toArray()"
-                :value="old('categoria_id', $producto->categoria_id ?? '')"
+                :value="old('categoria_id', isset($producto) && isset($producto->categoria_id) ? $producto->categoria_id : '')"
             />
 
             <!-- Marca -->
@@ -338,7 +338,7 @@
                 ]"
                 help-text="Marca del producto"
                 :options="$marcas->pluck('nombre', 'marca_id')->toArray()"
-                :value="old('marca_id', $producto->marca_id ?? '')"
+                :value="old('marca_id', isset($producto) && isset($producto->marca_id) ? $producto->marca_id : '')"
             />
 
             <!-- Estado del producto -->
@@ -349,8 +349,8 @@
                 <select name="estado" 
                         id="estado" 
                         class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200">
-                    <option value="nuevo" {{ old('estado', $producto->estado ?? '') == 'nuevo' ? 'selected' : '' }}>Nuevo</option>
-                    <option value="usado" {{ old('estado', $producto->estado ?? '') == 'usado' ? 'selected' : '' }}>Usado</option>
+                    <option value="nuevo" {{ old('estado', isset($producto) && isset($producto->estado) ? $producto->estado : 'nuevo') == 'nuevo' ? 'selected' : '' }}>Nuevo</option>
+                    <option value="usado" {{ old('estado', isset($producto) && isset($producto->estado) ? $producto->estado : 'nuevo') == 'usado' ? 'selected' : '' }}>Usado</option>
                 </select>
                 @error('estado')
                     <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -384,7 +384,7 @@
                 min="0"
                 max="999.99"
                 step="0.01"
-                :value="old('peso', $producto->peso ?? '')"
+                :value="old('peso', isset($producto) && isset($producto->peso) ? $producto->peso : '')"
             />
 
             <!-- Dimensiones -->
@@ -398,7 +398,7 @@
                     'maxLength' => 'Máximo 100 caracteres'
                 ]"
                 help-text="Dimensiones del producto (ej: 15x10x5 cm)"
-                :value="old('dimensiones', $producto->dimensiones ?? '')"
+                :value="old('dimensiones', isset($producto) && isset($producto->dimensiones) ? $producto->dimensiones : '')"
             />
 
             <!-- Código de Barras -->
@@ -414,7 +414,7 @@
                     'maxLength' => 'Máximo 20 dígitos'
                 ]"
                 help-text="Código de barras del producto (solo números)"
-                :value="old('codigo_barras', $producto->codigo_barras ?? '')"
+                :value="old('codigo_barras', isset($producto) && isset($producto->codigo_barras) ? $producto->codigo_barras : '')"
             />
         </div>
     </div>
@@ -549,8 +549,6 @@
     // Función para cargar especificaciones
     async function cargarEspecificaciones(categoriaId) {
         try {
-            console.log('Cargando especificaciones para categoría:', categoriaId);
-            
             const response = await fetch(`/api/especificaciones/${categoriaId}`);
             
             if (!response.ok) {
@@ -558,19 +556,6 @@
             }
             
             const especificaciones = await response.json();
-            console.log('Especificaciones recibidas:', especificaciones);
-            
-            // Log detallado de cada especificación
-            especificaciones.forEach((espec, index) => {
-                console.log(`Especificación ${index + 1}:`, {
-                    nombre_campo: espec.nombre_campo,
-                    tipo_campo: espec.tipo_campo,
-                    opciones: espec.opciones,
-                    opciones_tipo: typeof espec.opciones,
-                    opciones_array: espec.opciones_array,
-                    opciones_array_tipo: typeof espec.opciones_array
-                });
-            });
             
             especificacionesActuales = especificaciones;
             renderizarEspecificaciones(especificaciones);
@@ -578,13 +563,11 @@
             // Si hay valores de especificaciones existentes, re-renderizar después de un breve delay
             if (Object.keys(valoresEspecificaciones).length > 0) {
                 setTimeout(() => {
-                    console.log('Re-renderizando con valores existentes después de cargar especificaciones');
                     renderizarEspecificaciones(especificaciones);
-                }, 100);
+                }, 300);
             }
             
         } catch (error) {
-            console.error('Error al cargar especificaciones:', error);
             mostrarError('Error al cargar las especificaciones de la categoría: ' + error.message);
         }
     }
@@ -611,22 +594,26 @@
         
         // Agregar event listeners a los campos creados
         // Usar setTimeout para asegurar que ValidationSystem esté listo
-        setTimeout(() => {
-            console.log('Agregando event listeners a especificaciones...');
-            agregarEventListenersEspecificaciones();
-        }, 100);
+            setTimeout(() => {
+                agregarEventListenersEspecificaciones();
+            }, 100);
     }
 
     // Función para crear un campo de especificación
     function crearCampoEspecificacion(espec, index) {
-        const valorActual = valoresEspecificaciones[espec.nombre_campo] || '';
+        // Obtener el valor actual y normalizarlo
+        let valorActual = valoresEspecificaciones[espec.nombre_campo];
+        
+        // Si el valor es null, undefined, o vacío, usar string vacío
+        if (valorActual === null || valorActual === undefined || valorActual === '') {
+            valorActual = '';
+        } else {
+            // Convertir a string y limpiar espacios
+            valorActual = String(valorActual).trim();
+        }
+        
         const requerido = espec.requerido ? '<span class="text-red-500">*</span>' : '';
         const unidad = espec.unidad ? ` (${espec.unidad})` : '';
-        
-        // Debug: mostrar qué tipo de campo se está procesando
-        console.log(`Creando campo: ${espec.nombre_campo}, tipo: ${espec.tipo_campo}, etiqueta: ${espec.etiqueta}`);
-        console.log(`Valor actual para ${espec.nombre_campo}:`, valorActual);
-        console.log('Valores de especificaciones disponibles:', valoresEspecificaciones);
         
         let campo = '';
         
@@ -676,10 +663,9 @@
                      if (espec.opciones.startsWith('[') && espec.opciones.endsWith(']')) {
                          try {
                              opciones = JSON.parse(espec.opciones);
-                         } catch (e) {
-                             console.error('Error parseando opciones JSON:', e);
-                             opciones = espec.opciones.split(',').map(op => op.trim());
-                         }
+                        } catch (e) {
+                            opciones = espec.opciones.split(',').map(op => op.trim());
+                        }
                      } else {
                          // Si no es JSON, dividir por comas
                          opciones = espec.opciones.split(',').map(op => op.trim());
@@ -713,16 +699,12 @@
                      }
                  }
                  
-                 console.log(`Campo select ${espec.nombre_campo}:`, {
-                     valorActual: valorActual,
-                     opciones: opciones,
-                     opcionesOriginales: espec.opciones
-                 });
-                 
                  let opcionesHtml = '<option value="">Selecciona una opción</option>';
                  opciones.forEach(opcion => {
-                     const selected = valorActual === opcion ? 'selected' : '';
-                     console.log(`Opción ${opcion}: selected = ${selected}, valorActual = ${valorActual}`);
+                     // Normalizar ambos valores para comparación (convertir a string y trim)
+                     const valorActualNormalizado = valorActual ? String(valorActual).trim() : '';
+                     const opcionNormalizada = String(opcion).trim();
+                     const selected = valorActualNormalizado === opcionNormalizada ? 'selected' : '';
                      opcionesHtml += `<option value="${opcion}" ${selected}>${opcion}</option>`;
                  });
                  
@@ -800,7 +782,6 @@
                 
             default:
                 // Tipo por defecto si el tipo no es reconocido
-                console.warn(`Tipo de campo no reconocido: ${espec.tipo_campo} para ${espec.nombre_campo}`);
                 campo = `
                     <input type="text" 
                            name="especificaciones[${espec.nombre_campo}]" 
@@ -858,15 +839,10 @@
                 }
                 
                 // Registrar campo con el sistema de validación
-                console.log('Intentando registrar campo:', campo.name, 'con ValidationSystem:', !!window.ValidationSystem);
-                
                 // Verificar que ValidationSystem esté completamente inicializado
                 if (window.ValidationSystem && typeof window.ValidationSystem.addRule === 'function') {
                     const rules = JSON.parse(campo.getAttribute('data-rules') || '[]');
                     const messages = JSON.parse(campo.getAttribute('data-messages') || '{}');
-                    
-                    console.log('Reglas para', campo.name, ':', rules);
-                    console.log('Mensajes para', campo.name, ':', messages);
                     
                     if (rules.length > 0) {
                         window.ValidationSystem.addRule(campo.name, rules);
@@ -883,13 +859,7 @@
                         if (typeof window.ValidationSystem.registerDynamicField === 'function') {
                             window.ValidationSystem.registerDynamicField(campo);
                         }
-                        
-                        console.log('Campo', campo.name, 'registrado exitosamente');
-                    } else {
-                        console.log('No hay reglas para el campo', campo.name);
                     }
-                } else {
-                    console.error('ValidationSystem no está disponible');
                 }
             }
         });
@@ -948,42 +918,57 @@
 
     // Función para cargar especificaciones existentes del producto
     function cargarEspecificacionesExistentes() {
-        @if(isset($producto) && $producto->especificaciones && $producto->especificaciones->count() > 0)
-            console.log('Cargando especificaciones existentes del producto:', @json($producto->especificaciones->map(function($esp) {
-                return [
-                    'nombre_campo' => $esp->especificacionCategoria ? $esp->especificacionCategoria->nombre_campo : null,
-                    'valor' => $esp->valor,
-                    'especificacion_categoria' => $esp->especificacionCategoria
-                ];
-            })));
+        @if(isset($producto) && isset($producto->especificaciones) && $producto->especificaciones && $producto->especificaciones->count() > 0)
+            @php
+                try {
+                    $especificacionesData = $producto->especificaciones->map(function($esp) {
+                        return [
+                            'nombre_campo' => isset($esp->especificacionCategoria) && $esp->especificacionCategoria ? $esp->especificacionCategoria->nombre_campo : null,
+                            'valor' => $esp->valor ?? null,
+                            'especificacion_categoria' => isset($esp->especificacionCategoria) ? $esp->especificacionCategoria : null
+                        ];
+                    })->toArray();
+                } catch (\Exception $e) {
+                    $especificacionesData = [];
+                }
+            @endphp
             
             // Cargar valores de especificaciones existentes
-            @foreach($producto->especificaciones as $especProducto)
-                @if($especProducto->especificacionCategoria)
-                    valoresEspecificaciones['{{ $especProducto->especificacionCategoria->nombre_campo }}'] = {!! json_encode($especProducto->valor) !!};
-                @endif
-            @endforeach
-            
-            console.log('Valores de especificaciones cargados:', valoresEspecificaciones);
+            @if(isset($producto) && isset($producto->especificaciones))
+                @foreach($producto->especificaciones as $especProducto)
+                    @if(isset($especProducto->especificacionCategoria) && $especProducto->especificacionCategoria)
+                        @php
+                            // Obtener el valor y asegurarse de que sea una cadena
+                            $valorEspecificacion = $especProducto->valor ?? '';
+                            // Si el valor es un array o objeto, convertirlo a JSON string
+                            if (is_array($valorEspecificacion) || is_object($valorEspecificacion)) {
+                                $valorEspecificacion = json_encode($valorEspecificacion);
+                            } else {
+                                // Convertir a string y limpiar
+                                $valorEspecificacion = (string)$valorEspecificacion;
+                            }
+                        @endphp
+                        valoresEspecificaciones['{{ $especProducto->especificacionCategoria->nombre_campo }}'] = {!! json_encode($valorEspecificacion) !!};
+                    @endif
+                @endforeach
+            @endif
         @endif
     }
 
     // Cargar especificaciones al cargar la página si ya hay una categoría seleccionada
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOMContentLoaded ejecutado - Iniciando carga de especificaciones');
-        
         // Cargar especificaciones existentes primero
         cargarEspecificacionesExistentes();
         
         const categoriaSelect = document.getElementById('categoria_id');
-        console.log('Categoría seleccionada:', categoriaSelect.value);
         
-        if (categoriaSelect.value) {
-            console.log('Cargando especificaciones para categoría:', categoriaSelect.value);
-            cargarEspecificaciones(categoriaSelect.value);
-        } else {
-            console.log('No hay categoría seleccionada');
-        }
+        // Esperar un poco más para asegurar que el DOM esté completamente cargado
+        setTimeout(function() {
+            if (categoriaSelect && categoriaSelect.value) {
+                // Cargar especificaciones para la categoría seleccionada
+                cargarEspecificaciones(categoriaSelect.value);
+            }
+        }, 500);
     });
 
     // Calcular costo unitario al cargar la página si ya hay un precio
@@ -1055,27 +1040,39 @@
     let varianteCounter = 0;
     
     // Cargar variantes existentes si estamos editando
-    @if(isset($producto) && $producto->variantes && $producto->variantes->count() > 0)
+    @if(isset($producto) && isset($producto->variantes) && $producto->variantes && $producto->variantes->count() > 0)
+        @php
+            try {
+                $variantesData = $producto->variantes->map(function($variante) {
+                    return [
+                        'variante_id' => $variante->variante_id ?? null,
+                        'nombre' => $variante->nombre ?? '',
+                        'codigo_color' => $variante->codigo_color ?? '#000000',
+                        'stock' => $variante->stock ?? 0,
+                        'precio_adicional' => $variante->precio_adicional ?? 0,
+                        'descripcion' => $variante->descripcion ?? '',
+                        'disponible' => isset($variante->disponible) ? (bool)$variante->disponible : false,
+                        'imagenes' => isset($variante->imagenes) && $variante->imagenes ? $variante->imagenes->map(function($imagen) {
+                            return [
+                                'url' => asset('storage/' . ($imagen->ruta_imagen ?? '')),
+                                'nombre' => $imagen->nombre_archivo ?? '',
+                                'id' => $imagen->imagen_variante_id ?? null
+                            ];
+                        })->toArray() : []
+                    ];
+                })->toArray();
+            } catch (\Exception $e) {
+                $variantesData = [];
+            }
+        @endphp
         document.addEventListener('DOMContentLoaded', function() {
-            @foreach($producto->variantes as $variante)
-                agregarVarianteExistente({
-                    nombre: '{{ $variante->nombre }}',
-                    codigo_color: '{{ $variante->codigo_color ?? "#000000" }}',
-                    stock: {{ $variante->stock }},
-                    precio_adicional: {{ $variante->precio_adicional ?? 0 }},
-                    descripcion: '{{ $variante->descripcion ?? "" }}',
-                    disponible: {{ $variante->disponible ? 'true' : 'false' }},
-                    imagenes: [
-                        @foreach($variante->imagenes as $imagen)
-                            {
-                                url: '{{ Storage::url($imagen->ruta_imagen) }}',
-                                nombre: '{{ $imagen->nombre_archivo }}',
-                                id: {{ $imagen->imagen_variante_id }}
-                            }@if(!$loop->last),@endif
-                        @endforeach
-                    ]
+            const variantesData = @json($variantesData ?? []);
+            
+            if (variantesData && Array.isArray(variantesData) && variantesData.length > 0) {
+                variantesData.forEach(function(varianteData) {
+                    agregarVarianteExistente(varianteData);
                 });
-            @endforeach
+            }
         });
     @endif
     
@@ -1095,6 +1092,8 @@
                         </svg>
                     </button>
                 </div>
+                
+                <input type="hidden" name="variantes[${varianteCounter-1}][_delete]" value="0" class="variante-delete-flag">
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <!-- Nombre del color -->
@@ -1230,12 +1229,187 @@
         });
     });
     
-    // Función para eliminar variante
+    // Función para eliminar variante usando el sistema de confirmación personalizado
     function eliminarVariante(varianteId) {
         const variante = document.getElementById(varianteId);
-        if (variante) {
-            variante.remove();
+        if (!variante) {
+            return;
         }
+        
+        // Obtener el nombre de la variante para el mensaje de confirmación
+        const nombreInput = variante.querySelector('input[name*="[nombre]"]');
+        const nombreVariante = nombreInput ? nombreInput.value || 'esta variante' : 'esta variante';
+        
+        // Obtener el variante_id si existe (para variantes existentes)
+        const varianteIdInput = variante.querySelector('input[name*="[variante_id]"]');
+        const varianteIdValue = varianteIdInput ? varianteIdInput.value : null;
+        
+        // Verificar si es una variante existente (tiene variante_id)
+        const esVarianteExistente = varianteIdValue !== null && varianteIdValue !== '';
+        
+        // Crear modal de confirmación usando el sistema personalizado
+        const modalId = 'confirmDeleteVariante_' + varianteId;
+        const title = '¿Eliminar variante?';
+        const message = `¿Estás seguro de eliminar la variante <strong>${nombreVariante}</strong>?${esVarianteExistente ? '<br><span class="text-sm text-yellow-600 dark:text-yellow-400">Esta variante será eliminada permanentemente al guardar el producto.</span>' : ''}`;
+        const confirmText = 'Sí, eliminar';
+        const cancelText = 'Cancelar';
+        const confirmColor = 'red';
+        const showWarning = true;
+        
+        // Crear o actualizar el modal
+        let modal = document.getElementById(modalId);
+        
+        if (!modal) {
+            modal = createConfirmModal(modalId, title, message, confirmText, cancelText, confirmColor, showWarning);
+            document.body.appendChild(modal);
+        } else {
+            updateConfirmModal(modal, title, message, confirmText, cancelText, confirmColor, showWarning);
+        }
+        
+        // Configurar el botón de confirmar
+        const confirmBtn = document.getElementById(modalId + '_confirm');
+        const cancelBtn = document.getElementById(modalId + '_cancel');
+        
+        // Remover listeners previos clonando los botones
+        if (confirmBtn) {
+            const newConfirmBtn = confirmBtn.cloneNode(true);
+            confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+            
+            newConfirmBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Ocultar el modal
+                modal.classList.add('hidden');
+                
+                // Procesar la eliminación
+                if (esVarianteExistente) {
+                    const deleteFlag = variante.querySelector('.variante-delete-flag');
+                    if (deleteFlag) {
+                        deleteFlag.value = '1';
+                        // Asegurar que el campo _delete se envíe
+                        deleteFlag.disabled = false;
+                        deleteFlag.removeAttribute('disabled');
+                    }
+                    
+                    // Asegurar que el variante_id también se envíe
+                    const varianteIdInput = variante.querySelector('input[name*="[variante_id]"]');
+                    if (varianteIdInput) {
+                        varianteIdInput.disabled = false;
+                        varianteIdInput.removeAttribute('disabled');
+                    }
+                    
+                    // Ocultar la variante visualmente pero mantenerla en el DOM
+                    // Usar una clase CSS para ocultar visualmente pero mantener los campos enviables
+                    variante.classList.add('variante-marked-for-deletion');
+                    variante.style.opacity = '0.3';
+                    variante.style.pointerEvents = 'none';
+                    // NO usar display: none porque los navegadores no envían campos con display: none
+                    // En su lugar, usar una altura mínima y ocultar visualmente
+                    variante.style.minHeight = '0';
+                    variante.style.maxHeight = '1px';
+                    variante.style.overflow = 'hidden';
+                    variante.style.padding = '0';
+                    variante.style.margin = '0';
+                    variante.style.border = 'none';
+                    
+                    // Asegurar que todos los campos sigan siendo enviados y habilitados
+                    const allInputs = variante.querySelectorAll('input, select, textarea');
+                    allInputs.forEach(input => {
+                        input.disabled = false;
+                        input.removeAttribute('disabled');
+                        // Asegurar que los campos tengan valores mínimos para que se envíen
+                        if (input.type === 'number' && !input.value) {
+                            input.value = input.min || '0';
+                        }
+                        if (input.type === 'text' && input.required && !input.value) {
+                            input.value = input.placeholder || 'temp';
+                        }
+                    });
+                } else {
+                    // Si es una variante nueva (sin variante_id), eliminarla del DOM directamente
+                    variante.remove();
+                }
+            });
+        }
+        
+        if (cancelBtn) {
+            const newCancelBtn = cancelBtn.cloneNode(true);
+            cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+            
+            newCancelBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                modal.classList.add('hidden');
+            });
+        }
+        
+        // Cerrar al hacer clic fuera del modal
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.classList.add('hidden');
+            }
+        });
+        
+        // Mostrar el modal
+        modal.classList.remove('hidden');
+    }
+    
+    // Función auxiliar para crear el modal de confirmación
+    function createConfirmModal(id, title, message, confirmText, cancelText, confirmColor, showWarning) {
+        const modal = document.createElement('div');
+        modal.id = id;
+        modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden';
+        
+        const warningText = showWarning ? '<p class="text-sm text-' + confirmColor + '-600 dark:text-' + confirmColor + '-400 mt-2 font-medium">Esta acción no se puede deshacer.</p>' : '';
+        
+        modal.innerHTML = `
+            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
+                <div class="mt-3 text-center">
+                    <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-${confirmColor}-100 dark:bg-${confirmColor}-900/30">
+                        <svg class="h-6 w-6 text-${confirmColor}-600 dark:text-${confirmColor}-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mt-5">
+                        ${title}
+                    </h3>
+                    <div class="mt-2 px-7 py-3">
+                        <p class="text-sm text-gray-500 dark:text-gray-300" id="${id}_message">
+                            ${message}
+                        </p>
+                        ${warningText}
+                    </div>
+                    <div class="items-center px-4 py-3">
+                        <button id="${id}_confirm" 
+                                type="button"
+                                class="px-4 py-2 bg-${confirmColor}-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-${confirmColor}-700 focus:outline-none focus:ring-2 focus:ring-${confirmColor}-500 transition-colors duration-200">
+                            ${confirmText}
+                        </button>
+                        <button id="${id}_cancel" 
+                                type="button"
+                                class="mt-2 px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-400 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors duration-200">
+                            ${cancelText}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        return modal;
+    }
+    
+    // Función auxiliar para actualizar el modal de confirmación
+    function updateConfirmModal(modal, title, message, confirmText, cancelText, confirmColor, showWarning) {
+        const titleEl = modal.querySelector('h3');
+        const messageEl = modal.querySelector(`#${modal.id}_message`);
+        const confirmBtn = modal.querySelector(`#${modal.id}_confirm`);
+        const cancelBtn = modal.querySelector(`#${modal.id}_cancel`);
+        
+        if (titleEl) titleEl.textContent = title;
+        if (messageEl) messageEl.innerHTML = message;
+        if (confirmBtn) confirmBtn.textContent = confirmText;
+        if (cancelBtn) cancelBtn.textContent = cancelText;
     }
     
         // Función para agregar variante existente (para edición)
@@ -1255,6 +1429,9 @@
                         </svg>
                     </button>
                 </div>
+                
+                ${varianteData.variante_id ? `<input type="hidden" name="variantes[${varianteCounter-1}][variante_id]" value="${varianteData.variante_id}">` : ''}
+                <input type="hidden" name="variantes[${varianteCounter-1}][_delete]" value="0" class="variante-delete-flag" data-variante-id="${varianteData.variante_id || ''}">
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <!-- Nombre del color -->
@@ -1571,6 +1748,29 @@
      
      // Validación de formulario mejorada
     document.querySelector('form').addEventListener('submit', function(e) {
+        // Asegurar que el token CSRF esté presente
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        if (!csrfToken) {
+            console.error('Token CSRF no encontrado');
+            e.preventDefault();
+            alert('Error: Token CSRF no encontrado. Por favor, recarga la página.');
+            return;
+        }
+        
+        // Verificar que el campo _token esté presente
+        let tokenInput = this.querySelector('input[name="_token"]');
+        if (!tokenInput) {
+            // Crear el campo _token si no existe
+            tokenInput = document.createElement('input');
+            tokenInput.type = 'hidden';
+            tokenInput.name = '_token';
+            tokenInput.value = csrfToken;
+            this.appendChild(tokenInput);
+        } else {
+            // Actualizar el valor del token
+            tokenInput.value = csrfToken;
+        }
+        
         const requiredFields = this.querySelectorAll('[required]');
         let isValid = true;
         
@@ -1742,7 +1942,36 @@
         // Agregar validación antes de enviar el formulario
         const form = document.querySelector('form');
         if (form) {
-            form.addEventListener('submit', function(e) {
+            // Remover listener anterior si existe para evitar duplicados
+            const existingHandler = form._submitHandler;
+            if (existingHandler) {
+                form.removeEventListener('submit', existingHandler);
+            }
+            
+            const submitHandler = function(e) {
+                // Asegurar que el token CSRF esté presente
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                if (!csrfToken) {
+                    console.error('Token CSRF no encontrado');
+                    e.preventDefault();
+                    alert('Error: Token CSRF no encontrado. Por favor, recarga la página.');
+                    return false;
+                }
+                
+                // Verificar que el campo _token esté presente
+                let tokenInput = form.querySelector('input[name="_token"]');
+                if (!tokenInput) {
+                    // Crear el campo _token si no existe
+                    tokenInput = document.createElement('input');
+                    tokenInput.type = 'hidden';
+                    tokenInput.name = '_token';
+                    tokenInput.value = csrfToken;
+                    form.appendChild(tokenInput);
+                } else {
+                    // Actualizar el valor del token
+                    tokenInput.value = csrfToken;
+                }
+                
                 const stockInicial = parseInt(stockInicialInput.value) || 0;
                 
                 if (stockInicial <= 0) {
@@ -1759,7 +1988,10 @@
                     e.preventDefault();
                     return false;
                 }
-            });
+            };
+            
+            form._submitHandler = submitHandler;
+            form.addEventListener('submit', submitHandler);
         }
     });
 </script>

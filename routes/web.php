@@ -1,20 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
-use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Carbon;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Cliente\CheckoutController;
 use App\Http\Controllers\Cliente\DireccionController;
-use App\Http\Controllers\Servicios\StripeController;
-use App\Http\Controllers\Admin\PedidoController;
-use App\Http\Controllers\Admin\ProductoController;
-use App\Http\Controllers\Publico\ContactoController;
+use App\Http\Controllers\Cliente\PedidoController;
 use App\Http\Controllers\LocalizationController;
-
-
-
+use App\Http\Controllers\Publico\ContactoController;
+use App\Http\Controllers\Servicios\StripeController;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
 
 // Google
 Route::get('/auth/redirect/google', [AuthController::class, 'redirectToGoogle'])->name('google.redirect');
@@ -103,37 +97,37 @@ Route::group(['prefix' => 'carrito', 'as' => 'carrito.'], function () {
 });
 
 // Rutas de productos con variantes - Redirigidas a la vista principal
-Route::get('/productos-variantes', function() {
+Route::get('/productos-variantes', function () {
     return redirect()->route('productos.index')->with('info', 'La vista de productos con variantes ha sido consolidada en la vista principal de productos.');
 })->name('productos.variantes');
 
-Route::get('/productos-variantes/{producto}', function($producto) {
+Route::get('/productos-variantes/{producto}', function ($producto) {
     return redirect()->route('productos.show', $producto)->with('info', 'Redirigido a la vista principal del producto.');
 })->name('productos.variantes.show');
 
-Route::get('/productos-variantes/{producto}/stock', function($producto) {
+Route::get('/productos-variantes/{producto}/stock', function ($producto) {
     return redirect()->route('productos.show', $producto)->with('info', 'Redirigido a la vista principal del producto.');
 })->name('productos.variantes.stock');
 
 // Demo del Sistema de Carga - ELIMINADO (vista no utilizada)
 
-Route::get('/productos-variantes/{producto}/variantes', function($producto) {
+Route::get('/productos-variantes/{producto}/variantes', function ($producto) {
     return redirect()->route('productos.show', $producto)->with('info', 'Redirigido a la vista principal del producto.');
 })->name('productos.variantes.lista');
 
-Route::get('/productos-variantes/buscar', function() {
+Route::get('/productos-variantes/buscar', function () {
     return redirect()->route('productos.index')->with('info', 'La búsqueda de productos con variantes está disponible en la vista principal.');
 })->name('productos.variantes.buscar');
 
-Route::get('/productos-variantes/categoria/{categoria}', function($categoria) {
+Route::get('/productos-variantes/categoria/{categoria}', function ($categoria) {
     return redirect()->route('productos.categoria', $categoria)->with('info', 'Redirigido a la vista de categoría de productos.');
 })->name('productos.variantes.categoria');
 
-Route::get('/productos-variantes/stock-bajo', function() {
+Route::get('/productos-variantes/stock-bajo', function () {
     return redirect()->route('productos.index')->with('info', 'La información de stock bajo está disponible en la vista principal de productos.');
 })->name('productos.variantes.stock-bajo');
 
-Route::get('/productos-variantes/sin-stock', function() {
+Route::get('/productos-variantes/sin-stock', function () {
     return redirect()->route('productos.index')->with('info', 'La información de productos sin stock está disponible en la vista principal.');
 })->name('productos.variantes.sin-stock');
 
@@ -141,9 +135,10 @@ Route::get('/productos-variantes/sin-stock', function() {
 Route::middleware(['auth', 'email.verified'])->group(function () {
     // Rutas de direcciones
     Route::resource('direcciones', DireccionController::class);
-    
+
     // Rutas de pedidos
     Route::get('/pedidos/{pedido}', [PedidoController::class, 'detalle'])->name('pedidos.show');
+    Route::get('/pedidos/{pedido}/factura', [PedidoController::class, 'factura'])->name('pedidos.factura');
     Route::get('/pedidos', [PedidoController::class, 'historial'])->name('pedidos.index');
 });
 
@@ -162,7 +157,7 @@ Route::get('/api/especificaciones/{categoriaId}', function ($categoriaId) {
         ->where('estado', true)
         ->orderBy('orden', 'asc')
         ->get();
-    
+
     return response()->json($especificaciones);
 })->name('api.especificaciones.categoria');
 
@@ -172,32 +167,32 @@ Route::get('/api/especificaciones/{categoriaId}/valores', function ($categoriaId
         ->where('estado', true)
         ->orderBy('orden', 'asc')
         ->get();
-    
+
     $valoresDisponibles = [];
-    
+
     foreach ($especificaciones as $espec) {
         // Obtener valores únicos para esta especificación
         $valores = \App\Models\EspecificacionProducto::whereHas('especificacionCategoria', function ($query) use ($espec) {
             $query->where('especificacion_id', $espec->especificacion_id);
         })
-        ->whereHas('producto', function ($query) use ($categoriaId) {
-            $query->where('categoria_id', $categoriaId);
-        })
-        ->pluck('valor')
-        ->unique()
-        ->values()
-        ->toArray();
-        
-        if (!empty($valores)) {
+            ->whereHas('producto', function ($query) use ($categoriaId) {
+                $query->where('categoria_id', $categoriaId);
+            })
+            ->pluck('valor')
+            ->unique()
+            ->values()
+            ->toArray();
+
+        if (! empty($valores)) {
             $valoresDisponibles[$espec->nombre_campo] = [
                 'etiqueta' => $espec->etiqueta,
                 'tipo_campo' => $espec->tipo_campo,
                 'unidad' => $espec->unidad,
-                'valores' => $valores
+                'valores' => $valores,
             ];
         }
     }
-    
+
     return response()->json($valoresDisponibles);
 })->name('api.especificaciones.valores');
 
@@ -207,7 +202,7 @@ Route::get('/api/productos/{producto}/variantes', function ($producto) {
         ->where('disponible', true)
         ->orderBy('nombre', 'asc')
         ->get();
-    
+
     return response()->json([
         'success' => true,
         'variantes' => $variantes->map(function ($variante) {
@@ -218,9 +213,9 @@ Route::get('/api/productos/{producto}/variantes', function ($producto) {
                 'precio_adicional' => $variante->precio_adicional,
                 'stock_disponible' => $variante->stock_disponible,
                 'descripcion' => $variante->descripcion,
-                'disponible' => $variante->disponible
+                'disponible' => $variante->disponible,
             ];
-        })
+        }),
     ]);
 })->name('api.productos.variantes');
 
@@ -231,55 +226,55 @@ Route::get('/localization/change/{language}', [LocalizationController::class, 'c
 Route::get('/localization/current', [LocalizationController::class, 'getCurrentConfig'])->name('localization.current');
 
 // Rutas de prueba
-Route::get('/test-locale', function() {
+Route::get('/test-locale', function () {
     // Aplicar el locale de la sesión directamente
     $locale = session('locale', 'es');
     $currency = session('currency', 'COP');
     $country = session('country', 'CO');
-    
+
     app()->setLocale($locale);
-    
+
     return response()->json([
         'current_locale' => app()->getLocale(),
         'session_locale' => session('locale'),
         'session_currency' => session('currency'),
         'welcome_message' => __('messages.messages.welcome'),
-        'formatted_price' => \App\Helpers\CurrencyHelper::formatPrice(150000)
+        'formatted_price' => \App\Helpers\CurrencyHelper::formatPrice(150000),
     ]);
 });
 
-Route::get('/change-lang/{locale}', function($locale) {
+Route::get('/change-lang/{locale}', function ($locale) {
     $allowedLanguages = ['es', 'en', 'pt'];
-    
-    if (!in_array($locale, $allowedLanguages)) {
+
+    if (! in_array($locale, $allowedLanguages)) {
         $locale = 'es';
     }
-    
+
     // Configuraciones por idioma
     $languageConfigs = [
         'es' => ['country' => 'CO', 'currency' => 'COP'],
         'en' => ['country' => 'US', 'currency' => 'USD'],
         'pt' => ['country' => 'BR', 'currency' => 'BRL'],
     ];
-    
+
     $config = $languageConfigs[$locale] ?? $languageConfigs['es'];
-    
+
     // Establecer en la sesión
     session([
         'locale' => $locale,
         'currency' => $config['currency'],
-        'country' => $config['country']
+        'country' => $config['country'],
     ]);
-    
+
     // Establecer el locale actual
     app()->setLocale($locale);
-    
+
     // Forzar guardar la sesión
     session()->save();
-    
+
     // Obtener la URL de referencia (la página donde estaba el usuario)
     $referer = request()->header('referer', '/');
-    
+
     // Retornar una página simple que recargue la página actual
     return response('
     <!DOCTYPE html>
@@ -294,13 +289,13 @@ Route::get('/change-lang/{locale}', function($locale) {
     </head>
     <body>
         <div class="loading">
-            <h2>Cambiando idioma a ' . strtoupper($locale) . '...</h2>
+            <h2>Cambiando idioma a '.strtoupper($locale).'...</h2>
             <p>Redirigiendo...</p>
         </div>
         <script>
             // Recargar la página actual después de un breve delay
             setTimeout(function() {
-                window.location.href = "' . $referer . '";
+                window.location.href = "'.$referer.'";
             }, 1000);
         </script>
     </body>
@@ -309,31 +304,31 @@ Route::get('/change-lang/{locale}', function($locale) {
 })->middleware('web');
 
 // Ruta de prueba para verificar el cambio
-Route::get('/test-change/{locale}', function($locale) {
+Route::get('/test-change/{locale}', function ($locale) {
     $allowedLanguages = ['es', 'en', 'pt'];
-    
-    if (!in_array($locale, $allowedLanguages)) {
+
+    if (! in_array($locale, $allowedLanguages)) {
         $locale = 'es';
     }
-    
+
     // Configuraciones por idioma
     $languageConfigs = [
         'es' => ['country' => 'CO', 'currency' => 'COP'],
         'en' => ['country' => 'US', 'currency' => 'USD'],
         'pt' => ['country' => 'BR', 'currency' => 'BRL'],
     ];
-    
+
     $config = $languageConfigs[$locale] ?? $languageConfigs['es'];
-    
+
     session([
         'locale' => $locale,
         'currency' => $config['currency'],
-        'country' => $config['country']
+        'country' => $config['country'],
     ]);
-    
+
     app()->setLocale($locale);
     session()->save();
-    
+
     return response()->json([
         'success' => true,
         'locale' => app()->getLocale(),
@@ -348,6 +343,6 @@ Route::get('/test-change/{locale}', function($locale) {
             'product_show_warranty' => __('messages.product_show.warranty'),
             'product_show_available' => __('messages.product_show.available'),
             'product_show_add_to_cart' => __('messages.product_show.add_to_cart'),
-        ]
+        ],
     ]);
 })->middleware('web');

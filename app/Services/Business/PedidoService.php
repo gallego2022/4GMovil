@@ -2,19 +2,17 @@
 
 namespace App\Services\Business;
 
-use App\Services\Base\BaseService;
-use App\Models\Pedido;
 use App\Models\DetallePedido;
-use App\Models\Producto;
-use App\Models\VarianteProducto;
-use App\Models\Usuario;
-use App\Models\DireccionEnvio;
-use App\Models\MetodoPago;
 use App\Models\EstadoPedido;
+use App\Models\Pedido;
+use App\Models\Producto;
+use App\Models\Usuario;
+use App\Models\VarianteProducto;
+use App\Services\Base\BaseService;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Exception;
 
 class PedidoService extends BaseService
 {
@@ -31,15 +29,15 @@ class PedidoService extends BaseService
                 ->orderBy('fecha_pedido', 'desc');
 
             // Aplicar filtros
-            if (!empty($filters['estado_id'])) {
+            if (! empty($filters['estado_id'])) {
                 $query->where('estado_id', $filters['estado_id']);
             }
 
-            if (!empty($filters['fecha_desde'])) {
+            if (! empty($filters['fecha_desde'])) {
                 $query->whereDate('created_at', '>=', $filters['fecha_desde']);
             }
 
-            if (!empty($filters['fecha_hasta'])) {
+            if (! empty($filters['fecha_hasta'])) {
                 $query->whereDate('created_at', '<=', $filters['fecha_hasta']);
             }
 
@@ -62,38 +60,38 @@ class PedidoService extends BaseService
 
         try {
             $query = Pedido::with([
-                'usuario', 
-                'detalles.producto', 
-                'detalles.variante', 
-                'estado', 
-                'direccion', 
-                'pago.metodoPago'
+                'usuario',
+                'detalles.producto',
+                'detalles.variante',
+                'estado',
+                'direccion',
+                'pago.metodoPago',
             ])->orderBy('fecha_pedido', 'desc');
 
             // Aplicar filtros
-            if (!empty($filters['estado_id'])) {
+            if (! empty($filters['estado_id'])) {
                 $query->where('estado_id', $filters['estado_id']);
             }
 
-            if (!empty($filters['usuario_id'])) {
+            if (! empty($filters['usuario_id'])) {
                 $query->where('usuario_id', $filters['usuario_id']);
             }
 
-            if (!empty($filters['fecha_desde'])) {
+            if (! empty($filters['fecha_desde'])) {
                 $query->whereDate('created_at', '>=', $filters['fecha_desde']);
             }
 
-            if (!empty($filters['fecha_hasta'])) {
+            if (! empty($filters['fecha_hasta'])) {
                 $query->whereDate('created_at', '<=', $filters['fecha_hasta']);
             }
 
-            if (!empty($filters['search'])) {
+            if (! empty($filters['search'])) {
                 $query->where(function ($q) use ($filters) {
-                    $q->where('numero_pedido', 'like', '%' . $filters['search'] . '%')
-                      ->orWhereHas('usuario', function ($uq) use ($filters) {
-                          $uq->where('nombre', 'like', '%' . $filters['search'] . '%')
-                             ->orWhere('email', 'like', '%' . $filters['search'] . '%');
-                      });
+                    $q->where('numero_pedido', 'like', '%'.$filters['search'].'%')
+                        ->orWhereHas('usuario', function ($uq) use ($filters) {
+                            $uq->where('nombre', 'like', '%'.$filters['search'].'%')
+                                ->orWhere('email', 'like', '%'.$filters['search'].'%');
+                        });
                 });
             }
 
@@ -115,15 +113,15 @@ class PedidoService extends BaseService
         try {
             $pedido = Pedido::with([
                 'usuario',
-                'detalles.producto', 
-                'detalles.variante', 
-                'estado', 
-                'direccion', 
-                'pago.metodoPago'
+                'detalles.producto',
+                'detalles.variante',
+                'estado',
+                'direccion',
+                'pago.metodoPago',
             ])->findOrFail($pedidoId);
 
             // Verificar permisos
-            if (!Auth::user()->hasRole('admin') && $pedido->usuario_id !== Auth::id()) {
+            if (! Auth::user()->hasRole('admin') && $pedido->usuario_id !== Auth::id()) {
                 throw new Exception('No tienes permisos para ver este pedido');
             }
 
@@ -132,7 +130,7 @@ class PedidoService extends BaseService
         } catch (Exception $e) {
             $this->logOperation('error_obteniendo_pedido', [
                 'pedido_id' => $pedidoId,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 'error');
             throw $e;
         }
@@ -148,36 +146,36 @@ class PedidoService extends BaseService
         return $this->executeInTransaction(function () use ($request) {
             // Validar datos de entrada
             $data = $this->validateCreateOrderData($request);
-            
+
             // Obtener carrito del usuario
             $carrito = $this->getUserCart();
-            
+
             if (empty($carrito['detalles'])) {
                 throw new Exception('El carrito está vacío');
             }
 
             // Verificar disponibilidad de stock
             $this->validateCartStock($carrito['detalles']);
-            
+
             // Crear pedido
             $pedido = $this->createOrder($data, $carrito);
-            
+
             // Crear detalles del pedido
             $this->createOrderItems($pedido, $carrito['detalles']);
-            
+
             // Actualizar stock de productos
             $this->updateProductStock($carrito['detalles']);
-            
+
             // Limpiar carrito
             $this->clearUserCart();
-            
+
             // Crear historial de estado
             $this->createOrderStatusHistory($pedido, 'creado');
 
             $this->logOperation('pedido_creado_exitosamente', [
                 'pedido_id' => $pedido->id,
                 'user_id' => Auth::id(),
-                'total_detalles' => count($carrito['detalles'])
+                'total_detalles' => count($carrito['detalles']),
             ]);
 
             return $this->formatSuccessResponse($pedido, 'Pedido creado exitosamente');
@@ -192,16 +190,16 @@ class PedidoService extends BaseService
     {
         $this->logOperation('actualizando_estado_pedido', [
             'pedido_id' => $pedidoId,
-            'user_id' => Auth::id()
+            'user_id' => Auth::id(),
         ]);
 
         return $this->executeInTransaction(function () use ($pedidoId, $request) {
             $data = $this->validateUpdateStatusData($request);
-            
+
             $pedido = Pedido::with('estado')->findOrFail($pedidoId);
-            
+
             // Verificar permisos
-            if (!Auth::user()->hasRole('admin')) {
+            if (! Auth::user()->hasRole('admin')) {
                 throw new Exception('No tienes permisos para actualizar el estado del pedido');
             }
 
@@ -213,10 +211,10 @@ class PedidoService extends BaseService
 
             $estadoAnterior = $pedido->estado->nombre;
             $pedido->update(['estado_id' => $data['estado_id']]);
-            
+
             // Crear historial de estado
             $this->createOrderStatusHistory($pedido, $estadoAnterior, $data['comentario'] ?? null);
-            
+
             // Enviar notificaciones según el estado
             $this->sendStatusNotifications($pedido, $estadoAnterior);
 
@@ -224,7 +222,7 @@ class PedidoService extends BaseService
                 'pedido_id' => $pedidoId,
                 'estado_anterior' => $estadoAnterior,
                 'estado_nuevo' => $pedido->estado->nombre,
-                'user_id' => Auth::id()
+                'user_id' => Auth::id(),
             ]);
 
             return $this->formatSuccessResponse($pedido, 'Estado del pedido actualizado exitosamente');
@@ -239,39 +237,42 @@ class PedidoService extends BaseService
     {
         $this->logOperation('cancelando_pedido', [
             'pedido_id' => $pedidoId,
-            'user_id' => Auth::id()
+            'user_id' => Auth::id(),
         ]);
 
         return $this->executeInTransaction(function () use ($pedidoId, $request) {
             $pedido = Pedido::with(['detalles.producto', 'detalles.variante'])->findOrFail($pedidoId);
-            
+
             // Verificar permisos
-            if (!Auth::user()->hasRole('admin') && $pedido->usuario_id !== Auth::id()) {
+            if (! Auth::user()->hasRole('admin') && $pedido->usuario_id !== Auth::id()) {
                 throw new Exception('No tienes permisos para cancelar este pedido');
             }
 
             // Verificar que el pedido se pueda cancelar
-            if (!in_array($pedido->estado->nombre, ['creado', 'confirmado', 'en_proceso'])) {
+            if (! in_array($pedido->estado->nombre, ['creado', 'confirmado', 'en_proceso'])) {
                 throw new Exception('No se puede cancelar un pedido en este estado');
             }
 
+            // Guardar estado anterior para restaurar stock correctamente
+            $estadoAnterior = $pedido->estado->nombre;
+
             // Restaurar stock
-            $this->restoreProductStock($pedido->detalles);
-            
+            $this->restoreProductStock($pedido->detalles, $pedido, $estadoAnterior);
+
             // Actualizar estado a cancelado
             $estadoCancelado = EstadoPedido::where('nombre', 'cancelado')->first();
             $pedido->update(['estado_id' => $estadoCancelado->id]);
-            
+
             // Crear historial de estado
             $this->createOrderStatusHistory($pedido, 'cancelado', $request->input('motivo_cancelacion'));
-            
+
             // Enviar notificación de cancelación
             $this->sendCancellationNotification($pedido);
 
             $this->logOperation('pedido_cancelado_exitosamente', [
                 'pedido_id' => $pedidoId,
                 'user_id' => Auth::id(),
-                'motivo' => $request->input('motivo_cancelacion')
+                'motivo' => $request->input('motivo_cancelacion'),
             ]);
 
             return $this->formatSuccessResponse($pedido, 'Pedido cancelado exitosamente');
@@ -288,11 +289,11 @@ class PedidoService extends BaseService
             $query = Pedido::query();
 
             // Aplicar filtros de fecha
-            if (!empty($filters['fecha_desde'])) {
+            if (! empty($filters['fecha_desde'])) {
                 $query->whereDate('created_at', '>=', $filters['fecha_desde']);
             }
 
-            if (!empty($filters['fecha_hasta'])) {
+            if (! empty($filters['fecha_hasta'])) {
                 $query->whereDate('created_at', '<=', $filters['fecha_hasta']);
             }
 
@@ -308,7 +309,7 @@ class PedidoService extends BaseService
                     $q->where('nombre', 'cancelado');
                 })->count(),
                 'total_ventas' => $query->sum('total'),
-                'promedio_por_pedido' => $query->avg('total')
+                'promedio_por_pedido' => $query->avg('total'),
             ];
 
             return $this->formatSuccessResponse($estadisticas, 'Estadísticas obtenidas exitosamente');
@@ -326,9 +327,9 @@ class PedidoService extends BaseService
     {
         try {
             $pedido = Pedido::findOrFail($pedidoId);
-            
+
             // Verificar permisos
-            if (!Auth::user()->hasRole('admin') && $pedido->usuario_id !== Auth::id()) {
+            if (! Auth::user()->hasRole('admin') && $pedido->usuario_id !== Auth::id()) {
                 throw new Exception('No tienes permisos para ver este pedido');
             }
 
@@ -339,7 +340,7 @@ class PedidoService extends BaseService
         } catch (Exception $e) {
             $this->logOperation('error_obteniendo_historial_estados', [
                 'pedido_id' => $pedidoId,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 'error');
             throw $e;
         }
@@ -353,20 +354,20 @@ class PedidoService extends BaseService
         $rules = [
             'direccion_envio_id' => 'required|exists:direcciones_envio,id',
             'metodo_pago_id' => 'required|exists:metodos_pago,id',
-            'notas' => 'nullable|string|max:500'
+            'notas' => 'nullable|string|max:500',
         ];
 
         $messages = [
             'direccion_envio_id.required' => 'Debe seleccionar una dirección de envío',
             'direccion_envio_id.exists' => 'La dirección de envío no existe',
             'metodo_pago_id.required' => 'Debe seleccionar un método de pago',
-            'metodo_pago_id.exists' => 'El método de pago no existe'
+            'metodo_pago_id.exists' => 'El método de pago no existe',
         ];
 
         $validator = validator($request->all(), $rules, $messages);
-        
+
         if ($validator->fails()) {
-            throw new Exception('Datos inválidos: ' . implode(', ', $validator->errors()->all()));
+            throw new Exception('Datos inválidos: '.implode(', ', $validator->errors()->all()));
         }
 
         return $validator->validated();
@@ -379,18 +380,18 @@ class PedidoService extends BaseService
     {
         $rules = [
             'estado_id' => 'required|exists:estados_pedido,id',
-            'comentario' => 'nullable|string|max:500'
+            'comentario' => 'nullable|string|max:500',
         ];
 
         $messages = [
             'estado_id.required' => 'Debe seleccionar un estado',
-            'estado_id.exists' => 'El estado seleccionado no existe'
+            'estado_id.exists' => 'El estado seleccionado no existe',
         ];
 
         $validator = validator($request->all(), $rules, $messages);
-        
+
         if ($validator->fails()) {
-            throw new Exception('Datos inválidos: ' . implode(', ', $validator->errors()->all()));
+            throw new Exception('Datos inválidos: '.implode(', ', $validator->errors()->all()));
         }
 
         return $validator->validated();
@@ -414,7 +415,7 @@ class PedidoService extends BaseService
                 'carrito_items.variante_id',
                 'carrito_items.cantidad',
                 'productos.precio',
-                'variantes_producto.precio_adicional'
+                'variantes_producto.precio_adicional',
             ])
             ->get()
             ->toArray();
@@ -423,8 +424,9 @@ class PedidoService extends BaseService
             'detalles' => $carrito,
             'total' => collect($carrito)->sum(function ($item) {
                 $precio = $item->precio + ($item->precio_adicional ?? 0);
+
                 return $precio * $item->cantidad;
-            })
+            }),
         ];
     }
 
@@ -436,12 +438,12 @@ class PedidoService extends BaseService
         foreach ($items as $item) {
             if ($item->variante_id) {
                 $variante = VarianteProducto::find($item->variante_id);
-                if (!$variante || $variante->stock < $item->cantidad) {
-                    throw new Exception("Stock insuficiente para la variante del producto");
+                if (! $variante || $variante->stock < $item->cantidad) {
+                    throw new Exception('Stock insuficiente para la variante del producto');
                 }
             } else {
                 $producto = Producto::find($item->producto_id);
-                if (!$producto || $producto->stock < $item->cantidad) {
+                if (! $producto || $producto->stock < $item->cantidad) {
                     throw new Exception("Stock insuficiente para el producto {$producto->nombre_producto}");
                 }
             }
@@ -454,7 +456,7 @@ class PedidoService extends BaseService
     private function createOrder(array $data, array $carrito): Pedido
     {
         $estadoCreado = EstadoPedido::where('nombre', 'creado')->first();
-        
+
         return Pedido::create([
             'usuario_id' => Auth::id(),
             'numero_pedido' => $this->generateOrderNumber(),
@@ -463,7 +465,7 @@ class PedidoService extends BaseService
             'metodo_pago_id' => $data['metodo_pago_id'],
             'total' => $carrito['total'],
             'notas' => $data['notas'] ?? null,
-            'fecha_pedido' => now()
+            'fecha_pedido' => now(),
         ]);
     }
 
@@ -474,14 +476,14 @@ class PedidoService extends BaseService
     {
         foreach ($items as $item) {
             $precio = $item->precio + ($item->precio_adicional ?? 0);
-            
+
             DetallePedido::create([
                 'pedido_id' => $pedido->id,
                 'producto_id' => $item->producto_id,
                 'variante_id' => $item->variante_id,
                 'cantidad' => $item->cantidad,
                 'precio_unitario' => $precio,
-                'subtotal' => $precio * $item->cantidad
+                'subtotal' => $precio * $item->cantidad,
             ]);
         }
     }
@@ -498,9 +500,9 @@ class PedidoService extends BaseService
                 if ($variante) {
                     $variante->registrarSalida(
                         $item->cantidad,
-                        "Venta - Pedido desde carrito",
+                        'Venta - Pedido desde carrito',
                         \Illuminate\Support\Facades\Auth::id(),
-                        "carrito_venta"
+                        'carrito_venta'
                     );
                 }
             } else {
@@ -509,7 +511,7 @@ class PedidoService extends BaseService
                 if ($producto) {
                     $producto->registrarSalida(
                         $item->cantidad,
-                        "Venta - Pedido desde carrito",
+                        'Venta - Pedido desde carrito',
                         \Illuminate\Support\Facades\Auth::id(),
                         null
                     );
@@ -521,30 +523,63 @@ class PedidoService extends BaseService
     /**
      * Restaura el stock de los productos
      */
-    private function restoreProductStock($items): void
+    private function restoreProductStock($items, Pedido $pedido, string $estadoAnterior): void
     {
+        $pedidoId = $pedido->pedido_id;
+
+        // Verificar si el pedido tiene variantes con reservas activas
+        $tieneVariantesConReservas = $items->contains(function ($item) {
+            return $item->variante_id !== null;
+        });
+
+        // Si el pedido estaba pendiente y tiene variantes, cancelar reservas activas
+        // Comparar con el nombre del estado (puede ser 'Pendiente' o 'pendiente')
+        $estadoAnteriorLower = strtolower($estadoAnterior);
+        if ($estadoAnteriorLower === 'pendiente' && $tieneVariantesConReservas) {
+            // Usar el servicio de reservas para cancelar todas las reservas activas del pedido
+            $reservaStockService = new \App\Services\ReservaStockService;
+            $reservaStockService->cancelarReservasPedido(
+                $pedidoId,
+                \Illuminate\Support\Facades\Auth::id(),
+                "Cancelación de pedido #{$pedidoId}"
+            );
+        }
+
         foreach ($items as $item) {
             if ($item->variante_id) {
-                // Para variantes, usar el método que registra movimientos
+                // Para variantes, las reservas ya se cancelaron arriba si estaba pendiente
+                // Si el pedido estaba confirmado, registrar entrada para restaurar stock
                 $variante = VarianteProducto::find($item->variante_id);
-                if ($variante) {
+                if ($variante && strtolower($estadoAnterior) === 'confirmado') {
                     $variante->registrarEntrada(
                         $item->cantidad,
-                        "Cancelación de pedido - Restauración de stock",
+                        "Cancelación de pedido #{$pedidoId} - Restauración de stock",
                         \Illuminate\Support\Facades\Auth::id(),
-                        "cancelacion_pedido"
+                        "Pedido #{$pedidoId}"
                     );
                 }
             } else {
-                // Para productos sin variantes, usar el método que registra movimientos
+                // Para productos sin variantes, liberar stock reservado si está pendiente
                 $producto = Producto::find($item->producto_id);
                 if ($producto) {
-                    $producto->registrarEntrada(
-                        $item->cantidad,
-                        "Cancelación de pedido - Restauración de stock",
-                        \Illuminate\Support\Facades\Auth::id(),
-                        "cancelacion_pedido"
-                    );
+                    $estadoAnteriorLower = strtolower($estadoAnterior);
+                    if ($estadoAnteriorLower === 'pendiente' && $producto->stock_reservado > 0) {
+                        // Liberar stock reservado
+                        $producto->liberarStockReservado(
+                            $item->cantidad,
+                            "Cancelación de pedido #{$pedidoId}",
+                            \Illuminate\Support\Facades\Auth::id(),
+                            $pedidoId
+                        );
+                    } elseif ($estadoAnteriorLower === 'confirmado') {
+                        // Si estaba confirmado, registrar entrada para restaurar stock
+                        $producto->registrarEntrada(
+                            $item->cantidad,
+                            "Cancelación de pedido #{$pedidoId} - Restauración de stock",
+                            \Illuminate\Support\Facades\Auth::id(),
+                            "Pedido #{$pedidoId}"
+                        );
+                    }
                 }
             }
         }
@@ -569,7 +604,7 @@ class PedidoService extends BaseService
         $pedido->historialEstados()->create([
             'estado_id' => $pedido->estado_id,
             'comentario' => $comentario,
-            'fecha_cambio' => now()
+            'fecha_cambio' => now(),
         ]);
     }
 
@@ -583,7 +618,7 @@ class PedidoService extends BaseService
         $this->logOperation('notificaciones_enviadas', [
             'pedido_id' => $pedido->id,
             'estado_anterior' => $estadoAnterior,
-            'estado_nuevo' => $pedido->estado->nombre
+            'estado_nuevo' => $pedido->estado->nombre,
         ]);
     }
 
@@ -594,7 +629,7 @@ class PedidoService extends BaseService
     {
         // Aquí se implementaría el envío de notificación de cancelación
         $this->logOperation('notificacion_cancelacion_enviada', [
-            'pedido_id' => $pedido->id
+            'pedido_id' => $pedido->id,
         ]);
     }
 
@@ -606,14 +641,14 @@ class PedidoService extends BaseService
         $prefix = 'PED';
         $year = date('Y');
         $month = date('m');
-        
+
         $lastOrder = Pedido::whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
             ->orderBy('id', 'desc')
             ->first();
-        
+
         $sequence = $lastOrder ? (intval(substr($lastOrder->numero_pedido, -4)) + 1) : 1;
-        
+
         return sprintf('%s%s%s%04d', $prefix, $year, $month, $sequence);
     }
 
@@ -625,9 +660,9 @@ class PedidoService extends BaseService
     {
         // Estados que no permiten cambios
         $estadosFinales = ['cancelado', 'confirmado', 'entregado'];
-        
+
         $estadoActual = strtolower($pedido->estado->nombre ?? '');
-        
+
         return in_array($estadoActual, $estadosFinales);
     }
 }
