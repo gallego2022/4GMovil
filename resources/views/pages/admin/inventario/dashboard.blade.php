@@ -175,22 +175,21 @@
                     ->filter(function($variante) {
                         $producto = $variante->producto;
                         
-                        // Usar umbrales del producto si existen, sino calcular
-                        $umbralBajo = $producto->stock_maximo ?? null;
+                        // Obtener el umbral crítico (stock_minimo)
                         $umbralCritico = $producto->stock_minimo ?? null;
                         
-                        if ($umbralBajo === null || $umbralCritico === null) {
+                        if ($umbralCritico === null) {
                             $stockInicial = $producto->stock_inicial ?? 0;
                             if ($stockInicial > 0) {
-                                $umbralBajo = $umbralBajo ?? (int) ceil(($stockInicial * 60) / 100);
-                                $umbralCritico = $umbralCritico ?? (int) ceil(($stockInicial * 20) / 100);
+                                $umbralCritico = (int) ceil(($stockInicial * 20) / 100);
                             } else {
-                                $umbralBajo = $umbralBajo ?? 10;
-                                $umbralCritico = $umbralCritico ?? 5;
+                                $umbralCritico = 5; // Fallback
                             }
                         }
                         
-                        return $variante->stock <= $umbralBajo && $variante->stock > $umbralCritico;
+                        // Solo mostrar variantes con stock por debajo del umbral crítico
+                        // Si el stock está por encima o igual al mínimo, no mostrar alerta
+                        return $variante->stock < $umbralCritico && $variante->stock > 0;
                     });
             }
             $variantesStockBajo = $variantesStockBajo->take(5);

@@ -55,17 +55,6 @@ echo "⚡ Configurando aplicación para desarrollo..."
 # En desarrollo no cacheamos para ver cambios en tiempo real
 echo "✅ Aplicación configurada para desarrollo"
 
-# Asegurar permisos
-echo "🔐 Configurando permisos..."
-chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public/storage
-chmod -R 755 /var/www/html/storage
-chmod -R 777 /var/www/html/storage/framework
-chmod -R 777 /var/www/html/storage/logs
-chmod -R 777 /var/www/html/storage/app/public
-chmod -R 777 /var/www/html/bootstrap/cache
-chmod -R 755 /var/www/html/public/storage
-echo "✅ Permisos configurados"
-
 # Crear enlace simbólico de storage si no existe
 echo "🔗 Creando enlace simbólico de storage..."
 if [ ! -L /var/www/html/public/storage ] && [ ! -d /var/www/html/public/storage ]; then
@@ -80,9 +69,37 @@ else
     echo "✅ Storage sincronizado"
 fi
 
-# Asegurar permisos finales después de crear el enlace
-chown -R www-data:www-data /var/www/html/public/storage
-chmod -R 755 /var/www/html/public/storage
+# Compilar assets de Vite si no existen
+echo "📦 Verificando assets de Vite..."
+if [ ! -f /var/www/html/public/build/manifest.json ]; then
+    echo "🔨 Compilando assets de Vite..."
+    npm run build || echo "⚠️  Error compilando assets, continuando..."
+    echo "✅ Assets compilados"
+else
+    echo "✅ Assets de Vite ya existen"
+fi
+
+# Asegurar permisos
+echo "🔐 Configurando permisos..."
+chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache || echo "⚠️  Error configurando permisos de storage"
+chmod -R 755 /var/www/html/storage || echo "⚠️  Error configurando permisos de storage"
+chmod -R 777 /var/www/html/storage/framework || echo "⚠️  Error configurando permisos de framework"
+chmod -R 777 /var/www/html/storage/logs || echo "⚠️  Error configurando permisos de logs"
+chmod -R 777 /var/www/html/storage/app/public || echo "⚠️  Error configurando permisos de app/public"
+chmod -R 777 /var/www/html/bootstrap/cache || echo "⚠️  Error configurando permisos de bootstrap/cache"
+
+# Asegurar permisos del enlace simbólico si existe
+if [ -L /var/www/html/public/storage ] || [ -d /var/www/html/public/storage ]; then
+    chown -R www-data:www-data /var/www/html/public/storage || echo "⚠️  Error configurando permisos de public/storage"
+    chmod -R 755 /var/www/html/public/storage || echo "⚠️  Error configurando permisos de public/storage"
+fi
+
+# Asegurar permisos del directorio build si existe
+if [ -d /var/www/html/public/build ]; then
+    chown -R www-data:www-data /var/www/html/public/build || echo "⚠️  Error configurando permisos de public/build"
+    chmod -R 755 /var/www/html/public/build || echo "⚠️  Error configurando permisos de public/build"
+fi
+echo "✅ Permisos configurados"
 
 echo "🎉 Configuración de Laravel completada!"
 

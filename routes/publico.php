@@ -6,6 +6,7 @@ use App\Http\Controllers\Publico\LandingController;
 use App\Http\Controllers\Publico\ProductoPublicoController;
 use App\Http\Controllers\Publico\SearchController;
 
+
 // Rutas públicas (accesibles para todos)
 
 // Ruta para ver la página de inicio

@@ -157,6 +157,7 @@ class OptimizedStockAlertService
 
     /**
      * Obtiene productos con stock bajo (agrupando variantes)
+     * Excluye productos que ya están en stock crítico
      */
     public function getProductosStockBajo(): Collection
     {
@@ -164,12 +165,19 @@ class OptimizedStockAlertService
             ->where('activo', true)
             ->get()
             ->filter(function ($producto) {
-                // Si el producto tiene variantes, verificar si tiene stock bajo
+                // Excluir productos que ya están en stock crítico
                 if ($producto->variantes->isNotEmpty()) {
+                    if ($this->tieneVariantesCriticas($producto)) {
+                        return false;
+                    }
                     return $this->tieneVariantesStockBajo($producto);
                 }
                 
-                // Si no tiene variantes, verificar stock del producto principal
+                // Si no tiene variantes, verificar que no esté crítico y que esté bajo
+                if ($this->esStockCritico($producto->stock, $producto->stock_inicial, $producto)) {
+                    return false;
+                }
+                
                 return $this->esStockBajo($producto->stock, $producto->stock_inicial, $producto);
             })
             ->map(function ($producto) {
@@ -248,38 +256,62 @@ class OptimizedStockAlertService
     {
         // Si hay producto, usar su umbral crítico (stock_minimo)
         if ($producto && $producto->stock_minimo !== null && $producto->stock_minimo > 0) {
-            return $stock <= $producto->stock_minimo && $stock > 0;
+            return $stock < $producto->stock_minimo && $stock > 0;
         }
         
         // Fallback: calcular basado en stock_inicial
         if ($stockInicial === null || $stockInicial <= 0) {
-            return $stock <= 5;
+            return $stock < 5 && $stock > 0;
         }
         
         $umbralCritico = (int) ceil(($stockInicial * 20) / 100);
-        return $stock <= $umbralCritico && $stock > 0;
+        return $stock < $umbralCritico && $stock > 0;
     }
 
     /**
      * Verifica si el stock está bajo
-     * Usa stock_maximo del producto si existe, sino calcula el 60% del stock_inicial
+     * Solo muestra alerta si el stock está por debajo del stock_minimo pero por encima de 0
+     * Si el stock está por encima del stock_minimo, no se muestra ninguna alerta
      */
     private function esStockBajo(int $stock, ?int $stockInicial, ?Producto $producto = null): bool
     {
-        // Si hay producto, usar su umbral bajo (stock_maximo)
+        // Obtener el umbral crítico (stock_minimo)
+        $umbralCritico = null;
+        
+        if ($producto && $producto->stock_minimo !== null && $producto->stock_minimo > 0) {
+            $umbralCritico = $producto->stock_minimo;
+        } elseif ($stockInicial !== null && $stockInicial > 0) {
+            $umbralCritico = (int) ceil(($stockInicial * 20) / 100);
+        } else {
+            $umbralCritico = 5; // Fallback
+        }
+        
+        // Si hay producto con stock_maximo, usar como umbral bajo
+        // Pero solo si el stock está por debajo del stock_minimo
         if ($producto && $producto->stock_maximo !== null && $producto->stock_maximo > 0) {
-            $umbralCritico = $producto->stock_minimo ?? ((int) ceil((($stockInicial ?? 0) * 20) / 100));
-            return $stock <= $producto->stock_maximo && $stock > $umbralCritico;
+            // Stock bajo: está por encima del crítico pero por debajo del máximo
+            // PERO solo si está por debajo del mínimo (no por encima)
+            if ($stock >= $umbralCritico) {
+                return false; // Si está por encima o igual al mínimo, no mostrar alerta
+            }
+            return $stock < $producto->stock_maximo && $stock > 0;
         }
         
         // Fallback: calcular basado en stock_inicial
         if ($stockInicial === null || $stockInicial <= 0) {
-            return $stock <= 10 && $stock > 5;
+            // Solo mostrar si está por debajo del umbral crítico (5)
+            return $stock < 5 && $stock > 0;
         }
         
         $umbralBajo = (int) ceil(($stockInicial * 60) / 100);
         $umbralCritico = (int) ceil(($stockInicial * 20) / 100);
-        return $stock <= $umbralBajo && $stock > $umbralCritico;
+        
+        // Solo mostrar si está por debajo del umbral crítico
+        if ($stock >= $umbralCritico) {
+            return false; // Si está por encima o igual al mínimo, no mostrar alerta
+        }
+        
+        return $stock < $umbralBajo && $stock > 0;
     }
 
     /**

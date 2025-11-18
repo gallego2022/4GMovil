@@ -44,10 +44,17 @@ COPY . .
 # Crear archivo .env desde el ejemplo
 RUN cp env.docker.example .env
 
+# Configurar variables de entorno para el build
+ENV VIEW_COMPILED_PATH=/var/www/html/storage/framework/views
+ENV CACHE_DRIVER=file
+
 # Crear carpetas que Laravel necesita y dar permisos
-RUN mkdir -p /var/www/html/storage/framework/{cache,sessions,views} \
+RUN mkdir -p /var/www/html/storage/framework/cache/data \
+    && mkdir -p /var/www/html/storage/framework/sessions \
+    && mkdir -p /var/www/html/storage/framework/views \
     && mkdir -p /var/www/html/storage/logs \
     && mkdir -p /var/www/html/storage/app/public/{productos,fotos_perfil,perfiles} \
+    && mkdir -p /var/www/html/bootstrap/cache \
     && touch /var/www/html/storage/logs/laravel.log \
     && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 755 /var/www/html/storage \
@@ -74,13 +81,13 @@ RUN php artisan storage:link
 # RUN composer install --no-dev --optimize-autoloader --no-scripts  # Comentado para desarrollo
 
 # Asegurar permisos finales después de todas las operaciones
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public/storage \
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 755 /var/www/html/storage \
     && chmod -R 777 /var/www/html/storage/framework \
     && chmod -R 777 /var/www/html/storage/logs \
     && chmod -R 777 /var/www/html/storage/app/public \
     && chmod -R 777 /var/www/html/bootstrap/cache \
-    && chmod -R 755 /var/www/html/public/storage
+    && (test -L /var/www/html/public/storage || test -d /var/www/html/public/storage) && chown -R www-data:www-data /var/www/html/public/storage && chmod -R 755 /var/www/html/public/storage || true
 
 # Habilitar módulos de Apache
 RUN a2enmod rewrite headers
