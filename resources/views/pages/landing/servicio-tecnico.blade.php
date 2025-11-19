@@ -506,13 +506,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const device = document.getElementById('device').value;
             
             if (!name || !phone || !device) {
-                Swal.fire({
-                    title: '{{ __('messages.technical_service.required_fields') }}',
-                    text: '{{ __('messages.technical_service.complete_fields') }}',
-                    icon: 'warning',
-                    confirmButtonText: '{{ __('messages.technical_service.understood') }}',
-                    confirmButtonColor: '#3B82F6'
-                });
+                if (typeof window.showNotification === 'function') {
+                    window.showNotification('{{ __('messages.technical_service.required_fields') }}: {{ __('messages.technical_service.complete_fields') }}', 'warning', 5);
+                }
                 return;
             }
 
@@ -544,13 +540,9 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (data.success) {
                     // Éxito
-                    Swal.fire({
-                        title: '{{ __('messages.technical_service.request_sent') }}',
-                        text: data.message,
-                        icon: 'success',
-                        confirmButtonText: '{{ __('messages.technical_service.understood') }}',
-                        confirmButtonColor: '#3B82F6'
-                    });
+                    if (typeof window.showNotification === 'function') {
+                        window.showNotification('{{ __('messages.technical_service.request_sent') }}: ' + data.message, 'success', 5);
+                    }
                     
                     // Limpiar formulario
                     serviceForm.reset();
@@ -558,30 +550,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Error de validación
                     let errorMessage = data.message;
                     if (data.errors) {
-                        errorMessage = '{{ __('messages.technical_service.fix_errors') }}\n';
+                        errorMessage = '{{ __('messages.technical_service.fix_errors') }}: ';
                         Object.keys(data.errors).forEach(field => {
-                            errorMessage += `• ${data.errors[field][0]}\n`;
+                            errorMessage += data.errors[field][0] + ' ';
                         });
                     }
                     
-                    Swal.fire({
-                        title: '{{ __('messages.technical_service.error') }}',
-                        text: errorMessage,
-                        icon: 'error',
-                        confirmButtonText: '{{ __('messages.technical_service.understood') }}',
-                        confirmButtonColor: '#EF4444'
-                    });
+                    if (typeof window.showNotification === 'function') {
+                        window.showNotification('{{ __('messages.technical_service.error') }}: ' + errorMessage, 'error', 5);
+                    }
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                Swal.fire({
-                    title: '{{ __('messages.technical_service.error') }}',
-                    text: '{{ __('messages.technical_service.send_error') }}',
-                    icon: 'error',
-                    confirmButtonText: 'Entendido',
-                    confirmButtonColor: '#EF4444'
-                });
+                if (typeof window.showNotification === 'function') {
+                    window.showNotification('{{ __('messages.technical_service.error') }}: {{ __('messages.technical_service.send_error') }}', 'error', 5);
+                }
             })
             .finally(() => {
                 // Restaurar botón

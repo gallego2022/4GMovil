@@ -77,8 +77,13 @@ class ProductoServiceOptimizadoCorregido extends BaseService
     {
         return $this->cacheService->remember('productos:form_data', 7200, function () {
             try {
-                $categorias = Categoria::all();
-                $marcas = Marca::all();
+                $categorias = Categoria::orderBy('nombre')->get();
+                $marcas = Marca::orderBy('nombre')->get();
+
+                // Verificar que las marcas se obtuvieron correctamente
+                if ($marcas->isEmpty()) {
+                    Log::warning('No se encontraron marcas en la base de datos');
+                }
 
                 return [
                     'success' => true,
@@ -88,6 +93,10 @@ class ProductoServiceOptimizadoCorregido extends BaseService
 
             } catch (Exception $e) {
                 $this->logOperation('error_obteniendo_datos_formulario', ['error' => $e->getMessage()], 'error');
+                Log::error('Error al obtener datos del formulario', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
                 throw $e;
             }
         });

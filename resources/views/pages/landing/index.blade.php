@@ -333,25 +333,7 @@
     </script>
     @endpush
 
-    <!-- Stats Section -->
-    <section class="py-12 bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-8 text-center">
-                <div class="space-y-2">
-                    <div class="text-4xl md:text-5xl font-bold text-yellow-300">5000+</div>
-                    <div class="text-lg font-medium">{{ __('messages.home.satisfied_clients') }}</div>
-                </div>
-                <div class="space-y-2">
-                    <div class="text-4xl md:text-5xl font-bold text-green-300">1000+</div>
-                    <div class="text-lg font-medium">{{ __('messages.home.successful_repairs') }}</div>
-                </div>
-                <div class="space-y-2">
-                    <div class="text-4xl md:text-5xl font-bold text-purple-300">50+</div>
-                    <div class="text-lg font-medium">{{ __('messages.home.available_brands') }}</div>
-                </div>
-            </div>
-        </div>
-    </section>
+    
 
     <!-- Brands Section Carrusel -->
     <section class="py-16 bg-white dark:bg-gray-900 overflow-hidden">

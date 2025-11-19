@@ -480,9 +480,9 @@ class InventarioService
                     }
                 }
                 
-                // Solo mostrar variantes con stock por debajo del umbral crítico
-                // Si el stock está por encima o igual al mínimo, no mostrar alerta
-                return $variante->stock < $umbralCritico && $variante->stock > 0;
+                // Solo mostrar variantes con stock por debajo o igual al umbral crítico
+                // Si el stock está por encima del mínimo, no mostrar alerta
+                return $variante->stock <= $umbralCritico && $variante->stock > 0;
             });
     }
 
@@ -699,14 +699,14 @@ class InventarioService
         // Usar el servicio OptimizedStockAlertService para obtener alertas correctas considerando variantes
         $alertService = app(\App\Services\OptimizedStockAlertService::class);
         
-        // Obtener alertas optimizadas
-        $alertasCriticos = $alertService->getOptimizedStockAlerts('criticos', 1);
-        $alertasBajo = $alertService->getOptimizedStockAlerts('bajo', 1);
-        $alertasAgotadas = $alertService->getOptimizedStockAlerts('agotadas', 1);
+        // Obtener alertas optimizadas (una sola llamada para obtener todas las estadísticas)
+        $alertasOptimizadas = $alertService->getOptimizedStockAlerts();
 
-        $productosStockCritico = $alertasCriticos['productos_criticos_count'] ?? 0;
-        $productosStockBajo = $alertasBajo['productos_stock_bajo_count'] ?? 0;
-        $productosSinStock = $alertasAgotadas['variantes_agotadas_count'] ?? 0;
+        $productosStockCritico = $alertasOptimizadas['productos_criticos_count'] ?? 0;
+        $productosStockBajo = $alertasOptimizadas['productos_stock_bajo_count'] ?? 0;
+        
+        // Obtener productos sin stock usando el método correcto del servicio
+        $productosSinStock = $this->getProductosSinStock()->count();
 
         return [
             'total_productos' => $totalProductos,

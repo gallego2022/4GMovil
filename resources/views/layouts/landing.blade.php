@@ -11,19 +11,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/style_inicio.css') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <!-- Alpine.js y SweetAlert2 se cargan desde Vite para mejor rendimiento -->
+    <!-- Alpine.js se carga desde Vite para mejor rendimiento -->
     <!-- CSS de animaciones de carga -->
     <link rel="stylesheet" href="{{ asset('css/loading-animations.css') }}">
-    <!-- SweetAlert2 desde CDN como fallback si no está disponible desde Vite -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        // Asegurar que SweetAlert2 esté disponible globalmente
-        if (typeof Swal !== 'undefined') {
-            window.Swal = Swal;
-            console.log('SweetAlert2 cargado desde CDN');
-        }
-    </script>
     @stack('styles')
     <style>
         [x-cloak] {
@@ -391,6 +381,9 @@
 </head>
 
 <body class="bg-white dark:bg-gray-900 transition-colors duration-300">
+    <!-- Componente de Notificaciones -->
+    <x-notifications />
+    
     <!-- Scroll Progress Indicator -->
     <div class="scroll-indicator" id="scrollIndicator"></div>
     <!-- Navigation -->
@@ -938,8 +931,6 @@
         </button>
     </main>
 
-    @include('layouts.partials.sweet-alerts')
-
     <!-- Script del carrito -->
     <script>
         document.addEventListener('DOMContentLoaded', async function() {
@@ -1202,15 +1193,9 @@
                 updateCartDisplay();
 
                 // Mostrar notificación de éxito
-                Swal.fire({
-                    title: '¡Producto agregado!',
-                    text: 'El producto se agregó al carrito exitosamente',
-                    icon: 'success',
-                    timer: 1500,
-                    showConfirmButton: false,
-                    position: 'top-end',
-                    toast: true
-                });
+                if (typeof window.showNotification === 'function') {
+                    window.showNotification('¡Producto agregado! El producto se agregó al carrito exitosamente', 'success', 3);
+                }
             }
 
             function updateQuantity(productId, varianteId, change) {
@@ -1415,53 +1400,7 @@
                 }
             });
 
-            // Event listener adicional para asegurar que los botones funcionen
-            document.addEventListener('DOMContentLoaded', function() {
-                const addToCartButtons = document.querySelectorAll('.add-to-cart');
-                console.log('Botones encontrados:', addToCartButtons.length); // Debug
-
-                addToCartButtons.forEach(button => {
-                    button.addEventListener('click', function(e) {
-                        console.log('Click directo en botón:', this); // Debug
-                        e.preventDefault();
-                        e.stopPropagation();
-
-                        const id = parseInt(this.dataset.id);
-                        const name = this.dataset.name;
-                        const price = parseFloat(this.dataset.price);
-                        const varianteId = this.dataset.varianteId ? parseInt(this.dataset.varianteId) : null;
-                        const varianteNombre = this.dataset.varianteNombre || null;
-                        const precioAdicional = this.dataset.precioAdicional ? parseFloat(this.dataset.precioAdicional) : 0;
-
-                        console.log('Datos del producto (directo):', {
-                            id,
-                            name,
-                            price,
-                            varianteId,
-                            varianteNombre,
-                            precioAdicional
-                        }); // Debug
-
-                        if (isNaN(id) || !name || isNaN(price)) {
-                            console.error('Datos de producto inválidos (directo):', {
-                                id,
-                                name,
-                                price
-                            });
-                            return;
-                        }
-
-                        addToCart({
-                            id: id,
-                            name: name,
-                            price: price,
-                            variante_id: varianteId,
-                            variante_nombre: varianteNombre,
-                            precio_adicional: precioAdicional
-                        });
-                    });
-                });
-            });
+            // El event listener con delegation ya maneja todos los clicks, no necesitamos duplicar
 
             // Inicializar carrito
             updateCartCount();

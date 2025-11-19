@@ -326,6 +326,15 @@
             />
 
             <!-- Marca -->
+            @php
+                $marcasOptions = [];
+                if (isset($marcas) && $marcas && $marcas->count() > 0) {
+                    $marcasOptions = $marcas->pluck('nombre', 'marca_id')->toArray();
+                } else {
+                    // Fallback: obtener marcas directamente si no están disponibles
+                    $marcasOptions = \App\Models\Marca::pluck('nombre', 'marca_id')->toArray();
+                }
+            @endphp
             <x-validation-field 
                 name="marca_id"
                 label="Marca"
@@ -337,7 +346,7 @@
                     'required' => 'La marca es requerida'
                 ]"
                 help-text="Marca del producto"
-                :options="$marcas->pluck('nombre', 'marca_id')->toArray()"
+                :options="$marcasOptions"
                 :value="old('marca_id', isset($producto) && isset($producto->marca_id) ? $producto->marca_id : '')"
             />
 

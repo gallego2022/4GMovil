@@ -187,9 +187,9 @@
                             }
                         }
                         
-                        // Solo mostrar variantes con stock por debajo del umbral crítico
-                        // Si el stock está por encima o igual al mínimo, no mostrar alerta
-                        return $variante->stock < $umbralCritico && $variante->stock > 0;
+                        // Solo mostrar variantes con stock por debajo o igual al umbral crítico
+                        // Si el stock está por encima del mínimo, no mostrar alerta
+                        return $variante->stock <= $umbralCritico && $variante->stock > 0;
                     });
             }
             $variantesStockBajo = $variantesStockBajo->take(5);

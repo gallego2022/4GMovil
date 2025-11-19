@@ -349,13 +349,9 @@
                     .then(data => {
                         if (data.success) {
                             // Éxito
-                            Swal.fire({
-                                title: '{{ __('messages.contact.message_sent') }}',
-                                text: data.message,
-                                icon: 'success',
-                                confirmButtonText: '{{ __('messages.contact.understood') }}',
-                                confirmButtonColor: '#3B82F6'
-                            });
+                            if (typeof window.showNotification === 'function') {
+                                window.showNotification('{{ __('messages.contact.message_sent') }}: ' + data.message, 'success', 5);
+                            }
                             
                             // Limpiar formulario
                             contactForm.reset();
@@ -363,30 +359,22 @@
                             // Error de validación
                             let errorMessage = data.message;
                             if (data.errors) {
-                                errorMessage = '{{ __('messages.contact.fix_errors') }}\n';
+                                errorMessage = '{{ __('messages.contact.fix_errors') }}: ';
                                 Object.keys(data.errors).forEach(field => {
-                                    errorMessage += `• ${data.errors[field][0]}\n`;
+                                    errorMessage += data.errors[field][0] + ' ';
                                 });
                             }
                             
-                            Swal.fire({
-                                title: '{{ __('messages.contact.error') }}',
-                                text: errorMessage,
-                                icon: 'error',
-                                confirmButtonText: '{{ __('messages.contact.understood') }}',
-                                confirmButtonColor: '#EF4444'
-                            });
+                            if (typeof window.showNotification === 'function') {
+                                window.showNotification('{{ __('messages.contact.error') }}: ' + errorMessage, 'error', 5);
+                            }
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        Swal.fire({
-                            title: '{{ __('messages.contact.error') }}',
-                            text: '{{ __('messages.contact.send_error') }}',
-                            icon: 'error',
-                            confirmButtonText: '{{ __('messages.contact.understood') }}',
-                            confirmButtonColor: '#EF4444'
-                        });
+                        if (typeof window.showNotification === 'function') {
+                            window.showNotification('{{ __('messages.contact.error') }}: {{ __('messages.contact.send_error') }}', 'error', 5);
+                        }
                     })
                     .finally(() => {
                         // Restaurar botón
@@ -506,37 +494,26 @@ document.addEventListener('fullscreenchange', function() {
         // Función para obtener direcciones
         function getDirections() {
             const address = 'Cra 52 #49-100, La Candelaria, Medellín, Colombia';
-
-            Swal.fire({
-                title: '¿Cómo quieres llegar?',
-                html: `
-            <div class="space-y-3">
-                <button onclick="openGoogleMaps()" class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
-                    <i class="fas fa-external-link-alt mr-2"></i>Google Maps
-                </button>
-                <button onclick="openWaze()" class="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors">
-                    <i class="fas fa-car mr-2"></i>Waze
-                </button>
-                <button onclick="copyAddress()" class="w-full bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
-                    <i class="fas fa-copy mr-2"></i>Copiar Dirección
-                </button>
-            </div>
-        `,
-                showConfirmButton: false,
-                showCloseButton: true
-            });
+            const choice = confirm('¿Cómo quieres llegar?\n\n1. OK para Google Maps\n2. Cancelar para elegir otra opción');
+            
+            if (choice) {
+                openGoogleMaps();
+            } else {
+                const wazeChoice = confirm('¿Abrir con Waze?\n\n1. OK para Waze\n2. Cancelar para copiar dirección');
+                if (wazeChoice) {
+                    openWaze();
+                } else {
+                    copyAddress();
+                }
+            }
         }
 
         function copyAddress() {
             const address = 'Cra 52 #49-100, La Candelaria, Medellín, Colombia';
             navigator.clipboard.writeText(address).then(() => {
-                Swal.fire({
-                    title: '{{ __('messages.contact.address_copied') }}',
-                    text: '{{ __('messages.contact.address_copied_desc') }}',
-                    icon: 'success',
-                    timer: 2000,
-                    showConfirmButton: false
-                });
+                if (typeof window.showNotification === 'function') {
+                    window.showNotification('{{ __('messages.contact.address_copied') }}: {{ __('messages.contact.address_copied_desc') }}', 'success', 3);
+                }
             });
         }
     </script>
