@@ -284,6 +284,9 @@ class CarritoService extends BaseService
                 ]);
 
                 try {
+                    // Calcular el precio unitario del producto
+                    $precioUnitario = $this->calculatePrecioUnitario($productoId, $varianteId);
+
                     // Verificar si el producto ya existe en el carrito del usuario
                     $existingItem = $carrito->items()
                         ->where('producto_id', $productoId)
@@ -293,12 +296,16 @@ class CarritoService extends BaseService
                     if ($existingItem) {
                         // Si ya existe, usar la cantidad de la sesión (reemplazar, no sumar)
                         $cantidadAnterior = $existingItem->cantidad;
-                        $existingItem->update(['cantidad' => $cantidad]);
+                        $existingItem->update([
+                            'cantidad' => $cantidad,
+                            'precio_unitario' => $precioUnitario,
+                        ]);
                         $this->logOperation('item_usuario_actualizado', [
                             'producto_id' => $productoId,
                             'variante_id' => $varianteId,
                             'cantidad_anterior' => $cantidadAnterior,
                             'cantidad_nueva' => $cantidad,
+                            'precio_unitario' => $precioUnitario,
                         ]);
                     } else {
                         // Si no existe, crear nuevo item con la cantidad de la sesión
@@ -306,11 +313,13 @@ class CarritoService extends BaseService
                             'producto_id' => $productoId,
                             'variante_id' => $varianteId,
                             'cantidad' => $cantidad,
+                            'precio_unitario' => $precioUnitario,
                         ]);
                         $this->logOperation('item_usuario_creado', [
                             'producto_id' => $productoId,
                             'variante_id' => $varianteId,
                             'cantidad' => $cantidad,
+                            'precio_unitario' => $precioUnitario,
                         ]);
                     }
                 } catch (Exception $e) {
@@ -563,6 +572,9 @@ class CarritoService extends BaseService
             ->where('variante_id', $data['variante_id'] ?? null)
             ->first();
 
+        // Calcular el precio unitario del producto
+        $precioUnitario = $this->calculatePrecioUnitario($data['producto_id'], $data['variante_id'] ?? null);
+
         if ($existingItem) {
             // Actualizar cantidad existente - sumar la nueva cantidad
             $cantidadAnterior = $existingItem->cantidad;
@@ -571,6 +583,7 @@ class CarritoService extends BaseService
 
             $existingItem->update([
                 'cantidad' => $cantidadTotal,
+                'precio_unitario' => $precioUnitario,
             ]);
 
             $this->logOperation('item_usuario_actualizado', [
@@ -579,6 +592,7 @@ class CarritoService extends BaseService
                 'cantidad_anterior' => $cantidadAnterior,
                 'cantidad_agregada' => $nuevaCantidad,
                 'cantidad_total' => $cantidadTotal,
+                'precio_unitario' => $precioUnitario,
             ]);
         } else {
             // Crear nuevo item
@@ -586,12 +600,14 @@ class CarritoService extends BaseService
                 'producto_id' => $data['producto_id'],
                 'variante_id' => $data['variante_id'] ?? null,
                 'cantidad' => (int) $data['cantidad'],
+                'precio_unitario' => $precioUnitario,
             ]);
 
             $this->logOperation('item_usuario_creado', [
                 'producto_id' => $data['producto_id'],
                 'variante_id' => $data['variante_id'] ?? null,
                 'cantidad' => (int) $data['cantidad'],
+                'precio_unitario' => $precioUnitario,
             ]);
         }
 
@@ -819,5 +835,27 @@ class CarritoService extends BaseService
             'total_precio' => $totalPrecio,
             'items_count' => count($cartItems),
         ];
+    }
+
+    /**
+     * Calcula el precio unitario de un producto (incluyendo variante si existe)
+     */
+    private function calculatePrecioUnitario(int $productoId, ?int $varianteId): float
+    {
+        $producto = Producto::find($productoId);
+        if (! $producto) {
+            throw new Exception("Producto con ID {$productoId} no encontrado");
+        }
+
+        $precio = (float) $producto->precio;
+
+        if ($varianteId) {
+            $variante = VarianteProducto::find($varianteId);
+            if ($variante) {
+                $precio += (float) ($variante->precio_adicional ?? 0);
+            }
+        }
+
+        return $precio;
     }
 }

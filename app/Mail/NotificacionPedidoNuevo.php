@@ -37,7 +37,7 @@ class NotificacionPedidoNuevo extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '🆕 Nuevo Pedido Confirmado - 4GMovil',
+            subject: ' Nuevo Pedido Confirmado - 4GMovil',
         );
     }
 

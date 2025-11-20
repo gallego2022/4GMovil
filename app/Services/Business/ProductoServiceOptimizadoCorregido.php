@@ -14,6 +14,7 @@ use App\Services\RedisCacheService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 use Exception;
 
 class ProductoServiceOptimizadoCorregido extends BaseService
@@ -30,12 +31,23 @@ class ProductoServiceOptimizadoCorregido extends BaseService
     /**
      * Obtiene todos los productos con filtros
      */
-    public function getAllProducts(array $filters = []): array
+    public function getAllProducts(array $filters = [], bool $forceRefresh = false): array
     {
-        $this->logOperation('obteniendo_productos', ['filters' => $filters]);
+        $this->logOperation('obteniendo_productos', [
+            'filters' => $filters,
+            'force_refresh' => $forceRefresh,
+        ]);
 
-        // Crear clave de caché basada en filtros
-        $cacheKey = 'productos:all:' . md5(serialize($filters));
+        // Obtener versión del caché de productos (se actualiza cuando se crea/actualiza/elimina un producto)
+        $cacheVersion = Cache::get('productos:cache_version', 1);
+        
+        // Crear clave de caché basada en filtros y versión
+        $cacheKey = 'productos:all:' . $cacheVersion . ':' . md5(serialize($filters));
+        
+        // Si se fuerza la actualización, limpiar el caché primero
+        if ($forceRefresh) {
+            $this->cacheService->forget($cacheKey);
+        }
         
         return $this->cacheService->remember($cacheKey, 3600, function () use ($filters) {
             try {
@@ -55,11 +67,21 @@ class ProductoServiceOptimizadoCorregido extends BaseService
                 }
 
                 if (!empty($filters['search'])) {
-                    $query->where('nombre_producto', 'like', '%' . $filters['search'] . '%')
+                    $query->where(function($q) use ($filters) {
+                        $q->where('nombre_producto', 'like', '%' . $filters['search'] . '%')
                           ->orWhere('descripcion', 'like', '%' . $filters['search'] . '%');
+                    });
                 }
 
+                // No filtrar por activo en la vista de administración - mostrar todos los productos
                 $productos = $query->orderBy('created_at', 'desc')->get();
+
+                // Log para depuración
+                $this->logOperation('productos_obtenidos_de_db', [
+                    'total_productos' => $productos->count(),
+                    'productos_ids' => $productos->pluck('producto_id')->toArray(),
+                    'filters' => $filters,
+                ]);
 
                 return $this->formatSuccessResponse($productos, 'Productos obtenidos exitosamente');
 
@@ -109,7 +131,7 @@ class ProductoServiceOptimizadoCorregido extends BaseService
     {
         $this->logOperation('creando_producto', ['user_id' => auth()->id() ?? 0]);
 
-        return $this->executeInTransaction(function () use ($request) {
+        $result = $this->executeInTransaction(function () use ($request) {
             // Validar datos del producto
             $productoData = $this->validateProductData($request);
             
@@ -132,14 +154,38 @@ class ProductoServiceOptimizadoCorregido extends BaseService
                 $this->processProductImages($producto, $request->file('imagenes'));
             }
 
+            // Recargar el producto con todas sus relaciones para verificar que se creó correctamente
+            $producto->refresh();
+            $producto->load(['categoria', 'marca', 'variantes', 'imagenes']);
+
             $this->logOperation('producto_creado_exitosamente', [
                 'producto_id' => $producto->producto_id,
-                'user_id' => auth()->id() ?? 0
+                'user_id' => auth()->id() ?? 0,
+                'activo' => $producto->activo,
+                'categoria_id' => $producto->categoria_id,
+                'marca_id' => $producto->marca_id,
+                'tiene_categoria' => $producto->categoria !== null,
+                'tiene_marca' => $producto->marca !== null,
             ]);
 
             return $this->formatSuccessResponse($producto, 'Producto creado exitosamente');
 
         }, 'creación de producto');
+
+        // Invalidar caché de productos DESPUÉS de que la transacción se confirme
+        // Esto asegura que el producto esté completamente guardado antes de invalidar el caché
+        $productoId = $result['data']->producto_id ?? null;
+        
+        // Incrementar versión del caché para invalidar automáticamente todas las claves de caché de productos
+        $currentVersion = Cache::get('productos:cache_version', 1);
+        Cache::forever('productos:cache_version', $currentVersion + 1);
+        
+        $this->logOperation('cache_invalidado_despues_crear_producto', [
+            'producto_id' => $productoId,
+            'nueva_version_cache' => $currentVersion + 1,
+        ]);
+
+        return $result;
     }
 
     /**
@@ -212,6 +258,11 @@ class ProductoServiceOptimizadoCorregido extends BaseService
                 $mensaje .= '. Nota: ' . count($variantesNoEliminadas) . ' variante(s) no se pudieron eliminar porque tienen pedidos asociados: ' . implode(', ', $nombresVariantes);
             }
 
+            // Invalidar caché de productos para que se muestren los cambios
+            // Incrementar versión del caché para invalidar automáticamente todas las claves de caché de productos
+            $currentVersion = Cache::get('productos:cache_version', 1);
+            Cache::forever('productos:cache_version', $currentVersion + 1);
+
             return $this->formatSuccessResponse($producto, $mensaje);
 
         }, 'actualización de producto');
@@ -243,6 +294,11 @@ class ProductoServiceOptimizadoCorregido extends BaseService
                 'producto_id' => $productoId,
                 'user_id' => auth()->id() ?? 0
             ]);
+
+            // Invalidar caché de productos para que se refleje la eliminación
+            // Incrementar versión del caché para invalidar automáticamente todas las claves de caché de productos
+            $currentVersion = Cache::get('productos:cache_version', 1);
+            Cache::forever('productos:cache_version', $currentVersion + 1);
 
             return $this->formatSuccessResponse(null, 'Producto eliminado exitosamente');
 
@@ -378,7 +434,7 @@ class ProductoServiceOptimizadoCorregido extends BaseService
             'costo_unitario' => $data['costo_unitario'] ?? null,
             'stock_minimo' => $data['stock_minimo'] ?? null,
             'stock_maximo' => $data['stock_maximo'] ?? null,
-            'activo' => $data['activo'] ?? true,
+            'activo' => isset($data['activo']) ? (bool) $data['activo'] : true,
         ]);
     }
 

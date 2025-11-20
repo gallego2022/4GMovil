@@ -230,45 +230,4 @@ class CheckoutController extends WebController
         }
     }
 
-    /**
-     * Muestra la página de confirmación de pago (para pago en efectivo)
-     */
-    public function showConfirm(string $pedidoId)
-    {
-        try {
-            $pedido = Pedido::with(['detalles.producto', 'pago.metodoPago', 'direccion', 'usuario'])
-                ->where('usuario_id', Auth::id())
-                ->findOrFail($pedidoId);
-
-            // Verificar que el pedido está en estado pendiente
-            if ($pedido->estado_id !== 1) {
-                return $this->redirectError('landing', 'Este pedido ya ha sido procesado');
-            }
-
-            return View::make('checkout.confirm', [
-                'pedido' => $pedido,
-            ]);
-
-        } catch (Exception $e) {
-            return $this->handleException($e, 'landing');
-        }
-    }
-
-    /**
-     * Confirma un pedido (para métodos de pago que requieren confirmación manual)
-     */
-    public function confirmarPedido(Request $request, string $pedidoId)
-    {
-        try {
-            $result = $this->checkoutService->confirmarPedido($pedidoId);
-
-            return $this->redirectSuccess('checkout.success',
-                $result['message'],
-                ['pedido' => $pedidoId]
-            );
-
-        } catch (Exception $e) {
-            return $this->handleException($e, 'landing');
-        }
-    }
 }

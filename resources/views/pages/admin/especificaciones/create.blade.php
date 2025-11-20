@@ -181,9 +181,9 @@
 
                     <!-- Estado activo -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="activo" name="activo" value="1" {{ old('activo', '1') ? 'checked' : '' }}
+                        <input type="checkbox" id="estado" name="estado" value="1" {{ old('estado', '1') ? 'checked' : '' }}
                                class="h-5 w-5 text-brand-600 focus:ring-brand-500 border-gray-300 rounded transition-colors duration-200">
-                        <label for="activo" class="ml-3 block text-sm text-gray-900 dark:text-gray-100">
+                        <label for="estado" class="ml-3 block text-sm text-gray-900 dark:text-gray-100">
                             Especificación activa
                         </label>
                     </div>

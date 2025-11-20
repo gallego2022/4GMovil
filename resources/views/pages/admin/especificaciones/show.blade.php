@@ -265,8 +265,8 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                            {{ {{ __('admin.fields.status') }} }}                        </label>
-                        <span class="status-badge {{ $especificacion->activo ? 'status-active' : 'status-inactive' }}">
-                            {{ $especificacion->activo ? 'Activa' : 'Inactiva' }}
+                        <span class="status-badge {{ $especificacion->estado ? 'status-active' : 'status-inactive' }}">
+                            {{ $especificacion->estado ? 'Activa' : 'Inactiva' }}
                         </span>
                     </div>
                     
@@ -328,7 +328,7 @@
                         <svg class="-ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
-                        {{ $especificacion->activo ? 'Desactivar' : 'Activar' }}
+                        {{ $especificacion->estado ? 'Desactivar' : 'Activar' }}
                     </button>
                 </div>
             </div>
@@ -340,8 +340,8 @@
 <script>
 function toggleEstado() {
     const especificacionId = {{ $especificacion->especificacion_id }};
-    const curren{{ t{{ __('admin.fields.status') }} }}= {{ $especificacion->activo ? 'true' : 'false' }};
-    const ne{{ w{{ __('admin.fields.status') }} }}= !currentEstado;
+    const currentEstado = {{ $especificacion->estado ? 'true' : 'false' }};
+    const newEstado = !currentEstado;
     
     fetch(`/admin/especificaciones/${especificacionId}/toggle-estado`, {
         method: 'PATCH',

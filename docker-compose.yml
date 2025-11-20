@@ -15,6 +15,7 @@ services:
       - ./database:/var/www/html/database
       - ./public:/var/www/html/public
       - ./tests:/var/www/html/tests
+      - ./scripts:/var/www/html/scripts
     environment:
       - APP_ENV=local
       - APP_DEBUG=true
@@ -139,6 +140,7 @@ services:
       - ./database:/var/www/html/database
       - ./public:/var/www/html/public
       - ./tests:/var/www/html/tests
+      - ./scripts:/var/www/html/scripts
     environment:
       - APP_ENV=local
       - APP_DEBUG=true

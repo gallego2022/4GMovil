@@ -64,6 +64,7 @@ class EspecificacionController extends WebController
                 'unidad' => 'nullable|string|max:50',
                 'descripcion' => 'nullable|string|max:500',
                 'requerido' => 'boolean',
+                'estado' => 'boolean',
                 'orden' => 'nullable|integer|min:0',
             ]);
 
@@ -159,6 +160,7 @@ class EspecificacionController extends WebController
                 'unidad' => 'nullable|string|max:50',
                 'descripcion' => 'nullable|string|max:500',
                 'requerido' => 'boolean',
+                'estado' => 'boolean',
                 'orden' => 'nullable|integer|min:0',
             ]);
 
@@ -234,7 +236,7 @@ class EspecificacionController extends WebController
     {
         try {
             $especificaciones = EspecificacionCategoria::where('categoria_id', $categoriaId)
-                ->where('activo', true)
+                ->where('estado', true)
                 ->orderBy('orden')
                 ->get();
 
@@ -258,10 +260,10 @@ class EspecificacionController extends WebController
     {
         try {
             $especificacion = EspecificacionCategoria::findOrFail($id);
-            $especificacion->activo = !$especificacion->activo;
+            $especificacion->estado = !$especificacion->estado;
             $especificacion->save();
 
-            $estado = $especificacion->activo ? 'activada' : 'desactivada';
+            $estado = $especificacion->estado ? 'activada' : 'desactivada';
 
             Log::info('Estado de especificación cambiado', [
                 'id' => $id,
@@ -271,7 +273,7 @@ class EspecificacionController extends WebController
             return Response::json([
                 'success' => true,
                 'message' => "Especificación {$estado} exitosamente",
-                'activo' => $especificacion->activo
+                'estado' => $especificacion->estado
             ]);
         } catch (\Exception $e) {
             Log::error('Error al cambiar estado de especificación: ' . $e->getMessage());

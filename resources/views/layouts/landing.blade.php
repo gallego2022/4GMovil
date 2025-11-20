@@ -1937,6 +1937,9 @@
         });
     </script>
 
+    <!-- Componente de modal de confirmación personalizado -->
+    @include('components.confirm-modal-custom')
+
     <!-- Sistema de confirmación modal (debe cargarse antes que otros scripts) -->
     <script src="{{ asset('js/confirm-modal.js') }}"></script>
     
