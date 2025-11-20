@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="auth-check" content="{{ Auth::check() ? 'true' : 'false' }}">
     <title>@yield('title')</title>
     <meta name="description" content="@yield('meta-description')">
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
@@ -380,9 +381,19 @@
     </style>
 </head>
 
-<body class="bg-white dark:bg-gray-900 transition-colors duration-300">
+<body class="bg-white dark:bg-gray-900 transition-colors duration-300 {{ Auth::check() ? 'authenticated' : '' }}">
     <!-- Componente de Notificaciones -->
     <x-notifications />
+    
+    @if(Auth::check())
+        <script>
+            window.isAuthenticated = true;
+        </script>
+    @else
+        <script>
+            window.isAuthenticated = false;
+        </script>
+    @endif
     
     <!-- Scroll Progress Indicator -->
     <div class="scroll-indicator" id="scrollIndicator"></div>
@@ -939,57 +950,117 @@
             // Variables globales - inicializar desde localStorage primero
             let cart = JSON.parse(localStorage.getItem('cart')) || [];
             
+            // Verificar si el usuario está autenticado
+            const isAuthenticated = document.querySelector('meta[name="auth-check"]')?.getAttribute('content') === 'true' || 
+                                   document.body.classList.contains('authenticated') ||
+                                   (typeof window.isAuthenticated !== 'undefined' && window.isAuthenticated);
+            
             // Si el usuario está autenticado, sincronizar con el servidor al cargar
             // Esto asegura que el carrito esté actualizado y sin duplicados
-            try {
-                const cartResponse = await fetch('/carrito/obtener', {
-                    method: 'GET',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                        'Accept': 'application/json'
-                    }
-                });
-                
-                if (cartResponse.ok) {
-                    const cartData = await cartResponse.json();
-                    if (cartData.success && cartData.data && cartData.data.items && cartData.data.items.length > 0) {
-                        // Reconstruir carrito desde el servidor para evitar duplicados
-                        cart = [];
-                        cartData.data.items.forEach(item => {
-                            if (item.producto) {
-                                const cartItem = {
-                                    id: item.producto.producto_id,
-                                    name: item.producto.nombre_producto,
-                                    price: parseFloat(item.producto.precio),
-                                    quantity: item.cantidad,
-                                    itemId: item.id // Guardar el ID del item del servidor para poder eliminarlo
-                                };
-                                
-                                if (item.variante) {
-                                    cartItem.variante_id = item.variante.variante_id;
-                                    cartItem.variante_nombre = item.variante.nombre;
-                                    cartItem.precio_adicional = parseFloat(item.variante.precio_adicional || 0);
-                                    cartItem.name = `${item.producto.nombre_producto} (${item.variante.nombre})`;
-                                    cartItem.price = parseFloat(item.producto.precio) + parseFloat(item.variante.precio_adicional || 0);
+            if (isAuthenticated) {
+                try {
+                    const cartResponse = await fetch('/carrito/obtener', {
+                        method: 'GET',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    if (cartResponse.ok) {
+                        const cartData = await cartResponse.json();
+                        if (cartData.success && cartData.data && cartData.data.items && cartData.data.items.length > 0) {
+                            // Reconstruir carrito desde el servidor para evitar duplicados
+                            cart = [];
+                            cartData.data.items.forEach(item => {
+                                if (item.producto) {
+                                    const cartItem = {
+                                        id: item.producto.producto_id,
+                                        name: item.producto.nombre_producto,
+                                        price: parseFloat(item.producto.precio),
+                                        quantity: item.cantidad,
+                                        itemId: item.id // Guardar el ID del item del servidor para poder eliminarlo
+                                    };
+                                    
+                                    if (item.variante) {
+                                        cartItem.variante_id = item.variante.variante_id;
+                                        cartItem.variante_nombre = item.variante.nombre;
+                                        cartItem.precio_adicional = parseFloat(item.variante.precio_adicional || 0);
+                                        cartItem.name = `${item.producto.nombre_producto} (${item.variante.nombre})`;
+                                        cartItem.price = parseFloat(item.producto.precio) + parseFloat(item.variante.precio_adicional || 0);
+                                    }
+                                    
+                                    cart.push(cartItem);
                                 }
-                                
-                                cart.push(cartItem);
+                            });
+                            
+                            // Actualizar localStorage con datos del servidor
+                            localStorage.setItem('cart', JSON.stringify(cart));
+                            console.log('Carrito sincronizado desde servidor al cargar:', cart);
+                        } else if (cartData.success && cartData.data && (!cartData.data.items || cartData.data.items.length === 0)) {
+                            // Si el carrito del servidor está vacío, limpiar localStorage también
+                            cart = [];
+                            localStorage.setItem('cart', JSON.stringify(cart));
+                            console.log('Carrito del servidor vacío, localStorage limpiado');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error al sincronizar carrito al cargar:', error);
+                    // Continuar con localStorage si hay error
+                }
+            } else {
+                // Si no está autenticado, sincronizar localStorage con la sesión de Laravel
+                // Esto asegura que cuando el usuario inicie sesión, los items estén en la sesión
+                if (cart.length > 0) {
+                    try {
+                        console.log('Sincronizando localStorage con sesión de Laravel...');
+                        
+                        // Consolidar items del mismo producto+variante antes de sincronizar
+                        const consolidatedCart = {};
+                        cart.forEach(item => {
+                            const key = item.variante_id ? `${item.id}-${item.variante_id}` : item.id.toString();
+                            if (consolidatedCart[key]) {
+                                consolidatedCart[key].quantity += (item.quantity || 1);
+                            } else {
+                                consolidatedCart[key] = {
+                                    id: item.id,
+                                    variante_id: item.variante_id || null,
+                                    quantity: item.quantity || 1
+                                };
                             }
                         });
                         
-                        // Actualizar localStorage con datos del servidor
-                        localStorage.setItem('cart', JSON.stringify(cart));
-                        console.log('Carrito sincronizado desde servidor al cargar:', cart);
-                    } else if (cartData.success && cartData.data && (!cartData.data.items || cartData.data.items.length === 0)) {
-                        // Si el carrito del servidor está vacío, limpiar localStorage también
-                        cart = [];
-                        localStorage.setItem('cart', JSON.stringify(cart));
-                        console.log('Carrito del servidor vacío, localStorage limpiado');
+                        console.log('Items consolidados:', Object.values(consolidatedCart));
+                        
+                        // Enviar cada item consolidado al servidor para guardarlo en la sesión
+                        for (const item of Object.values(consolidatedCart)) {
+                            const formData = new FormData();
+                            formData.append('producto_id', item.id);
+                            formData.append('cantidad', item.quantity);
+                            if (item.variante_id) {
+                                formData.append('variante_id', item.variante_id);
+                            }
+                            formData.append('_token', document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'));
+
+                            const response = await fetch('/carrito/agregar', {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                                    'Accept': 'application/json'
+                                },
+                                body: formData
+                            });
+                            
+                            if (response.ok) {
+                                const data = await response.json();
+                                console.log('Item sincronizado:', item, 'Respuesta:', data);
+                            }
+                        }
+                        console.log('localStorage sincronizado con sesión de Laravel');
+                    } catch (error) {
+                        console.warn('Error al sincronizar localStorage con sesión:', error);
                     }
                 }
-            } catch (error) {
-                console.error('Error al sincronizar carrito al cargar:', error);
-                // Continuar con localStorage si hay error
             }
             
             // Sincronizar window.cart con la variable local
@@ -1138,7 +1209,7 @@
                 checkoutBtn.setAttribute('aria-disabled', 'false');
             }
 
-            function addToCart(product) {
+            async function addToCart(product) {
                 // Agregando al carrito
 
                 // Asegurarse de que el ID sea un número
@@ -1153,6 +1224,66 @@
                 const varianteNombre = product.variante_nombre || null;
                 const precioAdicional = product.precio_adicional ? parseFloat(product.precio_adicional) : 0;
 
+                // Si el usuario está autenticado, agregar al servidor primero
+                const isAuthenticated = document.querySelector('meta[name="auth-check"]')?.getAttribute('content') === 'true' || 
+                                       document.body.classList.contains('authenticated') ||
+                                       (typeof window.isAuthenticated !== 'undefined' && window.isAuthenticated);
+
+                if (isAuthenticated) {
+                    try {
+                        // El servidor maneja automáticamente el incremento si el producto ya existe
+                        const formData = new FormData();
+                        formData.append('producto_id', productId);
+                        formData.append('cantidad', 1);
+                        if (varianteId) {
+                            formData.append('variante_id', varianteId);
+                        }
+                        formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+
+                        console.log('Agregando al carrito en servidor:', {
+                            producto_id: productId,
+                            variante_id: varianteId,
+                            cantidad: 1
+                        });
+
+                        const response = await fetch('/carrito/agregar', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                'Accept': 'application/json'
+                            },
+                            body: formData
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            console.log('Respuesta del servidor:', data);
+                            
+                            if (data.success) {
+                                // Recargar el carrito desde el servidor
+                                await reloadCartFromServer();
+                                
+                                // Mostrar notificación de éxito
+                                if (typeof window.showNotification === 'function') {
+                                    window.showNotification('¡Producto agregado! El producto se agregó al carrito exitosamente', 'success', 3);
+                                }
+                                return;
+                            } else {
+                                console.error('Error del servidor:', data.message);
+                                // Continuar con método local si falla
+                            }
+                        } else {
+                            const errorText = await response.text();
+                            console.error('Error HTTP:', response.status, errorText);
+                            // Continuar con método local si falla
+                        }
+                    } catch (error) {
+                        console.error('Error al agregar al carrito en servidor:', error);
+                        // Continuar con el método local si falla
+                    }
+                }
+
+                // Si no está autenticado o falló la llamada al servidor, usar método local
                 // Crear clave única para el producto (producto + variante)
                 const itemKey = varianteId ? `${productId}-${varianteId}` : productId.toString();
 
@@ -1192,13 +1323,107 @@
                 updateCartCount();
                 updateCartDisplay();
 
+                // Guardar en la sesión de Laravel (aunque no esté autenticado)
+                // IMPORTANTE: Siempre enviar cantidad 1, el servidor se encarga de sumar
+                try {
+                    // SIEMPRE enviar cantidad 1, sin importar la cantidad en localStorage
+                    const cantidadAEnviar = 1;
+                    
+                    console.log('Enviando a sesión de Laravel:', {
+                        producto_id: productId,
+                        variante_id: varianteId,
+                        cantidad: cantidadAEnviar, // SIEMPRE 1
+                        cantidad_en_localStorage: existingProduct ? existingProduct.quantity : 1
+                    });
+                    
+                    const formData = new FormData();
+                    formData.append('producto_id', productId);
+                    formData.append('cantidad', cantidadAEnviar); // SIEMPRE 1
+                    if (varianteId) {
+                        formData.append('variante_id', varianteId);
+                    }
+                    formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+
+                    // Llamar al servidor para guardar en sesión (aunque no esté autenticado)
+                    const sessionResponse = await fetch('/carrito/agregar', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Accept': 'application/json'
+                        },
+                        body: formData
+                    });
+
+                    if (sessionResponse.ok) {
+                        const sessionData = await sessionResponse.json();
+                        console.log('Producto guardado en sesión de Laravel (cantidad 1 agregada):', sessionData);
+                    } else {
+                        const errorText = await sessionResponse.text();
+                        console.error('Error al guardar en sesión:', errorText);
+                    }
+                } catch (error) {
+                    console.warn('No se pudo guardar en sesión de Laravel (continuando con localStorage):', error);
+                }
+
                 // Mostrar notificación de éxito
                 if (typeof window.showNotification === 'function') {
                     window.showNotification('¡Producto agregado! El producto se agregó al carrito exitosamente', 'success', 3);
                 }
             }
 
-            function updateQuantity(productId, varianteId, change) {
+            // Función para recargar el carrito desde el servidor
+            async function reloadCartFromServer() {
+                try {
+                    const response = await fetch('/carrito/obtener', {
+                        method: 'GET',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        const cartData = await response.json();
+                        if (cartData.success && cartData.data && cartData.data.items) {
+                            // Reconstruir carrito desde el servidor
+                            cart = [];
+                            cartData.data.items.forEach(item => {
+                                if (item.producto) {
+                                    const cartItem = {
+                                        id: item.producto.producto_id,
+                                        name: item.producto.nombre_producto,
+                                        price: parseFloat(item.producto.precio),
+                                        quantity: item.cantidad,
+                                        itemId: item.id
+                                    };
+
+                                    if (item.variante) {
+                                        cartItem.variante_id = item.variante.variante_id;
+                                        cartItem.variante_nombre = item.variante.nombre;
+                                        cartItem.precio_adicional = parseFloat(item.variante.precio_adicional || 0);
+                                        cartItem.name = `${item.producto.nombre_producto} (${item.variante.nombre})`;
+                                        cartItem.price = parseFloat(item.producto.precio) + parseFloat(item.variante.precio_adicional || 0);
+                                    }
+
+                                    cart.push(cartItem);
+                                }
+                            });
+
+                            // Actualizar localStorage
+                            localStorage.setItem('cart', JSON.stringify(cart));
+                            window.cart = cart;
+
+                            // Actualizar UI
+                            updateCartCount();
+                            updateCartDisplay();
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error al recargar carrito desde servidor:', error);
+                }
+            }
+
+            async function updateQuantity(productId, varianteId, change) {
                 console.log('Actualizando cantidad:', {
                     productId,
                     varianteId,
@@ -1206,22 +1431,102 @@
                 }); // Debug
                 
                 const product = cart.find(item => {
-                    if (varianteId) {
-                        return item.id === productId && item.variante_id === varianteId;
+                    if (varianteId && varianteId !== 'null') {
+                        return item.id === productId && item.variante_id === parseInt(varianteId);
                     }
                     return item.id === productId && !item.variante_id;
                 });
                 
                 if (product) {
+                    const cantidadAnterior = product.quantity;
                     product.quantity += change;
+                    
                     if (product.quantity <= 0) {
                         removeFromCart(productId, varianteId);
                     } else {
                         // Sincronizar con window.cart
-                    window.cart = cart;
-                    localStorage.setItem('cart', JSON.stringify(cart));
+                        window.cart = cart;
+                        localStorage.setItem('cart', JSON.stringify(cart));
                         updateCartCount();
                         updateCartDisplay();
+                        
+                        // Si el usuario está autenticado, actualizar en el servidor
+                        const isAuthenticated = document.querySelector('meta[name="auth-check"]')?.getAttribute('content') === 'true' || 
+                                               document.body.classList.contains('authenticated') ||
+                                               (typeof window.isAuthenticated !== 'undefined' && window.isAuthenticated);
+                        
+                        if (isAuthenticated && product.itemId) {
+                            // Usuario autenticado: actualizar cantidad en el servidor
+                            try {
+                                const response = await fetch(`/carrito/actualizar/${product.itemId}`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                                        'Content-Type': 'application/json',
+                                        'Accept': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        cantidad: product.quantity
+                                    })
+                                });
+                                
+                                if (response.ok) {
+                                    const data = await response.json();
+                                    console.log('Cantidad actualizada en servidor:', data);
+                                }
+                            } catch (error) {
+                                console.error('Error al actualizar cantidad en servidor:', error);
+                            }
+                        } else {
+                            // Usuario no autenticado: sincronizar todo el carrito con la sesión de Laravel
+                            // Esto asegura que la cantidad actualizada se guarde correctamente
+                            try {
+                                console.log('Sincronizando carrito completo con sesión después de actualizar cantidad...');
+                                
+                                // Consolidar items del mismo producto+variante antes de sincronizar
+                                const consolidatedCart = {};
+                                cart.forEach(item => {
+                                    const key = item.variante_id ? `${item.id}-${item.variante_id}` : item.id.toString();
+                                    if (consolidatedCart[key]) {
+                                        consolidatedCart[key].quantity += (item.quantity || 1);
+                                    } else {
+                                        consolidatedCart[key] = {
+                                            id: item.id,
+                                            variante_id: item.variante_id || null,
+                                            quantity: item.quantity || 1
+                                        };
+                                    }
+                                });
+                                
+                                // Limpiar la sesión primero y luego agregar todos los items consolidados
+                                // Para esto, necesitamos eliminar todos los items y luego agregarlos de nuevo
+                                // O mejor: sincronizar item por item con la cantidad correcta
+                                
+                                // Sincronizar cada item consolidado
+                                for (const item of Object.values(consolidatedCart)) {
+                                    const formData = new FormData();
+                                    formData.append('producto_id', item.id);
+                                    formData.append('cantidad', item.quantity);
+                                    if (item.variante_id) {
+                                        formData.append('variante_id', item.variante_id);
+                                    }
+                                    formData.append('_token', document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'));
+
+                                    await fetch('/carrito/agregar', {
+                                        method: 'POST',
+                                        headers: {
+                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                                            'Accept': 'application/json'
+                                        },
+                                        body: formData
+                                    });
+                                }
+                                
+                                console.log('Carrito sincronizado con sesión después de actualizar cantidad');
+                            } catch (error) {
+                                console.warn('Error al sincronizar carrito con sesión:', error);
+                            }
+                        }
                     }
                 }
             }
@@ -1778,9 +2083,22 @@
                 // Configurar botón de agregar
                 const addButton = clone.querySelector('.add-variant-to-cart');
                 if (variante.stock_disponible > 0) {
-                    addButton.addEventListener('click', function() {
-                        addVariantToCart(variante);
-                        closeModal();
+                    addButton.addEventListener('click', async function() {
+                        // Deshabilitar botón mientras se procesa
+                        addButton.disabled = true;
+                        const originalText = addButton.innerHTML;
+                        addButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Agregando...';
+                        
+                        try {
+                            await addVariantToCart(variante);
+                            // Cerrar modal solo si se agregó exitosamente
+                            closeModal();
+                        } catch (error) {
+                            console.error('Error al agregar variante:', error);
+                            // Restaurar botón en caso de error
+                            addButton.disabled = false;
+                            addButton.innerHTML = originalText;
+                        }
                     });
                 } else {
                     addButton.disabled = true;
@@ -1810,15 +2128,28 @@
             }
             
             // Función para agregar variante al carrito
-            function addVariantToCart(variante) {
+            async function addVariantToCart(variante) {
+                console.log('addVariantToCart llamada con variante:', variante);
+                
+                // Validar que tenemos los datos necesarios
+                if (!currentProductId) {
+                    console.error('Error: currentProductId no está definido');
+                    if (typeof window.showNotification === 'function') {
+                        window.showNotification('Error: No se pudo obtener la información del producto', 'error', 5);
+                    }
+                    return;
+                }
+                
                 const product = {
-                    id: currentProductId,
-                    name: currentProductName,
-                    price: currentProductPrice,
-                    variante_id: variante.variante_id,
-                    variante_nombre: variante.nombre,
-                    precio_adicional: variante.precio_adicional
+                    id: parseInt(currentProductId),
+                    name: currentProductName || 'Producto',
+                    price: parseFloat(currentProductPrice) || 0,
+                    variante_id: variante.variante_id ? parseInt(variante.variante_id) : null,
+                    variante_nombre: variante.nombre || null,
+                    precio_adicional: variante.precio_adicional ? parseFloat(variante.precio_adicional) : 0
                 };
+                
+                console.log('Producto preparado para agregar:', product);
                 
                 // Sincronizar stock con la variante seleccionada
                 if (window.stockSync) {
@@ -1826,11 +2157,22 @@
                     console.log('Stock sincronizado con variante:', variante.stock_disponible);
                 }
                 
-                // Llamar a la función global addToCart
+                // Llamar a la función global addToCart y esperar su resultado
                 if (typeof addToCart === 'function') {
-                    addToCart(product);
+                    try {
+                        await addToCart(product);
+                        console.log('Producto agregado exitosamente desde addVariantToCart');
+                    } catch (error) {
+                        console.error('Error al agregar producto desde addVariantToCart:', error);
+                        if (typeof window.showNotification === 'function') {
+                            window.showNotification('Error al agregar el producto al carrito. Por favor, intenta nuevamente.', 'error', 5);
+                        }
+                    }
                 } else {
                     console.error('Función addToCart no encontrada');
+                    if (typeof window.showNotification === 'function') {
+                        window.showNotification('Error: No se pudo agregar el producto al carrito', 'error', 5);
+                    }
                 }
             }
             

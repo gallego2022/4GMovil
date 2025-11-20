@@ -403,6 +403,8 @@
     @endpush
 
 @section('content')
+  
+    
     <!-- Breadcrumb -->
     <div class="container mx-auto px-4 py-3 bg-gray-100 dark:bg-gray-800">
         <nav class="flex" aria-label="Breadcrumb">
@@ -1993,7 +1995,10 @@
                     // Validate product data
                     if (!productoId || isNaN(parseInt(productoId))) {
                         console.error('Error: productoId inválido', productoId);
-                        if (typeof Swal !== 'undefined') {
+                        // Mostrar notificación de error personalizada
+                        if (typeof window.showNotification === 'function') {
+                            window.showNotification('Error al obtener los datos del producto. Por favor, recarga la página.', 'error', 5);
+                        } else if (typeof Swal !== 'undefined') {
                             Swal.fire({
                                 title: 'Error',
                                 text: 'Error al obtener los datos del producto. Por favor, recarga la página.',
@@ -2053,7 +2058,10 @@
                         console.log('Datos de respuesta:', data);
 
                         if (data.success) {
-                            if (typeof Swal !== 'undefined') {
+                            // Mostrar notificación personalizada
+                            if (typeof window.showNotification === 'function') {
+                                window.showNotification('¡Producto agregado al carrito exitosamente!', 'success', 5);
+                            } else if (typeof Swal !== 'undefined') {
                                 Swal.fire({
                                     title: '¡Producto Agregado!',
                                     text: 'El producto se ha agregado al carrito exitosamente.',
@@ -2165,7 +2173,10 @@
                                 console.error('Stack trace:', error.stack);
                             }
                         } else {
-                            if (typeof Swal !== 'undefined') {
+                            // Mostrar notificación de error personalizada
+                            if (typeof window.showNotification === 'function') {
+                                window.showNotification(data.message || 'Error al agregar el producto al carrito', 'error', 5);
+                            } else if (typeof Swal !== 'undefined') {
                                 Swal.fire({
                                     title: 'Error',
                                     text: data.message || 'Error al agregar el producto al carrito',
@@ -2179,7 +2190,10 @@
                         }
                     } catch (error) {
                         console.error('Error al agregar al carrito:', error);
-                        if (typeof Swal !== 'undefined') {
+                        // Mostrar notificación de error personalizada
+                        if (typeof window.showNotification === 'function') {
+                            window.showNotification('Error al agregar el producto al carrito. Por favor, intenta nuevamente.', 'error', 5);
+                        } else if (typeof Swal !== 'undefined') {
                             Swal.fire({
                                 title: 'Error',
                                 text: 'Error al agregar el producto al carrito. Por favor, intenta nuevamente.',

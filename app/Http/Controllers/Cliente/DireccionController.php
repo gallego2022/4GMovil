@@ -81,7 +81,10 @@ class DireccionController extends WebController
             Session::forget('direccion_redirect_url'); // Limpiar la URL guardada
 
             // Si la URL anterior contiene 'checkout', redirigir al checkout
+            // Preservar el checkout_cart si existe
             if (str_contains($redirectUrl, 'checkout')) {
+                // El checkout_cart se preserva automáticamente en la sesión
+                // CheckoutService lo obtendrá de la BD o de checkout_cart
                 return Redirect::route('checkout.index')
                     ->with('mensaje', 'Dirección agregada correctamente')
                     ->with('tipo', 'success');
@@ -119,6 +122,9 @@ class DireccionController extends WebController
                     ->with('tipo', 'error');
             }
 
+            // Guardar la URL anterior para redirección posterior
+            Session::put('direccion_redirect_url', URL::previous());
+
             return View::make('direcciones.edit', compact('direccion'));
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return Redirect::route('direcciones.index')
@@ -148,6 +154,16 @@ class DireccionController extends WebController
             // Si se marca como predeterminada, desmarcar las demás
             if ($request->predeterminada) {
                 $direccion->marcarComoPredeterminada();
+            }
+
+            // Verificar si veníamos del checkout
+            $redirectUrl = Session::get('direccion_redirect_url');
+            Session::forget('direccion_redirect_url');
+
+            if ($redirectUrl && str_contains($redirectUrl, 'checkout')) {
+                return Redirect::route('checkout.index')
+                    ->with('mensaje', 'Dirección actualizada correctamente')
+                    ->with('tipo', 'success');
             }
 
             return Redirect::route('direcciones.index')

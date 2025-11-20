@@ -2,6 +2,7 @@
 
 namespace App\Services\Business;
 
+use App\Models\Carrito;
 use App\Models\Direccion;
 use App\Models\MetodoPago;
 use App\Models\Producto;
@@ -35,6 +36,12 @@ class CheckoutService extends BaseService
             // Obtener carrito
             $cart = $this->getCartFromRequest($request);
 
+            $this->logOperation('carrito_obtenido_para_checkout', [
+                'cart_items' => count($cart),
+                'user_id' => Auth::id(),
+                'cart_data' => $cart,
+            ]);
+
             // Validar carrito
             $this->validateCart($cart);
 
@@ -45,8 +52,19 @@ class CheckoutService extends BaseService
             $direcciones = $this->getUserAddresses();
             $metodosPago = $this->getActivePaymentMethods();
 
-            // Guardar carrito en sesión
-            Session::put('cart', $cart);
+            // Guardar carrito en sesión para mantenerlo durante el checkout
+            // Esto es importante para cuando el usuario crea/edita direcciones
+            // SIEMPRE guardar el carrito en checkout_cart, incluso si viene de BD
+            Session::put('checkout_cart', $cart);
+
+            // Si el usuario está autenticado y el carrito viene de BD, también sincronizar con checkout_cart
+            // para asegurar que se preserve durante las redirecciones
+            if (Auth::check() && ! empty($cart)) {
+                $this->logOperation('checkout_cart_guardado', [
+                    'cart_items' => count($cart),
+                    'user_id' => Auth::id(),
+                ]);
+            }
 
             $this->logOperation('checkout_preparado_exitosamente', [
                 'cart_items' => count($cart),
@@ -79,8 +97,20 @@ class CheckoutService extends BaseService
             // Validar datos del checkout
             $checkoutData = $this->validateCheckoutData($request);
 
-            // Obtener carrito de sesión
-            $cart = Session::get('cart', []);
+            // Obtener carrito de sesión o base de datos
+            $cart = Session::get('checkout_cart', []);
+
+            // Si no hay carrito en sesión y el usuario está autenticado, obtener de BD
+            if (empty($cart) && Auth::check()) {
+                $carrito = Carrito::where('usuario_id', Auth::id())
+                    ->with(['items.producto', 'items.variante'])
+                    ->first();
+
+                if ($carrito && ! $carrito->items->isEmpty()) {
+                    $cart = $this->convertDatabaseCartToArray($carrito);
+                }
+            }
+
             if (empty($cart)) {
                 throw new Exception('El carrito está vacío');
             }
@@ -123,16 +153,191 @@ class CheckoutService extends BaseService
     }
 
     /**
-     * Obtiene el carrito de la request o sesión
+     * Obtiene el carrito de la request, sesión o base de datos según autenticación
      */
     private function getCartFromRequest(Request $request): array
     {
+        // Si el usuario está autenticado, SIEMPRE obtener el carrito de la base de datos primero
+        if (Auth::check()) {
+            // Obtener el carrito con todas las relaciones necesarias
+            $carrito = Carrito::where('usuario_id', Auth::id())
+                ->with([
+                    'items' => function ($query) {
+                        $query->with(['producto', 'variante']);
+                    },
+                ])
+                ->first();
+
+            $this->logOperation('verificando_carrito_bd', [
+                'carrito_existe' => $carrito ? 'si' : 'no',
+                'items_count' => $carrito ? $carrito->items->count() : 0,
+                'user_id' => Auth::id(),
+            ]);
+
+            // Si hay carrito en BD, verificar si tiene items
+            if ($carrito) {
+                // Asegurar que los items estén cargados
+                if (! $carrito->relationLoaded('items')) {
+                    $carrito->load(['items.producto', 'items.variante']);
+                }
+
+                // Verificar que los items tengan productos cargados
+                $itemsConProductos = $carrito->items->filter(function ($item) {
+                    return $item->producto !== null;
+                });
+
+                if ($itemsConProductos->count() > 0) {
+                    $this->logOperation('carrito_obtenido_de_bd', [
+                        'cart_items' => $itemsConProductos->count(),
+                        'user_id' => Auth::id(),
+                    ]);
+
+                    // Convertir carrito de BD al formato esperado
+                    $convertedCart = $this->convertDatabaseCartToArray($carrito);
+
+                    $this->logOperation('carrito_convertido_de_bd', [
+                        'items_convertidos' => count($convertedCart),
+                        'user_id' => Auth::id(),
+                    ]);
+
+                    return $convertedCart;
+                } else {
+                    $this->logOperation('carrito_bd_sin_items_validos', [
+                        'items_totales' => $carrito->items->count(),
+                        'items_con_productos' => 0,
+                        'user_id' => Auth::id(),
+                    ]);
+                }
+            }
+
+            // Si no hay carrito en BD o está vacío, intentar obtener de checkout_cart (sesión del checkout)
+            $checkoutCart = Session::get('checkout_cart', []);
+            if (! empty($checkoutCart)) {
+                $this->logOperation('carrito_obtenido_de_checkout_cart', [
+                    'cart_items' => count($checkoutCart),
+                    'user_id' => Auth::id(),
+                ]);
+
+                return $checkoutCart;
+            }
+
+            // Si no hay checkout_cart, intentar obtener de request o sesión normal
+            if ($request->isMethod('post')) {
+                $cart = json_decode($request->input('cart'), true) ?? [];
+                if (! empty($cart)) {
+                    $this->logOperation('carrito_obtenido_por_post', ['cart_items' => count($cart)]);
+
+                    return $this->convertSessionCartToArray($cart);
+                }
+            }
+
+            $cart = Session::get('cart', []);
+            if (! empty($cart)) {
+                $this->logOperation('carrito_obtenido_de_sesion', ['cart_items' => count($cart)]);
+
+                return $this->convertSessionCartToArray($cart);
+            }
+
+            // Si no hay carrito en ningún lugar, retornar vacío
+            $this->logOperation('carrito_vacio', [
+                'user_id' => Auth::id(),
+                'mensaje' => 'No se encontró carrito en BD, checkout_cart, request ni sesión',
+            ]);
+
+            return [];
+        }
+
+        // Si no está autenticado, obtener de request o sesión
         if ($request->isMethod('post')) {
             $cart = json_decode($request->input('cart'), true) ?? [];
             $this->logOperation('carrito_obtenido_por_post', ['cart_items' => count($cart)]);
         } else {
             $cart = Session::get('cart', []);
             $this->logOperation('carrito_obtenido_de_sesion', ['cart_items' => count($cart)]);
+        }
+
+        return $cart;
+    }
+
+    /**
+     * Convierte el carrito de la base de datos al formato esperado
+     */
+    public function convertDatabaseCartToArray($carrito): array
+    {
+        $cart = [];
+
+        // Asegurar que los items estén cargados
+        if (! $carrito->relationLoaded('items')) {
+            $carrito->load(['items.producto', 'items.variante']);
+        }
+
+        foreach ($carrito->items as $item) {
+            // Validar que el producto exista
+            if (! $item->producto) {
+                $this->logOperation('producto_no_encontrado_en_item', [
+                    'item_id' => $item->id,
+                    'producto_id' => $item->producto_id,
+                ], 'warning');
+
+                continue;
+            }
+
+            $precio = $item->producto->precio;
+            if ($item->variante) {
+                $precio += $item->variante->precio_adicional ?? 0;
+            }
+
+            $cart[] = [
+                'id' => (string) $item->id,
+                'producto_id' => $item->producto_id,
+                'variante_id' => $item->variante_id,
+                'cantidad' => $item->cantidad,
+                'quantity' => $item->cantidad,
+                'name' => $item->producto->nombre_producto.($item->variante ? ' - '.$item->variante->nombre : ''),
+                'price' => $precio,
+            ];
+        }
+
+        $this->logOperation('carrito_convertido', [
+            'items_originales' => $carrito->items->count(),
+            'items_convertidos' => count($cart),
+        ]);
+
+        return $cart;
+    }
+
+    /**
+     * Convierte el carrito de sesión al formato esperado
+     */
+    private function convertSessionCartToArray(array $sessionCart): array
+    {
+        $cart = [];
+
+        foreach ($sessionCart as $item) {
+            $producto = Producto::find($item['producto_id'] ?? $item['id'] ?? null);
+            if (! $producto) {
+                continue;
+            }
+
+            $variante = null;
+            if (isset($item['variante_id'])) {
+                $variante = VarianteProducto::find($item['variante_id']);
+            }
+
+            $precio = $producto->precio;
+            if ($variante) {
+                $precio += $variante->precio_adicional ?? 0;
+            }
+
+            $cart[] = [
+                'id' => $item['id'] ?? uniqid(),
+                'producto_id' => $item['producto_id'] ?? $item['id'],
+                'variante_id' => $item['variante_id'] ?? null,
+                'cantidad' => $item['cantidad'] ?? $item['quantity'] ?? 1,
+                'quantity' => $item['cantidad'] ?? $item['quantity'] ?? 1,
+                'name' => $producto->nombre_producto.($variante ? ' - '.$variante->nombre : ''),
+                'price' => $precio,
+            ];
         }
 
         return $cart;
