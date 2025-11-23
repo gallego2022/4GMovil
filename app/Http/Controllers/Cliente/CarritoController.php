@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Cliente;
 
 use App\Http\Controllers\Base\WebController;
-use App\Services\Business\CarritoService;
+use App\Services\Orders\CarritoService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\View;
@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\App;
 use Exception;
+use App\Services\Inventory\ReservaStockService;
 
 class CarritoController extends WebController
 {
@@ -274,7 +275,7 @@ class CarritoController extends WebController
             }
 
             // Usar el ReservaStockService directamente
-            $reservaStockService = App::make(\App\Services\ReservaStockService::class);
+            $reservaStockService = App::make(ReservaStockService::class);
             $resultado = $reservaStockService->verificarStockCarrito($cart);
             
             return Response::json([

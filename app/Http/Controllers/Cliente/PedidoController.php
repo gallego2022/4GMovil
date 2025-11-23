@@ -4,13 +4,17 @@ namespace App\Http\Controllers\Cliente;
 
 use App\Http\Controllers\Base\WebController;
 use App\Models\Pedido;
-use App\Services\Business\PedidoService;
+use App\Services\Orders\PedidoService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\View;
+use Dompdf\Dompdf as DompdfDompdf;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Validation\ValidationException;
+use App\Models\Resena;
 
 class PedidoController extends WebController
 {
@@ -85,7 +89,7 @@ class PedidoController extends WebController
                 'yaCalificado' => $yaCalificado,
             ]);
 
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return Redirect::route('pedidos.historial')->with('error', 'Pedido no encontrado.');
         } catch (Exception $e) {
             Log::error('Error al cargar detalle de pedido: '.$e->getMessage(), [
@@ -129,7 +133,7 @@ class PedidoController extends WebController
             ])->render();
 
             // Crear instancia de DomPDF
-            $dompdf = new \Dompdf\Dompdf;
+            $dompdf = new DompdfDompdf;
             $dompdf->loadHtml($html);
             $dompdf->setPaper('A4', 'portrait');
             $dompdf->render();
@@ -146,7 +150,7 @@ class PedidoController extends WebController
                 'Expires' => '0',
             ]);
 
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return Redirect::route('pedidos.historial')->with('error', 'Pedido no encontrado.');
         } catch (Exception $e) {
             Log::error('Error al generar factura PDF: '.$e->getMessage(), [
@@ -212,7 +216,7 @@ class PedidoController extends WebController
             $resenasCreadas = [];
             foreach ($request->productos as $productoData) {
                 // Buscar reseña existente del usuario para este producto en este pedido específico
-                $resenaExistente = \App\Models\Resena::where('usuario_id', Auth::id())
+                $resenaExistente = Resena::where('usuario_id', Auth::id())
                     ->where('producto_id', $productoData['producto_id'])
                     ->where('pedido_id', $pedido->pedido_id)
                     ->first();
@@ -229,7 +233,7 @@ class PedidoController extends WebController
                 } else {
                     // Verificar límite de reseñas de pedido por usuario/producto
                     // Contar solo reseñas con pedido_id (reseñas privadas de pedidos)
-                    $totalResenasPedido = \App\Models\Resena::where('usuario_id', Auth::id())
+                    $totalResenasPedido = Resena::where('usuario_id', Auth::id())
                         ->where('producto_id', $productoData['producto_id'])
                         ->whereNotNull('pedido_id') // Solo reseñas de pedidos
                         ->count();
@@ -240,7 +244,7 @@ class PedidoController extends WebController
                     }
                     
                     // Crear nueva reseña de pedido (con pedido_id - privada)
-                    $resena = \App\Models\Resena::create([
+                    $resena = Resena::create([
                         'usuario_id' => Auth::id(),
                         'producto_id' => $productoData['producto_id'],
                         'pedido_id' => $pedido->pedido_id, // Reseña privada asociada al pedido
@@ -262,10 +266,10 @@ class PedidoController extends WebController
             return Redirect::back()
                 ->with('success', '¡Gracias por calificar tu pedido! Tu opinión es muy importante para nosotros.');
 
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            } catch (ModelNotFoundException $e) {
             return Redirect::route('pedidos.historial')
                 ->with('error', 'Pedido no encontrado.');
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return Redirect::back()
                 ->withErrors($e->errors())
                 ->withInput();

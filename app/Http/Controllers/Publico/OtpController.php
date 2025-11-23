@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Publico;
 
 use App\Http\Controllers\Base\WebController;
-use App\Services\OtpService;
+use App\Services\Auth\OtpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;

@@ -9,6 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Pedido;
+use App\Models\Usuario;
 
 class StripePagoFallido extends Mailable
 {
@@ -19,7 +20,7 @@ class StripePagoFallido extends Mailable
     public $paymentIntent;
     public $retryUrl;
 
-    public function __construct($usuario, Pedido $pedido, $paymentIntent = null)
+    public function __construct(Usuario $usuario, Pedido $pedido, ?string $paymentIntent = null)
     {
         $this->usuario = $usuario;
         $this->pedido = $pedido;

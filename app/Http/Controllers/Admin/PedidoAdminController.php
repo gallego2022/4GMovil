@@ -4,10 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Base\WebController;
 use App\Models\Pedido;
-use App\Services\PedidoNotificationService;
-use App\Services\ReservaStockService;
+use App\Services\Notification\PedidoNotificationService;
+use App\Services\Inventory\ReservaStockService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
@@ -75,7 +76,7 @@ class PedidoAdminController extends WebController
                     'pedido_id' => $pedido->pedido_id,
                     'estado_actual' => $estadoActual,
                     'nuevo_estado' => $nuevoEstado,
-                    'admin_id' => auth()->id(),
+                    'admin_id' => Auth::id(),
                 ]);
 
                 return Redirect::back()

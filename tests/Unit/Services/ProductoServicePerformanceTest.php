@@ -3,7 +3,7 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Services\ProductoService;
+use App\Services\Catalog\ProductoService;
 use App\Models\Producto;
 use App\Models\Categoria;
 use App\Models\Marca;

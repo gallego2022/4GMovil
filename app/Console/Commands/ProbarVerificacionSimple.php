@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Producto;
 use App\Models\VarianteProducto;
-use App\Services\ReservaStockService;
+use App\Services\Inventory\ReservaStockService;
 use Illuminate\Console\Command;
 
 class ProbarVerificacionSimple extends Command

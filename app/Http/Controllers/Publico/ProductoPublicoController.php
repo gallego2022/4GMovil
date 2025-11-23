@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Publico;
 
 use App\Http\Controllers\Base\WebController;
-use App\Services\ProductoService;
+use App\Services\Catalog\ProductoService;
 use App\Models\Resena;
 use App\Models\Producto;
 use App\Models\Usuario;
@@ -15,11 +15,11 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Validation\ValidationException;
+use Exception;
 
 class ProductoPublicoController extends WebController
 {
@@ -57,7 +57,7 @@ class ProductoPublicoController extends WebController
             
             $data = $this->productoService->getProductById($id);
             
-            if (!$data || !$data['producto']) {
+            if (!$data || !$data['success'] || !isset($data['data'])) {
                 Log::warning('Producto no encontrado en show público', [
                     'id' => $id,
                     'data' => $data
@@ -65,7 +65,7 @@ class ProductoPublicoController extends WebController
                 abort(404, 'Producto no encontrado');
             }
 
-            $producto = $data['producto'];
+            $producto = $data['data'];
             
             // Cargar relaciones necesarias incluyendo solo reseñas públicas (sin pedido_id)
             $producto->load(['categoria', 'marca', 'imagenes', 'variantes.imagenes']);
@@ -131,7 +131,7 @@ class ProductoPublicoController extends WebController
             
             return View::make('productos.show', compact('producto', 'productosRelacionados'));
             
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Error al mostrar producto público', [
                 'id' => $id,
                 'error' => $e->getMessage(),
@@ -276,7 +276,7 @@ class ProductoPublicoController extends WebController
                 ]
             ]);
 
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             Log::error('Producto no encontrado para reseña', [
                 'producto_id' => $productoId,
                 'error' => $e->getMessage()
@@ -289,7 +289,7 @@ class ProductoPublicoController extends WebController
                 'suggestion' => 'Verifica que el producto existe y esté disponible'
             ], 404);
 
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             Log::error('Error de validación en reseña', [
                 'producto_id' => $productoId,
                 'errors' => $e->errors()
@@ -310,7 +310,7 @@ class ProductoPublicoController extends WebController
                 ]
             ], 422);
 
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (QueryException $e) {
             Log::error('Error de base de datos al crear reseña', [
                 'producto_id' => $productoId,
                 'error' => $e->getMessage(),
@@ -336,7 +336,7 @@ class ProductoPublicoController extends WebController
                 'debug_info' => Config::get('app.debug') ? $e->getMessage() : null
             ], 500);
             
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Error al crear reseña', [
                 'producto_id' => $productoId,
                 'error' => $e->getMessage(),

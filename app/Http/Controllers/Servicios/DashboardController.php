@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Servicios;
 
 use App\Http\Controllers\Base\WebController;
-use App\Services\DashboardService;
+use App\Services\Dashboard\DashboardService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;

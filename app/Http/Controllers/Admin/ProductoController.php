@@ -8,9 +8,11 @@ use App\Models\Marca;
 use App\Models\Producto;
 use App\Models\Usuario;
 use App\Models\VarianteProducto;
-use App\Services\Business\ProductoServiceOptimizadoCorregido;
+use App\Services\Catalog\ProductoService;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\View;
@@ -20,7 +22,7 @@ class ProductoController extends WebController
 {
     protected $productoService;
 
-    public function __construct(ProductoServiceOptimizadoCorregido $productoService)
+    public function __construct(ProductoService $productoService)
     {
         $this->productoService = $productoService;
     }
@@ -80,11 +82,23 @@ class ProductoController extends WebController
         try {
             $result = $this->productoService->createProduct($request);
 
-            return $this->redirectSuccess('productos.index', 'Producto Creado');
+            return $this->redirectSuccess('productos.index', 'Producto creado exitosamente');
 
         } catch (ValidationException $e) {
+            // Los errores de validación se mostrarán automáticamente en el formulario
             return $this->handleValidationException($e, 'productos.create');
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Errores de base de datos
+            Log::error('Error de base de datos al crear producto', [
+                'error' => $e->getMessage(),
+                'user_id' => Auth::id(),
+            ]);
+            return $this->backWithInput('Error al guardar el producto en la base de datos. Por favor, verifica los datos e intenta nuevamente.');
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            // Recurso no encontrado
+            return $this->redirectError('productos.index', 'El recurso solicitado no existe.');
         } catch (Exception $e) {
+            // Otros errores
             return $this->handleException($e, 'productos.create');
         }
     }

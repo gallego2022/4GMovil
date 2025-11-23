@@ -112,8 +112,8 @@
                                 class="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-600 last:border-b-0">
                                 <div class="flex items-center space-x-4">
                                     <div class="flex-shrink-0">
-                                        @if ($producto->imagen_principal)
-                                            <img src="{{ asset('storage/' . $producto->imagen_principal) }}"
+                                        @if ($producto->imagenes->isNotEmpty() && $producto->imagenes->first()->principal)
+                                            <img src="{{ asset('storage/' . $producto->imagenes->first()->ruta_imagen) }}"
                                                 alt="{{ $producto->nombre_producto }}"
                                                 class="h-16 w-16 rounded-lg object-cover">
                                         @else

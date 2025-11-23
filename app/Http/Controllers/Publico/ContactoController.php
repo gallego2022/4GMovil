@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Publico;
 
 use App\Http\Controllers\Base\WebController;
-use App\Services\ContactoService;
+use App\Services\Public\ContactoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;

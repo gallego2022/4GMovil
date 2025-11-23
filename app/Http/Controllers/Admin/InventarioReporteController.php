@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Base\WebController;
-use App\Services\InventarioService;
+use App\Services\Inventory\InventarioService;
 use App\Models\Producto;
 use Illuminate\Http\Request;
 use Carbon\Carbon;

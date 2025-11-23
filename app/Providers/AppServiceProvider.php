@@ -5,7 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Producto;
 use App\Observers\ProductoObserver;
-use App\Services\RedisCacheService;
+use App\Services\Infrastructure\RedisCacheService;
 
 class AppServiceProvider extends ServiceProvider
 {

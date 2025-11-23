@@ -8,7 +8,7 @@ use App\Models\Producto;
 use App\Models\VarianteProducto;
 use App\Models\Carrito;
 use App\Models\CarritoItem;
-use App\Services\Business\CarritoService;
+use App\Services\Orders\CarritoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 

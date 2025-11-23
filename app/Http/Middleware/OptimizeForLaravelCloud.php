@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
 
 class OptimizeForLaravelCloud
 {
@@ -78,13 +79,11 @@ class OptimizeForLaravelCloud
     private function optimizeDatabaseQueries(): void
     {
         // Configurar conexión de base de datos para máximo rendimiento
-        config([
-            'database.connections.mysql.options' => [
-                PDO::ATTR_PERSISTENT => true,
-                PDO::ATTR_EMULATE_PREPARES => false,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
-            ]
+        Config::set('database.connections.mysql.options', [
+            \PDO::ATTR_PERSISTENT => true,
+            \PDO::ATTR_EMULATE_PREPARES => false,
+            \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+            \PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
         ]);
     }
 

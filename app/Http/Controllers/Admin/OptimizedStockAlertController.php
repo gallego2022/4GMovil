@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Services\OptimizedStockAlertService;
+use App\Http\Controllers\Base\WebController;
+use App\Services\Inventory\StockAlertService;
 use App\Models\Producto;
 use App\Models\VarianteProducto;
 use Illuminate\Http\JsonResponse;
@@ -12,11 +12,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
-class OptimizedStockAlertController extends Controller
+class OptimizedStockAlertController extends WebController
 {
     protected $stockAlertService;
 
-    public function __construct(OptimizedStockAlertService $stockAlertService)
+    public function __construct(StockAlertService $stockAlertService)
     {
         $this->stockAlertService = $stockAlertService;
     }
@@ -28,8 +28,9 @@ class OptimizedStockAlertController extends Controller
     {
         $tipo = $request->get('tipo', 'criticos');
         $page = $request->get('page', 1);
+        $forzarActualizacion = $request->get('refresh', false) || $request->get('forzar', false);
 
-        $alertas = $this->stockAlertService->getOptimizedStockAlerts($tipo, $page);
+        $alertas = $this->stockAlertService->getOptimizedStockAlerts($tipo, $page, $forzarActualizacion);
 
         // Si es una petición AJAX, retornar solo el contenido del tab
         if ($request->ajax()) {

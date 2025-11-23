@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Servicios;
 
+use App\Http\Controllers\Base\WebController;
 use App\Models\LocalizationConfig;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Redirect;
 
-class LocalizationController extends Controller
+class LocalizationController extends WebController
 {
     /**
      * Mostrar el modal de configuración de localización

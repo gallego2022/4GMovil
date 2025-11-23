@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Log;
 
 class RequireAdminRole
 {
@@ -39,7 +40,7 @@ class RequireAdminRole
 
             return $next($request);
         } catch (\Exception $e) {
-            \Log::error('Error en RequireAdminRole middleware: ' . $e->getMessage());
+            Log::error('Error en RequireAdminRole middleware: ' . $e->getMessage());
             return redirect()->route('login')
                 ->with('error', 'Error de autenticación. Por favor, inicia sesión nuevamente.');
         }

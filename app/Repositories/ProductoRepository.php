@@ -26,8 +26,24 @@ class ProductoRepository implements ProductoRepositoryInterface
         $stockInicial = $data['stock_inicial'] ?? 0;
         
         // Calcular umbrales automáticamente basados en el stock inicial
-        $umbralBajo = $stockInicial > 0 ? (int) ceil(($stockInicial * 60) / 100) : 0;
-        $umbralCritico = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 0;
+        // Solo calcular si stock_inicial > 0 y no se proporcionaron umbrales personalizados
+        $umbralBajo = null;
+        $umbralCritico = null;
+        
+        if ($stockInicial > 0) {
+            // Si no se proporcionaron umbrales personalizados, calcularlos automáticamente
+            if (!isset($data['umbral_stock_bajo']) || $data['umbral_stock_bajo'] === null) {
+                $umbralBajo = (int) ceil(($stockInicial * 60) / 100);
+            } else {
+                $umbralBajo = $data['umbral_stock_bajo'];
+            }
+            
+            if (!isset($data['umbral_stock_critico']) || $data['umbral_stock_critico'] === null) {
+                $umbralCritico = (int) ceil(($stockInicial * 20) / 100);
+            } else {
+                $umbralCritico = $data['umbral_stock_critico'];
+            }
+        }
         
         return Producto::create([
             'nombre_producto' => $data['nombre_producto'],
@@ -40,8 +56,8 @@ class ProductoRepository implements ProductoRepositoryInterface
             'marca_id' => $data['marca_id'],
             'sku' => $data['sku'] ?? null,
             'costo_unitario' => $data['costo_unitario'] ?? null,
-            'stock_minimo' => $umbralCritico, // Umbral crítico (20% del stock inicial)
-            'stock_maximo' => $umbralBajo, // Umbral bajo (60% del stock inicial)
+            'umbral_stock_critico' => $umbralCritico, // Umbral crítico (20% del stock inicial)
+            'umbral_stock_bajo' => $umbralBajo, // Umbral bajo (60% del stock inicial)
             'peso' => $data['peso'] ?? null,
             'dimensiones' => $data['dimensiones'] ?? null,
             'codigo_barras' => $data['codigo_barras'] ?? null,
@@ -62,23 +78,32 @@ class ProductoRepository implements ProductoRepositoryInterface
         
         if ($stockInicial > 0) {
             // Solo actualizar si no hay umbrales personalizados o si se fuerza
-            $actualizarMinimo = $forzar || ($producto->stock_minimo === null || $producto->stock_minimo <= 0);
-            $actualizarMaximo = $forzar || ($producto->stock_maximo === null || $producto->stock_maximo <= 0);
+            $umbralCriticoActual = $producto->getAttribute('umbral_stock_critico');
+            $umbralBajoActual = $producto->getAttribute('umbral_stock_bajo');
             
-            if ($actualizarMinimo || $actualizarMaximo) {
+            $actualizarCritico = $forzar || ($umbralCriticoActual === null || $umbralCriticoActual <= 0);
+            $actualizarBajo = $forzar || ($umbralBajoActual === null || $umbralBajoActual <= 0);
+            
+            if ($actualizarCritico || $actualizarBajo) {
                 $umbralBajo = (int) ceil(($stockInicial * 60) / 100);
                 $umbralCritico = (int) ceil(($stockInicial * 20) / 100);
                 
                 $updateData = [];
-                if ($actualizarMinimo) {
-                    $updateData['stock_minimo'] = $umbralCritico;
+                if ($actualizarCritico) {
+                    $updateData['umbral_stock_critico'] = $umbralCritico;
                 }
-                if ($actualizarMaximo) {
-                    $updateData['stock_maximo'] = $umbralBajo;
+                if ($actualizarBajo) {
+                    $updateData['umbral_stock_bajo'] = $umbralBajo;
                 }
                 
                 if (!empty($updateData)) {
                     $producto->update($updateData);
+                    Log::info('Umbrales actualizados automáticamente', [
+                        'producto_id' => $producto->producto_id,
+                        'stock_inicial' => $stockInicial,
+                        'umbral_critico' => $umbralCritico,
+                        'umbral_bajo' => $umbralBajo
+                    ]);
                 }
             }
         }

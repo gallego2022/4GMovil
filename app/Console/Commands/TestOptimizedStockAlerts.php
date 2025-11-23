@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Services\OptimizedStockAlertService;
+use App\Services\Inventory\StockAlertService;
 use App\Models\Producto;
 use App\Models\VarianteProducto;
 
@@ -17,7 +17,7 @@ class TestOptimizedStockAlerts extends Command
         $this->info('🧪 Probando Alertas de Stock Optimizadas...');
         $this->newLine();
 
-        $stockAlertService = new OptimizedStockAlertService();
+        $stockAlertService = new StockAlertService(app(\App\Services\Infrastructure\RedisCacheService::class));
 
         // Obtener alertas optimizadas
         $this->info('📊 Obteniendo alertas optimizadas...');

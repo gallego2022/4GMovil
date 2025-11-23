@@ -3,8 +3,8 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Services\DashboardMetricsService;
-use App\Services\RedisCacheService;
+use App\Services\Dashboard\DashboardMetricsService;
+use App\Services\Infrastructure\RedisCacheService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
 

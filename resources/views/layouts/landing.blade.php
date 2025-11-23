@@ -10,6 +10,7 @@
     <meta name="description" content="@yield('meta-description')">
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="{{ asset('css/style_inicio.css') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- Alpine.js se carga desde Vite para mejor rendimiento -->

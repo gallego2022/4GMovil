@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Cliente;
 
 use App\Http\Controllers\Base\WebController;
 use App\Models\Pedido;
-use App\Services\Business\CheckoutService;
+use App\Services\Orders\CheckoutService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

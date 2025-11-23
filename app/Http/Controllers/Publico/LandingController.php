@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Publico;
 
 use App\Http\Controllers\Base\WebController;
-use App\Services\LandingService;
+use App\Services\Public\LandingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;

@@ -317,14 +317,14 @@ class VarianteProducto extends Model
     {
         // Obtener umbrales del producto padre
         $producto = $this->producto;
-        $stockMinimo = $producto->stock_minimo ?? null;
-        if ($stockMinimo === null) {
+        $umbralCritico = $producto->umbral_stock_critico ?? null;
+        if ($umbralCritico === null) {
             $stockInicial = $producto->stock_inicial ?? 0;
-            $stockMinimo = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 10;
+            $umbralCritico = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 10;
         }
 
         // Solo enviar alerta si el stock anterior estaba por encima del umbral y ahora está por debajo
-        if ($stockAnterior > $stockMinimo && $stockNuevo <= $stockMinimo) {
+        if ($stockAnterior > $umbralCritico && $stockNuevo <= $umbralCritico) {
             $tipoAlerta = $this->determinarTipoAlerta($stockNuevo);
 
             if ($tipoAlerta) {
@@ -342,14 +342,14 @@ class VarianteProducto extends Model
     {
         // Obtener umbrales del producto padre
         $producto = $this->producto;
-        $stockMinimo = $producto->stock_minimo ?? null;
-        if ($stockMinimo === null) {
+        $umbralCritico = $producto->umbral_stock_critico ?? null;
+        if ($umbralCritico === null) {
             $stockInicial = $producto->stock_inicial ?? 0;
-            $stockMinimo = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 10;
+            $umbralCritico = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 10;
         }
 
-        // Si el stock anterior estaba por debajo del mínimo y ahora está por encima, enviar alerta de reposición
-        if ($stockAnterior <= $stockMinimo && $stockNuevo > $stockMinimo) {
+        // Si el stock anterior estaba por debajo del umbral crítico y ahora está por encima, enviar alerta de reposición
+        if ($stockAnterior <= $umbralCritico && $stockNuevo > $umbralCritico) {
             Log::info('Stock repuesto para variante', [
                 'variante_id' => $this->variante_id,
                 'color' => $this->nombre,
@@ -366,25 +366,26 @@ class VarianteProducto extends Model
         }
 
         // Obtener umbrales del producto padre
+        // Usar getAttribute que respeta los accessors
         $producto = $this->producto;
-        $stockMinimo = $producto->stock_minimo ?? null;
-        $stockMaximo = $producto->stock_maximo ?? null;
+        $umbralCritico = $producto->getAttribute('umbral_stock_critico') ?? null;
+        $umbralBajo = $producto->getAttribute('umbral_stock_bajo') ?? null;
 
-        if ($stockMinimo === null || $stockMaximo === null) {
+        if ($umbralCritico === null || $umbralBajo === null) {
             $stockInicial = $producto->stock_inicial ?? 0;
             if ($stockInicial > 0) {
-                $stockMinimo = $stockMinimo ?? (int) ceil(($stockInicial * 20) / 100);
-                $stockMaximo = $stockMaximo ?? (int) ceil(($stockInicial * 60) / 100);
+                $umbralCritico = $umbralCritico ?? (int) ceil(($stockInicial * 20) / 100);
+                $umbralBajo = $umbralBajo ?? (int) ceil(($stockInicial * 60) / 100);
             } else {
-                $stockMinimo = $stockMinimo ?? 5;
-                $stockMaximo = $stockMaximo ?? 10;
+                $umbralCritico = $umbralCritico ?? 5;
+                $umbralBajo = $umbralBajo ?? 10;
             }
         }
 
         // Verificar tipo de alerta usando umbrales del producto
-        if ($stockActual <= $stockMinimo) {
+        if ($stockActual <= $umbralCritico) {
             return 'critico';
-        } elseif ($stockActual <= $stockMaximo) {
+        } elseif ($stockActual <= $umbralBajo) {
             return 'bajo';
         }
 
@@ -409,15 +410,16 @@ class VarianteProducto extends Model
     public function necesitaReposicion(): bool
     {
         // Obtener umbral crítico del producto padre
+        // Usar getAttribute que respeta los accessors
         $producto = $this->producto;
-        $stockMinimo = $producto->stock_minimo ?? null;
+        $umbralCritico = $producto->getAttribute('umbral_stock_critico') ?? null;
 
-        if ($stockMinimo === null) {
+        if ($umbralCritico === null) {
             $stockInicial = $producto->stock_inicial ?? 0;
-            $stockMinimo = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 10;
+            $umbralCritico = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 10;
         }
 
-        return $this->stock <= $stockMinimo;
+        return $this->stock <= $umbralCritico;
     }
 
     public function getPrecioFinalAttribute(): float

@@ -10,10 +10,10 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 use Illuminate\Session\TokenMismatchException;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Base\WebController;
 use Illuminate\Support\Facades\Response;
 
-class TestErrorController extends Controller
+class TestErrorController extends WebController
 {
     /**
      * Probar diferentes tipos de errores

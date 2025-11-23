@@ -3,14 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Base\WebController;
-use App\Services\Business\PedidoService;
+use App\Services\Orders\PedidoService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Exception;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Auth;
-use App\Models\DireccionEnvio;
+use App\Models\Direccion;
 use App\Models\MetodoPago;
 use App\Models\Pedido;
 use App\Models\EstadoPedido;
@@ -33,7 +34,7 @@ class PedidoController extends WebController
             $filters = $this->getFilterParams($request);
             $result = $this->pedidoService->getUserOrders($filters);
             
-            return View::make('pages.cliente.pedidos.index', [
+            return View::make('modules.cliente.pedidos.historial', [
                 'pedidos' => $result['data']
             ]);
 
@@ -51,7 +52,7 @@ class PedidoController extends WebController
             $filters = $this->getFilterParams($request);
             $result = $this->pedidoService->getUserOrders($filters);
             
-            return View::make('pages.cliente.pedidos.historial', [
+            return View::make('modules.cliente.pedidos.historial', [
                 'pedidos' => $result['data']
             ]);
 
@@ -88,7 +89,7 @@ class PedidoController extends WebController
         try {
             $result = $this->pedidoService->getOrderById($id);
             
-            return View::make('pages.cliente.pedidos.show', [
+            return View::make('modules.cliente.pedidos.detalle', [
                 'pedido' => $result['data']
             ]);
 
@@ -105,7 +106,7 @@ class PedidoController extends WebController
         try {
             $result = $this->pedidoService->getOrderById($id);
             
-            return View::make('pages.cliente.pedidos.detalle', [
+            return View::make('modules.cliente.pedidos.detalle', [
                 'pedido' => $result['data']
             ]);
 
@@ -258,9 +259,14 @@ class PedidoController extends WebController
                 return Response::json($result);
             }
             
-            return View::make('pages.admin.pedidos.statistics', [
-                'estadisticas' => $result['data']
-            ]);
+            // TODO: Crear vista pages.admin.pedidos.statistics
+            // Por ahora mostrar en JSON o redirigir al index
+            if ($request->ajax() || $request->wantsJson()) {
+                return Response::json($result);
+            }
+            
+            return Redirect::route('admin.pedidos.index')
+                ->with('estadisticas', $result['data']);
 
         } catch (Exception $e) {
             if ($request->ajax() || $request->wantsJson()) {
@@ -286,7 +292,9 @@ class PedidoController extends WebController
                 return Response::json($result);
             }
             
-            return View::make('pages.cliente.pedidos.status-history', [
+            // TODO: Crear vista modules.cliente.pedidos.status-history
+            return View::make('modules.cliente.pedidos.detalle', [
+                'pedido' => $result['data']['pedido'] ?? null,
                 'historial' => $result['data']
             ]);
 
@@ -309,13 +317,14 @@ class PedidoController extends WebController
     {
         try {
             // Aquí se obtendrían las direcciones de envío y métodos de pago del usuario
-            $direcciones = DireccionEnvio::where('usuario_id', \Illuminate\Support\FacadesAuth::id())->get();
+            $direcciones = Direccion::where('usuario_id', Auth::id())->get();
             $metodosPago = MetodoPago::where('activo', true)->get();
             
-            return View::make('pages.cliente.pedidos.create', [
-                'direcciones' => $direcciones,
-                'metodosPago' => $metodosPago
-            ]);
+            // TODO: Crear vista modules.cliente.pedidos.create
+            // Por ahora redirigir al checkout que es donde se crean los pedidos
+            return Redirect::route('checkout.index')
+                ->with('direcciones', $direcciones)
+                ->with('metodosPago', $metodosPago);
 
         } catch (Exception $e) {
             return $this->handleException($e, 'pedidos.index');
@@ -333,9 +342,12 @@ class PedidoController extends WebController
             $pedido = Pedido::with(['estado'])->findOrFail($id);
             $estados = EstadoPedido::all();
             
-            return View::make('pages.admin.pedidos.edit-status', [
+            // TODO: Crear vista pages.admin.pedidos.edit-status
+            // Por ahora mostrar en la vista show con un formulario inline
+            return View::make('pages.admin.pedidos.show', [
                 'pedido' => $pedido,
-                'estados' => $estados
+                'estados' => $estados,
+                'showEditForm' => true
             ]);
 
         } catch (Exception $e) {
@@ -349,7 +361,7 @@ class PedidoController extends WebController
     public function getOrdersJson(Request $request)
     {
         try {
-            if (\Illuminate\Support\FacadesAuth::user()->hasRole('admin')) {
+            if (Auth::user()->hasRole('admin')) {
                 $result = $this->pedidoService->getAllOrders($request->all());
             } else {
                 $result = $this->pedidoService->getUserOrders($request->all());

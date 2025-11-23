@@ -8,6 +8,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use App\Models\Usuario;
 
 class OtpVerification extends Mailable
 {
@@ -18,7 +19,7 @@ class OtpVerification extends Mailable
     public $tipo;
     public $tiempoExpiracion;
 
-    public function __construct($usuario, $codigo, $tipo = 'email_verification', $tiempoExpiracion = 10)
+    public function __construct(Usuario $usuario, string $codigo, string $tipo = 'email_verification', int $tiempoExpiracion = 10)
     {
         $this->usuario = $usuario;
         $this->codigo = $codigo;

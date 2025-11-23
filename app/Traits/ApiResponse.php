@@ -5,6 +5,7 @@ namespace App\Traits;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 trait ApiResponse
 {
@@ -47,7 +48,7 @@ trait ApiResponse
             'request_id' => $response['request_id'],
             'url' => request()->fullUrl(),
             'method' => request()->method(),
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
         ]);
 
         return response()->json($response, $code);

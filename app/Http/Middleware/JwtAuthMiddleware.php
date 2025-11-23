@@ -2,10 +2,11 @@
 
 namespace App\Http\Middleware;
 
-use App\Services\JwtService;
+use App\Services\Auth\JwtService;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class JwtAuthMiddleware
@@ -37,7 +38,9 @@ class JwtAuthMiddleware
                 // Cerrar sesión si el token está expirado o es inválido
                 Auth::logout();
                 $request->session()->invalidate();
-                $request->session()->regenerateToken();
+                // NO regenerar el token CSRF aquí para evitar errores 419 en formularios abiertos
+                // El token se regenerará en la siguiente petición GET
+                // $request->session()->regenerateToken();
 
                 return $this->unauthorizedResponse('Token JWT inválido o expirado. Por favor, inicia sesión nuevamente.');
             }
@@ -55,14 +58,37 @@ class JwtAuthMiddleware
             }
 
             // Autenticar al usuario en la sesión de Laravel (para compatibilidad con código existente)
-            Auth::login($usuario);
+            // Solo hacer login si el usuario no está ya autenticado o es diferente
+            $necesitaLogin = !Auth::check() || Auth::id() !== $usuario->usuario_id;
+            
+            if ($necesitaLogin) {
+                Auth::login($usuario);
+                // Solo regenerar token CSRF cuando se hace login de un usuario diferente
+                // y SOLO en peticiones GET (no en POST/PUT/DELETE para evitar errores 419)
+                // Esto asegura que cada usuario tenga su propio token CSRF
+                // pero NO regenera en cada petición para evitar errores 419
+                if ($request->isMethod('GET') && !$request->ajax()) {
+                    Log::debug('JwtAuthMiddleware: Regenerando token CSRF por login de usuario diferente', [
+                        'user_id' => $usuario->usuario_id,
+                        'method' => $request->method(),
+                    ]);
+                    $request->session()->regenerateToken();
+                }
+            }
+            
+            // IMPORTANTE: NO regenerar el token CSRF en cada petición
+            // Esto causa que el token en el formulario no coincida con el token en la sesión
+            // El token CSRF se mantiene válido durante toda la sesión del usuario
+            // Solo se regenera cuando:
+            // 1. Se hace login de un usuario diferente Y es una petición GET (arriba)
+            // 2. Se invalida la sesión explícitamente
 
             // Agregar información del token a la request
             $request->merge(['jwt_payload' => $payload]);
 
             return $next($request);
         } catch (\Exception $e) {
-            \Log::error('Error en JwtAuthMiddleware: '.$e->getMessage());
+            Log::error('Error en JwtAuthMiddleware: '.$e->getMessage());
 
             return $this->unauthorizedResponse('Error de autenticación');
         }

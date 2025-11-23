@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Services\StockSincronizacionService;
+use App\Services\Inventory\StockSincronizacionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Base\WebController;

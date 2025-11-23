@@ -37,10 +37,6 @@ echo "📊 Ejecutando migraciones..."
 php artisan migrate --force || echo "⚠️  Error en migraciones, continuando..."
 echo "✅ Migraciones ejecutadas"
 
-# Ejecutar seeders si es necesario
-echo "🌱 Ejecutando seeders..."
-php artisan db:seed --force || echo "⚠️  Seeders fallaron o no existen"
-echo "✅ Seeders ejecutados"
 
 # Limpiar caché
 echo "🧹 Limpiando caché..."

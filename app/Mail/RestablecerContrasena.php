@@ -8,6 +8,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use App\Models\Usuario;
 
 class RestablecerContrasena extends Mailable
 {
@@ -16,7 +17,7 @@ class RestablecerContrasena extends Mailable
     public $usuario;
     public $resetUrl;
 
-    public function __construct($usuario, $resetUrl)
+    public function __construct(Usuario $usuario, string $resetUrl)
     {
         $this->usuario = $usuario;
         $this->resetUrl = $resetUrl;

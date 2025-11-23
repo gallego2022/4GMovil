@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Services\CategoriaService;
+use App\Services\Catalog\CategoriaService;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Base\WebController;
 use Illuminate\Support\Facades\View;

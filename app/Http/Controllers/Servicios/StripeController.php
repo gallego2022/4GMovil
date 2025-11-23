@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Servicios;
 
 use App\Http\Controllers\Base\WebController;
-use App\Services\StripeService;
+use App\Services\Payment\StripeService;
 use App\Models\Pedido;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;

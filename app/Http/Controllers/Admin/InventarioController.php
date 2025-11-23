@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Base\WebController;
 use App\Models\Producto;
 use App\Models\Usuario;
-use App\Services\InventarioService;
+use App\Services\Inventory\InventarioService;
 use Carbon\Carbon;
+use Dompdf\Dompdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -51,10 +52,11 @@ class InventarioController extends WebController
     /**
      * Dashboard de inventario
      */
-    public function dashboard()
+    public function dashboard(Request $request)
     {
         try {
-            $data = $this->inventarioService->getDashboardData();
+            $forzarActualizacion = $request->get('refresh', false) || $request->get('forzar', false);
+            $data = $this->inventarioService->getDashboardData($forzarActualizacion);
 
             return View::make('pages.admin.inventario.dashboard', $data);
         } catch (\Exception $e) {
@@ -295,7 +297,7 @@ class InventarioController extends WebController
             $html = View::make('pages.admin.inventario.reporte-pdf', $data)->render();
 
             // Crear instancia de DomPDF
-            $dompdf = new \Dompdf\Dompdf;
+            $dompdf = new Dompdf();
             $dompdf->loadHtml($html);
             $dompdf->setPaper('A4', 'portrait');
             $dompdf->render();
@@ -389,7 +391,7 @@ class InventarioController extends WebController
         if ($request->has('producto_id') && $request->producto_id) {
             $productoId = (int) $request->producto_id;
             // Verificar que el producto existe
-            if (! \App\Models\Producto::where('producto_id', $productoId)->exists()) {
+            if (! Producto::where('producto_id', $productoId)->exists()) {
                 Log::warning('Producto no encontrado en filtros de movimientos', [
                     'producto_id' => $productoId,
                 ]);
@@ -415,7 +417,7 @@ class InventarioController extends WebController
         if ($request->has('usuario_id') && $request->usuario_id) {
             $usuarioId = (int) $request->usuario_id;
             // Verificar que el usuario existe
-            if (! \App\Models\Usuario::where('usuario_id', $usuarioId)->exists()) {
+            if (!   Usuario::where('usuario_id', $usuarioId)->exists()) {
                 Log::warning('Usuario no encontrado en filtros de movimientos', [
                     'usuario_id' => $usuarioId,
                 ]);

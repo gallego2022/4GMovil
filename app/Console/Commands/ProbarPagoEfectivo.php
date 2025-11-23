@@ -7,7 +7,7 @@ use App\Models\Usuario;
 use App\Models\Producto;
 use App\Models\MetodoPago;
 use App\Models\Pedido;
-use App\Services\Business\CheckoutService;
+use App\Services\Orders\CheckoutService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;

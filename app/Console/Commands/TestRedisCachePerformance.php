@@ -3,10 +3,10 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Services\RedisCacheService;
-use App\Services\InventarioService;
-use App\Services\OptimizedStockAlertService;
-use App\Services\Business\ProductoServiceOptimizadoCorregido;
+use App\Services\Infrastructure\RedisCacheService;
+use App\Services\Inventory\InventarioService;
+use App\Services\Inventory\StockAlertService;
+use App\Services\Catalog\ProductoService;
 use Illuminate\Support\Facades\DB;
 
 class TestRedisCachePerformance extends Command
@@ -22,8 +22,8 @@ class TestRedisCachePerformance extends Command
     public function __construct(
         RedisCacheService $cacheService,
         InventarioService $inventarioService,
-        OptimizedStockAlertService $alertService,
-        ProductoServiceOptimizadoCorregido $productoService
+        StockAlertService $alertService,
+        ProductoService $productoService
     ) {
         parent::__construct();
         $this->cacheService = $cacheService;
