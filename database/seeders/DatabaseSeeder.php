@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Usuario;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-
 
 class DatabaseSeeder extends Seeder
 {
@@ -31,13 +30,9 @@ class DatabaseSeeder extends Seeder
 
         // Ejecutar seeders específicos
         $this->call([
-            MetodosPagoSeeder::class,
-            EstadosPedidoSeeder::class,
-            EspecificacionesCategoriaSeeder::class,
-            MarcaSeeder::class,
-            ProductoSeeder::class,
-            VarianteProductoSeeder::class,
-            EspecificacionesProductoSeeder::class,
+            MetodosPagoSeeder::class, // Métodos de pago
+            EstadosPedidoSeeder::class, // Estados de pedido
+            MarcaSeeder::class, // Marcas de productos
         ]);
 
         $this->command->info('✅ Base de datos poblada exitosamente!');

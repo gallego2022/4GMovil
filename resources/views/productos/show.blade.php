@@ -617,6 +617,7 @@
                                                         style="background-color: {{ $variante->codigo_color ?? '#CCCCCC' }};"
                                                         data-variante-id="{{ $variante->variante_id }}"
                                                         data-variant-stock="{{ $variante->stock }}"
+                                                        data-product-id="{{ $producto->producto_id }}"
                                                         data-color="{{ $variante->nombre }}"
                                                         data-precio-adicional="{{ $variante->precio_adicional }}"
                                                         data-descripcion="{{ $variante->descripcion }}"

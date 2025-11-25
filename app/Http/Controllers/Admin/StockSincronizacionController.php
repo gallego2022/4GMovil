@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Base\WebController;
 use App\Services\Inventory\StockSincronizacionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\Base\WebController;
-use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\View;
 
 class StockSincronizacionController extends WebController
 {
-    protected $stockSincronizacionService;
+    protected StockSincronizacionService $stockSincronizacionService;
 
     public function __construct(StockSincronizacionService $stockSincronizacionService)
     {
@@ -35,35 +35,35 @@ class StockSincronizacionController extends WebController
     public function sincronizarProducto(Request $request)
     {
         $request->validate([
-            'producto_id' => 'required|integer|exists:productos,producto_id'
+            'producto_id' => 'required|integer|exists:productos,producto_id',
         ]);
 
         try {
             $resultado = $this->stockSincronizacionService->sincronizarProducto($request->producto_id);
-            
+
             if ($resultado['success']) {
                 return Response::json([
                     'success' => true,
                     'message' => 'Stock sincronizado correctamente',
-                    'data' => $resultado
+                    'data' => $resultado,
                 ]);
             } else {
                 return Response::json([
                     'success' => false,
                     'message' => 'Error al sincronizar stock',
-                    'error' => $resultado['error']
+                    'error' => $resultado['error'],
                 ], 500);
             }
         } catch (\Exception $e) {
             Log::error('Error en sincronización de stock', [
                 'producto_id' => $request->producto_id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return Response::json([
                 'success' => false,
                 'message' => 'Error interno del servidor',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -75,21 +75,21 @@ class StockSincronizacionController extends WebController
     {
         try {
             $resultado = $this->stockSincronizacionService->sincronizarTodosLosProductos();
-            
+
             return Response::json([
                 'success' => true,
                 'message' => 'Sincronización completada',
-                'data' => $resultado
+                'data' => $resultado,
             ]);
         } catch (\Exception $e) {
             Log::error('Error en sincronización masiva de stock', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return Response::json([
                 'success' => false,
                 'message' => 'Error interno del servidor',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -101,20 +101,20 @@ class StockSincronizacionController extends WebController
     {
         try {
             $reporte = $this->stockSincronizacionService->obtenerReporteSincronizacion();
-            
+
             return Response::json([
                 'success' => true,
-                'data' => $reporte
+                'data' => $reporte,
             ]);
         } catch (\Exception $e) {
             Log::error('Error al obtener reporte de sincronización', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return Response::json([
                 'success' => false,
                 'message' => 'Error al obtener reporte',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -126,20 +126,20 @@ class StockSincronizacionController extends WebController
     {
         try {
             $integridad = $this->stockSincronizacionService->verificarIntegridadStock();
-            
+
             return Response::json([
                 'success' => true,
-                'data' => $integridad
+                'data' => $integridad,
             ]);
         } catch (\Exception $e) {
             Log::error('Error al verificar integridad del stock', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return Response::json([
                 'success' => false,
                 'message' => 'Error al verificar integridad',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -151,21 +151,21 @@ class StockSincronizacionController extends WebController
     {
         try {
             $resultado = $this->stockSincronizacionService->corregirSincronizacion();
-            
+
             return Response::json([
                 'success' => true,
                 'message' => 'Corrección automática completada',
-                'data' => $resultado
+                'data' => $resultado,
             ]);
         } catch (\Exception $e) {
             Log::error('Error en corrección automática de stock', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return Response::json([
                 'success' => false,
                 'message' => 'Error en corrección automática',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }

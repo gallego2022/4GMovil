@@ -2,17 +2,24 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Base\WebController;
 use App\Models\Marca;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Base\WebController;
-use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\View;
 
 class MarcaController extends WebController
 {
+    private function forgetProductoFormCache(): void
+    {
+        Cache::forget('productos:form_data');
+    }
+
     public function index()
     {
         $marcas = Marca::all();
+
         return View::make('pages.admin.marcas.index', compact('marcas'));
     }
 
@@ -27,8 +34,9 @@ class MarcaController extends WebController
             'nombre' => 'required|string|max:255|unique:marcas,nombre',
         ]);
 
-       Marca::create($request->only('nombre'));
+        Marca::create($request->only('nombre'));
 
+        $this->forgetProductoFormCache();
 
         return Redirect::route('marcas.index')->with('mensaje', 'Marca Creada')->with('tipo', 'success');
     }
@@ -36,6 +44,7 @@ class MarcaController extends WebController
     public function edit($id)
     {
         $marca = Marca::findOrFail($id);
+
         return View::make('pages.admin.marcas.edit', compact('marca'));
     }
 
@@ -44,12 +53,14 @@ class MarcaController extends WebController
         $marca = Marca::findOrFail($id);
 
         $request->validate([
-            'nombre' => 'required|string|max:255|unique:marcas,nombre,' . $id . ',marca_id',
+            'nombre' => 'required|string|max:255|unique:marcas,nombre,'.$id.',marca_id',
         ]);
 
         $marca->update([
             'nombre' => $request->nombre,
         ]);
+
+        $this->forgetProductoFormCache();
 
         return Redirect::route('marcas.index')->with('mensaje', 'Marca Actualizada')->with('tipo', 'success');
     }
@@ -58,6 +69,8 @@ class MarcaController extends WebController
     {
         $marca = Marca::findOrFail($id);
         $marca->delete();
+
+        $this->forgetProductoFormCache();
 
         return Redirect::route('marcas.index')->with('mensaje', 'Marca Eliminada')->with('tipo', 'success');
     }

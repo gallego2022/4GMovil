@@ -6,10 +6,10 @@ use App\Http\Controllers\Base\WebController;
 use App\Models\LocalizationConfig;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Session;
 
 class LocalizationController extends WebController
 {
@@ -19,7 +19,7 @@ class LocalizationController extends WebController
     public function showConfigModal()
     {
         $config = LocalizationConfig::getConfigForUser(Auth::id());
-        
+
         $countries = [
             'CO' => ['name' => 'Colombia', 'flag' => '🇨🇴'],
             'US' => ['name' => 'Estados Unidos', 'flag' => '🇺🇸'],
@@ -83,9 +83,9 @@ class LocalizationController extends WebController
             if (Auth::check()) {
                 $userId = Auth::id();
                 $config = LocalizationConfig::where('usuario_id', $userId)->first();
-                
-                if (!$config) {
-                    $config = new LocalizationConfig();
+
+                if (! $config) {
+                    $config = new LocalizationConfig;
                     $config->usuario_id = $userId;
                 }
 
@@ -102,14 +102,13 @@ class LocalizationController extends WebController
                     'country_code' => $request->country_code,
                     'language_code' => $request->language_code,
                     'currency_code' => $request->currency_code,
-                ]
+                ],
             ]);
-
         } catch (\Exception $e) {
             return Response::json([
                 'success' => false,
                 'message' => __('messages.messages.save_error'),
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -120,7 +119,7 @@ class LocalizationController extends WebController
     public function changeLanguage($language)
     {
         $allowedLanguages = ['es', 'en', 'pt'];
-        
+
         if (in_array($language, $allowedLanguages)) {
             // Configuraciones por idioma
             $languageConfigs = [
@@ -128,7 +127,7 @@ class LocalizationController extends WebController
                 'en' => ['country' => 'US', 'currency' => 'USD'],
                 'pt' => ['country' => 'BR', 'currency' => 'BRL'],
             ];
-            
+
             $config = $languageConfigs[$language] ?? $languageConfigs['es'];
 
             // Si la sesión indica España, forzar EUR
@@ -136,21 +135,21 @@ class LocalizationController extends WebController
             if ($language === 'es' && $sessionCountry === 'ES') {
                 $config = ['country' => 'ES', 'currency' => 'EUR'];
             }
-            
+
             // Establecer locale
             App::setLocale($language);
             Session::put('locale', $language);
             Session::put('country', $config['country']);
             Session::put('currency', $config['currency']);
-            
+
             // Actualizar configuración del usuario si está autenticado
             if (Auth::check()) {
                 $userConfig = LocalizationConfig::where('usuario_id', Auth::id())->first();
-                if (!$userConfig) {
-                    $userConfig = new LocalizationConfig();
+                if (! $userConfig) {
+                    $userConfig = new LocalizationConfig;
                     $userConfig->usuario_id = Auth::id();
                 }
-                
+
                 $userConfig->language_code = $language;
                 $userConfig->country_code = $config['country'];
                 $userConfig->currency_code = $config['currency'];
@@ -168,16 +167,16 @@ class LocalizationController extends WebController
     {
         $userId = Auth::id();
         $config = LocalizationConfig::getConfigForUser($userId);
-        
+
         // Si no hay configuración, usar valores por defecto de la sesión
-        if (!$config->exists) {
+        if (! $config->exists) {
             $config = (object) [
                 'country_code' => Session::get('country', 'CO'),
                 'language_code' => Session::get('locale', 'es'),
                 'currency_code' => Session::get('currency', 'COP'),
             ];
         }
-        
+
         return Response::json([
             'config' => $config,
             'current_locale' => App::getLocale(),

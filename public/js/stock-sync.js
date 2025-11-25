@@ -5,9 +5,9 @@
 
 class StockSync {
     constructor() {
-        this.originalStock = null;
         this.currentStock = null;
         this.isVariantSelected = false;
+        this.activeProductId = null;
         this.init();
     }
 
@@ -17,14 +17,14 @@ class StockSync {
     }
 
     setupEventListeners() {
-        // Escuchar cambios en selección de variantes
+        // Escuchar cambios en selección de variantes (botones de color)
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('color-variant')) {
                 this.handleVariantSelection(e.target);
             }
         });
 
-        // Escuchar cierre de modales
+        // Escuchar cierre de modales (para otros sistemas de modales)
         document.addEventListener('hidden.bs.modal', (e) => {
             if (e.target.id === 'variantSelectionModal') {
                 this.handleModalClose();
@@ -33,31 +33,40 @@ class StockSync {
     }
 
     handleVariantSelection(variantElement) {
-        const stock = parseInt(variantElement.dataset.stock) || 0;
-        console.log('Variante seleccionada, stock:', stock);
+        const stockValue = variantElement.dataset.variantStock ?? variantElement.dataset.stock;
+        const stock = parseInt(stockValue) || 0;
+        const productId = variantElement.dataset.productId || null;
+        console.log('Variante seleccionada, stock:', stock, 'producto:', productId);
         
         this.currentStock = stock;
         this.isVariantSelected = true;
-        this.updateAllStockIndicators(stock);
+        this.activeProductId = productId;
+        this.updateAllStockIndicators(stock, productId);
     }
 
     handleModalClose() {
         // Siempre restaurar stock original al cerrar modal
-        this.restoreOriginalStock();
+        this.restoreOriginalStock(this.activeProductId);
+        this.activeProductId = null;
     }
 
-    updateAllStockIndicators(stock) {
-        console.log('Actualizando indicadores de stock:', stock);
+    updateAllStockIndicators(stock, productId = null) {
+        console.log('Actualizando indicadores de stock:', stock, 'para producto:', productId);
         
-        // Buscar todos los indicadores de stock
-        const stockIndicators = document.querySelectorAll('.stock-status');
+        const selector = productId ? `.stock-status[data-product-id="${productId}"]` : '.stock-status';
+        let stockIndicators = document.querySelectorAll(selector);
+
+        // Fallback: si no se encontró el producto específico, actualizar todos (caso legacy)
+        if (stockIndicators.length === 0 && productId) {
+            stockIndicators = document.querySelectorAll('.stock-status');
+        }
         
         stockIndicators.forEach(indicator => {
             this.updateStockIndicator(indicator, stock);
         });
 
-        // Actualizar elementos con data-stock
-        const stockElements = document.querySelectorAll('[data-stock]');
+        const stockElementsSelector = productId ? `[data-stock][data-product-id="${productId}"]` : '[data-stock]';
+        const stockElements = document.querySelectorAll(stockElementsSelector);
         stockElements.forEach(element => {
             element.textContent = stock > 0 ? `${stock} disponibles` : 'Agotado';
         });
@@ -79,7 +88,8 @@ class StockSync {
         // Actualizar barra de progreso
         const progressBar = indicator.querySelector('.stock-progress');
         if (progressBar) {
-            this.updateProgressBar(progressBar, stock);
+            const totalStock = parseInt(indicator.dataset.totalStock) || 0;
+            this.updateProgressBar(progressBar, stock, totalStock);
         }
     }
 
@@ -113,8 +123,7 @@ class StockSync {
         }
     }
 
-    updateProgressBar(element, stock) {
-        const totalStock = this.getTotalStock();
+    updateProgressBar(element, stock, totalStock) {
         const percentage = totalStock > 0 ? (stock / totalStock) * 100 : 0;
         element.style.width = `${percentage}%`;
         
@@ -129,59 +138,39 @@ class StockSync {
         }
     }
 
-    getTotalStock() {
-        // Intentar obtener el stock total del producto
-        const stockData = document.querySelector('[data-total-stock]');
-        if (stockData) {
-            return parseInt(stockData.dataset.totalStock) || 0;
-        }
-        
-        // Fallback: buscar en elementos de stock
-        const stockElements = document.querySelectorAll('.stock-status');
-        if (stockElements.length > 0) {
-            const firstElement = stockElements[0];
-            const progressBar = firstElement.querySelector('.stock-progress');
-            if (progressBar) {
-                const currentWidth = progressBar.style.width;
-                const currentStock = this.currentStock || 0;
-                if (currentWidth && currentStock > 0) {
-                    const percentage = parseFloat(currentWidth.replace('%', ''));
-                    return Math.round((currentStock / percentage) * 100);
-                }
-            }
-        }
-        
-        return 0;
-    }
-
-    restoreOriginalStock() {
-        console.log('Restaurando stock original');
+    restoreOriginalStock(productId = null) {
+        console.log('Restaurando stock original para producto:', productId);
         this.isVariantSelected = false;
         
-        // Buscar el stock original en los datos del producto
-        const originalStockElement = document.querySelector('[data-original-stock]');
-        if (originalStockElement) {
-            const originalStock = parseInt(originalStockElement.dataset.originalStock) || 0;
-            this.updateAllStockIndicators(originalStock);
+        const selector = productId ? `.stock-status[data-product-id="${productId}"]` : '.stock-status';
+        const indicators = document.querySelectorAll(selector);
+        if (indicators.length === 0) {
+            return;
         }
+
+        indicators.forEach(indicator => {
+            const originalStock = parseInt(indicator.dataset.originalStock) || 0;
+            this.updateStockIndicator(indicator, originalStock);
+        });
     }
 
     // Método público para actualizar stock desde código externo
-    updateStock(stock) {
+    updateStock(stock, productId = null) {
         this.currentStock = stock;
         this.isVariantSelected = true;
-        this.updateAllStockIndicators(stock);
+        this.activeProductId = productId ?? this.activeProductId;
+        this.updateAllStockIndicators(stock, this.activeProductId);
     }
 
     // Método público para restaurar stock original
-    resetStock() {
-        this.restoreOriginalStock();
+    resetStock(productId = null) {
+        this.restoreOriginalStock(productId ?? this.activeProductId);
     }
 
     // Método para actualización temporal (hover)
-    updateStockTemporary(stock) {
+    updateStockTemporary(stock, productId = null) {
         this.currentStock = stock;
-        this.updateAllStockIndicators(stock);
+        this.updateAllStockIndicators(stock, productId ?? this.activeProductId);
     }
 }
 

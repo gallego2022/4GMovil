@@ -1989,7 +1989,7 @@
                 
                 // Restaurar stock original si no se seleccionó variante
                 if (window.stockSync) {
-                    window.stockSync.resetStock();
+                    window.stockSync.resetStock(currentProductId);
                     console.log('Stock restaurado al cerrar modal');
                 }
                 
@@ -2115,7 +2115,7 @@
                 if (variantItem) {
                     variantItem.addEventListener('mouseenter', function() {
                         if (window.stockSync) {
-                            window.stockSync.updateStockTemporary(variante.stock_disponible);
+                            window.stockSync.updateStockTemporary(variante.stock_disponible, currentProductId);
                             console.log('Stock sincronizado en hover:', variante.stock_disponible);
                         }
                     });
@@ -2123,7 +2123,7 @@
                     variantItem.addEventListener('mouseleave', function() {
                         // Restaurar stock original al salir del hover
                         if (window.stockSync) {
-                            window.stockSync.resetStock();
+                            window.stockSync.resetStock(currentProductId);
                         }
                     });
                 }
@@ -2157,7 +2157,7 @@
                 
                 // Sincronizar stock con la variante seleccionada
                 if (window.stockSync) {
-                    window.stockSync.updateStock(variante.stock_disponible);
+                    window.stockSync.updateStock(variante.stock_disponible, currentProductId);
                     console.log('Stock sincronizado con variante:', variante.stock_disponible);
                 }
                 

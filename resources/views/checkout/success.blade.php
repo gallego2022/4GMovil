@@ -73,11 +73,12 @@
                     <div>
                         <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Estado</p>
                         @php
-                            $estadoClasses = getEstadoClasses($pedido->estado->nombre);
+                            $estadoNombre = optional($pedido->estado)->nombre ?? 'Pendiente';
+                            $estadoClasses = getEstadoClasses($estadoNombre);
                         @endphp
                         <span
                             class="inline-flex items-center rounded-md {{ $estadoClasses['bg'] }} px-2 py-1 text-xs font-medium {{ $estadoClasses['text'] }} ring-1 ring-inset {{ $estadoClasses['ring'] }}">
-                            {{ $pedido->estado->nombre }}
+                            {{ $estadoNombre }}
                         </span>
                     </div>
                 </div>
