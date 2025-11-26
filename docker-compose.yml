@@ -36,6 +36,7 @@ services:
       - STRIPE_KEY=${STRIPE_KEY}
       - STRIPE_SECRET=${STRIPE_SECRET}
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - REPORTES_SERVICE_URL=http://reportes:8081
     depends_on:
       - db
       - redis
@@ -118,6 +119,27 @@ services:
       - HTTP_PASSWORD=admin
     depends_on:
       - redis
+    networks:
+      - 4gmovil_network
+
+  reportes:
+    image: maven:3.9-eclipse-temurin-17
+    container_name: 4gmovil_reportes
+    restart: unless-stopped
+    working_dir: /usr/src/app
+    volumes:
+      - ./reportes-service:/usr/src/app
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/4gmovil?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&sslMode=DISABLED
+      - SPRING_DATASOURCE_USERNAME=laraveluser
+      - SPRING_DATASOURCE_PASSWORD=laravelpass
+      - JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8
+      - SERVER_PORT=8081
+    depends_on:
+      - db
+    command: ["bash", "-lc", "mvn -U -q -DskipTests clean package spring-boot:repackage && java -jar target/reportes-service-0.0.1-SNAPSHOT.jar"]
+    ports:
+      - "8082:8081"
     networks:
       - 4gmovil_network
 

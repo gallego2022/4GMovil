@@ -204,6 +204,61 @@
         </div>
     </div>
 
+    <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Ventas del Período</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="ventas-resumen">
+            <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+                <div class="flex items-center">
+                    <div class="p-2 bg-green-100 dark:bg-green-800 rounded-full">
+                        <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/></svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Ingresos</p>
+                        <p class="text-lg font-semibold text-gray-900 dark:text-white" id="ingresos-total">$0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                <div class="flex items-center">
+                    <div class="p-2 bg-blue-100 dark:bg-blue-800 rounded-full">
+                        <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Pedidos Completados</p>
+                        <p class="text-lg font-semibold text-gray-900 dark:text-white" id="pedidos-completados">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
+                <div class="flex items-center">
+                    <div class="p-2 bg-purple-100 dark:bg-purple-800 rounded-full">
+                        <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707-.293l-2.414-2.414a1 1 0 01-.707-.293H6.586a1 1 0 00-.707.293L3.707 12.707A1 1 0 004.586 13H2"/></svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Ticket Promedio</p>
+                        <p class="text-lg font-semibold text-gray-900 dark:text-white" id="ticket-promedio">$0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Top Productos Vendidos</h3>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700" id="top-productos">
+                <thead class="bg-gray-50 dark:bg-gray-800">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Producto</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Cantidad</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Ingresos</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700"></tbody>
+            </table>
+        </div>
+    </div>
+
     <!-- Alertas de Inventario -->
     <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Alertas de Inventario</h3>
@@ -541,6 +596,51 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Validación inicial al cargar la página
     validarFechas();
+
+    function formatoMonto(n) {
+        try { return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(Number(n || 0)); } catch { return `$${Number(n||0).toFixed(0)}` }
+    }
+
+    async function cargarVentasResumen() {
+        const desde = fechaInicio.value || '{{ $fecha_inicio->format('Y-m-d') }}';
+        const hasta = fechaFin.value || '{{ $fecha_fin->format('Y-m-d') }}';
+        const url = `/admin/api/reportes/ventas/resumen?desde=${desde}&hasta=${hasta}`;
+        const res = await fetch(url);
+        if (!res.ok) return;
+        const json = await res.json();
+        document.getElementById('ingresos-total').textContent = formatoMonto(json.totalVentas);
+        document.getElementById('pedidos-completados').textContent = Number(json.totalPedidosCompletados || 0);
+        document.getElementById('ticket-promedio').textContent = formatoMonto(json.ticketPromedio);
+    }
+
+    async function cargarTopProductos() {
+        const desde = fechaInicio.value || '{{ $fecha_inicio->format('Y-m-d') }}';
+        const hasta = fechaFin.value || '{{ $fecha_fin->format('Y-m-d') }}';
+        const categoriaId = document.getElementById('categoria_id')?.value || '';
+        const marcaId = document.getElementById('marca_id')?.value || '';
+        const params = new URLSearchParams({ desde, hasta, length: 10, draw: 1 });
+        if (categoriaId) params.append('categoria_id', categoriaId);
+        if (marcaId) params.append('marca_id', marcaId);
+        const url = `/admin/api/reportes/ventas/top-productos-dt?${params.toString()}`;
+        const res = await fetch(url);
+        if (!res.ok) return;
+        const json = await res.json();
+        const tbody = document.querySelector('#top-productos tbody');
+        tbody.innerHTML = '';
+        (json.data || []).forEach(r => {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-gray-50 dark:hover:bg-gray-800';
+            tr.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">${r.producto}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">${r.cantidad}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">${formatoMonto(r.ingresos)}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    cargarVentasResumen();
+    cargarTopProductos();
 });
 </script>
 @endsection
