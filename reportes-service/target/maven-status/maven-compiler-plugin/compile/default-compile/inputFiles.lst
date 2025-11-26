@@ -1,0 +1,7 @@
+/usr/src/app/src/main/java/com/4gmovil/reportes/ReportesApplication.java
+/usr/src/app/src/main/java/com/4gmovil/reportes/controller/ReportesController.java
+/usr/src/app/src/main/java/com/4gmovil/reportes/dto/PedidosPorEstadoDTO.java
+/usr/src/app/src/main/java/com/4gmovil/reportes/dto/TopProductoDTO.java
+/usr/src/app/src/main/java/com/4gmovil/reportes/dto/VentasResumenDTO.java
+/usr/src/app/src/main/java/com/4gmovil/reportes/service/ReportesService.java
+/usr/src/app/src/main/java/com/movil4g/reportes/web/GlobalExceptionHandler.java

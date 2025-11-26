@@ -207,5 +207,11 @@ Route::middleware([
             
             return response()->json(['exists' => $exists]);
         })->name('check-email');
+
+        Route::prefix('reportes')->name('reportes.')->group(function () {
+            Route::get('/ventas/resumen', [\App\Http\Controllers\Admin\ReportesGatewayController::class, 'ventasResumen'])->name('ventas.resumen');
+            Route::get('/ventas/top-productos-dt', [\App\Http\Controllers\Admin\ReportesGatewayController::class, 'topProductosDt'])->name('ventas.top-productos-dt');
+            Route::get('/pedidos/por-estado-dt', [\App\Http\Controllers\Admin\ReportesGatewayController::class, 'pedidosPorEstadoDt'])->name('pedidos.por-estado-dt');
+        });
     });
 });
