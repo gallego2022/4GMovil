@@ -27,8 +27,7 @@
         }
     </script>
 
-    <!-- Critical Scripts -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Alpine.js se carga desde app.js (Vite) -->
 
     <!-- DataTables CSS - Load only when needed -->
     @stack('datatables-css')
@@ -1277,13 +1276,19 @@
         </div>
     </div>
 
+    <!-- Componente de notificaciones personalizadas -->
+    @include('components.notifications')
+    
+    <!-- Componente de modal de confirmación personalizado -->
+    @include('components.confirm-modal-custom')
+
     <!-- Load jQuery only when needed -->
     @stack('jquery-script')
 
     <!-- Load DataTables only when needed -->
     @stack('datatables-script')
 
-    <!-- Sistema de confirmación modal (debe cargarse antes que sweet-alerts) -->
+    <!-- Sistema de confirmación modal (debe cargarse antes que otros scripts) -->
     <script src="{{ asset('js/confirm-modal.js') }}"></script>
 
     <!-- SweetAlert2 Scripts -->

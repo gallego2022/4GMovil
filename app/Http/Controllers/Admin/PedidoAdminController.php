@@ -4,16 +4,25 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Base\WebController;
 use App\Models\Pedido;
-use App\Services\PedidoNotificationService;
-use App\Services\ReservaStockService;
+use App\Services\Notification\PedidoNotificationService;
+use App\Services\Inventory\ReservaStockService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Contracts\View\View as ViewView;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 
+/**
+ * Controlador de administración para gestión avanzada de pedidos.
+ *
+ * Administra listado, detalle, cambios de estado, notificaciones y
+ * sincronización de stock asociado a los pedidos.
+ */
 class PedidoAdminController extends WebController
 {
     public function __construct()
@@ -21,7 +30,12 @@ class PedidoAdminController extends WebController
         $this->middleware(['auth']);
     }
 
-    public function index()
+    /**
+     * Listado de pedidos (admin).
+     *
+     * @return ViewView|RedirectResponse Vista con paginación o redirección en error
+     */
+    public function index(): ViewView|RedirectResponse
     {
         try {
             $pedidos = Pedido::with(['usuario', 'estado', 'pago.metodoPago', 'direccion'])
@@ -36,7 +50,13 @@ class PedidoAdminController extends WebController
         }
     }
 
-    public function show($id)
+    /**
+     * Detalle de pedido (admin).
+     *
+     * @param int $id Pedido ID
+     * @return ViewView|RedirectResponse Vista de detalle o redirección en error
+     */
+    public function show(int $id): ViewView|RedirectResponse
     {
         try {
             $pedido = Pedido::with([
@@ -55,11 +75,19 @@ class PedidoAdminController extends WebController
         }
     }
 
-    public function updateEstado(Request $request, $id)
+    /**
+     * Actualizar estado del pedido (admin).
+     *
+     * @param Request $request Datos de estado
+     * @param int $id Pedido ID
+     * @return RedirectResponse Redirección con mensaje de estado
+     */
+    public function updateEstado(Request $request, int $id): RedirectResponse
     {
         try {
             $request->validate([
                 'estado_id' => 'required|exists:estados_pedido,estado_id',
+                'motivo_cancelacion' => 'exclude_unless:estado_id,3|required|string|min:5',
             ]);
 
             $pedido = Pedido::with(['detalles.producto', 'usuario', 'estado'])->findOrFail($id);
@@ -75,7 +103,7 @@ class PedidoAdminController extends WebController
                     'pedido_id' => $pedido->pedido_id,
                     'estado_actual' => $estadoActual,
                     'nuevo_estado' => $nuevoEstado,
-                    'admin_id' => auth()->id(),
+                    'admin_id' => Auth::id(),
                 ]);
 
                 return Redirect::back()
@@ -95,8 +123,7 @@ class PedidoAdminController extends WebController
             $pedido->estado_id = $nuevoEstado;
             $pedido->save();
 
-            // Enviar correo según el tipo de cambio de estado
-            $this->enviarCorreoSegunEstado($pedido, $estadoAnterior, $nuevoEstado);
+            $this->enviarCorreoSegunEstado($pedido, $estadoAnterior, $nuevoEstado, $request->input('motivo_cancelacion'));
 
             Log::info('Estado de pedido actualizado', [
                 'pedido_id' => $pedido->pedido_id,
@@ -118,7 +145,10 @@ class PedidoAdminController extends WebController
     /**
      * Enviar correo según el tipo de cambio de estado
      */
-    private function enviarCorreoSegunEstado(Pedido $pedido, int $estadoAnterior, int $nuevoEstado): void
+    /**
+     * Enviar correo según el tipo de cambio de estado.
+     */
+    private function enviarCorreoSegunEstado(Pedido $pedido, int $estadoAnterior, int $nuevoEstado, ?string $motivo = null): void
     {
         // Estados pendientes
         $estadosPendientes = [1]; // Pendiente
@@ -135,16 +165,19 @@ class PedidoAdminController extends WebController
         }
         // Si pasa de pendiente a cancelado/rechazado
         elseif (in_array($estadoAnterior, $estadosPendientes) && in_array($nuevoEstado, $estadosCancelados)) {
-            $this->enviarCorreoCancelacion($pedido);
+            $this->enviarCorreoCancelacion($pedido, $motivo);
         }
         // Si pasa de confirmado a cancelado (cancelación post-confirmación)
         elseif (in_array($estadoAnterior, $estadosConfirmados) && in_array($nuevoEstado, $estadosCancelados)) {
-            $this->enviarCorreoCancelacion($pedido);
+            $this->enviarCorreoCancelacion($pedido, $motivo);
         }
     }
 
     /**
      * Determinar si se debe enviar correo de confirmación
+     */
+    /**
+     * Determinar si se debe enviar correo de confirmación.
      */
     private function debeEnviarCorreoConfirmacion(int $estadoAnterior, int $nuevoEstado): bool
     {
@@ -160,6 +193,9 @@ class PedidoAdminController extends WebController
 
     /**
      * Enviar correo de confirmación del pedido
+     */
+    /**
+     * Enviar correo de confirmación del pedido.
      */
     private function enviarCorreoConfirmacion(Pedido $pedido): void
     {
@@ -184,16 +220,14 @@ class PedidoAdminController extends WebController
     /**
      * Enviar correo de cancelación del pedido
      */
-    private function enviarCorreoCancelacion(Pedido $pedido): void
+    /**
+     * Enviar correo de cancelación del pedido.
+     */
+    private function enviarCorreoCancelacion(Pedido $pedido, ?string $motivo = null): void
     {
         try {
-            // Por ahora, para cancelaciones usamos el mailable existente
-            // En el futuro se puede crear un método específico en PedidoNotificationService
-            $pedidoUrl = Route::route('pedidos.show', $pedido->pedido_id);
-
-            // Enviar correo de cancelación usando el mailable existente
             Mail::to($pedido->usuario->correo_electronico)
-                ->send(new \App\Mail\PedidoCancelado($pedido->usuario, $pedido, $pedidoUrl));
+                ->send(new \App\Mail\PedidoCancelado($pedido->usuario, $pedido, $motivo));
 
             Log::info('Correo de cancelación enviado', [
                 'pedido_id' => $pedido->pedido_id,
@@ -211,6 +245,9 @@ class PedidoAdminController extends WebController
 
     /**
      * Manejar el stock reservado según el cambio de estado del pedido
+     */
+    /**
+     * Manejar el stock reservado según el cambio de estado del pedido.
      */
     private function manejarStockReservado(Pedido $pedido, int $estadoAnterior, int $nuevoEstado): void
     {
@@ -372,6 +409,10 @@ class PedidoAdminController extends WebController
     /**
      * Verificar si un pedido permite cambio de estado
      * Los pedidos cancelados o confirmados no permiten cambios
+     */
+    /**
+     * Verificar si un pedido permite cambio de estado.
+     * Los pedidos cancelados o confirmados no permiten cambios.
      */
     private function pedidoNoPermiteCambioEstado($pedido): bool
     {

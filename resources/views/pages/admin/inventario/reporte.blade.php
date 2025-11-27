@@ -605,12 +605,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const desde = fechaInicio.value || '{{ $fecha_inicio->format('Y-m-d') }}';
         const hasta = fechaFin.value || '{{ $fecha_fin->format('Y-m-d') }}';
         const url = `/admin/api/reportes/ventas/resumen?desde=${desde}&hasta=${hasta}`;
-        const res = await fetch(url);
-        if (!res.ok) return;
-        const json = await res.json();
-        document.getElementById('ingresos-total').textContent = formatoMonto(json.totalVentas);
-        document.getElementById('pedidos-completados').textContent = Number(json.totalPedidosCompletados || 0);
-        document.getElementById('ticket-promedio').textContent = formatoMonto(json.ticketPromedio);
+        try {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const json = await res.json();
+            document.getElementById('ingresos-total').textContent = formatoMonto(json.totalVentas);
+            document.getElementById('pedidos-completados').textContent = Number(json.totalPedidosCompletados || 0);
+            document.getElementById('ticket-promedio').textContent = formatoMonto(json.ticketPromedio);
+        } catch (e) {
+            mostrarMensaje('No se pudieron cargar los datos de ventas del microservicio', 'error');
+        }
     }
 
     async function cargarTopProductos() {
@@ -622,21 +626,32 @@ document.addEventListener('DOMContentLoaded', function() {
         if (categoriaId) params.append('categoria_id', categoriaId);
         if (marcaId) params.append('marca_id', marcaId);
         const url = `/admin/api/reportes/ventas/top-productos-dt?${params.toString()}`;
-        const res = await fetch(url);
-        if (!res.ok) return;
-        const json = await res.json();
-        const tbody = document.querySelector('#top-productos tbody');
-        tbody.innerHTML = '';
-        (json.data || []).forEach(r => {
-            const tr = document.createElement('tr');
-            tr.className = 'hover:bg-gray-50 dark:hover:bg-gray-800';
-            tr.innerHTML = `
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">${r.producto}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">${r.cantidad}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">${formatoMonto(r.ingresos)}</td>
-            `;
-            tbody.appendChild(tr);
-        });
+        try {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const json = await res.json();
+            const tbody = document.querySelector('#top-productos tbody');
+            tbody.innerHTML = '';
+            const rows = (json.data || []);
+            if (rows.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="3" class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">Sin datos para el período seleccionado</td>`;
+                tbody.appendChild(tr);
+                return;
+            }
+            rows.forEach(r => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-50 dark:hover:bg-gray-800';
+                tr.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">${r.producto}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">${r.cantidad}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">${formatoMonto(r.ingresos)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } catch (e) {
+            mostrarMensaje('No se pudieron cargar los top productos del microservicio', 'error');
+        }
     }
 
     cargarVentasResumen();

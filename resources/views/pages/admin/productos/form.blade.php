@@ -167,8 +167,9 @@
                            name="costo_unitario" 
                            id="costo_unitario"
                            min="0"
+                           step="0.01"
                            placeholder="Se calcula automáticamente"
-                           disabled
+                           readonly
                            class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 pl-7 shadow-sm bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400 sm:text-sm cursor-not-allowed transition-colors duration-200 @error('costo_unitario') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
                            value="{{ old('costo_unitario', isset($producto) && isset($producto->costo_unitario) ? $producto->costo_unitario : '') }}">
                 </div>
@@ -228,50 +229,50 @@
                  @enderror
              </div>
 
-             <!-- Stock Mínimo (Umbral Crítico) -->
+             <!-- Umbral Crítico (20% del Stock Inicial) -->
              <div>
-                 <label for="stock_minimo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                 <label for="umbral_stock_critico" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                      Umbral Crítico (20% del Stock Inicial)
                  </label>
                  <input type="number" 
-                        name="stock_minimo" 
-                        id="stock_minimo"
+                        name="umbral_stock_critico" 
+                        id="umbral_stock_critico"
                         min="0"
                         placeholder="0"
-                        disabled
-                        class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 sm:text-sm cursor-not-allowed transition-colors duration-200 @error('stock_minimo') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
-                        value="{{ old('stock_minimo', isset($producto) && isset($producto->stock_minimo) ? $producto->stock_minimo : 0) }}">
+                        readonly
+                        class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 sm:text-sm cursor-not-allowed transition-colors duration-200 @error('umbral_stock_critico') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
+                        value="{{ old('umbral_stock_critico', isset($producto) && isset($producto->umbral_stock_critico) ? $producto->umbral_stock_critico : (isset($producto) && $producto->stock_inicial > 0 ? ceil($producto->stock_inicial * 0.2) : 0)) }}">
                  <p class="mt-1 text-xs text-blue-600 dark:text-blue-400">
                      <span class="font-medium">Se calcula automáticamente:</span> 20% del stock inicial
-                     @if(isset($producto) && $producto->stock > 0)
-                         <br><span class="text-gray-500">Ejemplo: Stock inicial {{ $producto->stock }} → Umbral crítico {{ ceil($producto->stock * 0.2) }}</span>
+                     @if(isset($producto) && $producto->stock_inicial > 0)
+                         <br><span class="text-gray-500">Ejemplo: Stock inicial {{ $producto->stock_inicial }} → Umbral crítico {{ ceil($producto->stock_inicial * 0.2) }}</span>
                      @endif
                  </p>
-                 @error('stock_minimo')
+                 @error('umbral_stock_critico')
                      <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                  @enderror
              </div>
 
-             <!-- Stock Máximo (Umbral Bajo) -->
+             <!-- Umbral Bajo (60% del Stock Inicial) -->
              <div>
-                 <label for="stock_maximo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                 <label for="umbral_stock_bajo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                      Umbral Bajo (60% del Stock Inicial)
                  </label>
                  <input type="number" 
-                        name="stock_maximo" 
-                        id="stock_maximo"
+                        name="umbral_stock_bajo" 
+                        id="umbral_stock_bajo"
                         min="0"
                         placeholder="0"
-                        disabled
-                        class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 sm:text-sm cursor-not-allowed transition-colors duration-200 @error('stock_maximo') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
-                        value="{{ old('stock_maximo', isset($producto) && isset($producto->stock_maximo) ? $producto->stock_maximo : 0) }}">
+                        readonly
+                        class="block w-full px-4 py-3 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 sm:text-sm cursor-not-allowed transition-colors duration-200 @error('umbral_stock_bajo') border-red-300 dark:border-red-600 text-red-900 dark:text-red-200 placeholder-red-300 dark:placeholder-red-500 focus:border-red-500 focus:ring-red-500 @enderror" 
+                        value="{{ old('umbral_stock_bajo', isset($producto) && isset($producto->umbral_stock_bajo) ? $producto->umbral_stock_bajo : (isset($producto) && $producto->stock_inicial > 0 ? ceil($producto->stock_inicial * 0.6) : 0)) }}">
                  <p class="mt-1 text-xs text-yellow-600 dark:text-yellow-400">
                      <span class="font-medium">Se calcula automáticamente:</span> 60% del stock inicial
-                     @if(isset($producto) && $producto->stock > 0)
-                         <br><span class="text-gray-500">Ejemplo: Stock inicial {{ $producto->stock }} → Umbral bajo {{ ceil($producto->stock * 0.6) }}</span>
+                     @if(isset($producto) && $producto->stock_inicial > 0)
+                         <br><span class="text-gray-500">Ejemplo: Stock inicial {{ $producto->stock_inicial }} → Umbral bajo {{ ceil($producto->stock_inicial * 0.6) }}</span>
                      @endif
                  </p>
-                 @error('stock_maximo')
+                 @error('umbral_stock_bajo')
                      <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                  @enderror
              </div>
@@ -539,11 +540,26 @@
     let valoresEspecificaciones = {};
 
     // Cálculo automático del costo unitario
-    document.getElementById('precio').addEventListener('input', function() {
-        const precio = parseFloat(this.value) || 0;
-        const costoUnitario = precio * 0.7; // 70% del precio
-        document.getElementById('costo_unitario').value = costoUnitario.toFixed(2);
-    });
+    const precioInput = document.getElementById('precio');
+    const costoUnitarioInput = document.getElementById('costo_unitario');
+    
+    function calcularCostoUnitario() {
+        const precio = parseFloat(precioInput.value) || 0;
+        if (precio > 0) {
+            const costoUnitario = precio * 0.7; // 70% del precio
+            costoUnitarioInput.value = costoUnitario.toFixed(2);
+        } else {
+            costoUnitarioInput.value = '';
+        }
+    }
+    
+    // Calcular al cambiar el precio
+    precioInput.addEventListener('input', calcularCostoUnitario);
+    
+    // Calcular al cargar la página si ya hay un precio
+    if (precioInput.value && parseFloat(precioInput.value) > 0) {
+        calcularCostoUnitario();
+    }
 
     // Cargar especificaciones cuando cambie la categoría
     document.getElementById('categoria_id').addEventListener('change', function() {
@@ -558,24 +574,31 @@
     // Función para cargar especificaciones
     async function cargarEspecificaciones(categoriaId) {
         try {
-            const response = await fetch(`/api/especificaciones/${categoriaId}`);
-            
+            const url = "{{ route('admin.especificaciones.by-categoria', ['categoriaId' => '__ID__']) }}".replace('__ID__', categoriaId);
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
             const especificaciones = await response.json();
-            
-            especificacionesActuales = especificaciones;
-            renderizarEspecificaciones(especificaciones);
-            
-            // Si hay valores de especificaciones existentes, re-renderizar después de un breve delay
+            if (!Array.isArray(especificaciones) && especificaciones && especificaciones.success === false) {
+                mostrarError(especificaciones.message || 'No se pudieron obtener las especificaciones de la categoría.');
+                limpiarEspecificaciones();
+                return;
+            }
+            const data = Array.isArray(especificaciones) ? especificaciones : (especificaciones.data || []);
+            especificacionesActuales = data;
+            renderizarEspecificaciones(data);
             if (Object.keys(valoresEspecificaciones).length > 0) {
                 setTimeout(() => {
-                    renderizarEspecificaciones(especificaciones);
+                    renderizarEspecificaciones(data);
                 }, 300);
             }
-            
         } catch (error) {
             mostrarError('Error al cargar las especificaciones de la categoría: ' + error.message);
         }
@@ -762,10 +785,29 @@
                 break;
                 
             case 'radio':
-                const opcionesRadio = espec.opciones_array || [];
+                let opcionesRadio = [];
+                if (espec.opciones_array && Array.isArray(espec.opciones_array)) {
+                    opcionesRadio = espec.opciones_array;
+                } else if (espec.opciones && typeof espec.opciones === 'string') {
+                    if (espec.opciones.startsWith('[') && espec.opciones.endsWith(']')) {
+                        try {
+                            opcionesRadio = JSON.parse(espec.opciones);
+                        } catch (e) {
+                            opcionesRadio = espec.opciones.split(',').map(op => op.trim());
+                        }
+                    } else {
+                        opcionesRadio = espec.opciones.split(',').map(op => op.trim());
+                    }
+                } else if (espec.opciones && Array.isArray(espec.opciones)) {
+                    opcionesRadio = espec.opciones;
+                } else {
+                    opcionesRadio = ['Opción 1', 'Opción 2'];
+                }
                 let radioHtml = '';
                 opcionesRadio.forEach((opcion, radioIndex) => {
-                    const checked = valorActual === opcion ? 'checked' : '';
+                    const valorActualNormalizado = valorActual ? String(valorActual).trim() : '';
+                    const opcionNormalizada = String(opcion).trim();
+                    const checked = valorActualNormalizado === opcionNormalizada ? 'checked' : '';
                     radioHtml += `
                         <div class="flex items-center">
                             <input type="radio" 
@@ -774,14 +816,16 @@
                                    value="${opcion}"
                                    ${checked}
                                    class="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 transition-colors duration-200"
-                                   ${espec.requerido ? 'required' : ''}>
+                                   ${espec.requerido ? 'required' : ''}
+                                   data-field-name="especificaciones[${espec.nombre_campo}]"
+                                   data-rules='${JSON.stringify(espec.requerido ? ['required'] : [])}'
+                                   data-messages='${JSON.stringify(espec.requerido ? {required: `${espec.etiqueta} es requerido`} : {})}'>
                             <label for="espec_${espec.nombre_campo}_${radioIndex}" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
                                 ${opcion}
                             </label>
                         </div>
                     `;
                 });
-                
                 campo = `
                     <div class="space-y-2">
                         ${radioHtml}
@@ -804,7 +848,7 @@
         }
         
         return `
-            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600 validation-field">
                 <div class="mb-2">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                         ${espec.etiqueta}${unidad} ${requerido}
@@ -836,37 +880,51 @@
         especificacionesActuales.forEach(espec => {
             const campo = document.getElementById(`espec_${espec.nombre_campo}`);
             if (campo) {
-                // Event listeners para guardar valores
                 campo.addEventListener('change', function() {
                     guardarValorEspecificacion(espec.nombre_campo, this.value);
                 });
-                
                 if (espec.tipo_campo === 'checkbox') {
                     campo.addEventListener('change', function() {
                         guardarValorEspecificacion(espec.nombre_campo, this.checked ? '1' : '0');
                     });
                 }
-                
-                // Registrar campo con el sistema de validación
-                // Verificar que ValidationSystem esté completamente inicializado
                 if (window.ValidationSystem && typeof window.ValidationSystem.addRule === 'function') {
                     const rules = JSON.parse(campo.getAttribute('data-rules') || '[]');
                     const messages = JSON.parse(campo.getAttribute('data-messages') || '{}');
-                    
                     if (rules.length > 0) {
                         window.ValidationSystem.addRule(campo.name, rules);
                         if (Object.keys(messages).length > 0) {
                             window.ValidationSystem.addMessage(campo.name, messages);
                         }
-                        
-                        // Marcar campo como requerido si tiene la regla 'required'
                         if (rules.includes('required')) {
                             campo.setAttribute('data-required', 'true');
                         }
-                        
-                        // Registrar el campo dinámico
-                        if (typeof window.ValidationSystem.registerDynamicField === 'function') {
-                            window.ValidationSystem.registerDynamicField(campo);
+                    }
+                    if (typeof window.ValidationSystem.setupFieldValidation === 'function') {
+                        window.ValidationSystem.setupFieldValidation(campo);
+                    }
+                }
+            } else if (espec.tipo_campo === 'radio') {
+                const radios = document.querySelectorAll(`input[type="radio"][name="especificaciones[${espec.nombre_campo}]"]`);
+                if (radios.length > 0) {
+                    radios.forEach(r => {
+                        r.addEventListener('change', function() {
+                            const seleccionado = document.querySelector(`input[type="radio"][name="especificaciones[${espec.nombre_campo}]"]:checked`);
+                            guardarValorEspecificacion(espec.nombre_campo, seleccionado ? seleccionado.value : '');
+                        });
+                        if (window.ValidationSystem && typeof window.ValidationSystem.setupFieldValidation === 'function') {
+                            window.ValidationSystem.setupFieldValidation(r);
+                        }
+                    });
+                    if (window.ValidationSystem && typeof window.ValidationSystem.addRule === 'function') {
+                        const first = radios[0];
+                        const rules = JSON.parse(first.getAttribute('data-rules') || '[]');
+                        const messages = JSON.parse(first.getAttribute('data-messages') || '{}');
+                        if (rules.length > 0) {
+                            window.ValidationSystem.addRule(first.name, rules);
+                            if (Object.keys(messages).length > 0) {
+                                window.ValidationSystem.addMessage(first.name, messages);
+                            }
                         }
                     }
                 }
@@ -1755,54 +1813,82 @@
           }
       });
      
-     // Validación de formulario mejorada
-    document.querySelector('form').addEventListener('submit', function(e) {
-        // Asegurar que el token CSRF esté presente
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        if (!csrfToken) {
-            console.error('Token CSRF no encontrado');
-            e.preventDefault();
-            alert('Error: Token CSRF no encontrado. Por favor, recarga la página.');
-            return;
-        }
-        
-        // Verificar que el campo _token esté presente
-        let tokenInput = this.querySelector('input[name="_token"]');
-        if (!tokenInput) {
-            // Crear el campo _token si no existe
-            tokenInput = document.createElement('input');
-            tokenInput.type = 'hidden';
-            tokenInput.name = '_token';
-            tokenInput.value = csrfToken;
-            this.appendChild(tokenInput);
-        } else {
-            // Actualizar el valor del token
-            tokenInput.value = csrfToken;
-        }
-        
-        const requiredFields = this.querySelectorAll('[required]');
-        let isValid = true;
-        
-        requiredFields.forEach(field => {
-            if (!field.value.trim()) {
-                field.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
-                isValid = false;
-            } else {
-                field.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
-            }
-        });
-        
-        if (!isValid) {
-            e.preventDefault();
-            alert('Por favor completa todos los campos requeridos.');
-        }
-    });
+     // Validación de formulario mejorada - Movido dentro de DOMContentLoaded para evitar conflictos
+    // Este código se maneja en el bloque DOMContentLoaded más abajo
 
-    // JavaScript para cálculos dinámicos
+    // JavaScript para cálculos dinámicos y manejo del formulario
     document.addEventListener('DOMContentLoaded', function() {
+        // Manejo del submit del formulario - asegurar token CSRF actualizado
+        const form = document.querySelector('form');
+        if (form) {
+            // Asegurar que solo haya un listener
+            form.addEventListener('submit', function(e) {
+                // Obtener el token CSRF del meta tag
+                const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+                if (!csrfMeta) {
+                    console.error('Meta tag CSRF no encontrado');
+                    e.preventDefault();
+                    alert('Error: Token CSRF no encontrado. Por favor, recarga la página.');
+                    return false;
+                }
+                
+                const csrfToken = csrfMeta.getAttribute('content');
+                if (!csrfToken) {
+                    console.error('Token CSRF vacío');
+                    e.preventDefault();
+                    alert('Error: Token CSRF vacío. Por favor, recarga la página.');
+                    return false;
+                }
+                
+                // Asegurar que el campo _token esté presente y actualizado
+                let tokenInput = this.querySelector('input[name="_token"]');
+                if (!tokenInput) {
+                    // Crear el campo _token si no existe
+                    tokenInput = document.createElement('input');
+                    tokenInput.type = 'hidden';
+                    tokenInput.name = '_token';
+                    tokenInput.value = csrfToken;
+                    this.insertBefore(tokenInput, this.firstChild);
+                } else {
+                    // Actualizar el valor del token para asegurar que esté actualizado
+                    tokenInput.value = csrfToken;
+                }
+                
+                // Validación básica de campos requeridos (solo campos editables)
+                const requiredFields = this.querySelectorAll('[required]:not([readonly]):not([disabled])');
+                let isValid = true;
+                const firstInvalidField = [];
+                
+                requiredFields.forEach(field => {
+                    if (!field.value || !field.value.trim()) {
+                        field.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+                        isValid = false;
+                        if (firstInvalidField.length === 0) {
+                            firstInvalidField.push(field);
+                        }
+                    } else {
+                        field.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+                    }
+                });
+                
+                if (!isValid) {
+                    e.preventDefault();
+                    if (firstInvalidField.length > 0) {
+                        firstInvalidField[0].focus();
+                        firstInvalidField[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    alert('Por favor completa todos los campos requeridos.');
+                    return false;
+                }
+                
+                // El formulario se enviará normalmente si pasa todas las validaciones
+                return true;
+            }, { once: false, passive: false });
+        }
+        
         const stockInicialInput = document.getElementById('stock_inicial');
-        const stockMinimoInput = document.getElementById('stock_minimo');
-        const stockMaximoInput = document.getElementById('stock_maximo');
+        const umbralCriticoInput = document.getElementById('umbral_stock_critico');
+        const umbralBajoInput = document.getElementById('umbral_stock_bajo');
         
         // Función para calcular y mostrar los umbrales
         function calcularUmbrales() {
@@ -1813,30 +1899,46 @@
                 const umbralBajo = Math.ceil((stockInicial * 60) / 100);
                 const umbralCritico = Math.ceil((stockInicial * 20) / 100);
                 
-                // Actualizar campos
-                stockMinimoInput.value = umbralCritico;
-                stockMaximoInput.value = umbralBajo;
+                // Actualizar campos (readonly permite que se envíen en el formulario)
+                if (umbralCriticoInput) {
+                    umbralCriticoInput.value = umbralCritico;
+                }
+                if (umbralBajoInput) {
+                    umbralBajoInput.value = umbralBajo;
+                }
                 
                 // Actualizar ejemplos en los labels
                 actualizarEjemplos(stockInicial, umbralBajo, umbralCritico);
                 
                 // Marcar campos con colores apropiados
-                stockMinimoInput.style.backgroundColor = '#dbeafe'; // bg-blue-50
-                stockMaximoInput.style.backgroundColor = '#fef3c7'; // bg-yellow-50
+                if (umbralCriticoInput) {
+                    umbralCriticoInput.style.backgroundColor = '#dbeafe'; // bg-blue-50
+                }
+                if (umbralBajoInput) {
+                    umbralBajoInput.style.backgroundColor = '#fef3c7'; // bg-yellow-50
+                }
                 
                 // Mostrar información de que se actualizarán al guardar
                 mostrarInfoActualizacion();
             } else {
                 // Si no hay stock inicial, mostrar 0
-                stockMinimoInput.value = 0;
-                stockMaximoInput.value = 0;
+                if (umbralCriticoInput) {
+                    umbralCriticoInput.value = 0;
+                }
+                if (umbralBajoInput) {
+                    umbralBajoInput.value = 0;
+                }
                 
                 // Limpiar ejemplos
                 ocultarEjemplos();
                 
                 // Colorear inputs en gris
-                stockMinimoInput.style.backgroundColor = '#f3f4f6'; // bg-gray-100
-                stockMaximoInput.style.backgroundColor = '#f3f4f6'; // bg-gray-100
+                if (umbralCriticoInput) {
+                    umbralCriticoInput.style.backgroundColor = '#f3f4f6'; // bg-gray-100
+                }
+                if (umbralBajoInput) {
+                    umbralBajoInput.style.backgroundColor = '#f3f4f6'; // bg-gray-100
+                }
                 
                 // Ocultar información de actualización
                 ocultarInfoActualizacion();
@@ -1845,17 +1947,17 @@
         
         // Función para actualizar los ejemplos en tiempo real
         function actualizarEjemplos(stockInicial, umbralBajo, umbralCritico) {
-            const ejemploMinimo = stockMinimoInput.parentNode.querySelector('.text-xs');
-            const ejemploMaximo = stockMaximoInput.parentNode.querySelector('.text-xs');
+            const ejemploCritico = umbralCriticoInput?.parentNode.querySelector('.text-xs');
+            const ejemploBajo = umbralBajoInput?.parentNode.querySelector('.text-xs');
             
-            if (ejemploMinimo && ejemploMaximo) {
-                ejemploMinimo.innerHTML = `
+            if (ejemploCritico && ejemploBajo) {
+                ejemploCritico.innerHTML = `
                     <span class="font-medium">Se calcula automáticamente:</span> 20% del stock inicial
                     <br><span class="text-gray-500">Ejemplo: Stock inicial ${stockInicial} → Umbral crítico ${umbralCritico}</span>
                     <br><span class="text-blue-600 font-medium">Se actualizará al guardar el producto</span>
                 `;
                 
-                ejemploMaximo.innerHTML = `
+                ejemploBajo.innerHTML = `
                     <span class="font-medium">Se calcula automáticamente:</span> 60% del stock inicial
                     <br><span class="text-gray-500">Ejemplo: Stock inicial ${stockInicial} → Umbral bajo ${umbralBajo}</span>
                     <br><span class="text-yellow-600 font-medium">Se actualizará al guardar el producto</span>
@@ -1865,15 +1967,15 @@
         
         // Función para ocultar ejemplos
         function ocultarEjemplos() {
-            const ejemploMinimo = stockMinimoInput.parentNode.querySelector('.text-xs');
-            const ejemploMaximo = stockMaximoInput.parentNode.querySelector('.text-xs');
+            const ejemploCritico = umbralCriticoInput?.parentNode.querySelector('.text-xs');
+            const ejemploBajo = umbralBajoInput?.parentNode.querySelector('.text-xs');
             
-            if (ejemploMinimo && ejemploMaximo) {
-                ejemploMinimo.innerHTML = `
+            if (ejemploCritico && ejemploBajo) {
+                ejemploCritico.innerHTML = `
                     <span class="font-medium">Se calcula automáticamente:</span> 20% del stock inicial
                 `;
                 
-                ejemploMaximo.innerHTML = `
+                ejemploBajo.innerHTML = `
                     <span class="font-medium">Se calcula automáticamente:</span> 60% del stock inicial
                 `;
             }
@@ -1948,61 +2050,28 @@
             primeraColumna.parentNode.insertBefore(infoContainer, primeraColumna);
         }
         
-        // Agregar validación antes de enviar el formulario
-        const form = document.querySelector('form');
-        if (form) {
-            // Remover listener anterior si existe para evitar duplicados
-            const existingHandler = form._submitHandler;
-            if (existingHandler) {
-                form.removeEventListener('submit', existingHandler);
-            }
-            
-            const submitHandler = function(e) {
-                // Asegurar que el token CSRF esté presente
-                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-                if (!csrfToken) {
-                    console.error('Token CSRF no encontrado');
-                    e.preventDefault();
-                    alert('Error: Token CSRF no encontrado. Por favor, recarga la página.');
-                    return false;
-                }
-                
-                // Verificar que el campo _token esté presente
-                let tokenInput = form.querySelector('input[name="_token"]');
-                if (!tokenInput) {
-                    // Crear el campo _token si no existe
-                    tokenInput = document.createElement('input');
-                    tokenInput.type = 'hidden';
-                    tokenInput.name = '_token';
-                    tokenInput.value = csrfToken;
-                    form.appendChild(tokenInput);
-                } else {
-                    // Actualizar el valor del token
-                    tokenInput.value = csrfToken;
-                }
-                
-                const stockInicial = parseInt(stockInicialInput.value) || 0;
-                
+        // Validación adicional de stock inicial (solo para creación, no bloquea el submit)
+        // Esta validación es informativa, no bloquea el envío
+        if (stockInicialInput) {
+            stockInicialInput.addEventListener('blur', function() {
+                const stockInicial = parseInt(this.value) || 0;
                 if (stockInicial <= 0) {
-                    e.preventDefault();
-                    alert('El stock inicial debe ser mayor a 0 para calcular los umbrales de alerta.');
-                    stockInicialInput.focus();
-                    return false;
-                }
-                
-                // Confirmación de actualización de umbrales
-                if (confirm('¿Estás seguro de que quieres actualizar el producto? Los umbrales de alerta se recalcularán automáticamente.')) {
-                    return true;
+                    // Mostrar advertencia pero no bloquear
+                    const warning = this.parentNode.querySelector('.stock-warning');
+                    if (!warning) {
+                        const warningDiv = document.createElement('p');
+                        warningDiv.className = 'mt-1 text-xs text-yellow-600 dark:text-yellow-400 stock-warning';
+                        warningDiv.textContent = 'Recomendado: El stock inicial debe ser mayor a 0 para calcular alertas automáticamente.';
+                        this.parentNode.appendChild(warningDiv);
+                    }
                 } else {
-                    e.preventDefault();
-                    return false;
+                    const warning = this.parentNode.querySelector('.stock-warning');
+                    if (warning) {
+                        warning.remove();
+                    }
                 }
-            };
-            
-            form._submitHandler = submitHandler;
-            form.addEventListener('submit', submitHandler);
+            });
         }
     });
 </script>
 @endpush
-

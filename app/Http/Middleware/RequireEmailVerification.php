@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
+use App\Models\OtpCode;
 
 class RequireEmailVerification
 {
@@ -22,7 +23,7 @@ class RequireEmailVerification
             // Si el usuario no tiene email verificado
             if (!$usuario->email_verified_at) {
                 // Enviar nuevo código OTP si no tiene uno válido
-                if (!\App\Models\OtpCode::tieneCodigoValido($usuario->usuario_id, 'email_verification')) {
+                if (!OtpCode::tieneCodigoValido($usuario->usuario_id, 'email_verification')) {
                     $usuario->sendEmailVerificationNotification();
                 }
                 

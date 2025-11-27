@@ -4,9 +4,9 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
-use App\Services\InventarioService;
-use App\Services\OptimizedStockAlertService;
-use App\Services\Business\ProductoServiceOptimizadoCorregido;
+use App\Services\Inventory\InventarioService;
+use App\Services\Inventory\StockAlertService;
+use App\Services\Catalog\ProductoService;
 use Illuminate\Support\Facades\DB;
 
 class TestCachePerformanceFallback extends Command
@@ -20,8 +20,8 @@ class TestCachePerformanceFallback extends Command
 
     public function __construct(
         InventarioService $inventarioService,
-        OptimizedStockAlertService $alertService,
-        ProductoServiceOptimizadoCorregido $productoService
+        StockAlertService $alertService,
+        ProductoService $productoService
     ) {
         parent::__construct();
         $this->inventarioService = $inventarioService;

@@ -5,9 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Base\WebController;
 use App\Models\Producto;
 use App\Models\Usuario;
-use App\Services\InventarioService;
+use App\Services\Inventory\InventarioService;
 use Carbon\Carbon;
+use Dompdf\Dompdf;
 use Illuminate\Http\Request;
+use Illuminate\Contracts\View\View as ViewView;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -15,9 +20,15 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\View;
 
+/**
+ * Controlador de administración para gestionar el Inventario.
+ *
+ * Muestra dashboards, movimientos, reportes, exportaciones y operaciones
+ * de entradas/salidas/ajustes.
+ */
 class InventarioController extends WebController
 {
-    protected $inventarioService;
+    protected InventarioService $inventarioService;
 
     public function __construct(InventarioService $inventarioService)
     {
@@ -27,9 +38,12 @@ class InventarioController extends WebController
     }
 
     /**
-     * Valor del inventario por categoría
+     * Valor del inventario por categoría.
+     *
+     * @param Request $request Filtros opcionales
+     * @return ViewView|RedirectResponse Vista con valores o redirección en error
      */
-    public function valorPorCategoria(Request $request)
+    public function valorPorCategoria(Request $request): ViewView|RedirectResponse
     {
         try {
             $valorTotal = $this->inventarioService->getValorTotalInventario();
@@ -49,12 +63,16 @@ class InventarioController extends WebController
     }
 
     /**
-     * Dashboard de inventario
+     * Dashboard de inventario.
+     *
+     * @param Request $request Forzar actualización mediante `refresh` o `forzar`
+     * @return ViewView Vista con datos del dashboard
      */
-    public function dashboard()
+    public function dashboard(Request $request): ViewView
     {
         try {
-            $data = $this->inventarioService->getDashboardData();
+            $forzarActualizacion = $request->get('refresh', false) || $request->get('forzar', false);
+            $data = $this->inventarioService->getDashboardData($forzarActualizacion);
 
             return View::make('pages.admin.inventario.dashboard', $data);
         } catch (\Exception $e) {
@@ -68,9 +86,12 @@ class InventarioController extends WebController
     }
 
     /**
-     * Movimientos de inventario
+     * Movimientos de inventario.
+     *
+     * @param Request $request Filtros de búsqueda
+     * @return ViewView|RedirectResponse Vista con movimientos o redirección
      */
-    public function movimientos(Request $request)
+    public function movimientos(Request $request): ViewView|RedirectResponse
     {
         try {
             $filtros = $this->getFiltrosMovimientos($request);
@@ -85,9 +106,12 @@ class InventarioController extends WebController
     }
 
     /**
-     * Registrar entrada de inventario
+     * Registrar entrada de inventario.
+     *
+     * @param Request $request Datos de la entrada
+     * @return RedirectResponse|JsonResponse Respuesta según contexto
      */
-    public function registrarEntrada(Request $request)
+    public function registrarEntrada(Request $request): RedirectResponse|JsonResponse
     {
         $validated = $request->validate([
             'producto_id' => 'required',
@@ -161,9 +185,12 @@ class InventarioController extends WebController
     }
 
     /**
-     * Registrar salida de inventario
+     * Registrar salida de inventario.
+     *
+     * @param Request $request Datos de la salida
+     * @return RedirectResponse Redirección con mensaje de estado
      */
-    public function registrarSalida(Request $request)
+    public function registrarSalida(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'producto_id' => 'required|exists:productos,producto_id',
@@ -194,9 +221,12 @@ class InventarioController extends WebController
     }
 
     /**
-     * Ajustar stock de un producto
+     * Ajustar stock de un producto.
+     *
+     * @param Request $request Datos del ajuste
+     * @return RedirectResponse Redirección con mensaje de estado
      */
-    public function ajustarStock(Request $request)
+    public function ajustarStock(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'producto_id' => 'required|exists:productos,producto_id',
@@ -225,9 +255,12 @@ class InventarioController extends WebController
     }
 
     /**
-     * Generar reporte de inventario
+     * Generar reporte de inventario.
+     *
+     * @param Request $request Filtros del reporte
+     * @return ViewView|RedirectResponse Vista con reporte o redirección en error
      */
-    public function reporte(Request $request)
+    public function reporte(Request $request): ViewView|RedirectResponse
     {
         try {
             $filtros = $this->getFiltrosReporte($request);
@@ -242,22 +275,19 @@ class InventarioController extends WebController
     }
 
     /**
-     * Exportar reporte de inventario
+     * Exportar reporte de inventario.
+     *
+     * @param Request $request Filtros del reporte
+     * @return SymfonyResponse|RedirectResponse Descarga CSV o redirección en error
      */
-    public function exportarReporte(Request $request)
+    public function exportarReporte(Request $request): SymfonyResponse|RedirectResponse
     {
         try {
             $filtros = $this->getFiltrosReporte($request);
             $data = $this->inventarioService->getReporteData($filtros);
 
-            // Generar archivo Excel o PDF según el formato solicitado
-            $formato = $request->get('formato', 'excel');
-
-            if ($formato === 'pdf') {
-                return $this->generarReportePDF($data);
-            } else {
-                return $this->generarReporteExcel($data);
-            }
+            // Solo generar CSV (Excel), para PDF se usa reportePDF() directamente
+            return $this->generarReporteExcel($data);
         } catch (\Exception $e) {
             Log::error('Error al exportar reporte', ['error' => $e->getMessage()]);
 
@@ -266,9 +296,12 @@ class InventarioController extends WebController
     }
 
     /**
-     * Productos más vendidos
+     * Productos más vendidos.
+     *
+     * @param Request $request Rango de fechas
+     * @return ViewView|RedirectResponse Vista con ranking o redirección en error
      */
-    public function productosMasVendidos(Request $request)
+    public function productosMasVendidos(Request $request): ViewView|RedirectResponse
     {
         try {
             $fechaInicio = $request->get('fecha_inicio') ? Carbon::parse($request->fecha_inicio) : Carbon::now()->subMonth();
@@ -289,9 +322,12 @@ class InventarioController extends WebController
     }
 
     /**
-     * Generar reporte de inventario en PDF usando DomPDF
+     * Generar reporte de inventario en PDF usando DomPDF.
+     *
+     * @param Request $request Filtros del reporte
+     * @return SymfonyResponse|RedirectResponse Descarga PDF o redirección en error
      */
-    public function reportePDF(Request $request)
+    public function reportePDF(Request $request): SymfonyResponse|RedirectResponse
     {
         try {
             $filtros = $this->getFiltrosReporte($request);
@@ -301,7 +337,7 @@ class InventarioController extends WebController
             $html = View::make('pages.admin.inventario.reporte-pdf', $data)->render();
 
             // Crear instancia de DomPDF
-            $dompdf = new \Dompdf\Dompdf;
+            $dompdf = new Dompdf();
             $dompdf->loadHtml($html);
             $dompdf->setPaper('A4', 'portrait');
             $dompdf->render();
@@ -395,7 +431,7 @@ class InventarioController extends WebController
         if ($request->has('producto_id') && $request->producto_id) {
             $productoId = (int) $request->producto_id;
             // Verificar que el producto existe
-            if (! \App\Models\Producto::where('producto_id', $productoId)->exists()) {
+            if (! Producto::where('producto_id', $productoId)->exists()) {
                 Log::warning('Producto no encontrado en filtros de movimientos', [
                     'producto_id' => $productoId,
                 ]);
@@ -421,7 +457,7 @@ class InventarioController extends WebController
         if ($request->has('usuario_id') && $request->usuario_id) {
             $usuarioId = (int) $request->usuario_id;
             // Verificar que el usuario existe
-            if (! \App\Models\Usuario::where('usuario_id', $usuarioId)->exists()) {
+            if (!   Usuario::where('usuario_id', $usuarioId)->exists()) {
                 Log::warning('Usuario no encontrado en filtros de movimientos', [
                     'usuario_id' => $usuarioId,
                 ]);
@@ -453,31 +489,6 @@ class InventarioController extends WebController
         ];
     }
 
-    /**
-     * Generar reporte en formato PDF
-     */
-    private function generarReportePDF(array $data)
-    {
-        $filename = 'reporte_inventario_'.date('Y-m-d_H-i-s').'.pdf';
-
-        // Preparar datos para la vista
-        $reporte = $this->prepararDatosParaVista($data);
-        $secciones = ['resumen', 'alertas', 'productos', 'categorias']; // Secciones por defecto
-
-        // Generar PDF usando la vista existente
-        $html = View::make('pages.admin.inventario.pdf.reporte', compact('reporte', 'secciones'))->render();
-
-        // Generar HTML optimizado para impresión (más confiable)
-        $htmlOptimizado = $this->optimizarHTMLParaImpresion($html);
-
-        return response($htmlOptimizado, 200, [
-            'Content-Type' => 'text/html; charset=utf-8',
-            'Content-Disposition' => 'attachment; filename="'.str_replace('.pdf', '.html', $filename).'"',
-            'Cache-Control' => 'no-cache, no-store, must-revalidate',
-            'Pragma' => 'no-cache',
-            'Expires' => '0',
-        ]);
-    }
 
     /**
      * Generar reporte en formato Excel (CSV)
@@ -509,7 +520,7 @@ class InventarioController extends WebController
 
         // Encabezado del reporte
         $csv = "REPORTE DE INVENTARIO - 4GMOVIL\n";
-        $csv .= "=====================================\n";
+        
         $csv .= 'Generado el: '.Carbon::now()->format('d/m/Y H:i:s')."\n";
 
         if (isset($estadisticas['periodo'])) {
@@ -518,7 +529,7 @@ class InventarioController extends WebController
 
         $csv .= "\n";
         $csv .= "ESTADÍSTICAS GENERALES\n";
-        $csv .= "======================\n";
+        
         $csv .= "Concepto,Valor\n";
         $csv .= 'Total de Productos,'.number_format($estadisticas['total_productos'] ?? 0)."\n";
         $csv .= 'Total de Variantes,'.number_format($estadisticas['total_variantes'] ?? 0)."\n";
@@ -532,23 +543,38 @@ class InventarioController extends WebController
 
         $csv .= "\n";
         $csv .= "PRODUCTOS EN INVENTARIO\n";
-        $csv .= "=======================\n";
-        $csv .= "ID,Producto,Categoría,Marca,Stock,Precio Unitario,Valor Total\n";
+        
+        $csv .= "ID,Producto,Categoría,Marca,Stock,Precio Unitario,Valor Total,Estado\n";
 
         foreach ($productos as $producto) {
+            $umbralCritico = $producto->getAttribute('umbral_stock_critico');
+            $umbralBajo = $producto->getAttribute('umbral_stock_bajo');
+            if ($umbralCritico === null || $umbralCritico <= 0) {
+                $umbralCritico = ($producto->stock_inicial ?? 0) > 0 ? (int) ceil(($producto->stock_inicial * 20) / 100) : 5;
+            }
+            if ($umbralBajo === null || $umbralBajo <= 0) {
+                $umbralBajo = ($producto->stock_inicial ?? 0) > 0 ? (int) ceil(($producto->stock_inicial * 60) / 100) : 0;
+            }
+            $estado = 'OK';
+            if ($producto->stock <= 0 || $producto->stock <= $umbralCritico) {
+                $estado = 'Crítico';
+            } elseif ($producto->stock <= $umbralBajo) {
+                $estado = 'Bajo';
+            }
             $csv .= $producto->producto_id.',';
             $csv .= '"'.str_replace('"', '""', $producto->nombre_producto).'",';
             $csv .= '"'.str_replace('"', '""', $producto->categoria->nombre ?? 'Sin categoría').'",';
             $csv .= '"'.str_replace('"', '""', $producto->marca->nombre ?? 'Sin marca').'",';
             $csv .= number_format($producto->stock).',';
             $csv .= '$'.number_format($producto->precio, 0, ',', '.').',';
-            $csv .= '$'.number_format($producto->stock * $producto->precio, 0, ',', '.')."\n";
+            $csv .= '$'.number_format($producto->stock * $producto->precio, 0, ',', '.').',';
+            $csv .= $estado."\n";
         }
 
         if ($movimientos->count() > 0) {
             $csv .= "\n";
             $csv .= "MOVIMIENTOS RECIENTES\n";
-            $csv .= "=====================\n";
+            
             $csv .= "Fecha,Producto,Variante,Tipo,Cantidad,Motivo,Usuario\n";
 
             foreach ($movimientos->take(100) as $movimiento) {
@@ -563,222 +589,11 @@ class InventarioController extends WebController
         }
 
         $csv .= "\n";
-        $csv .= "=====================================\n";
+        
         $csv .= "Reporte generado automáticamente por el sistema 4GMovil\n";
         $csv .= "Para más información, contacte al administrador del sistema\n";
 
         return $csv;
     }
 
-    /**
-     * Preparar datos para la vista de PDF
-     */
-    private function prepararDatosParaVista(array $data): array
-    {
-        $estadisticas = $data['estadisticas'] ?? [];
-        $productos = $data['productos'] ?? Collection::make();
-        $movimientos = $data['movimientos'] ?? Collection::make();
-
-        // Preparar resumen general
-        $resumenGeneral = [
-            'total_productos' => $estadisticas['total_productos'] ?? 0,
-            'productos_activos' => $estadisticas['total_productos'] ?? 0, // Asumimos que todos están activos
-            'valor_total_inventario' => $estadisticas['valor_inventario'] ?? 0,
-            'stock_total' => $estadisticas['stock_total'] ?? 0,
-        ];
-
-        // Preparar alertas (usar conteos separados del servicio)
-        $alertas = [
-            'stock_critico' => $estadisticas['productos_stock_critico'] ?? 0,
-            'stock_bajo' => $estadisticas['productos_stock_bajo'] ?? 0,
-            'sin_stock' => $estadisticas['productos_sin_stock'] ?? 0,
-            'stock_excesivo' => 0, // No tenemos esta métrica en los datos actuales
-        ];
-
-        // Preparar productos con stock bajo
-        // Productos con stock bajo (usar umbrales del producto si existen, sino calcular)
-        $productosStockBajo = $productos->filter(function ($producto) {
-            $stockActual = $producto->stock ?? 0;
-
-            // Usar umbrales del producto si existen
-            $umbralBajo = $producto->stock_maximo ?? null;
-            $umbralCritico = $producto->stock_minimo ?? null;
-
-            // Si no hay umbrales personalizados, calcular basado en stock_inicial
-            if ($umbralBajo === null || $umbralCritico === null) {
-                $stockInicial = $producto->stock_inicial ?? 0;
-                if ($stockInicial > 0) {
-                    $umbralBajo = $umbralBajo ?? (int) ceil(($stockInicial * 60) / 100);
-                    $umbralCritico = $umbralCritico ?? (int) ceil(($stockInicial * 20) / 100);
-                } else {
-                    $umbralBajo = $umbralBajo ?? 10;
-                    $umbralCritico = $umbralCritico ?? 5;
-                }
-            }
-
-            return $stockActual <= $umbralBajo && $stockActual > $umbralCritico;
-        })->values();
-
-        // Preparar valor por categoría
-        $valorPorCategoria = $productos->groupBy('categoria_id')->map(function ($productosCategoria) {
-            $categoria = $productosCategoria->first()->categoria;
-            $stockTotal = $productosCategoria->sum('stock');
-            $valorTotal = $productosCategoria->sum(function ($producto) {
-                return $producto->stock * $producto->precio;
-            });
-
-            return [
-                'categoria' => $categoria,
-                'productos_count' => $productosCategoria->count(),
-                'stock_total' => $stockTotal,
-                'valor_total' => $valorTotal,
-            ];
-        })->values();
-
-        return [
-            'resumen_general' => $resumenGeneral,
-            'alertas' => $alertas,
-            'productos_stock_bajo' => $productosStockBajo,
-            'valor_por_categoria' => $valorPorCategoria,
-        ];
-    }
-
-    /**
-     * Optimizar HTML para impresión (solución confiable)
-     */
-    private function optimizarHTMLParaImpresion(string $html): string
-    {
-        // Agregar estilos CSS optimizados para impresión y PDF
-        $estilosImpresion = '
-        <style>
-            @media print {
-                body { 
-                    margin: 0; 
-                    font-size: 12px;
-                    line-height: 1.4;
-                }
-                .page-break { page-break-before: always; }
-                .no-print { display: none; }
-                table { page-break-inside: avoid; }
-                .summary-grid { page-break-inside: avoid; }
-            }
-            @page {
-                margin: 1.5cm;
-                size: A4;
-            }
-            body {
-                font-family: Arial, sans-serif;
-                color: #333;
-                background: white;
-            }
-            .header {
-                text-align: center;
-                margin-bottom: 20px;
-                border-bottom: 2px solid #333;
-                padding-bottom: 10px;
-            }
-            .header h1 {
-                margin: 0;
-                font-size: 18px;
-                color: #333;
-            }
-            .section {
-                margin-bottom: 20px;
-            }
-            .section h2 {
-                font-size: 14px;
-                color: #333;
-                border-bottom: 1px solid #ccc;
-                padding-bottom: 5px;
-                margin-bottom: 10px;
-            }
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-bottom: 10px;
-                font-size: 10px;
-            }
-            th, td {
-                border: 1px solid #ddd;
-                padding: 4px;
-                text-align: left;
-            }
-            th {
-                background-color: #f5f5f5;
-                font-weight: bold;
-                font-size: 9px;
-            }
-            .summary-grid {
-                display: table;
-                width: 100%;
-                margin-bottom: 15px;
-            }
-            .summary-item {
-                display: table-cell;
-                width: 25%;
-                padding: 8px;
-                border: 1px solid #ddd;
-                text-align: center;
-                vertical-align: top;
-            }
-            .summary-item h3 {
-                margin: 0 0 5px 0;
-                font-size: 10px;
-                color: #666;
-            }
-            .summary-item p {
-                margin: 0;
-                font-size: 12px;
-                font-weight: bold;
-                color: #333;
-            }
-            .footer {
-                margin-top: 20px;
-                text-align: center;
-                font-size: 8px;
-                color: #666;
-                border-top: 1px solid #ccc;
-                padding-top: 10px;
-            }
-        </style>';
-
-        // Insertar estilos en el head
-        $html = str_replace('</head>', $estilosImpresion.'</head>', $html);
-
-        // Agregar script mejorado para impresión
-        $scriptImpresion = '
-        <script>
-            window.onload = function() {
-                // Mostrar instrucciones claras
-                const mensaje = "REPORTE DE INVENTARIO LISTO PARA IMPRIMIR\\n\\n" +
-                              "Para convertir a PDF:\\n" +
-                              "1. Presione Ctrl+P (o Cmd+P en Mac)\\n" +
-                              "2. Seleccione \\"Guardar como PDF\\" como destino\\n" +
-                              "3. Ajuste la configuración si es necesario\\n" +
-                              "4. Haga clic en \\"Guardar\\"\\n\\n" +
-                              "¿Desea abrir el diálogo de impresión ahora?";
-                
-                if (confirm(mensaje)) {
-                    window.print();
-                }
-            }
-            
-            // También permitir impresión con botón
-            document.addEventListener("keydown", function(e) {
-                if (e.ctrlKey && e.key === "p") {
-                    e.preventDefault();
-                    window.print();
-                }
-            });
-        </script>
-        
-        <!-- Botón de impresión visible -->
-        <div style="position: fixed; top: 10px; right: 10px; z-index: 1000; background: #007bff; color: white; padding: 10px; border-radius: 5px; cursor: pointer; font-size: 12px;" onclick="window.print()">
-            🖨️ Imprimir/Guardar PDF
-        </div>';
-
-        $html = str_replace('</body>', $scriptImpresion.'</body>', $html);
-
-        return $html;
-    }
 }

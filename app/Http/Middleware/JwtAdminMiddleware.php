@@ -2,10 +2,11 @@
 
 namespace App\Http\Middleware;
 
-use App\Services\JwtService;
+use App\Services\Auth\JwtService;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class JwtAdminMiddleware
@@ -42,7 +43,9 @@ class JwtAdminMiddleware
                 // Cerrar sesión si el token está expirado o es inválido
                 Auth::logout();
                 $request->session()->invalidate();
-                $request->session()->regenerateToken();
+                // NO regenerar el token CSRF aquí para evitar errores 419 en formularios abiertos
+                // El token se regenerará en la siguiente petición GET
+                // $request->session()->regenerateToken();
 
                 return $this->unauthorizedResponse('Token JWT inválido o expirado. Por favor, inicia sesión nuevamente.');
             }
@@ -53,7 +56,7 @@ class JwtAdminMiddleware
 
             return $next($request);
         } catch (\Exception $e) {
-            \Log::error('Error en JwtAdminMiddleware: '.$e->getMessage());
+            Log::error('Error en JwtAdminMiddleware: '.$e->getMessage());
 
             return $this->unauthorizedResponse('Error de autenticación');
         }

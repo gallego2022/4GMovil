@@ -10,6 +10,7 @@
     <meta name="description" content="@yield('meta-description')">
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="{{ asset('css/style_inicio.css') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- Alpine.js se carga desde Vite para mejor rendimiento -->
@@ -1367,7 +1368,7 @@
 
                 // Mostrar notificación de éxito
                 if (typeof window.showNotification === 'function') {
-                    window.showNotification('¡Producto agregado! El producto se agregó al carrito exitosamente', 'success', 3);
+                    window.showNotification('¡Producto agregado! El producto se agregó al carrito exitosamente', 'success', 5);
                 }
             }
 
@@ -1937,6 +1938,9 @@
         });
     </script>
 
+    <!-- Componente de modal de confirmación personalizado -->
+    @include('components.confirm-modal-custom')
+
     <!-- Sistema de confirmación modal (debe cargarse antes que otros scripts) -->
     <script src="{{ asset('js/confirm-modal.js') }}"></script>
     
@@ -1985,7 +1989,7 @@
                 
                 // Restaurar stock original si no se seleccionó variante
                 if (window.stockSync) {
-                    window.stockSync.resetStock();
+                    window.stockSync.resetStock(currentProductId);
                     console.log('Stock restaurado al cerrar modal');
                 }
                 
@@ -2111,7 +2115,7 @@
                 if (variantItem) {
                     variantItem.addEventListener('mouseenter', function() {
                         if (window.stockSync) {
-                            window.stockSync.updateStockTemporary(variante.stock_disponible);
+                            window.stockSync.updateStockTemporary(variante.stock_disponible, currentProductId);
                             console.log('Stock sincronizado en hover:', variante.stock_disponible);
                         }
                     });
@@ -2119,7 +2123,7 @@
                     variantItem.addEventListener('mouseleave', function() {
                         // Restaurar stock original al salir del hover
                         if (window.stockSync) {
-                            window.stockSync.resetStock();
+                            window.stockSync.resetStock(currentProductId);
                         }
                     });
                 }
@@ -2153,7 +2157,7 @@
                 
                 // Sincronizar stock con la variante seleccionada
                 if (window.stockSync) {
-                    window.stockSync.updateStock(variante.stock_disponible);
+                    window.stockSync.updateStock(variante.stock_disponible, currentProductId);
                     console.log('Stock sincronizado con variante:', variante.stock_disponible);
                 }
                 

@@ -140,8 +140,40 @@
             <p><strong>Stock Actual:</strong> <span class="stock-number">{{ $producto->stock }}</span> unidades</p>
             <p><strong>Porcentaje del Stock:</strong> <span class="stock-number">{{ $porcentajeActual }}%</span></p>
             <p><strong>Stock Mínimo:</strong> {{ $stockMinimo }} unidades</p>
-            <p><strong>Estado:</strong> <span style="color: #dc3545;">CRÍTICO</span></p>
+            <p><strong>Estado:</strong> <span style="color: #e65100;">BAJO</span></p>
         </div>
+        @if(isset($variantesProblematicas) && $variantesProblematicas->count() > 0)
+        <div class="stock-info">
+            <h4>🎨 Variantes con Alerta</h4>
+            <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                <thead>
+                    <tr>
+                        <th style="text-align:left; border-bottom:1px solid #ffeaa7; padding:8px;">Variante</th>
+                        <th style="text-align:left; border-bottom:1px solid #ffeaa7; padding:8px;">Tipo</th>
+                        <th style="text-align:right; border-bottom:1px solid #ffeaa7; padding:8px;">Stock</th>
+                        <th style="text-align:right; border-bottom:1px solid #ffeaa7; padding:8px;">Mínimo</th>
+                        <th style="text-align:right; border-bottom:1px solid #ffeaa7; padding:8px;">%</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($variantesProblematicas as $item)
+                    <tr>
+                        <td style="padding:8px;">
+                            {{ $item['variante']->nombre }}
+                        </td>
+                        <td style="padding:8px;">
+                            @php $t = $item['tipo_alerta']; @endphp
+                            @if($t === 'agotado') Agotado @elseif($t === 'critico') Crítico @else Bajo @endif
+                        </td>
+                        <td style="text-align:right; padding:8px;">{{ number_format($item['stock_actual']) }}</td>
+                        <td style="text-align:right; padding:8px;">{{ number_format($item['stock_minimo']) }}</td>
+                        <td style="text-align:right; padding:8px;">{{ number_format($item['porcentaje'], 1) }}%</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        @endif
         
         <div class="product-details">
             <h3>📦 Detalles del Producto</h3>
@@ -153,6 +185,7 @@
         </div>
         
         <a href="{{ $productoUrl }}" class="btn">📦 Ver Producto</a>
+        <a href="{{ route('admin.inventario.variantes.reporte') }}" class="btn btn-secondary">📊 Reporte de Variantes</a>
         
         <div class="actions">
             <h4>🔄 Acciones Recomendadas</h4>
@@ -181,4 +214,3 @@
     </div>
 </body>
 </html>
-

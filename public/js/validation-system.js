@@ -233,7 +233,9 @@ class ValidationSystem {
      */
     async validateField(field, customRules = null, messages = {}) {
         const fieldName = field.name;
-        const value = field.value;
+        const value = field.type === 'radio'
+            ? (document.querySelector(`input[type="radio"][name="${fieldName}"]:checked`)?.value || '')
+            : field.value;
         const rules = customRules || this.rules.get(fieldName) || [];
 
         // Limpiar errores previos
@@ -280,7 +282,9 @@ class ValidationSystem {
      */
     getRequiredMessage(fieldName) {
         const messages = this.messages.get(fieldName) || {};
-        return messages.required || `${this.getFieldLabel(document.querySelector(`[name="${fieldName}"]`))} es requerido`;
+        const el = document.querySelector(`[name="${fieldName}"]`);
+        const labelText = this.getFieldLabel(el);
+        return messages.required || `${labelText} es requerido`;
     }
 
     /**
@@ -436,11 +440,12 @@ class ValidationSystem {
         field.classList.remove('border-green-500', 'focus:border-green-500', 'focus:ring-green-500');
 
         // Crear o actualizar mensaje de error
-        let errorElement = field.parentNode.querySelector('.field-error');
+        const wrapper = field.closest('.validation-field') || field.parentNode;
+        let errorElement = wrapper ? wrapper.querySelector('.field-error') : null;
         if (!errorElement) {
             errorElement = document.createElement('p');
             errorElement.className = 'field-error mt-1 text-sm text-red-600 dark:text-red-400';
-            field.parentNode.appendChild(errorElement);
+            (wrapper || field.parentNode).appendChild(errorElement);
         }
         errorElement.textContent = message;
         errorElement.style.display = 'block';
@@ -455,7 +460,8 @@ class ValidationSystem {
         field.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
 
         // Ocultar mensaje de error
-        const errorElement = field.parentNode.querySelector('.field-error');
+        const wrapper = field.closest('.validation-field') || field.parentNode;
+        const errorElement = wrapper ? wrapper.querySelector('.field-error') : null;
         if (errorElement) {
             errorElement.style.display = 'none';
         }
@@ -466,7 +472,8 @@ class ValidationSystem {
      */
     clearFieldErrors(field) {
         field.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
-        const errorElement = field.parentNode.querySelector('.field-error');
+        const wrapper = field.closest('.validation-field') || field.parentNode;
+        const errorElement = wrapper ? wrapper.querySelector('.field-error') : null;
         if (errorElement) {
             errorElement.style.display = 'none';
         }
@@ -476,8 +483,10 @@ class ValidationSystem {
      * Obtener etiqueta del campo
      */
     getFieldLabel(field) {
-        const label = field.parentNode.querySelector('label');
-        return label ? label.textContent.replace('*', '').trim() : field.name;
+        if (!field) return 'Este campo';
+        const wrapper = field.closest('.validation-field') || field.parentNode;
+        const label = wrapper ? wrapper.querySelector('label') : null;
+        return label ? label.textContent.replace('*', '').trim() : (field.name || 'Este campo');
     }
 
     /**

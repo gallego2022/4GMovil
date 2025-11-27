@@ -151,6 +151,11 @@ class CarritoServiceTest extends TestCase
             ->first();
         $this->assertNotNull($item);
         $this->assertEquals(2, $item->cantidad);
+        
+        // Verificar que el precio_unitario se guardó correctamente
+        $this->assertNotNull($item->precio_unitario);
+        $precioEsperado = (float) $this->producto->precio;
+        $this->assertEquals($precioEsperado, (float) $item->precio_unitario);
     }
 
     /** @test */
@@ -198,6 +203,11 @@ class CarritoServiceTest extends TestCase
             ->first();
         $this->assertNotNull($item);
         $this->assertEquals(1, $item->cantidad);
+        
+        // Verificar que el precio_unitario se guardó correctamente (incluyendo precio adicional de la variante)
+        $this->assertNotNull($item->precio_unitario);
+        $precioEsperado = (float) $this->producto->precio + (float) ($this->variante->precio_adicional ?? 0);
+        $this->assertEquals($precioEsperado, (float) $item->precio_unitario);
     }
 
     /** @test */
@@ -323,6 +333,12 @@ class CarritoServiceTest extends TestCase
         $carrito = Carrito::where('usuario_id', $this->usuario->usuario_id)->first();
         $this->assertNotNull($carrito);
         $this->assertEquals(1, $carrito->items()->count());
+        
+        // Verificar que el precio_unitario se guardó correctamente
+        $item = $carrito->items()->first();
+        $this->assertNotNull($item->precio_unitario);
+        $precioEsperado = (float) $this->producto->precio;
+        $this->assertEquals($precioEsperado, (float) $item->precio_unitario);
         
         // Verificar que se limpió la sesión
         $this->assertEmpty(Session::get('cart', []));

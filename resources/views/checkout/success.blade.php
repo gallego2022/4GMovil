@@ -73,11 +73,12 @@
                     <div>
                         <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Estado</p>
                         @php
-                            $estadoClasses = getEstadoClasses($pedido->estado->nombre);
+                            $estadoNombre = optional($pedido->estado)->nombre ?? 'Pendiente';
+                            $estadoClasses = getEstadoClasses($estadoNombre);
                         @endphp
                         <span
                             class="inline-flex items-center rounded-md {{ $estadoClasses['bg'] }} px-2 py-1 text-xs font-medium {{ $estadoClasses['text'] }} ring-1 ring-inset {{ $estadoClasses['ring'] }}">
-                            {{ $pedido->estado->nombre }}
+                            {{ $estadoNombre }}
                         </span>
                     </div>
                 </div>
@@ -112,8 +113,8 @@
                                 class="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-600 last:border-b-0">
                                 <div class="flex items-center space-x-4">
                                     <div class="flex-shrink-0">
-                                        @if ($producto->imagen_principal)
-                                            <img src="{{ asset('storage/' . $producto->imagen_principal) }}"
+                                        @if ($producto->imagenes->isNotEmpty() && $producto->imagenes->first()->principal)
+                                            <img src="{{ asset('storage/' . $producto->imagenes->first()->ruta_imagen) }}"
                                                 alt="{{ $producto->nombre_producto }}"
                                                 class="h-16 w-16 rounded-lg object-cover">
                                         @else

@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Base\WebController;
 use Illuminate\Http\Request;
+use Illuminate\Contracts\View\View as ViewView;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
@@ -12,12 +15,21 @@ use Illuminate\Support\Facades\Response;
 use App\Models\EspecificacionCategoria;
 use App\Models\Categoria;
 
+/**
+ * Controlador de administración para gestionar Especificaciones por Categoría.
+ *
+ * Expone acciones CRUD para las especificaciones del catálogo y utilidades
+ * adicionales como reordenar, alternar estado y consulta por categoría.
+ * Todas las respuestas son vistas Blade, redirecciones o respuestas JSON.
+ */
 class EspecificacionController extends WebController
 {
     /**
-     * Mostrar el listado de especificaciones
+     * Mostrar el listado de especificaciones.
+     *
+     * @return ViewView Vista con el listado de especificaciones
      */
-    public function index()
+    public function index(): ViewView
     {
         try {
             $especificaciones = EspecificacionCategoria::with('categoria')
@@ -33,9 +45,11 @@ class EspecificacionController extends WebController
     }
 
     /**
-     * Mostrar el formulario para crear una nueva especificación
+     * Mostrar el formulario para crear una nueva especificación.
+     *
+     * @return ViewView Vista del formulario de creación
      */
-    public function create()
+    public function create(): ViewView
     {
         try {
             $categorias = Categoria::where('estado', true)
@@ -50,9 +64,15 @@ class EspecificacionController extends WebController
     }
 
     /**
-     * Almacenar una nueva especificación
+     * Almacenar una nueva especificación.
+     *
+     * Valida la solicitud, asegura unicidad del `nombre_campo` por categoría y
+     * persiste la nueva especificación.
+     *
+     * @param Request $request Solicitud HTTP con los datos de la especificación
+     * @return RedirectResponse Redirección con mensaje de éxito o error
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         try {
             $request->validate([
@@ -64,6 +84,7 @@ class EspecificacionController extends WebController
                 'unidad' => 'nullable|string|max:50',
                 'descripcion' => 'nullable|string|max:500',
                 'requerido' => 'boolean',
+                'estado' => 'boolean',
                 'orden' => 'nullable|integer|min:0',
             ]);
 
@@ -110,9 +131,12 @@ class EspecificacionController extends WebController
     }
 
     /**
-     * Mostrar una especificación específica
+     * Mostrar una especificación específica.
+     *
+     * @param int $id Identificador de la especificación
+     * @return ViewView Vista con el detalle de la especificación
      */
-    public function show($id)
+    public function show(int $id): ViewView
     {
         try {
             $especificacion = EspecificacionCategoria::with('categoria')->findOrFail($id);
@@ -125,9 +149,12 @@ class EspecificacionController extends WebController
     }
 
     /**
-     * Mostrar el formulario para editar una especificación
+     * Mostrar el formulario para editar una especificación.
+     *
+     * @param int $id Identificador de la especificación
+     * @return ViewView Vista del formulario de edición
      */
-    public function edit($id)
+    public function edit(int $id): ViewView
     {
         try {
             $especificacion = EspecificacionCategoria::findOrFail($id);
@@ -143,9 +170,16 @@ class EspecificacionController extends WebController
     }
 
     /**
-     * Actualizar una especificación existente
+     * Actualizar una especificación existente.
+     *
+     * Valida la solicitud, verifica unicidad del `nombre_campo` dentro de la
+     * categoría y persiste los cambios.
+     *
+     * @param Request $request Solicitud HTTP con los datos a actualizar
+     * @param int $id Identificador de la especificación
+     * @return RedirectResponse Redirección con mensaje de éxito o error
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id): RedirectResponse
     {
         try {
             $especificacion = EspecificacionCategoria::findOrFail($id);
@@ -159,6 +193,7 @@ class EspecificacionController extends WebController
                 'unidad' => 'nullable|string|max:50',
                 'descripcion' => 'nullable|string|max:500',
                 'requerido' => 'boolean',
+                'estado' => 'boolean',
                 'orden' => 'nullable|integer|min:0',
             ]);
 
@@ -195,9 +230,14 @@ class EspecificacionController extends WebController
     }
 
     /**
-     * Eliminar una especificación
+     * Eliminar una especificación.
+     *
+     * Impide eliminar si está referenciada por productos.
+     *
+     * @param int $id Identificador de la especificación
+     * @return RedirectResponse Redirección con estado de eliminación
      */
-    public function destroy($id)
+    public function destroy(int $id): RedirectResponse
     {
         try {
             $especificacion = EspecificacionCategoria::findOrFail($id);
@@ -228,13 +268,16 @@ class EspecificacionController extends WebController
     }
 
     /**
-     * Obtener especificaciones por categoría (API)
+     * Obtener especificaciones por categoría (API).
+     *
+     * @param int $categoriaId Identificador de la categoría
+     * @return JsonResponse Respuesta JSON con las especificaciones activas
      */
-    public function getByCategoria($categoriaId)
+    public function getByCategoria(int $categoriaId): JsonResponse
     {
         try {
             $especificaciones = EspecificacionCategoria::where('categoria_id', $categoriaId)
-                ->where('activo', true)
+                ->where('estado', true)
                 ->orderBy('orden')
                 ->get();
 
@@ -252,16 +295,19 @@ class EspecificacionController extends WebController
     }
 
     /**
-     * Cambiar el estado activo/inactivo de una especificación
+     * Cambiar el estado activo/inactivo de una especificación.
+     *
+     * @param int $id Identificador de la especificación
+     * @return JsonResponse Respuesta JSON con el nuevo estado
      */
-    public function toggleEstado($id)
+    public function toggleEstado(int $id): JsonResponse
     {
         try {
             $especificacion = EspecificacionCategoria::findOrFail($id);
-            $especificacion->activo = !$especificacion->activo;
+            $especificacion->estado = !$especificacion->estado;
             $especificacion->save();
 
-            $estado = $especificacion->activo ? 'activada' : 'desactivada';
+            $estado = $especificacion->estado ? 'activada' : 'desactivada';
 
             Log::info('Estado de especificación cambiado', [
                 'id' => $id,
@@ -271,7 +317,7 @@ class EspecificacionController extends WebController
             return Response::json([
                 'success' => true,
                 'message' => "Especificación {$estado} exitosamente",
-                'activo' => $especificacion->activo
+                'estado' => $especificacion->estado
             ]);
         } catch (\Exception $e) {
             Log::error('Error al cambiar estado de especificación: ' . $e->getMessage());
@@ -283,9 +329,12 @@ class EspecificacionController extends WebController
     }
 
     /**
-     * Reordenar especificaciones
+     * Reordenar especificaciones.
+     *
+     * @param Request $request Solicitud HTTP con pares id/orden
+     * @return JsonResponse Respuesta JSON confirmando el reordenamiento
      */
-    public function reordenar(Request $request)
+    public function reordenar(Request $request): JsonResponse
     {
         try {
             $request->validate([

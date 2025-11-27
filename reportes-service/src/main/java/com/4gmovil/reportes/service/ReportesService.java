@@ -1,8 +1,7 @@
-package com.movil4g.reportes.service;
-
-import com.movil4g.reportes.dto.PedidosPorEstadoDTO;
-import com.movil4g.reportes.dto.TopProductoDTO;
-import com.movil4g.reportes.dto.VentasResumenDTO;
+package com.4gmovil.reportes.service;
+import com.4gmovil.reportes.dto.PedidosPorEstadoDTO;
+import com.4gmovil.reportes.dto.TopProductoDTO;
+import com.4gmovil.reportes.dto.VentasResumenDTO;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 

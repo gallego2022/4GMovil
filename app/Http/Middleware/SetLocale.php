@@ -7,6 +7,8 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class SetLocale
 {
@@ -25,8 +27,8 @@ class SetLocale
         $country = Session::get('country');
         
         // Si no hay configuración en sesión y el usuario está autenticado, cargar desde BD
-        if (!$locale && auth()->check()) {
-            $config = LocalizationConfig::where('user_id', auth()->id())->first();
+        if (!$locale && Auth::check()) {
+            $config = LocalizationConfig::where('user_id', Auth::id())->first();
             if ($config) {
                 $locale = $config->language_code;
                 $currency = $config->currency_code;
@@ -78,7 +80,7 @@ class SetLocale
         
         // Log solo en desarrollo
         if (config('app.debug')) {
-            \Log::info('SetLocale Middleware - Configuración aplicada:', [
+            Log::info('SetLocale Middleware - Configuración aplicada:', [
                 'final_locale' => App::getLocale(),
                 'session_locale' => Session::get('locale'),
                 'session_currency' => Session::get('currency'),

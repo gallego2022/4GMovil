@@ -1,9 +1,9 @@
-package com.movil4g.reportes.controller;
+package com.4gmovil.reportes.controller;
 
-import com.movil4g.reportes.dto.PedidosPorEstadoDTO;
-import com.movil4g.reportes.dto.TopProductoDTO;
-import com.movil4g.reportes.dto.VentasResumenDTO;
-import com.movil4g.reportes.service.ReportesService;
+import com.4gmovil.reportes.dto.PedidosPorEstadoDTO;
+import com.4gmovil.reportes.dto.TopProductoDTO;
+import com.4gmovil.reportes.dto.VentasResumenDTO;
+import com.4gmovil.reportes.service.ReportesService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,6 +52,5 @@ public class ReportesController {
         LocalDate h = LocalDate.parse(hasta);
         return service.obtenerPedidosPorEstado(d, h);
     }
-
 
 }

@@ -1,4 +1,4 @@
-package com.movil4g.reportes.dto;
+package com.4gmovil.reportes.dto;
 
 import java.math.BigDecimal;
 import java.util.Map;

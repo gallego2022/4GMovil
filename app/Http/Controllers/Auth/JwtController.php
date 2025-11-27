@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Services\JwtService;
-use App\Services\AuthService;
+use App\Services\Auth\JwtService;
+use App\Services\Auth\AuthService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class JwtController extends Controller
 {
@@ -57,7 +58,7 @@ class JwtController extends Controller
                 ]
             ]);
         } catch (\Exception $e) {
-            \Log::error('Error generando token JWT: ' . $e->getMessage());
+            Log::error('Error generando token JWT: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Error al generar token JWT'
@@ -113,7 +114,7 @@ class JwtController extends Controller
                 ]
             ]);
         } catch (\Exception $e) {
-            \Log::error('Error en login JWT: ' . $e->getMessage());
+            Log::error('Error en login JWT: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Error al autenticar'
@@ -160,7 +161,7 @@ class JwtController extends Controller
                 'expires_in' => config('jwt.expiration', 3600),
             ]);
         } catch (\Exception $e) {
-            \Log::error('Error refrescando token JWT: ' . $e->getMessage());
+            Log::error('Error refrescando token JWT: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Error al refrescar token'
@@ -213,7 +214,7 @@ class JwtController extends Controller
                 ]
             ]);
         } catch (\Exception $e) {
-            \Log::error('Error validando token JWT: ' . $e->getMessage());
+            Log::error('Error validando token JWT: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'valid' => false,

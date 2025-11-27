@@ -168,28 +168,15 @@
             $variantesStockBajo = $variantesStockBajo ?? collect();
             if ($variantesStockBajo->isEmpty()) {
                 // Fallback: obtener variantes con stock bajo usando umbrales del producto
-                $variantesStockBajo = \App\Models\VarianteProducto::with(['producto'])
+            $variantesStockBajo = \App\Models\VarianteProducto::with(['producto'])
                     ->where('disponible', true)
                     ->where('stock', '>', 0)
                     ->get()
                     ->filter(function($variante) {
                         $producto = $variante->producto;
-                        
-                        // Obtener el umbral crítico (stock_minimo)
-                        $umbralCritico = $producto->stock_minimo ?? null;
-                        
-                        if ($umbralCritico === null) {
-                            $stockInicial = $producto->stock_inicial ?? 0;
-                            if ($stockInicial > 0) {
-                                $umbralCritico = (int) ceil(($stockInicial * 20) / 100);
-                            } else {
-                                $umbralCritico = 5; // Fallback
-                            }
-                        }
-                        
-                        // Solo mostrar variantes con stock por debajo o igual al umbral crítico
-                        // Si el stock está por encima del mínimo, no mostrar alerta
-                        return $variante->stock <= $umbralCritico && $variante->stock > 0;
+                        $umbralCritico = $producto->getAttribute('umbral_stock_critico') ?? (($producto->stock_inicial ?? 0) > 0 ? (int) ceil(($producto->stock_inicial * 20) / 100) : 5);
+                        $umbralBajo = $producto->getAttribute('umbral_stock_bajo') ?? (($producto->stock_inicial ?? 0) > 0 ? (int) ceil(($producto->stock_inicial * 60) / 100) : 0);
+                        return $variante->stock > $umbralCritico && $variante->stock <= $umbralBajo;
                     });
             }
             $variantesStockBajo = $variantesStockBajo->take(5);

@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Services\InventarioService;
+use App\Services\Inventory\InventarioService;
 
 class VerificarAlertasCommand extends Command
 {

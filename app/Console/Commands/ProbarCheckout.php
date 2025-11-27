@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Producto;
 use App\Models\VarianteProducto;
 use App\Models\Usuario;
-use App\Services\ReservaStockService;
+use App\Services\Inventory\ReservaStockService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Auth;
 

@@ -25,7 +25,7 @@ class ProcesarAlertaStockVariante implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(VarianteProducto $variante, string $tipoAlerta, int $stockAnterior = null, int $stockActual = null)
+    public function __construct(VarianteProducto $variante, string $tipoAlerta, ?int $stockAnterior = null, ?int $stockActual = null)
     {
         $this->variante = $variante;
         $this->tipoAlerta = $tipoAlerta;

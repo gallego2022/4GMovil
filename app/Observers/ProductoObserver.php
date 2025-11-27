@@ -78,11 +78,16 @@ class ProductoObserver
     private function verificarStockBajo(Producto $producto, string $accion): void
     {
         try {
-            // Obtener el stock mínimo configurado
-            $stockMinimo = $producto->stock_minimo ?? config('inventory.stock_alerts.default_min_stock', 10);
-            
-            // Verificar si el stock está bajo (por unidades)
-            if ($producto->stock <= $stockMinimo) {
+            $umbralCritico = $producto->getAttribute('umbral_stock_critico');
+            $stockMinimo = $producto->getAttribute('umbral_stock_bajo');
+            if ($umbralCritico === null || $umbralCritico <= 0) {
+                $umbralCritico = ($producto->stock_inicial ?? 0) > 0 ? (int) ceil(($producto->stock_inicial * 20) / 100) : 5;
+            }
+            if ($stockMinimo === null || $stockMinimo <= 0) {
+                $stockMinimo = ($producto->stock_inicial ?? 0) > 0 ? (int) ceil(($producto->stock_inicial * 60) / 100) : 0;
+            }
+
+            if ($producto->stock > $umbralCritico && $producto->stock <= $stockMinimo) {
                 $porcentajeActual = $this->calcularPorcentajeStock($producto);
                 
                 Log::warning('Stock bajo detectado', [

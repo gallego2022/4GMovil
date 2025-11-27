@@ -3,8 +3,8 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Services\InventarioService;
-use App\Services\RedisCacheService;
+use App\Services\Inventory\InventarioService;
+use App\Services\Infrastructure\RedisCacheService;
 use App\Models\Producto;
 use App\Models\VarianteProducto;
 use App\Models\MovimientoInventario;

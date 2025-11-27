@@ -90,40 +90,80 @@
 </div>
 
 <script>
-// Variable global para el manager de notificaciones
-let globalNotificationManager = null;
-// Variable global para controlar si el listener ya fue agregado
-let globalListenerAdded = false;
-// Variable global para controlar si la notificación de sesión ya fue mostrada
-let sessionNotificationShown = false;
+// Variables globales (solo declarar si no existen para evitar duplicados)
+if (typeof globalNotificationManager === 'undefined') {
+    var globalNotificationManager = null;
+}
+if (typeof globalListenerAdded === 'undefined') {
+    var globalListenerAdded = false;
+}
+if (typeof sessionNotificationShown === 'undefined') {
+    var sessionNotificationShown = false;
+}
 
 function notificationManager() {
     return {
         notifications: [],
         
         init() {
-            // Guardar referencia global solo si no existe otra
-            if (!globalNotificationManager) {
-                globalNotificationManager = this;
+            // Esperar a que Alpine.js esté completamente inicializado
+            const self = this;
+            
+            function initializeNotifications() {
+                // Guardar referencia global solo si no existe otra
+                if (!globalNotificationManager) {
+                    globalNotificationManager = self;
+                    
+                    // Cargar notificación de sesión si existe (solo una vez)
+                    @if(session('mensaje'))
+                        if (!sessionNotificationShown) {
+                            try {
+                                self.show(@json(session('mensaje')), @json(session('tipo', 'success')));
+                                sessionNotificationShown = true;
+                            } catch (e) {
+                                console.error('Error mostrando notificación de sesión:', e);
+                            }
+                        }
+                    @endif
+                }
                 
-                // Cargar notificación de sesión si existe (solo una vez)
-                @if(session('mensaje'))
-                    if (!sessionNotificationShown) {
-                        this.show('{{ session('mensaje') }}', '{{ session('tipo', 'success') }}');
-                        sessionNotificationShown = true;
-                    }
-                @endif
+                // Escuchar eventos personalizados solo una vez globalmente
+                if (!globalListenerAdded) {
+                    window.addEventListener('show-notification', (e) => {
+                        if (globalNotificationManager) {
+                            globalNotificationManager.show(e.detail.mensaje, e.detail.tipo || 'success', e.detail.duration || 5);
+                        }
+                    });
+                    globalListenerAdded = true;
+                }
             }
             
-            // Escuchar eventos personalizados solo una vez globalmente
-            if (!globalListenerAdded) {
-                window.addEventListener('show-notification', (e) => {
-                    if (globalNotificationManager) {
-                        globalNotificationManager.show(e.detail.mensaje, e.detail.tipo || 'success', e.detail.duration || 5);
+            // Esperar a que Alpine.js esté listo con límite de intentos
+            let attempts = 0;
+            const maxAttempts = 100; // Máximo 5 segundos (100 * 50ms)
+            
+            function waitForAlpine() {
+                attempts++;
+                
+                if (window.Alpine && window.Alpine.version) {
+                    // Alpine está completamente cargado
+                    setTimeout(initializeNotifications, 100);
+                } else if (attempts < maxAttempts) {
+                    // Seguir esperando
+                    setTimeout(waitForAlpine, 50);
+                } else {
+                    // Timeout: inicializar de todas formas (fallback)
+                    console.warn('Alpine.js no se cargó a tiempo, inicializando notificaciones sin Alpine');
+                    try {
+                        initializeNotifications();
+                    } catch (e) {
+                        console.error('Error inicializando notificaciones:', e);
                     }
-                });
-                globalListenerAdded = true;
+                }
             }
+            
+            // Iniciar la espera
+            waitForAlpine();
         },
         
         show(mensaje, tipo = 'success', duration = 5) {

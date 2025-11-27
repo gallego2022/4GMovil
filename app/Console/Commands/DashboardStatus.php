@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Services\RedisCacheService;
+use App\Services\Infrastructure\RedisCacheService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 

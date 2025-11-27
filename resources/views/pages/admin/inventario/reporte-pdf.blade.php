@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reporte de Inventario</title>
     <style>
+        @@page { margin: 20mm 15mm; }
         * {
             margin: 0;
             padding: 0;
@@ -18,6 +19,11 @@
             line-height: 1.6;
             background-color: #ffffff;
         }
+        .accent { color: #3A7AFE; }
+        .header-title { font-size: 26px; letter-spacing: 1px; font-weight: 300; color: #3A7AFE; }
+        .invoice-number { margin-top: 5px; font-size: 12px; color: #555; }
+        .divider { height: 1px; background: #cbd8ff; margin: 24px 0; }
+        .section-title { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: #3A7AFE; margin-bottom: 10px; font-weight: 600; }
         
         .container {
             max-width: 210mm;
@@ -64,14 +70,7 @@
             text-align: right;
         }
         
-        .report-title {
-            font-size: 11px;
-            font-weight: 400;
-            letter-spacing: 3px;
-            color: #1a1a1a;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-        }
+        .report-title { font-size: 11px; font-weight: 400; letter-spacing: 2px; color: #1a1a1a; margin-bottom: 12px; text-transform: uppercase; }
         
         .report-date {
             font-size: 9px;
@@ -90,15 +89,7 @@
             margin-bottom: 35px;
         }
         
-        .section-title {
-            font-size: 12px;
-            font-weight: 500;
-            color: #1a1a1a;
-            margin-bottom: 20px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #e0e0e0;
-            letter-spacing: 0.5px;
-        }
+        .section-title { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: #3A7AFE; margin-bottom: 10px; font-weight: 600; }
         
         /* Estadísticas */
         .stats-grid {
@@ -135,27 +126,13 @@
             margin-bottom: 20px;
         }
         
-        .table thead {
-            background-color: #f5f5f5;
-        }
+        .table thead { background-color: transparent; }
         
-        .table th {
-            font-size: 9px;
-            font-weight: 500;
-            color: #1a1a1a;
-            text-align: left;
-            padding: 10px 8px;
-            border-bottom: 1px solid #e0e0e0;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+        .table th { font-size: 9px; font-weight: 600; color: #3A7AFE; text-align: left; padding: 10px 0 10px 0; border-bottom: 1px solid #3A7AFE; text-transform: uppercase; letter-spacing: 1px; }
         
-        .table td {
-            font-size: 9px;
-            color: #2c3e50;
-            padding: 10px 8px;
-            border-bottom: 1px solid #f0f0f0;
-        }
+        .table td { font-size: 10px; color: #1a1a1a; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+        .table tbody tr { page-break-inside: avoid; }
+        .table tbody tr:nth-child(even) { background-color: #fcfcfc; }
         
         .table tbody tr:last-child td {
             border-bottom: none;
@@ -227,26 +204,25 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <div class="header-top">
-                <div class="company">
-                    <div class="company-name">4GMovil</div>
-                    <div class="company-tagline">Reporte de Inventario</div>
-                </div>
-                <div class="report-meta">
-                    <div class="report-title">Reporte de Inventario</div>
-                    <div class="report-date">Generado el: {{ now()->format('d/m/Y H:i:s') }}</div>
-                    @if(isset($fecha_inicio) && isset($fecha_fin))
-                    <div class="period">
-                        Período: {{ $fecha_inicio->format('d/m/Y') }} - {{ $fecha_fin->format('d/m/Y') }}
-                    </div>
-                    @endif
-                </div>
+            <h1 class="header-title">4GMovil</h1>
+            <div class="invoice-number">
+                Reporte de Inventario<br>
+                Generado el: {{ now()->format('d/m/Y H:i:s') }}
+                <br>Generado por: {{ auth()->user()->nombre ?? auth()->user()->name ?? auth()->user()->email ?? 'Usuario' }}
+                @php $rolVal = auth()->user()->rol ?? null; @endphp
+                @if($rolVal)
+                <br>Rol: {{ is_string($rolVal) ? $rolVal : ($rolVal->nombre ?? $rolVal->name ?? 'Rol') }}
+                @endif
+                @if(isset($fecha_inicio) && isset($fecha_fin))
+                <br>Período: {{ $fecha_inicio->format('d/m/Y') }} - {{ $fecha_fin->format('d/m/Y') }}
+                @endif
             </div>
         </div>
+        <div class="divider"></div>
 
         <!-- Resumen General -->
         <div class="section">
-            <h2 class="section-title">Resumen General</h2>
+            <div class="section-title">Resumen General</div>
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-label">Total Productos</div>
@@ -269,7 +245,7 @@
 
         <!-- Alertas de Inventario -->
         <div class="section">
-            <h2 class="section-title">Alertas de Inventario</h2>
+            <div class="section-title">Alertas de Inventario</div>
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-label">Sin Stock</div>
@@ -299,7 +275,7 @@
         <!-- Productos en Inventario -->
         @if($productos->count() > 0)
         <div class="section">
-            <h2 class="section-title">Productos en Inventario</h2>
+            <div class="section-title">Productos en Inventario</div>
             <table class="table">
                 <thead>
                     <tr>
@@ -321,9 +297,19 @@
                         <td>{{ $producto->categoria->nombre ?? 'Sin categoría' }}</td>
                         <td>{{ $producto->marca->nombre ?? 'Sin marca' }}</td>
                         <td>
-                            @if($producto->stock <= 0)
+                            @php
+                                $umbralCritico = $producto->getAttribute('umbral_stock_critico');
+                                $umbralBajo = $producto->getAttribute('umbral_stock_bajo');
+                                if ($umbralCritico === null || $umbralCritico <= 0) {
+                                    $umbralCritico = ($producto->stock_inicial ?? 0) > 0 ? (int) ceil(($producto->stock_inicial * 20) / 100) : 5;
+                                }
+                                if ($umbralBajo === null || $umbralBajo <= 0) {
+                                    $umbralBajo = ($producto->stock_inicial ?? 0) > 0 ? (int) ceil(($producto->stock_inicial * 60) / 100) : 0;
+                                }
+                            @endphp
+                            @if($producto->stock <= 0 || $producto->stock <= $umbralCritico)
                                 <span class="badge badge-danger">{{ $producto->stock }} unidades</span>
-                            @elseif($producto->stock <= 10)
+                            @elseif($producto->stock <= $umbralBajo)
                                 <span class="badge badge-warning">{{ $producto->stock }} unidades</span>
                             @else
                                 <span class="badge badge-success">{{ $producto->stock }} unidades</span>
@@ -341,7 +327,7 @@
         <!-- Movimientos Recientes -->
         @if(isset($movimientos) && $movimientos->count() > 0)
         <div class="section">
-            <h2 class="section-title">Movimientos Recientes</h2>
+            <div class="section-title">Movimientos Recientes</div>
             <table class="table">
                 <thead>
                     <tr>
@@ -378,10 +364,17 @@
 
         <!-- Footer -->
         <div class="footer">
-            <p>Este reporte fue generado automáticamente el {{ now()->format('d/m/Y H:i:s') }}</p>
-            <p>4GMovil - Sistema de Gestión de Inventario</p>
+            4GMovil – Reporte de Inventario
+            <br>Gracias por tu preferencia
+            <br>Reporte generado el {{ now()->format('d/m/Y H:i:s') }}
         </div>
     </div>
+    <script type="text/php">
+        if (isset($pdf)) {
+            $font = $fontMetrics->getFont("DejaVu Sans", "normal");
+            $size = 8;
+            $pdf->page_text(520, 820, "Página {PAGE_NUM} de {PAGE_COUNT}", $font, $size, array(0.47,0.47,0.47));
+        }
+    </script>
 </body>
 </html>
-

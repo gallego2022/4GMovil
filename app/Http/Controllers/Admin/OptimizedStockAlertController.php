@@ -2,34 +2,45 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Services\OptimizedStockAlertService;
+use App\Http\Controllers\Base\WebController;
+use App\Services\Inventory\StockAlertService;
 use App\Models\Producto;
 use App\Models\VarianteProducto;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Contracts\View\View as ViewView;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
-class OptimizedStockAlertController extends Controller
+/**
+ * Controlador optimizado de alertas de stock.
+ *
+ * Provee dashboard, estadísticas y acciones de reposición, con soporte AJAX.
+ */
+class OptimizedStockAlertController extends WebController
 {
-    protected $stockAlertService;
+    protected StockAlertService $stockAlertService;
 
-    public function __construct(OptimizedStockAlertService $stockAlertService)
+    public function __construct(StockAlertService $stockAlertService)
     {
         $this->stockAlertService = $stockAlertService;
     }
 
     /**
-     * Muestra el dashboard de alertas optimizado
+     * Muestra el dashboard de alertas optimizado.
+     *
+     * @param Request $request Filtros y flags de actualización
+     * @return ViewView|JsonResponse Vista completa o HTML parcial en AJAX
      */
-    public function dashboard(Request $request)
+    public function dashboard(Request $request): ViewView|JsonResponse
     {
         $tipo = $request->get('tipo', 'criticos');
         $page = $request->get('page', 1);
+        $forzarActualizacion = $request->get('refresh', false) || $request->get('forzar', false);
 
-        $alertas = $this->stockAlertService->getOptimizedStockAlerts($tipo, $page);
+        $alertas = $this->stockAlertService->getOptimizedStockAlerts($tipo, $page, $forzarActualizacion);
 
         // Si es una petición AJAX, retornar solo el contenido del tab
         if ($request->ajax()) {
@@ -44,7 +55,10 @@ class OptimizedStockAlertController extends Controller
     }
 
     /**
-     * Obtiene las variantes problemáticas de un producto específico (AJAX)
+     * Obtiene las variantes problemáticas de un producto específico (AJAX).
+     *
+     * @param Request $request Debe incluir `producto_id`
+     * @return JsonResponse Lista de variantes con metadatos de alerta
      */
     public function getVariantesProblematicas(Request $request): JsonResponse
     {
@@ -72,7 +86,9 @@ class OptimizedStockAlertController extends Controller
     }
 
     /**
-     * Obtiene estadísticas de alertas (AJAX)
+     * Obtiene estadísticas de alertas (AJAX).
+     *
+     * @return JsonResponse Totales por tipo de alerta
      */
     public function getEstadisticas(): JsonResponse
     {
@@ -90,7 +106,10 @@ class OptimizedStockAlertController extends Controller
     }
 
     /**
-     * Obtiene todas las variantes de un producto (AJAX)
+     * Obtiene todas las variantes de un producto (AJAX).
+     *
+     * @param Request $request Debe incluir `producto_id`
+     * @return JsonResponse Variantes del producto
      */
     public function getVariantesProducto(Request $request): JsonResponse
     {
@@ -113,16 +132,19 @@ class OptimizedStockAlertController extends Controller
                     'nombre' => $variante->nombre,
                     'codigo_color' => $variante->codigo_color,
                     'stock_actual' => $variante->stock,
-                    'stock_minimo' => $variante->producto->stock_minimo ?? 10,
+                    'stock_minimo' => $variante->producto->getAttribute('umbral_stock_critico') ?? ($variante->producto->stock_inicial ? (int) ceil(($variante->producto->stock_inicial * 20) / 100) : 5),
                 ];
             }),
         ]);
     }
 
     /**
-     * Repone stock de un producto o variante
+     * Repone stock de un producto o variante.
+     *
+     * @param Request $request Datos de reposición
+     * @return RedirectResponse Redirección al dashboard o a alertas optimizadas
      */
-    public function reponerStock(Request $request)
+    public function reponerStock(Request $request): RedirectResponse
     {
         $request->validate([
             'producto_id' => 'required|integer|exists:productos,producto_id',

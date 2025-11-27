@@ -264,7 +264,9 @@ class ValidationSystem {
      */
     getRequiredMessage(fieldName) {
         const customMessages = this.messages.get(fieldName) || {};
-        return customMessages.required || `${this.getFieldLabel(document.querySelector(`[name="${fieldName}"]`))} es requerido`;
+        const fieldEl = document.querySelector(`[name="${fieldName}"]`);
+        const labelText = fieldEl ? this.getFieldLabel(fieldEl) : fieldName;
+        return customMessages.required || `${labelText} es requerido`;
     }
 
     /**
@@ -452,8 +454,13 @@ class ValidationSystem {
      * Obtener etiqueta del campo
      */
     getFieldLabel(field) {
-        const label = field.parentNode.querySelector('label');
-        return label ? label.textContent.replace('*', '').trim() : field.name;
+        if (!field) return '';
+        const labelEl = field.closest('label') || (field.parentNode && field.parentNode.querySelector ? field.parentNode.querySelector('label') : null);
+        const aria = field.getAttribute('aria-label');
+        const placeholder = field.getAttribute('placeholder');
+        const nameAttr = field.name || '';
+        const text = labelEl ? labelEl.textContent : (aria || placeholder || nameAttr);
+        return text ? text.replace('*', '').trim() : nameAttr;
     }
 
     /**

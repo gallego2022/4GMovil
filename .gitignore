@@ -46,6 +46,7 @@ pnpm-debug.log*
 
 # --- Build output ---
 /public/build
+reportes-service/target/
 
 # --- Composer lock file should be committed (important!) ---
 # composer.lock ❌ NO se debe ignorar

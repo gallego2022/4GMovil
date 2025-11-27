@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Services\RedisCacheService;
+use App\Services\Infrastructure\RedisCacheService;
 
 class ClearRedisCache extends Command
 {

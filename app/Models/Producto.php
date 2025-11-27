@@ -19,8 +19,8 @@ class Producto extends Model
         'stock_inicial',
         'stock_reservado',
         'stock_disponible',
-        'stock_minimo',
-        'stock_maximo',
+        'umbral_stock_critico',
+        'umbral_stock_bajo',
         'codigo_barras',
         'sku',
         'costo_unitario',
@@ -208,7 +208,7 @@ class Producto extends Model
     }
 
     /**
-     * Boot del modelo para configurar eliminación en cascada
+     * Boot del modelo para configurar eliminación en cascada y cálculo automático de umbrales
      */
     protected static function boot()
     {
@@ -226,6 +226,25 @@ class Producto extends Model
             
             // Eliminar movimientos de inventario
             $producto->movimientosInventario()->delete();
+        });
+
+        // Evento al crear o actualizar: calcular umbrales automáticamente si se establece stock_inicial
+        static::saving(function ($producto) {
+            $stockInicial = (int) ($producto->stock_inicial ?? 0);
+            $umbralCriticoActual = $producto->getAttribute('umbral_stock_critico');
+            $umbralBajoActual = $producto->getAttribute('umbral_stock_bajo');
+
+            if ($umbralCriticoActual === null || $umbralCriticoActual <= 0) {
+                $producto->umbral_stock_critico = $stockInicial > 0
+                    ? (int) ceil(($stockInicial * 20) / 100)
+                    : 5;
+            }
+
+            if ($umbralBajoActual === null || $umbralBajoActual <= 0) {
+                $producto->umbral_stock_bajo = $stockInicial > 0
+                    ? (int) ceil(($stockInicial * 60) / 100)
+                    : 0;
+            }
         });
 
         // Evento después de crear una variante
@@ -451,45 +470,45 @@ class Producto extends Model
 
     /**
      * Calcular el umbral de stock bajo
-     * Usa stock_maximo del producto si existe, sino calcula el 60% del stock_inicial
+     * Usa umbral_stock_bajo del producto si existe, sino calcula el 60% del stock_inicial
      */
     public function getUmbralStockBajoAttribute(): int
     {
-        // Si existe stock_maximo, usarlo directamente
-        if ($this->stock_maximo !== null && $this->stock_maximo > 0) {
-            return $this->stock_maximo;
+        $umbralBajoAttr = array_key_exists('umbral_stock_bajo', $this->attributes)
+            ? $this->attributes['umbral_stock_bajo']
+            : null;
+
+        if ($umbralBajoAttr !== null && $umbralBajoAttr > 0) {
+            return (int) $umbralBajoAttr;
         }
-        
-        $stockInicial = $this->stock_inicial;
-        
+
+        $stockInicial = (int) ($this->stock_inicial ?? 0);
         if ($stockInicial <= 0) {
-            // Si no hay stock inicial, usar el stock mínimo como fallback
-            return $this->stock_minimo ?? 5;
+            return 0;
         }
-        
-        // Fallback: 60% del stock inicial
+
         return (int) ceil(($stockInicial * 60) / 100);
     }
 
     /**
      * Calcular el umbral de stock crítico
-     * Usa stock_minimo del producto si existe, sino calcula el 20% del stock_inicial
+     * Usa umbral_stock_critico del producto si existe, sino calcula el 20% del stock_inicial
      */
     public function getUmbralStockCriticoAttribute(): int
     {
-        // Si existe stock_minimo, usarlo directamente
-        if ($this->stock_minimo !== null && $this->stock_minimo > 0) {
-            return $this->stock_minimo;
+        $umbralCriticoAttr = array_key_exists('umbral_stock_critico', $this->attributes)
+            ? $this->attributes['umbral_stock_critico']
+            : null;
+
+        if ($umbralCriticoAttr !== null && $umbralCriticoAttr > 0) {
+            return (int) $umbralCriticoAttr;
         }
-        
-        $stockInicial = $this->stock_inicial;
-        
+
+        $stockInicial = (int) ($this->stock_inicial ?? 0);
         if ($stockInicial <= 0) {
-            // Si no hay stock inicial, usar el stock mínimo como fallback
-            return max(1, (int) ceil(($this->stock_minimo ?? 5) * 0.2));
+            return 5;
         }
-        
-        // Fallback: 20% del stock inicial
+
         return (int) ceil(($stockInicial * 20) / 100);
     }
 
@@ -498,8 +517,9 @@ class Producto extends Model
      */
     public function getStockBajoAttribute(): bool
     {
-        $umbral = $this->umbral_stock_bajo;
-        return $this->stock_disponible > $umbral && $this->stock_disponible <= ($umbral * 1.5);
+        $umbralBajo = $this->umbral_stock_bajo;
+        $umbralCritico = $this->umbral_stock_critico;
+        return $this->stock_disponible > $umbralCritico && $this->stock_disponible <= $umbralBajo;
     }
 
     /**
@@ -581,19 +601,19 @@ class Producto extends Model
 
     public function scopeStockBajo($query)
     {
-        // Stock bajo: cuando está por debajo del umbral bajo (stock_maximo) pero por encima del crítico
-        return $query->whereRaw('stock <= COALESCE(stock_maximo, (stock_inicial * 0.6)) AND stock > COALESCE(stock_minimo, (stock_inicial * 0.2)) AND stock > 0');
+        // Stock bajo: cuando está por debajo del umbral bajo (umbral_stock_bajo) pero por encima del crítico
+        return $query->whereRaw('stock <= COALESCE(umbral_stock_bajo, (stock_inicial * 0.6)) AND stock > COALESCE(umbral_stock_critico, (stock_inicial * 0.2)) AND stock > 0');
     }
 
     public function scopeStockCritico($query)
     {
-        // Stock crítico: cuando está por debajo del umbral crítico (stock_minimo)
-        return $query->whereRaw('stock <= COALESCE(stock_minimo, (stock_inicial * 0.2)) AND stock > 0');
+        // Stock crítico: cuando está por debajo del umbral crítico (umbral_stock_critico)
+        return $query->whereRaw('stock <= COALESCE(umbral_stock_critico, (stock_inicial * 0.2)) AND stock > 0');
     }
 
     public function scopeStockExcesivo($query)
     {
-        return $query->whereRaw('stock > stock_maximo');
+        return $query->whereRaw('stock > umbral_stock_bajo');
     }
 
     public function scopeSinStock($query)

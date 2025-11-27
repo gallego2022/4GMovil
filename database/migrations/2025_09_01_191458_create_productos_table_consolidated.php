@@ -42,8 +42,8 @@ return new class extends Migration
             $table->integer('stock_disponible')->default(0);
             
             // ===== UMBRALES DE ALERTA DE STOCK =====
-            $table->integer('stock_minimo')->nullable()->comment('Umbral crítico: 20% del stock inicial');
-            $table->integer('stock_maximo')->nullable()->comment('Umbral bajo: 60% del stock inicial');
+            $table->integer('umbral_stock_critico')->nullable()->comment('Umbral crítico: 20% del stock inicial');
+            $table->integer('umbral_stock_bajo')->nullable()->comment('Umbral bajo: 60% del stock inicial');
             
             // ===== CAMPOS ADICIONALES =====
             $table->string('sku')->nullable()->unique();
@@ -68,8 +68,8 @@ return new class extends Migration
             $table->index(['stock_disponible', 'estado']);
             $table->index(['stock_reservado', 'estado']);
             $table->index(['stock_inicial', 'stock_disponible'], 'idx_alertas_stock_inicial');
-            $table->index(['stock_minimo', 'stock_disponible'], 'idx_alertas_stock');
-            $table->index(['stock_maximo', 'stock_disponible'], 'idx_umbrales_stock');
+            $table->index(['umbral_stock_critico', 'stock_disponible'], 'idx_alertas_stock');
+            $table->index(['umbral_stock_bajo', 'stock_disponible'], 'idx_umbrales_stock');
             $table->index('categoria_id');
             $table->index('marca_id');
             $table->index('precio');

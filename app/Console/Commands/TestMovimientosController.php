@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Http\Controllers\InventarioController;
-use App\Services\InventarioService;
+use App\Services\Inventory\InventarioService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 

@@ -76,7 +76,7 @@
                         <form action="{{ route('admin.pedidos.updateEstado', $pedido->pedido_id) }}" method="POST" class="flex items-center space-x-3">
                             @csrf
                             @method('PUT')
-                            <select name="estado_id" 
+                            <select name="estado_id" id="estadoSelect" 
                                     class="rounded-md px-4 py-3 border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200">
                                 @foreach(\App\Models\EstadoPedido::all() as $estado)
                                     <option value="{{ $estado->estado_id }}" 
@@ -85,6 +85,7 @@
                                     </option>
                                 @endforeach
                             </select>
+                            <input type="text" name="motivo_cancelacion" id="motivoCancelacion" placeholder="Motivo de cancelación" class="hidden rounded-md px-4 py-3 border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-gray-900 dark:bg-gray-700 dark:text-gray-100 transition-colors duration-200" />
                             <button type="submit" 
                             class="inline-flex justify-center rounded-lg bg-gradient-to-r from-emerald-500 to-teal-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:from-emerald-600 hover:to-teal-700 transform hover:scale-105 transition-all duration-200 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 hover:shadow-xl">
                             <svg class="w-5 h-5 mr-2 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -93,6 +94,26 @@
                                 Actualizar
                             </button>
                         </form>
+                        <script>
+                            (function(){
+                                var select = document.getElementById('estadoSelect');
+                                var input = document.getElementById('motivoCancelacion');
+                                function toggleMotivo(){
+                                    var text = (select.options[select.selectedIndex]||{}).text || '';
+                                    var isCancel = text.toLowerCase() === 'cancelado';
+                                    if(isCancel){
+                                        input.classList.remove('hidden');
+                                        input.disabled = false;
+                                    } else {
+                                        input.classList.add('hidden');
+                                        input.value = '';
+                                        input.disabled = true;
+                                    }
+                                }
+                                select.addEventListener('change', toggleMotivo);
+                                toggleMotivo();
+                            })();
+                        </script>
                     @else
                         <div class="flex items-center space-x-3">
                             <select disabled 

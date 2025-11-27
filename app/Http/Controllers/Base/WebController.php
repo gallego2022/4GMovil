@@ -129,13 +129,31 @@ abstract class WebController extends BaseController
      */
     protected function handleValidationException(ValidationException $e, ?string $redirectRoute = null, array $parameters = []): RedirectResponse
     {
+        // Log de errores de validación para debugging
+        \Illuminate\Support\Facades\Log::info('Error de validación', [
+            'errors' => $e->errors(),
+            'route' => $redirectRoute,
+            'user_id' => \Illuminate\Support\Facades\Auth::id(),
+        ]);
+        
         $message = 'Por favor, corrige los errores en el formulario';
         
-        if ($redirectRoute) {
-            return $this->redirectWithInput($redirectRoute, $message, $parameters);
+        // Si hay errores específicos, agregar el primero al mensaje
+        $errors = $e->errors();
+        if (!empty($errors)) {
+            $firstError = reset($errors);
+            if (!empty($firstError)) {
+                $message .= ': ' . $firstError[0];
+            }
         }
         
-        return $this->backWithInput($message);
+        if ($redirectRoute) {
+            return $this->redirectWithInput($redirectRoute, $message, $parameters)
+                ->withErrors($e->errors());
+        }
+        
+        return $this->backWithInput($message)
+            ->withErrors($e->errors());
     }
 
     /**
@@ -143,7 +161,34 @@ abstract class WebController extends BaseController
      */
     protected function handleException(\Exception $e, ?string $redirectRoute = null, array $parameters = []): RedirectResponse
     {
-        $message = Config::get('app.debug') ? $e->getMessage() : 'Ha ocurrido un error inesperado';
+        // Log del error completo para debugging
+        \Illuminate\Support\Facades\Log::error('Error en controlador web', [
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => $e->getTraceAsString(),
+            'route' => $redirectRoute,
+            'user_id' => \Illuminate\Support\Facades\Auth::id(),
+        ]);
+        
+        // Determinar mensaje de error apropiado
+        $message = 'Ha ocurrido un error inesperado';
+        
+        if (Config::get('app.debug')) {
+            // En modo debug, mostrar mensaje detallado
+            $message = $e->getMessage();
+        } else {
+            // En producción, mostrar mensajes más amigables según el tipo de error
+            if (str_contains($e->getMessage(), 'SQLSTATE') || str_contains($e->getMessage(), 'database')) {
+                $message = 'Error al conectar con la base de datos. Por favor, intenta nuevamente.';
+            } elseif (str_contains($e->getMessage(), 'file') || str_contains($e->getMessage(), 'image')) {
+                $message = 'Error al procesar el archivo. Verifica que el archivo sea válido.';
+            } elseif (str_contains($e->getMessage(), 'permission') || str_contains($e->getMessage(), 'unauthorized')) {
+                $message = 'No tienes permisos para realizar esta acción.';
+            } elseif (str_contains($e->getMessage(), 'not found') || str_contains($e->getMessage(), 'No existe')) {
+                $message = 'El recurso solicitado no existe.';
+            }
+        }
         
         if ($redirectRoute) {
             return $this->redirectError($redirectRoute, $message, $parameters);

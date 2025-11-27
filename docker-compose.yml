@@ -15,6 +15,7 @@ services:
       - ./database:/var/www/html/database
       - ./public:/var/www/html/public
       - ./tests:/var/www/html/tests
+      - ./scripts:/var/www/html/scripts
     environment:
       - APP_ENV=local
       - APP_DEBUG=true
@@ -89,7 +90,7 @@ services:
       PMA_PASSWORD: laravelpass
       MYSQL_ROOT_PASSWORD: rootpassword
     ports:
-      - "8080:80"
+      - "8083:80"
     depends_on:
       - db
     networks:
@@ -161,6 +162,7 @@ services:
       - ./database:/var/www/html/database
       - ./public:/var/www/html/public
       - ./tests:/var/www/html/tests
+      - ./scripts:/var/www/html/scripts
     environment:
       - APP_ENV=local
       - APP_DEBUG=true

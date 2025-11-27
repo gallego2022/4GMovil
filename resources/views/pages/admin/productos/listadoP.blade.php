@@ -225,7 +225,9 @@
                           data-title="¿Eliminar producto?"
                           data-message="¿Estás seguro de eliminar el producto {{ $producto->nombre_producto }}?"
                           data-confirm-text="Sí, eliminar"
-                          data-method="DELETE">
+                          data-cancel-text="Cancelar"
+                          data-confirm-color="red"
+                          data-show-warning="true">
                         @csrf
                         @method('DELETE')
                         <button type="submit" 
@@ -448,7 +450,9 @@
                                               data-title="¿Eliminar producto?"
                                               data-message="¿Estás seguro de eliminar el producto {{ $producto->nombre_producto }}?"
                                               data-confirm-text="Sí, eliminar"
-                                              data-method="DELETE">
+                                              data-cancel-text="Cancelar"
+                                              data-confirm-color="red"
+                                              data-show-warning="true">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" 

@@ -100,6 +100,15 @@
                                         </svg>
                                     </div>
                                 </button>
+
+                                <!-- Botón cancelar -->
+                                <a href="{{ route('checkout.cancel', $pedido) }}"
+                                   class="w-full inline-flex items-center justify-center px-4 py-3 border border-red-300 text-base font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                    Cancelar y volver
+                                </a>
                             </div>
                         </form>
                     </div>

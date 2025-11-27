@@ -3,8 +3,8 @@
 namespace Tests\Unit\Services;
 
 use Tests\TestCase;
-use App\Services\DashboardService;
-use App\Services\RedisCacheService;
+use App\Services\Dashboard\DashboardService;
+use App\Services\Infrastructure\RedisCacheService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Testing\RefreshDatabase;

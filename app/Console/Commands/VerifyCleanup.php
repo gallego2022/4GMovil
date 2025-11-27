@@ -83,7 +83,7 @@ class VerifyCleanup extends Command
         $this->info('⚙️ Verificando servicios optimizados...');
         
         $serviciosOptimizados = [
-            'App\Services\OptimizedStockAlertService',
+            'App\Services\Inventory\StockAlertService',
             'App\Http\Controllers\Admin\OptimizedStockAlertController'
         ];
 

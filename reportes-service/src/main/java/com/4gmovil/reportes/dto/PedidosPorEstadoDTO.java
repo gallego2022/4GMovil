@@ -1,4 +1,4 @@
-package com.movil4g.reportes.dto;
+package com.4gmovil.reportes.dto;
 
 public class PedidosPorEstadoDTO {
     private final Long estadoId;

@@ -4,12 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-
 class ReportesGatewayController
 {
     private function baseUrl(): string
     {
-        return env('REPORTES_SERVICE_URL', 'http://localhost:8081');
+        return env('REPORTES_SERVICE_URL', 'http://localhost:8082');
     }
 
     public function ventasResumen(Request $request)

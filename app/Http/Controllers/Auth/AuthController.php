@@ -5,21 +5,22 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Base\WebController;
 use App\Models\OtpCode;
 use App\Models\Usuario;
-use App\Services\AuthService;
-use App\Services\Business\CarritoService;
-use App\Services\JwtService;
+use App\Services\Auth\AuthService;
+use App\Services\Orders\CarritoService;
+use App\Services\Auth\JwtService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
+use App\Mail\BienvenidaUsuario;
 
 class AuthController extends WebController
 {
@@ -636,6 +637,12 @@ class AuthController extends WebController
                 }
 
                 Log::info("Nuevo usuario creado con Google: {$usuario->correo_electronico}");
+
+                try {
+                    Mail::to($usuario->correo_electronico)->send(new BienvenidaUsuario($usuario, 'google'));
+                } catch (\Exception $e) {
+                    Log::warning('No se pudo enviar correo de bienvenida (Google): '.$e->getMessage());
+                }
 
                 // Devolver JSON para mostrar modal
                 if (request()->expectsJson()) {

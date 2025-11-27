@@ -24,7 +24,7 @@ class PerformanceOptimization
         $this->addPerformanceHeaders($response);
 
         // Enable compression if configured
-        if (Config::get('optimization.compression.enabled')) {
+        if (Config::get('optimization.compression.enabled', false)) {
             $this->enableCompression($response);
         }
 
@@ -64,12 +64,12 @@ class PerformanceOptimization
         
         if ($this->isCompressible($contentType)) {
             // Enable gzip compression
-            if (Config::get('optimization.compression.gzip')) {
+            if (Config::get('optimization.compression.gzip', false)) {
                 $response->headers->set('Content-Encoding', 'gzip');
             }
             
             // Enable Brotli compression if available
-            if (Config::get('optimization.compression.brotli') && function_exists('brotli_compress')) {
+            if (Config::get('optimization.compression.brotli', false) && function_exists('brotli_compress')) {
                 $response->headers->set('Content-Encoding', 'br');
             }
         }

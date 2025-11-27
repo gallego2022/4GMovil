@@ -2,35 +2,59 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Services\UsuarioService;
+use App\Services\User\UsuarioService;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
+use Illuminate\Contracts\View\View as ViewView;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Base\WebController;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Redirect;
 
+/**
+ * Controlador de administración para gestionar Usuarios.
+ *
+ * Provee acciones CRUD, cambio de estado y asignación de roles, delegando
+ * la lógica de negocio al servicio `UsuarioService`.
+ */
 class UsuarioController extends WebController
 {
-    protected $usuarioService;
+    protected UsuarioService $usuarioService;
 
     public function __construct(UsuarioService $usuarioService)
     {
         $this->usuarioService = $usuarioService;
     }
 
-    public function index()
+    /**
+     * Listado de usuarios.
+     *
+     * @return ViewView Vista con el listado de usuarios
+     */
+    public function index(): ViewView
     {
         $usuarios = $this->usuarioService->getAllUsers();
         return View::make('pages.admin.usuarios.index', compact('usuarios'));
     }
 
-    public function create()
+    /**
+     * Formulario de creación de usuario.
+     *
+     * @return ViewView Vista del formulario de creación
+     */
+    public function create(): ViewView
     {
         return View::make('pages.admin.usuarios.create');
     }
 
-    public function store(Request $request)
+    /**
+     * Crear un usuario.
+     *
+     * @param Request $request Datos del usuario
+     * @return RedirectResponse Redirección con mensaje de estado
+     */
+    public function store(Request $request): RedirectResponse
     {
 
         $request->validate([
@@ -55,7 +79,13 @@ class UsuarioController extends WebController
         return Redirect::back()->withInput()->with('mensaje', $result['message'])->with('tipo', 'error');
     }
 
-    public function show($id)
+    /**
+     * Mostrar detalle de un usuario.
+     *
+     * @param int $id Identificador del usuario
+     * @return ViewView Vista de detalle o redirección si no existe
+     */
+    public function show(int $id): ViewView|RedirectResponse
     {
         $data = $this->usuarioService->getUserById($id);
         
@@ -66,7 +96,13 @@ class UsuarioController extends WebController
         return View::make('pages.admin.usuarios.show', compact('data'));
     }
 
-    public function edit($id)
+    /**
+     * Formulario de edición de usuario.
+     *
+     * @param int $id Identificador del usuario
+     * @return ViewView Vista de edición o redirección si no existe
+     */
+    public function edit(int $id): ViewView|RedirectResponse
     {
         $data = $this->usuarioService->getUserById($id);
         
@@ -77,7 +113,14 @@ class UsuarioController extends WebController
         return View::make('pages.admin.usuarios.edit', compact('data'));
     }
 
-    public function update(Request $request, $id)
+    /**
+     * Actualizar un usuario.
+     *
+     * @param Request $request Datos a actualizar
+     * @param int $id Identificador del usuario
+     * @return RedirectResponse Redirección con mensaje de estado
+     */
+    public function update(Request $request, int $id): RedirectResponse
     {
         $request->validate([
             'nombre_usuario' => 'required|string|max:255',
@@ -102,7 +145,13 @@ class UsuarioController extends WebController
         return Redirect::route('usuarios.index')->with('mensaje', $result['message'])->with('tipo', 'error');
     }
 
-    public function destroy($id)
+    /**
+     * Eliminar un usuario.
+     *
+     * @param int $id Identificador del usuario
+     * @return RedirectResponse Redirección con mensaje de estado
+     */
+    public function destroy(int $id): RedirectResponse
     {
         $result = $this->usuarioService->deleteUser($id);
 
@@ -113,7 +162,13 @@ class UsuarioController extends WebController
         return Redirect::route('usuarios.index')->with('mensaje', $result['message'])->with('tipo', 'error');
     }
 
-    public function cambiarEstado($id)
+    /**
+     * Cambiar estado activo/inactivo de un usuario.
+     *
+     * @param int $id Identificador del usuario
+     * @return RedirectResponse Redirección con mensaje de estado
+     */
+    public function cambiarEstado(int $id): RedirectResponse
     {
         $result = $this->usuarioService->toggleUserStatus($id);
 
@@ -124,7 +179,14 @@ class UsuarioController extends WebController
         return Redirect::route('usuarios.index')->with('mensaje', $result['message'])->with('tipo', 'error');
     }
 
-    public function asignarRol(Request $request, $id)
+    /**
+     * Asignar rol al usuario.
+     *
+     * @param Request $request Contiene el rol
+     * @param int $id Identificador del usuario
+     * @return RedirectResponse Redirección con mensaje de estado
+     */
+    public function asignarRol(Request $request, int $id): RedirectResponse
     {
         $request->validate([
             'rol' => 'required|in:cliente,admin,vendedor'

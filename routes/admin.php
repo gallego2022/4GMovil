@@ -6,17 +6,19 @@ use App\Http\Controllers\Admin\InventarioController;
 use App\Http\Controllers\Admin\MarcaController;
 use App\Http\Controllers\Admin\MetodoPagoController;
 use App\Http\Controllers\Admin\OptimizedStockAlertController;
-// use App\Http\Controllers\Cliente\DetallePedidoController; // ELIMINADO
+
 use App\Http\Controllers\Admin\PedidoAdminController;
-// use App\Http\Controllers\Admin\PagoController; // ELIMINADO
+
 use App\Http\Controllers\Admin\ProductoController;
 use App\Http\Controllers\Admin\UsuarioController;
 use App\Http\Controllers\Servicios\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 // Solo accesibles por usuarios autenticados y administradores con JWT
-// SOLO JWT - No se acepta autenticación de sesión
+// IMPORTANTE: Las rutas admin usan el middleware 'web' (cargado desde RouteServiceProvider)
+// para tener acceso a sesiones y CSRF, luego se aplican los middlewares JWT
 Route::middleware([
+    'web', // Asegurar que la sesión esté iniciada antes de los middlewares JWT
     \App\Http\Middleware\JwtAuthMiddleware::class,
     \App\Http\Middleware\JwtAdminMiddleware::class,
     \App\Http\Middleware\CacheInvalidationMiddleware::class
@@ -72,9 +74,8 @@ Route::middleware([
     });
 
     Route::resource('usuarios', UsuarioController::class);
-    Route::get('/usuarios/{usuario}/asignar-rol', [UsuarioController::class, 'asignarRol'])->name('usuarios.asignarRol');
-    Route::post('/usuarios/{usuario}/asignar-rol', [UsuarioController::class, 'updateRol'])->name('usuarios.updateRol');
-    Route::patch('/usuarios/{usuario}/toggle', [UsuarioController::class, 'toggleEstado'])->name('usuarios.toggle');
+    Route::post('/usuarios/{usuario}/asignar-rol', [UsuarioController::class, 'asignarRol'])->name('usuarios.asignarRol');
+    Route::patch('/usuarios/{usuario}/toggle', [UsuarioController::class, 'cambiarEstado'])->name('usuarios.toggle');
     // Categorias
     Route::resource('categorias', CategoriaController::class);
     // Marcas
