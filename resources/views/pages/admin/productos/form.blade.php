@@ -574,24 +574,31 @@
     // Función para cargar especificaciones
     async function cargarEspecificaciones(categoriaId) {
         try {
-            const response = await fetch(`/api/especificaciones/${categoriaId}`);
-            
+            const url = "{{ route('admin.especificaciones.by-categoria', ['categoriaId' => '__ID__']) }}".replace('__ID__', categoriaId);
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
             const especificaciones = await response.json();
-            
-            especificacionesActuales = especificaciones;
-            renderizarEspecificaciones(especificaciones);
-            
-            // Si hay valores de especificaciones existentes, re-renderizar después de un breve delay
+            if (!Array.isArray(especificaciones) && especificaciones && especificaciones.success === false) {
+                mostrarError(especificaciones.message || 'No se pudieron obtener las especificaciones de la categoría.');
+                limpiarEspecificaciones();
+                return;
+            }
+            const data = Array.isArray(especificaciones) ? especificaciones : (especificaciones.data || []);
+            especificacionesActuales = data;
+            renderizarEspecificaciones(data);
             if (Object.keys(valoresEspecificaciones).length > 0) {
                 setTimeout(() => {
-                    renderizarEspecificaciones(especificaciones);
+                    renderizarEspecificaciones(data);
                 }, 300);
             }
-            
         } catch (error) {
             mostrarError('Error al cargar las especificaciones de la categoría: ' + error.message);
         }
@@ -778,10 +785,29 @@
                 break;
                 
             case 'radio':
-                const opcionesRadio = espec.opciones_array || [];
+                let opcionesRadio = [];
+                if (espec.opciones_array && Array.isArray(espec.opciones_array)) {
+                    opcionesRadio = espec.opciones_array;
+                } else if (espec.opciones && typeof espec.opciones === 'string') {
+                    if (espec.opciones.startsWith('[') && espec.opciones.endsWith(']')) {
+                        try {
+                            opcionesRadio = JSON.parse(espec.opciones);
+                        } catch (e) {
+                            opcionesRadio = espec.opciones.split(',').map(op => op.trim());
+                        }
+                    } else {
+                        opcionesRadio = espec.opciones.split(',').map(op => op.trim());
+                    }
+                } else if (espec.opciones && Array.isArray(espec.opciones)) {
+                    opcionesRadio = espec.opciones;
+                } else {
+                    opcionesRadio = ['Opción 1', 'Opción 2'];
+                }
                 let radioHtml = '';
                 opcionesRadio.forEach((opcion, radioIndex) => {
-                    const checked = valorActual === opcion ? 'checked' : '';
+                    const valorActualNormalizado = valorActual ? String(valorActual).trim() : '';
+                    const opcionNormalizada = String(opcion).trim();
+                    const checked = valorActualNormalizado === opcionNormalizada ? 'checked' : '';
                     radioHtml += `
                         <div class="flex items-center">
                             <input type="radio" 
@@ -790,14 +816,16 @@
                                    value="${opcion}"
                                    ${checked}
                                    class="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 transition-colors duration-200"
-                                   ${espec.requerido ? 'required' : ''}>
+                                   ${espec.requerido ? 'required' : ''}
+                                   data-field-name="especificaciones[${espec.nombre_campo}]"
+                                   data-rules='${JSON.stringify(espec.requerido ? ['required'] : [])}'
+                                   data-messages='${JSON.stringify(espec.requerido ? {required: `${espec.etiqueta} es requerido`} : {})}'>
                             <label for="espec_${espec.nombre_campo}_${radioIndex}" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
                                 ${opcion}
                             </label>
                         </div>
                     `;
                 });
-                
                 campo = `
                     <div class="space-y-2">
                         ${radioHtml}
@@ -820,7 +848,7 @@
         }
         
         return `
-            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600 validation-field">
                 <div class="mb-2">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                         ${espec.etiqueta}${unidad} ${requerido}
@@ -852,37 +880,51 @@
         especificacionesActuales.forEach(espec => {
             const campo = document.getElementById(`espec_${espec.nombre_campo}`);
             if (campo) {
-                // Event listeners para guardar valores
                 campo.addEventListener('change', function() {
                     guardarValorEspecificacion(espec.nombre_campo, this.value);
                 });
-                
                 if (espec.tipo_campo === 'checkbox') {
                     campo.addEventListener('change', function() {
                         guardarValorEspecificacion(espec.nombre_campo, this.checked ? '1' : '0');
                     });
                 }
-                
-                // Registrar campo con el sistema de validación
-                // Verificar que ValidationSystem esté completamente inicializado
                 if (window.ValidationSystem && typeof window.ValidationSystem.addRule === 'function') {
                     const rules = JSON.parse(campo.getAttribute('data-rules') || '[]');
                     const messages = JSON.parse(campo.getAttribute('data-messages') || '{}');
-                    
                     if (rules.length > 0) {
                         window.ValidationSystem.addRule(campo.name, rules);
                         if (Object.keys(messages).length > 0) {
                             window.ValidationSystem.addMessage(campo.name, messages);
                         }
-                        
-                        // Marcar campo como requerido si tiene la regla 'required'
                         if (rules.includes('required')) {
                             campo.setAttribute('data-required', 'true');
                         }
-                        
-                        // Registrar el campo dinámico
-                        if (typeof window.ValidationSystem.registerDynamicField === 'function') {
-                            window.ValidationSystem.registerDynamicField(campo);
+                    }
+                    if (typeof window.ValidationSystem.setupFieldValidation === 'function') {
+                        window.ValidationSystem.setupFieldValidation(campo);
+                    }
+                }
+            } else if (espec.tipo_campo === 'radio') {
+                const radios = document.querySelectorAll(`input[type="radio"][name="especificaciones[${espec.nombre_campo}]"]`);
+                if (radios.length > 0) {
+                    radios.forEach(r => {
+                        r.addEventListener('change', function() {
+                            const seleccionado = document.querySelector(`input[type="radio"][name="especificaciones[${espec.nombre_campo}]"]:checked`);
+                            guardarValorEspecificacion(espec.nombre_campo, seleccionado ? seleccionado.value : '');
+                        });
+                        if (window.ValidationSystem && typeof window.ValidationSystem.setupFieldValidation === 'function') {
+                            window.ValidationSystem.setupFieldValidation(r);
+                        }
+                    });
+                    if (window.ValidationSystem && typeof window.ValidationSystem.addRule === 'function') {
+                        const first = radios[0];
+                        const rules = JSON.parse(first.getAttribute('data-rules') || '[]');
+                        const messages = JSON.parse(first.getAttribute('data-messages') || '{}');
+                        if (rules.length > 0) {
+                            window.ValidationSystem.addRule(first.name, rules);
+                            if (Object.keys(messages).length > 0) {
+                                window.ValidationSystem.addMessage(first.name, messages);
+                            }
                         }
                     }
                 }
@@ -2033,4 +2075,3 @@
     });
 </script>
 @endpush
-

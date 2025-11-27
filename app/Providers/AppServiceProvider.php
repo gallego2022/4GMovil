@@ -8,6 +8,7 @@ use App\Models\Producto;
 use App\Observers\ProductoObserver;
 use App\Services\Infrastructure\RedisCacheService;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
@@ -32,8 +33,20 @@ class AppServiceProvider extends ServiceProvider
         // Registrar el Observer para Producto
         Producto::observe(ProductoObserver::class);
 
-        $this->ensureStripePaymentMethodConfigured();
-        $this->ensureDefaultOrderStatuses();
+        if (app()->runningInConsole() && $this->databaseAvailable()) {
+            $this->ensureStripePaymentMethodConfigured();
+            $this->ensureDefaultOrderStatuses();
+        }
+    }
+
+    private function databaseAvailable(): bool
+    {
+        try {
+            DB::connection()->getPdo();
+            return true;
+        } catch (\Throwable $e) {
+            return false;
+        }
     }
 
     private function ensureStripePaymentMethodConfigured(): void
@@ -64,6 +77,7 @@ class AppServiceProvider extends ServiceProvider
                     'mode' => app()->environment('production') ? 'live' : 'test',
                 ],
                 'estado' => true,
+                'orden' => 1,
             ]);
 
             Log::info('Método de pago Stripe verificado/creado automáticamente.');

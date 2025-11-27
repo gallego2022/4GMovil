@@ -4,11 +4,18 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\MetodoPago;
 use Illuminate\Http\Request;
+use Illuminate\Contracts\View\View as ViewView;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Base\WebController;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Redirect;
 
+/**
+ * Controlador de administración para gestionar Métodos de Pago.
+ *
+ * Provee acciones CRUD y validaciones, con manejo de mensajes y errores.
+ */
 class MetodoPagoController extends WebController
 {
     public function __construct()
@@ -16,7 +23,12 @@ class MetodoPagoController extends WebController
         $this->middleware('auth');
     }
 
-    public function index()
+    /**
+     * Listado de métodos de pago.
+     *
+     * @return ViewView|RedirectResponse Vista con listado o redirección en error
+     */
+    public function index(): ViewView|RedirectResponse
     {
         try {
             $metodos = MetodoPago::all();
@@ -27,12 +39,23 @@ class MetodoPagoController extends WebController
         }
     }
 
-    public function create()
+    /**
+     * Formulario de creación de método de pago.
+     *
+     * @return ViewView Vista del formulario
+     */
+    public function create(): ViewView
     {
         return View::make('metodos_pago.create');
     }
     // Crear metodo de pago
-    public function store(Request $request)
+    /**
+     * Crear método de pago.
+     *
+     * @param Request $request Datos del método
+     * @return RedirectResponse Redirección con mensaje de estado
+     */
+    public function store(Request $request): RedirectResponse
     {
         $request->validate([
             'nombre' => 'required|string|max:100|unique:metodos_pago,nombre',
@@ -64,7 +87,13 @@ class MetodoPagoController extends WebController
     }
 
     // Editar metodo de pago
-    public function edit($id)
+    /**
+     * Formulario de edición de método de pago.
+     *
+     * @param int $id Identificador del método de pago
+     * @return ViewView|RedirectResponse Vista del formulario o redirección
+     */
+    public function edit(int $id): ViewView|RedirectResponse
     {
         try {
             $metodo = MetodoPago::findOrFail($id);
@@ -76,7 +105,14 @@ class MetodoPagoController extends WebController
         }
     }
     // Actualizar metodo de pago
-    public function update(Request $request, $id)
+    /**
+     * Actualizar método de pago.
+     *
+     * @param Request $request Datos actualizados
+     * @param int $id Identificador del método de pago
+     * @return RedirectResponse Redirección con mensaje de estado
+     */
+    public function update(Request $request, int $id): RedirectResponse
     {
         try {
             $metodo = MetodoPago::findOrFail($id);
@@ -109,7 +145,13 @@ class MetodoPagoController extends WebController
         }
     }
     // Eliminar metodo de pago
-    public function destroy($id)
+    /**
+     * Eliminar método de pago.
+     *
+     * @param int $id Identificador del método de pago
+     * @return RedirectResponse Redirección con mensaje de estado
+     */
+    public function destroy(int $id): RedirectResponse
     {
         try {
             $metodo = MetodoPago::findOrFail($id);

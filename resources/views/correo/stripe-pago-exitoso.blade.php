@@ -104,12 +104,12 @@
         <div class="content">
             <p>¡Hola <strong>{{ $usuario->nombre_usuario ?? 'usuario' }}</strong>!</p>
             <p>Tu pago ha sido procesado exitosamente en <strong style="color: #000;">4GMovil</strong>.</p>
-            <p>¡Gracias por tu compra! Tu pedido será procesado y enviado pronto.</p>
+            <p>Tu pedido está <strong>pendiente de confirmación</strong> por nuestro equipo. Te notificaremos cuando sea confirmado.</p>
         </div>
         
         <div class="success-box">
             <strong>🎉 ¡Transacción Exitosa!</strong><br>
-            Tu pago ha sido confirmado y tu pedido está siendo procesado.
+            Tu pago ha sido confirmado. El pedido queda <strong>pendiente de confirmación</strong> por nuestro equipo.
         </div>
         
         <div class="order-details">
@@ -118,8 +118,10 @@
             <p><strong>Total Pagado:</strong> ${{ number_format($pedido->total, 0, ',', '.') }}</p>
             <p><strong>Fecha:</strong> {{ \Carbon\Carbon::parse($pedido->fecha_pedido)->format('d/m/Y H:i') }}</p>
             <p><strong>Método de Pago:</strong> Tarjeta de crédito/débito (Stripe)</p>
+            <p><strong>Estado del Pedido:</strong> Pendiente</p>
             @if($paymentIntent)
-            <p><strong>Referencia:</strong> {{ $paymentIntent->id }}</p>
+            @php $ref = is_object($paymentIntent) ? $paymentIntent->id : $paymentIntent; @endphp
+            <p><strong>Referencia:</strong> {{ $ref }}</p>
             @endif
         </div>
         
@@ -128,11 +130,11 @@
         <div class="next-steps">
             <h4>🚀 ¿Qué Sigue?</h4>
             <ol>
-                <li><strong>Confirmamos tu pedido</strong> - Ya está hecho ✅</li>
-                <li><strong>Procesamos tu pedido</strong> - En curso 🔄</li>
-                <li><strong>Lo preparamos para envío</strong> - Próximamente 📦</li>
-                <li><strong>Te notificamos cuando esté en camino</strong> - 🚚</li>
-                <li><strong>¡Recibes tu pedido!</strong> - 🎉</li>
+                <li><strong>Pago confirmado</strong> - Completado ✅</li>
+                <li><strong>Confirmación del pedido por nuestro equipo</strong> - Pendiente 🔄</li>
+                <li><strong>Preparación para envío</strong> - Después de confirmar 📦</li>
+                <li><strong>Notificación de envío</strong> - Te avisaremos 🚚</li>
+                <li><strong>Entrega</strong> - 🎉</li>
             </ol>
         </div>
         

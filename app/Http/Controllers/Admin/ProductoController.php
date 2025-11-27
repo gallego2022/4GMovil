@@ -11,6 +11,9 @@ use App\Models\VarianteProducto;
 use App\Services\Catalog\ProductoService;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Contracts\View\View as ViewView;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
@@ -18,9 +21,16 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\View;
 use Illuminate\Validation\ValidationException;
 
+/**
+ * Controlador de administración para gestionar Productos.
+ *
+ * Centraliza acciones CRUD, detalle para modales, y utilidades asociadas
+ * al catálogo de productos. La lógica de negocio se delega a
+ * `ProductoService`.
+ */
 class ProductoController extends WebController
 {
-    protected $productoService;
+    protected ProductoService $productoService;
 
     public function __construct(ProductoService $productoService)
     {
@@ -30,7 +40,13 @@ class ProductoController extends WebController
     /**
      * Muestra la lista de productos
      */
-    public function index(Request $request)
+    /**
+     * Muestra la lista de productos.
+     *
+     * @param Request $request Filtros de búsqueda y paginación
+     * @return ViewView|RedirectResponse Vista con datos o redirección en error
+     */
+    public function index(Request $request): ViewView|RedirectResponse
     {
         try {
             $filters = $this->getFilterParams($request);
@@ -50,7 +66,13 @@ class ProductoController extends WebController
     /**
      * Muestra la lista de productos (método listado para compatibilidad)
      */
-    public function listado(Request $request)
+    /**
+     * Alias de `index` para compatibilidad.
+     *
+     * @param Request $request Filtros de búsqueda y paginación
+     * @return ViewView|RedirectResponse Vista con datos o redirección en error
+     */
+    public function listado(Request $request): ViewView|RedirectResponse
     {
         // Redirige al método index para mantener consistencia
         return $this->index($request);
@@ -59,7 +81,12 @@ class ProductoController extends WebController
     /**
      * Muestra el formulario de creación
      */
-    public function create()
+    /**
+     * Formulario de creación de producto.
+     *
+     * @return ViewView|RedirectResponse Vista del formulario o redirección en error
+     */
+    public function create(): ViewView|RedirectResponse
     {
         try {
             $result = $this->productoService->getFormData();
@@ -77,7 +104,13 @@ class ProductoController extends WebController
     /**
      * Almacena un nuevo producto
      */
-    public function store(Request $request)
+    /**
+     * Almacenar un nuevo producto.
+     *
+     * @param Request $request Datos del producto
+     * @return RedirectResponse Redirección con mensaje de estado
+     */
+    public function store(Request $request): RedirectResponse
     {
         try {
             $result = $this->productoService->createProduct($request);
@@ -106,7 +139,13 @@ class ProductoController extends WebController
     /**
      * Muestra un producto específico
      */
-    public function show(int $id)
+    /**
+     * Mostrar un producto específico.
+     *
+     * @param int $id Identificador del producto
+     * @return ViewView|RedirectResponse Vista con detalle o redirección en error
+     */
+    public function show(int $id): ViewView|RedirectResponse
     {
         try {
             $result = $this->productoService->getProductById($id);
@@ -123,7 +162,13 @@ class ProductoController extends WebController
     /**
      * Obtiene los datos completos de un producto para el modal
      */
-    public function getDetalles(int $id)
+    /**
+     * Datos completos de un producto para modal (JSON).
+     *
+     * @param int $id Identificador del producto
+     * @return JsonResponse Respuesta JSON con datos completos
+     */
+    public function getDetalles(int $id): JsonResponse
     {
         try {
             $producto = Producto::with([
@@ -381,65 +426,14 @@ class ProductoController extends WebController
     /**
      * Busca productos
      */
-    public function search(Request $request)
-    {
-        try {
-            $searchTerm = $request->get('q', '');
-            $filters = $this->getFilterParams($request);
-
-            if (empty($searchTerm)) {
-                return $this->redirectError('productos.index', 'Término de búsqueda requerido');
-            }
-
-            $result = $this->productoService->searchProducts($searchTerm, $filters);
-
-            return View::make('pages.admin.productos.search', [
-                'productos' => $result['data'],
-                'searchTerm' => $searchTerm,
-                'categorias' => Categoria::all(),
-                'marcas' => Marca::all(),
-            ]);
-
-        } catch (Exception $e) {
-            return $this->handleException($e, 'productos.index');
-        }
-    }
 
     /**
      * Muestra productos por categoría
      */
-    public function byCategory(int $categoriaId)
-    {
-        try {
-            $result = $this->productoService->getProductsByCategory($categoriaId);
-
-            return View::make('pages.admin.productos.byCategory', [
-                'productos' => $result['data'],
-                'categoria' => Categoria::find($categoriaId),
-            ]);
-
-        } catch (Exception $e) {
-            return $this->handleException($e, 'productos.index');
-        }
-    }
 
     /**
      * Muestra productos por marca
      */
-    public function byBrand(int $marcaId)
-    {
-        try {
-            $result = $this->productoService->getProductsByBrand($marcaId);
-
-            return View::make('pages.admin.productos.byBrand', [
-                'productos' => $result['data'],
-                'marca' => Marca::find($marcaId),
-            ]);
-
-        } catch (Exception $e) {
-            return $this->handleException($e, 'productos.index');
-        }
-    }
 
     /**
      * Obtiene parámetros de filtrado específicos para productos
@@ -456,148 +450,13 @@ class ProductoController extends WebController
 
     // ===== MÉTODOS DE VARIANTES (Consolidados desde ProductoVariantesController) =====
 
-    /**
-     * Mostrar productos con variantes
-     */
-    public function conVariantes()
-    {
-        try {
-            $result = $this->productoService->getProductosConVariantes();
 
-            // Vista eliminada - usar show.blade.php en su lugar
-            return Redirect::route('productos.index')->with('info', 'La vista de productos con variantes ha sido consolidada en la vista principal de productos.');
 
-        } catch (Exception $e) {
-            return $this->handleException($e, 'productos.index');
-        }
-    }
 
-    /**
-     * Mostrar detalle de un producto con sus variantes
-     */
-    public function detalleConVariantes(int $productoId)
-    {
-        try {
-            $result = $this->productoService->getProductoConVariantes($productoId);
 
-            return View::make('productos.detalle-variantes', [
-                'producto' => $result['producto'],
-                'productosRelacionados' => $result['productosRelacionados'],
-            ]);
 
-        } catch (Exception $e) {
-            return $this->handleException($e, 'productos.index');
-        }
-    }
 
-    /**
-     * Obtener información de stock de un producto
-     */
-    public function obtenerStock(int $productoId)
-    {
-        try {
-            $result = $this->productoService->getStockInfo($productoId);
 
-            return Response::json($result);
-
-        } catch (Exception $e) {
-            return Response::json([
-                'success' => false,
-                'message' => 'Error al obtener información de stock',
-            ], 500);
-        }
-    }
-
-    /**
-     * Obtener variantes de un producto
-     */
-    public function obtenerVariantes(int $productoId)
-    {
-        try {
-            $result = $this->productoService->getVariantesProducto($productoId);
-
-            return Response::json($result);
-
-        } catch (Exception $e) {
-            return Response::json([
-                'success' => false,
-                'message' => 'Error al obtener variantes',
-            ], 500);
-        }
-    }
-
-    /**
-     * Buscar productos con variantes
-     */
-    public function buscarConVariantes(Request $request)
-    {
-        try {
-            $query = $request->get('q');
-            $categoriaId = $request->get('categoria_id');
-
-            $result = $this->productoService->buscarProductosConVariantes($query, $categoriaId);
-
-            return Response::json($result);
-
-        } catch (Exception $e) {
-            return Response::json([
-                'success' => false,
-                'message' => 'Error al buscar productos',
-            ], 500);
-        }
-    }
-
-    /**
-     * Obtener productos por categoría con variantes
-     */
-    public function porCategoriaConVariantes(int $categoriaId)
-    {
-        try {
-            $result = $this->productoService->getProductosPorCategoriaConVariantes($categoriaId);
-
-            return View::make('productos.por-categoria', [
-                'productos' => $result['data'],
-                'categoria' => Categoria::find($categoriaId),
-            ]);
-
-        } catch (Exception $e) {
-            return $this->handleException($e, 'productos.index');
-        }
-    }
-
-    /**
-     * Obtener productos con stock bajo
-     */
-    public function stockBajo()
-    {
-        try {
-            $result = $this->productoService->getProductosStockBajo();
-
-            return View::make('productos.stock-bajo', [
-                'productos' => $result['data'],
-            ]);
-
-        } catch (Exception $e) {
-            return $this->handleException($e, 'productos.index');
-        }
-    }
-
-    /**
-     * Obtener productos sin stock
-     */
-    public function sinStock()
-    {
-        try {
-            $result = $this->productoService->getProductosSinStock();
-
-            return View::make('productos.sin-stock', [
-                'productos' => $result['data'],
-            ]);
-
-        } catch (Exception $e) {
-            return $this->handleException($e, 'productos.index');
-        }
-    }
 
     // ===== MÉTODOS DE GESTIÓN DE VARIANTES (Consolidados desde VarianteProductoController) =====
 

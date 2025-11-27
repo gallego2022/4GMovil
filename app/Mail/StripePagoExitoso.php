@@ -30,7 +30,7 @@ class StripePagoExitoso extends Mailable
 
     public function build()
     {
-        return $this->subject('✅ Pago Confirmado - Pedido #' . $this->pedido->pedido_id)
+        return $this->subject('Pago Confirmado - Pedido #' . $this->pedido->pedido_id)
                     ->view('correo.stripe-pago-exitoso')
                     ->with([
                         'usuario' => $this->usuario,

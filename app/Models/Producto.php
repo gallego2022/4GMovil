@@ -230,19 +230,20 @@ class Producto extends Model
 
         // Evento al crear o actualizar: calcular umbrales automáticamente si se establece stock_inicial
         static::saving(function ($producto) {
-            // Si se está estableciendo o modificando stock_inicial, calcular umbrales automáticamente
-            if ($producto->isDirty('stock_inicial') && $producto->stock_inicial > 0) {
-                // Solo calcular si los umbrales no están establecidos o son 0
-                $umbralCriticoActual = $producto->getAttribute('umbral_stock_critico');
-                $umbralBajoActual = $producto->getAttribute('umbral_stock_bajo');
-                
-                if ($umbralCriticoActual === null || $umbralCriticoActual <= 0) {
-                    $producto->umbral_stock_critico = (int) ceil(($producto->stock_inicial * 20) / 100);
-                }
-                
-                if ($umbralBajoActual === null || $umbralBajoActual <= 0) {
-                    $producto->umbral_stock_bajo = (int) ceil(($producto->stock_inicial * 60) / 100);
-                }
+            $stockInicial = (int) ($producto->stock_inicial ?? 0);
+            $umbralCriticoActual = $producto->getAttribute('umbral_stock_critico');
+            $umbralBajoActual = $producto->getAttribute('umbral_stock_bajo');
+
+            if ($umbralCriticoActual === null || $umbralCriticoActual <= 0) {
+                $producto->umbral_stock_critico = $stockInicial > 0
+                    ? (int) ceil(($stockInicial * 20) / 100)
+                    : 5;
+            }
+
+            if ($umbralBajoActual === null || $umbralBajoActual <= 0) {
+                $producto->umbral_stock_bajo = $stockInicial > 0
+                    ? (int) ceil(($stockInicial * 60) / 100)
+                    : 0;
             }
         });
 
@@ -473,29 +474,19 @@ class Producto extends Model
      */
     public function getUmbralStockBajoAttribute(): int
     {
-        // Si existe umbral_stock_bajo en los attributes, usarlo directamente
-        // Usar array_key_exists para verificar si la columna existe (incluso si es null)
-        $umbralBajo = null;
-        if (array_key_exists('umbral_stock_bajo', $this->attributes)) {
-            $umbralBajo = $this->attributes['umbral_stock_bajo'];
+        $umbralBajoAttr = array_key_exists('umbral_stock_bajo', $this->attributes)
+            ? $this->attributes['umbral_stock_bajo']
+            : null;
+
+        if ($umbralBajoAttr !== null && $umbralBajoAttr > 0) {
+            return (int) $umbralBajoAttr;
         }
-        
-        if ($umbralBajo !== null && $umbralBajo > 0) {
-            return (int) $umbralBajo;
-        }
-        
-        $stockInicial = $this->stock_inicial;
-        
+
+        $stockInicial = (int) ($this->stock_inicial ?? 0);
         if ($stockInicial <= 0) {
-            // Si no hay stock inicial, usar el umbral crítico como fallback
-            $umbralCritico = null;
-            if (array_key_exists('umbral_stock_critico', $this->attributes)) {
-                $umbralCritico = $this->attributes['umbral_stock_critico'];
-            }
-            return $umbralCritico !== null ? (int) $umbralCritico : 5;
+            return 0;
         }
-        
-        // Fallback: 60% del stock inicial
+
         return (int) ceil(($stockInicial * 60) / 100);
     }
 
@@ -505,25 +496,19 @@ class Producto extends Model
      */
     public function getUmbralStockCriticoAttribute(): int
     {
-        // Si existe umbral_stock_critico en los attributes, usarlo directamente
-        // Usar array_key_exists para verificar si la columna existe (incluso si es null)
-        $umbralCritico = null;
-        if (array_key_exists('umbral_stock_critico', $this->attributes)) {
-            $umbralCritico = $this->attributes['umbral_stock_critico'];
+        $umbralCriticoAttr = array_key_exists('umbral_stock_critico', $this->attributes)
+            ? $this->attributes['umbral_stock_critico']
+            : null;
+
+        if ($umbralCriticoAttr !== null && $umbralCriticoAttr > 0) {
+            return (int) $umbralCriticoAttr;
         }
-        
-        if ($umbralCritico !== null && $umbralCritico > 0) {
-            return (int) $umbralCritico;
-        }
-        
-        $stockInicial = $this->stock_inicial;
-        
+
+        $stockInicial = (int) ($this->stock_inicial ?? 0);
         if ($stockInicial <= 0) {
-            // Si no hay stock inicial, usar el umbral crítico como fallback
-            return max(1, (int) ceil(($umbralCritico ?? 5) * 0.2));
+            return 5;
         }
-        
-        // Fallback: 20% del stock inicial
+
         return (int) ceil(($stockInicial * 20) / 100);
     }
 
@@ -532,8 +517,9 @@ class Producto extends Model
      */
     public function getStockBajoAttribute(): bool
     {
-        $umbral = $this->umbral_stock_bajo; // Usa el accessor
-        return $this->stock_disponible > $umbral && $this->stock_disponible <= ($umbral * 1.5);
+        $umbralBajo = $this->umbral_stock_bajo;
+        $umbralCritico = $this->umbral_stock_critico;
+        return $this->stock_disponible > $umbralCritico && $this->stock_disponible <= $umbralBajo;
     }
 
     /**

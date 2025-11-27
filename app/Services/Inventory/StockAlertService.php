@@ -315,7 +315,7 @@ class StockAlertService
                     'producto' => $variante->producto,
                     'tipo_alerta' => 'agotado',
                     'stock_actual' => 0,
-                    'umbral_stock_critico' => $variante->producto ? $this->calcularStockMinimo($variante->producto->stock_inicial) : 0,
+                    'stock_minimo' => $variante->producto ? ($variante->producto->getAttribute('umbral_stock_critico') ?? $this->calcularStockMinimo($variante->producto->stock_inicial)) : 0,
                     'porcentaje' => 0
                 ];
             });
@@ -508,11 +508,18 @@ class StockAlertService
                 return $esCritico || $esBajo;
             })
             ->map(function ($variante) use ($producto) {
+            $tipo = $this->esStockCritico($variante->stock, $producto->stock_inicial, $producto) ? 'critico' : 'bajo';
+            $umbralCritico = $producto->getAttribute('umbral_stock_critico');
+            $umbralBajo = $producto->getAttribute('umbral_stock_bajo');
+            $stockMinimo = $tipo === 'critico'
+                ? ($umbralCritico ?? $this->calcularStockMinimo($producto->stock_inicial))
+                : ($umbralBajo ?? ($producto->stock_inicial ? (int) ceil(($producto->stock_inicial * 60) / 100) : 0));
+
             return [
                 'variante' => $variante,
-                'tipo_alerta' => $this->esStockCritico($variante->stock, $producto->stock_inicial, $producto) ? 'critico' : 'bajo',
+                'tipo_alerta' => $tipo,
                 'stock_actual' => $variante->stock,
-                    'umbral_stock_critico' => $producto->getAttribute('umbral_stock_critico') ?? $this->calcularStockMinimo($producto->stock_inicial),
+                'stock_minimo' => $stockMinimo,
                 'porcentaje' => $this->calcularPorcentaje($variante->stock, $producto->stock_inicial)
             ];
         });

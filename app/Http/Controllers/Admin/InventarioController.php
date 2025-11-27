@@ -9,6 +9,10 @@ use App\Services\Inventory\InventarioService;
 use Carbon\Carbon;
 use Dompdf\Dompdf;
 use Illuminate\Http\Request;
+use Illuminate\Contracts\View\View as ViewView;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -16,9 +20,15 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\View;
 
+/**
+ * Controlador de administración para gestionar el Inventario.
+ *
+ * Muestra dashboards, movimientos, reportes, exportaciones y operaciones
+ * de entradas/salidas/ajustes.
+ */
 class InventarioController extends WebController
 {
-    protected $inventarioService;
+    protected InventarioService $inventarioService;
 
     public function __construct(InventarioService $inventarioService)
     {
@@ -28,9 +38,12 @@ class InventarioController extends WebController
     }
 
     /**
-     * Valor del inventario por categoría
+     * Valor del inventario por categoría.
+     *
+     * @param Request $request Filtros opcionales
+     * @return ViewView|RedirectResponse Vista con valores o redirección en error
      */
-    public function valorPorCategoria(Request $request)
+    public function valorPorCategoria(Request $request): ViewView|RedirectResponse
     {
         try {
             $valorTotal = $this->inventarioService->getValorTotalInventario();
@@ -50,9 +63,12 @@ class InventarioController extends WebController
     }
 
     /**
-     * Dashboard de inventario
+     * Dashboard de inventario.
+     *
+     * @param Request $request Forzar actualización mediante `refresh` o `forzar`
+     * @return ViewView Vista con datos del dashboard
      */
-    public function dashboard(Request $request)
+    public function dashboard(Request $request): ViewView
     {
         try {
             $forzarActualizacion = $request->get('refresh', false) || $request->get('forzar', false);
@@ -70,9 +86,12 @@ class InventarioController extends WebController
     }
 
     /**
-     * Movimientos de inventario
+     * Movimientos de inventario.
+     *
+     * @param Request $request Filtros de búsqueda
+     * @return ViewView|RedirectResponse Vista con movimientos o redirección
      */
-    public function movimientos(Request $request)
+    public function movimientos(Request $request): ViewView|RedirectResponse
     {
         try {
             $filtros = $this->getFiltrosMovimientos($request);
@@ -87,9 +106,12 @@ class InventarioController extends WebController
     }
 
     /**
-     * Registrar entrada de inventario
+     * Registrar entrada de inventario.
+     *
+     * @param Request $request Datos de la entrada
+     * @return RedirectResponse|JsonResponse Respuesta según contexto
      */
-    public function registrarEntrada(Request $request)
+    public function registrarEntrada(Request $request): RedirectResponse|JsonResponse
     {
         $validated = $request->validate([
             'producto_id' => 'required',
@@ -163,9 +185,12 @@ class InventarioController extends WebController
     }
 
     /**
-     * Registrar salida de inventario
+     * Registrar salida de inventario.
+     *
+     * @param Request $request Datos de la salida
+     * @return RedirectResponse Redirección con mensaje de estado
      */
-    public function registrarSalida(Request $request)
+    public function registrarSalida(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'producto_id' => 'required|exists:productos,producto_id',
@@ -196,9 +221,12 @@ class InventarioController extends WebController
     }
 
     /**
-     * Ajustar stock de un producto
+     * Ajustar stock de un producto.
+     *
+     * @param Request $request Datos del ajuste
+     * @return RedirectResponse Redirección con mensaje de estado
      */
-    public function ajustarStock(Request $request)
+    public function ajustarStock(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'producto_id' => 'required|exists:productos,producto_id',
@@ -227,9 +255,12 @@ class InventarioController extends WebController
     }
 
     /**
-     * Generar reporte de inventario
+     * Generar reporte de inventario.
+     *
+     * @param Request $request Filtros del reporte
+     * @return ViewView|RedirectResponse Vista con reporte o redirección en error
      */
-    public function reporte(Request $request)
+    public function reporte(Request $request): ViewView|RedirectResponse
     {
         try {
             $filtros = $this->getFiltrosReporte($request);
@@ -244,9 +275,12 @@ class InventarioController extends WebController
     }
 
     /**
-     * Exportar reporte de inventario
+     * Exportar reporte de inventario.
+     *
+     * @param Request $request Filtros del reporte
+     * @return SymfonyResponse|RedirectResponse Descarga CSV o redirección en error
      */
-    public function exportarReporte(Request $request)
+    public function exportarReporte(Request $request): SymfonyResponse|RedirectResponse
     {
         try {
             $filtros = $this->getFiltrosReporte($request);
@@ -262,9 +296,12 @@ class InventarioController extends WebController
     }
 
     /**
-     * Productos más vendidos
+     * Productos más vendidos.
+     *
+     * @param Request $request Rango de fechas
+     * @return ViewView|RedirectResponse Vista con ranking o redirección en error
      */
-    public function productosMasVendidos(Request $request)
+    public function productosMasVendidos(Request $request): ViewView|RedirectResponse
     {
         try {
             $fechaInicio = $request->get('fecha_inicio') ? Carbon::parse($request->fecha_inicio) : Carbon::now()->subMonth();
@@ -285,9 +322,12 @@ class InventarioController extends WebController
     }
 
     /**
-     * Generar reporte de inventario en PDF usando DomPDF
+     * Generar reporte de inventario en PDF usando DomPDF.
+     *
+     * @param Request $request Filtros del reporte
+     * @return SymfonyResponse|RedirectResponse Descarga PDF o redirección en error
      */
-    public function reportePDF(Request $request)
+    public function reportePDF(Request $request): SymfonyResponse|RedirectResponse
     {
         try {
             $filtros = $this->getFiltrosReporte($request);
@@ -480,7 +520,7 @@ class InventarioController extends WebController
 
         // Encabezado del reporte
         $csv = "REPORTE DE INVENTARIO - 4GMOVIL\n";
-        $csv .= "=====================================\n";
+        
         $csv .= 'Generado el: '.Carbon::now()->format('d/m/Y H:i:s')."\n";
 
         if (isset($estadisticas['periodo'])) {
@@ -489,7 +529,7 @@ class InventarioController extends WebController
 
         $csv .= "\n";
         $csv .= "ESTADÍSTICAS GENERALES\n";
-        $csv .= "======================\n";
+        
         $csv .= "Concepto,Valor\n";
         $csv .= 'Total de Productos,'.number_format($estadisticas['total_productos'] ?? 0)."\n";
         $csv .= 'Total de Variantes,'.number_format($estadisticas['total_variantes'] ?? 0)."\n";
@@ -503,23 +543,38 @@ class InventarioController extends WebController
 
         $csv .= "\n";
         $csv .= "PRODUCTOS EN INVENTARIO\n";
-        $csv .= "=======================\n";
-        $csv .= "ID,Producto,Categoría,Marca,Stock,Precio Unitario,Valor Total\n";
+        
+        $csv .= "ID,Producto,Categoría,Marca,Stock,Precio Unitario,Valor Total,Estado\n";
 
         foreach ($productos as $producto) {
+            $umbralCritico = $producto->getAttribute('umbral_stock_critico');
+            $umbralBajo = $producto->getAttribute('umbral_stock_bajo');
+            if ($umbralCritico === null || $umbralCritico <= 0) {
+                $umbralCritico = ($producto->stock_inicial ?? 0) > 0 ? (int) ceil(($producto->stock_inicial * 20) / 100) : 5;
+            }
+            if ($umbralBajo === null || $umbralBajo <= 0) {
+                $umbralBajo = ($producto->stock_inicial ?? 0) > 0 ? (int) ceil(($producto->stock_inicial * 60) / 100) : 0;
+            }
+            $estado = 'OK';
+            if ($producto->stock <= 0 || $producto->stock <= $umbralCritico) {
+                $estado = 'Crítico';
+            } elseif ($producto->stock <= $umbralBajo) {
+                $estado = 'Bajo';
+            }
             $csv .= $producto->producto_id.',';
             $csv .= '"'.str_replace('"', '""', $producto->nombre_producto).'",';
             $csv .= '"'.str_replace('"', '""', $producto->categoria->nombre ?? 'Sin categoría').'",';
             $csv .= '"'.str_replace('"', '""', $producto->marca->nombre ?? 'Sin marca').'",';
             $csv .= number_format($producto->stock).',';
             $csv .= '$'.number_format($producto->precio, 0, ',', '.').',';
-            $csv .= '$'.number_format($producto->stock * $producto->precio, 0, ',', '.')."\n";
+            $csv .= '$'.number_format($producto->stock * $producto->precio, 0, ',', '.').',';
+            $csv .= $estado."\n";
         }
 
         if ($movimientos->count() > 0) {
             $csv .= "\n";
             $csv .= "MOVIMIENTOS RECIENTES\n";
-            $csv .= "=====================\n";
+            
             $csv .= "Fecha,Producto,Variante,Tipo,Cantidad,Motivo,Usuario\n";
 
             foreach ($movimientos->take(100) as $movimiento) {
@@ -534,7 +589,7 @@ class InventarioController extends WebController
         }
 
         $csv .= "\n";
-        $csv .= "=====================================\n";
+        
         $csv .= "Reporte generado automáticamente por el sistema 4GMovil\n";
         $csv .= "Para más información, contacte al administrador del sistema\n";
 

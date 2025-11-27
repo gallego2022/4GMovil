@@ -126,11 +126,11 @@
     <div class="container">
         <div class="header">
             <div class="logo">4GMovil</div>
-            <h1 class="title">🆕 Nuevo Pedido Confirmado</h1>
+            <h1 class="title">🆕 Nuevo Pedido Pendiente</h1>
         </div>
 
         <div class="alert">
-            ⚠️ Se ha confirmado un nuevo pedido que requiere tu atención
+            ⚠️ Se ha registrado un nuevo pedido que requiere tu confirmación
         </div>
 
         <div class="pedido-info">
@@ -169,10 +169,17 @@
                     </span>
                 </span>
             </div>
+
+            @if(isset($paymentIntentId) && $paymentIntentId)
+            <div class="info-row">
+                <span class="label">Referencia Stripe:</span>
+                <span class="value">{{ $paymentIntentId }}</span>
+            </div>
+            @endif
             
             <div class="info-row">
                 <span class="label">Estado Actual:</span>
-                <span class="value">✅ Confirmado</span>
+                <span class="value">⏳ Pendiente</span>
             </div>
         </div>
 
@@ -195,7 +202,11 @@
             </div>
         </div>
 
-        @if($metodoPago !== 'Stripe')
+        @if($metodoPago === 'Stripe')
+        <div class="highlight">
+            <strong>✅ Pago confirmado (Stripe):</strong> El pedido está pendiente de confirmación en el sistema.
+        </div>
+        @elseif($metodoPago !== 'Stripe')
         <div class="highlight">
             <strong>⚠️ Atención:</strong> Este pedido fue confirmado con método de pago <strong>{{ $metodoPago }}</strong>. 
             Verifica que el pago se haya realizado correctamente antes de proceder con el envío.

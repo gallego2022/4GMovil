@@ -467,23 +467,20 @@ class InventarioService
             ->get()
             ->filter(function($variante) {
                 $producto = $variante->producto;
-                
-                // Obtener el umbral crítico (umbral_stock_critico)
-                // Usar getAttribute que respeta los accessors
-                $umbralCritico = $producto->getAttribute('umbral_stock_critico') ?? null;
-                
-                if ($umbralCritico === null) {
+                $umbralCritico = $producto->getAttribute('umbral_stock_critico');
+                $umbralBajo = $producto->getAttribute('umbral_stock_bajo');
+
+                if ($umbralCritico === null || $umbralCritico <= 0) {
                     $stockInicial = $producto->stock_inicial ?? 0;
-                    if ($stockInicial > 0) {
-                        $umbralCritico = (int) ceil(($stockInicial * 20) / 100);
-                    } else {
-                        $umbralCritico = 5; // Fallback
-                    }
+                    $umbralCritico = $stockInicial > 0 ? (int) ceil(($stockInicial * 20) / 100) : 5;
                 }
-                
-                // Solo mostrar variantes con stock por debajo o igual al umbral crítico
-                // Si el stock está por encima del mínimo, no mostrar alerta
-                return $variante->stock <= $umbralCritico && $variante->stock > 0;
+
+                if ($umbralBajo === null || $umbralBajo <= 0) {
+                    $stockInicial = $producto->stock_inicial ?? 0;
+                    $umbralBajo = $stockInicial > 0 ? (int) ceil(($stockInicial * 60) / 100) : 0;
+                }
+
+                return $variante->stock > $umbralCritico && $variante->stock <= $umbralBajo;
             });
     }
 

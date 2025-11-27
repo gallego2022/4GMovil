@@ -144,7 +144,8 @@
     // Usar IIFE para crear un scope único y evitar conflictos de variables
     document.addEventListener('DOMContentLoaded', function() {
         // Configurar validación para este campo
-        const field = document.querySelector('[data-field-name="{{ $name }}"]');
+        const fieldWrapper = document.querySelector('[data-field-name="{{ $name }}"]');
+        const field = fieldWrapper ? fieldWrapper.querySelector('input, textarea, select') : null;
         if (field && window.ValidationSystem) {
             const rules = {!! $jsRules !!};
             const fieldMessages = {!! $jsMessages !!};

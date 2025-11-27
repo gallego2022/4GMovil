@@ -7,17 +7,28 @@ use App\Models\Resena;
 use App\Models\Producto;
 use App\Models\Pedido;
 use Illuminate\Http\Request;
+use Illuminate\Contracts\View\View as ViewView;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Controlador de administración para gestionar Reseñas.
+ *
+ * Provee listado, detalle, activación/inactivación, verificación y eliminación
+ * de reseñas de productos.
+ */
 class ResenaController extends WebController
 {
     /**
-     * Mostrar todas las reseñas en el dashboard admin
+     * Mostrar todas las reseñas en el dashboard admin.
+     *
+     * @param Request $request Filtros de búsqueda
+     * @return ViewView|RedirectResponse Vista con paginación y estadísticas
      */
-    public function index(Request $request)
+    public function index(Request $request): ViewView|RedirectResponse
     {
         try {
             $query = Resena::with(['usuario', 'producto'])
@@ -73,9 +84,12 @@ class ResenaController extends WebController
     }
 
     /**
-     * Mostrar detalles de una reseña
+     * Mostrar detalles de una reseña.
+     *
+     * @param int $id Identificador de la reseña
+     * @return ViewView|RedirectResponse Vista de detalle o redirección si no existe
      */
-    public function show($id)
+    public function show(int $id): ViewView|RedirectResponse
     {
         try {
             $resena = Resena::with(['usuario', 'producto'])->findOrFail($id);
@@ -88,9 +102,12 @@ class ResenaController extends WebController
     }
 
     /**
-     * Toggle estado activo/inactivo de una reseña
+     * Toggle estado activo/inactivo de una reseña.
+     *
+     * @param int $id Identificador de la reseña
+     * @return RedirectResponse Redirección con mensaje de estado
      */
-    public function toggleActiva($id)
+    public function toggleActiva(int $id): RedirectResponse
     {
         try {
             $resena = Resena::findOrFail($id);
@@ -107,9 +124,12 @@ class ResenaController extends WebController
     }
 
     /**
-     * Marcar reseña como verificada
+     * Marcar reseña como verificada.
+     *
+     * @param int $id Identificador de la reseña
+     * @return RedirectResponse Redirección con mensaje de estado
      */
-    public function verificar($id)
+    public function verificar(int $id): RedirectResponse
     {
         try {
             $resena = Resena::findOrFail($id);
@@ -124,9 +144,12 @@ class ResenaController extends WebController
     }
 
     /**
-     * Eliminar reseña
+     * Eliminar reseña.
+     *
+     * @param int $id Identificador de la reseña
+     * @return RedirectResponse Redirección con mensaje de estado
      */
-    public function destroy($id)
+    public function destroy(int $id): RedirectResponse
     {
         try {
             $resena = Resena::findOrFail($id);
@@ -139,4 +162,3 @@ class ResenaController extends WebController
         }
     }
 }
-

@@ -249,7 +249,7 @@ class PedidoService extends BaseService
             }
 
             // Verificar que el pedido se pueda cancelar
-            if (! in_array($pedido->estado->nombre, ['creado', 'confirmado', 'en_proceso'])) {
+            if (! in_array(strtolower($pedido->estado->nombre), ['pendiente', 'creado', 'confirmado', 'en_proceso'])) {
                 throw new Exception('No se puede cancelar un pedido en este estado');
             }
 
@@ -261,10 +261,10 @@ class PedidoService extends BaseService
 
             // Actualizar estado a cancelado
             $estadoCancelado = EstadoPedido::where('nombre', 'cancelado')->first();
-            $pedido->update(['estado_id' => $estadoCancelado->id]);
+            $pedido->update(['estado_id' => $estadoCancelado->estado_id]);
 
-            // Crear historial de estado
-            $this->createOrderStatusHistory($pedido, 'cancelado', $request->input('motivo_cancelacion'));
+            // Crear historial de estado con estado anterior
+            $this->createOrderStatusHistory($pedido, $estadoAnterior, $request->input('motivo_cancelacion'));
 
             // Enviar notificación de cancelación
             $this->sendCancellationNotification($pedido);
@@ -601,11 +601,19 @@ class PedidoService extends BaseService
      */
     private function createOrderStatusHistory(Pedido $pedido, string $estado, ?string $comentario = null): void
     {
-        $pedido->historialEstados()->create([
-            'estado_id' => $pedido->estado_id,
-            'comentario' => $comentario,
-            'fecha_cambio' => now(),
-        ]);
+        if (method_exists($pedido, 'historialEstados')) {
+            $pedido->historialEstados()->create([
+                'estado_id' => $pedido->estado_id,
+                'comentario' => $comentario,
+                'fecha_cambio' => now(),
+            ]);
+        } else {
+            $this->logOperation('historial_estados_no_implementado', [
+                'pedido_id' => $pedido->pedido_id,
+                'estado_id' => $pedido->estado_id,
+                'comentario' => $comentario,
+            ], 'warning');
+        }
     }
 
     /**

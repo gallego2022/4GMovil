@@ -296,6 +296,9 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    @if(session('cancellation_success'))
+    window.showNotification('{{ session('cancellation_success') }}', 'success', 5);
+    @endif
     const form = document.getElementById('checkoutForm');
     const submitButton = document.getElementById('confirmarPedido');
     const spinner = document.getElementById('spinner');

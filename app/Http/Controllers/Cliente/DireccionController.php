@@ -19,7 +19,9 @@ class DireccionController extends WebController
     {
         $this->middleware('auth');
     }
-
+    /**
+     * Mostrar el listado de direcciones del usuario.
+     */
     public function index()
     {
         try {
@@ -32,7 +34,9 @@ class DireccionController extends WebController
                 ->with('tipo', 'error');
         }
     }
-
+    /**
+     * Mostrar el formulario para crear una nueva dirección.
+     */
     public function create(Request $request)
     {
         try {
@@ -46,7 +50,9 @@ class DireccionController extends WebController
                 ->with('tipo', 'error');
         }
     }
-
+    /**
+     * Guardar una nueva dirección en la base de datos.
+     */
     public function store(StoreDireccionRequest $request)
     {
         try {
@@ -109,7 +115,9 @@ class DireccionController extends WebController
                 ->withInput();
         }
     }
-
+     /**
+     * Mostrar el formulario para editar una dirección existente.
+     */
     public function edit($id)
     {
         try {
@@ -136,7 +144,9 @@ class DireccionController extends WebController
                 ->with('tipo', 'error');
         }
     }
-
+     /**
+     * Actualizar una dirección existente en la base de datos.
+     */
     public function update(UpdateDireccionRequest $request, $id)
     {
         try {
@@ -181,7 +191,9 @@ class DireccionController extends WebController
                 ->withInput();
         }
     }
-
+     /**
+     * Eliminar una dirección existente de la base de datos.
+     */
     public function destroy($id)
     {
         try {

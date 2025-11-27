@@ -3,16 +3,29 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Http;
 
+/**
+ * Puerta de enlace para reportes agregados desde un servicio externo.
+ *
+ * Este controlador consulta el microservicio de reportes mediante HTTP
+ * y expone respuestas en formato JSON para consumo en el panel admin.
+ */
 class ReportesGatewayController
 {
     private function baseUrl(): string
     {
-        return env('REPORTES_SERVICE_URL', 'http://localhost:8081');
+        return env('REPORTES_SERVICE_URL', 'http://localhost:8082');
     }
 
-    public function ventasResumen(Request $request)
+    /**
+     * Resumen de ventas entre fechas.
+     *
+     * @param Request $request Query params `desde` y `hasta`
+     * @return JsonResponse Respuesta JSON con totales agregados
+     */
+    public function ventasResumen(Request $request): JsonResponse
     {
         $desde = $request->query('desde');
         $hasta = $request->query('hasta');
@@ -20,7 +33,13 @@ class ReportesGatewayController
         return response()->json($res->json());
     }
 
-    public function topProductosDt(Request $request)
+    /**
+     * Top de productos para DataTables.
+     *
+     * @param Request $request Query params: `desde`, `hasta`, `length`, opcionales `categoria_id`, `marca_id`
+     * @return JsonResponse Estructura compatible con DataTables
+     */
+    public function topProductosDt(Request $request): JsonResponse
     {
         $draw = (int) $request->query('draw', 1);
         $desde = $request->query('desde');
@@ -54,7 +73,13 @@ class ReportesGatewayController
         ]);
     }
 
-    public function pedidosPorEstadoDt(Request $request)
+    /**
+     * Pedidos agrupados por estado para DataTables.
+     *
+     * @param Request $request Query params `desde` y `hasta`
+     * @return JsonResponse Estructura compatible con DataTables
+     */
+    public function pedidosPorEstadoDt(Request $request): JsonResponse
     {
         $draw = (int) $request->query('draw', 1);
         $desde = $request->query('desde');

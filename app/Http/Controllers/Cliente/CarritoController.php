@@ -196,28 +196,6 @@ class CarritoController extends WebController
         }
     }
 
-    /**
-     * Muestra el mini carrito (para el header)
-     */
-    public function mini()
-    {
-        try {
-            $result = $this->carritoService->getCartSummary();
-            
-            return View::make('components.mini-carrito', [
-                'summary' => $result['data']
-            ]);
-
-        } catch (Exception $e) {
-            return View::make('components.mini-carrito', [
-                'summary' => [
-                    'total_items' => 0,
-                    'total_precio' => 0,
-                    'items_count' => 0
-                ]
-            ]);
-        }
-    }
 
     /**
      * Obtiene el carrito en formato JSON para APIs

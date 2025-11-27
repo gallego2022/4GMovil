@@ -1,5 +1,5 @@
 package com.movil4g.reportes.service;
-
+import org.springframework.format.annotation.DateTimeFormat;
 import com.movil4g.reportes.dto.PedidosPorEstadoDTO;
 import com.movil4g.reportes.dto.TopProductoDTO;
 import com.movil4g.reportes.dto.VentasResumenDTO;
@@ -13,6 +13,12 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+/**
+ * Servicio de consultas para el módulo de reportes.
+ *
+ * Ejecuta consultas agregadas sobre las tablas de pagos,
+ * pedidos y productos para generar métricas y listados.
+ */
 public class ReportesService {
     private final JdbcTemplate jdbcTemplate;
 
@@ -20,6 +26,13 @@ public class ReportesService {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    /**
+     * Calcula el resumen de ventas en el rango dado.
+     *
+     * @param desde fecha inicial
+     * @param hasta fecha final
+     * @return totales de ventas, pedidos y ticket promedio
+     */
     public VentasResumenDTO obtenerVentasResumen(LocalDate desde, LocalDate hasta) {
         BigDecimal totalVentas = jdbcTemplate.queryForObject(
                 "SELECT COALESCE(SUM(monto),0) FROM pagos WHERE estado='completado' AND fecha_pago BETWEEN ? AND ?",
@@ -45,6 +58,16 @@ public class ReportesService {
         return new VentasResumenDTO(totalVentas, totalPedidosCompletados, ticketPromedio, ingresosDiarios);
     }
 
+    /**
+     * Obtiene los productos con mayores ingresos/cantidad vendidos.
+     *
+     * @param desde fecha inicial
+     * @param hasta fecha final
+     * @param limit límite de resultados
+     * @param categoriaId filtro opcional por categoría
+     * @param marcaId filtro opcional por marca
+     * @return lista de productos destacados
+     */
     public List<TopProductoDTO> obtenerTopProductos(LocalDate desde, LocalDate hasta, Integer limit, Long categoriaId, Long marcaId) {
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT dp.producto_id, p.nombre_producto, COALESCE(SUM(dp.cantidad),0) cantidad, COALESCE(SUM(dp.subtotal),0) ingresos ");
@@ -81,6 +104,13 @@ public class ReportesService {
         );
     }
 
+    /**
+     * Obtiene la distribución de pedidos por estado en el rango.
+     *
+     * @param desde fecha inicial
+     * @param hasta fecha final
+     * @return listado por estado con cantidad de pedidos
+     */
     public List<PedidosPorEstadoDTO> obtenerPedidosPorEstado(LocalDate desde, LocalDate hasta) {
         return jdbcTemplate.query(
                 "SELECT ep.estado_id, ep.nombre estado, COALESCE(COUNT(ped.pedido_id),0) cantidad " +

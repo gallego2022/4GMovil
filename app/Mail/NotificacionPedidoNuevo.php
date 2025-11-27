@@ -19,16 +19,18 @@ class NotificacionPedidoNuevo extends Mailable
     public $usuario;
     public $metodoPago;
     public $adminUrl;
+    public $paymentIntentId;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(Pedido $pedido, Usuario $usuario, string $metodoPago, string $adminUrl)
+    public function __construct(Pedido $pedido, Usuario $usuario, string $metodoPago, string $adminUrl, ?string $paymentIntentId = null)
     {
         $this->pedido = $pedido;
         $this->usuario = $usuario;
         $this->metodoPago = $metodoPago;
         $this->adminUrl = $adminUrl;
+        $this->paymentIntentId = $paymentIntentId;
     }
 
     /**
@@ -37,7 +39,7 @@ class NotificacionPedidoNuevo extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: ' Nuevo Pedido Confirmado - 4GMovil',
+            subject: 'Nuevo Pedido Pendiente - 4GMovil',
         );
     }
 
@@ -53,6 +55,7 @@ class NotificacionPedidoNuevo extends Mailable
                 'usuario' => $this->usuario,
                 'metodoPago' => $this->metodoPago,
                 'adminUrl' => $this->adminUrl,
+                'paymentIntentId' => $this->paymentIntentId,
             ],
         );
     }

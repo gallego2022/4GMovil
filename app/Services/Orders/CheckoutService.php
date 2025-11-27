@@ -615,101 +615,6 @@ class CheckoutService extends BaseService
         return $this->reservaStockService->verificarStockCarrito($cart);
     }
 
-    /**
-     * Enviar correo de confirmación si es necesario
-     * Solo se envía para métodos de pago que no requieren confirmación posterior
-     */
-    private function enviarCorreoConfirmacionSiEsNecesario($pedido, int $metodoPagoId): void
-    {
-        try {
-            // Obtener información del método de pago
-            $metodoPago = MetodoPago::find($metodoPagoId);
-
-            if (! $metodoPago) {
-                Log::warning('Método de pago no encontrado', [
-                    'metodo_pago_id' => $metodoPagoId,
-                    'pedido_id' => $pedido->pedido_id,
-                ]);
-
-                return;
-            }
-
-            // NO enviar correo para Stripe en el checkout - se enviará después del pago
-            if (strtolower($metodoPago->nombre) === 'stripe') {
-                Log::info('Método Stripe seleccionado, no se envía correo en checkout', [
-                    'pedido_id' => $pedido->pedido_id,
-                    'metodo_pago' => $metodoPago->nombre,
-                ]);
-
-                return;
-            }
-
-            // Verificar si es un método que requiere confirmación manual
-            $requiereConfirmacionManual = $this->metodoRequiereConfirmacionManual($metodoPago);
-
-            if (! $requiereConfirmacionManual) {
-                // Para métodos como efectivo o transferencia, enviar correo inmediatamente
-                // ya que el pedido se confirma automáticamente
-                $notificationService = new PedidoNotificationService;
-                $notificationService->confirmarPedidoMetodoNoStripe($pedido, $metodoPago->nombre);
-
-                Log::info('Correo de confirmación enviado para método no-Stripe', [
-                    'pedido_id' => $pedido->pedido_id,
-                    'metodo_pago' => $metodoPago->nombre,
-                ]);
-            } else {
-                // Para métodos que requieren confirmación manual, también enviar notificación al administrador
-                // pero no el correo de confirmación al cliente
-                $this->notificarAdministradores($pedido, $metodoPago->nombre);
-
-                Log::info('Método de pago requiere confirmación manual, notificación enviada al administrador', [
-                    'pedido_id' => $pedido->pedido_id,
-                    'metodo_pago' => $metodoPago->nombre,
-                ]);
-            }
-
-        } catch (Exception $e) {
-            Log::error('Error al enviar correo de confirmación en checkout', [
-                'pedido_id' => $pedido->pedido_id,
-                'metodo_pago_id' => $metodoPagoId,
-                'error' => $e->getMessage(),
-            ]);
-            // No lanzar excepción para no afectar el flujo del checkout
-        }
-    }
-
-    /**
-     * Determinar si un método de pago requiere confirmación manual
-     */
-    private function metodoRequiereConfirmacionManual($metodoPago): bool
-    {
-        if (! $metodoPago) {
-            return false;
-        }
-
-        // Métodos que requieren confirmación manual (efectivo, transferencia)
-        // Stripe NO requiere confirmación manual porque se confirma automáticamente
-        $metodosManuales = ['Efectivo', 'Transferencia Bancaria', 'efectivo', 'transferencia bancaria', 'transferencia'];
-
-        return in_array($metodoPago->nombre, $metodosManuales) ||
-               in_array(strtolower($metodoPago->nombre), $metodosManuales);
-    }
-
-    /**
-     * Notifica a los administradores sobre un nuevo pedido.
-     */
-    private function notificarAdministradores($pedido, $metodoPagoNombre)
-    {
-        try {
-            $adminNotificationService = new AdminNotificationService;
-            $adminNotificationService->notificarPedidoNuevo($pedido, $metodoPagoNombre);
-        } catch (Exception $e) {
-            Log::error('Error al notificar administradores', [
-                'pedido_id' => $pedido->pedido_id,
-                'error' => $e->getMessage(),
-            ]);
-        }
-    }
 
     /**
      * Actualiza el stock de los productos (descuenta definitivamente)
@@ -732,7 +637,7 @@ class CheckoutService extends BaseService
                     $variante->registrarSalida(
                         $cantidad,
                         'Venta - Checkout',
-                        \Illuminate\Support\Facades\Auth::id(),
+                        Auth::id(),
                         'checkout_venta'
                     );
                 }
@@ -743,7 +648,7 @@ class CheckoutService extends BaseService
                     $producto->registrarSalida(
                         $cantidad,
                         'Venta - Checkout',
-                        \Illuminate\Support\Facades\Auth::id(),
+                        Auth::id(),
                         null // No hay pedido_id en este punto
                     );
                 }
@@ -790,89 +695,4 @@ class CheckoutService extends BaseService
         }
     }
 
-    /**
-     * Confirma un pedido y descuenta el stock definitivamente
-     */
-    public function confirmarPedido(string $pedidoId): array
-    {
-        return $this->executeInTransaction(function () use ($pedidoId) {
-            // Obtener el pedido
-            $pedido = PedidoPedido::findOrFail($pedidoId);
-
-            // Verificar que el pedido pertenece al usuario autenticado
-            if ($pedido->usuario_id !== Auth::id()) {
-                throw new Exception('No tienes permisos para confirmar este pedido');
-            }
-
-            // Verificar que el pedido está en estado pendiente
-            if ($pedido->estado_id !== 1) { // 1 = pendiente
-                throw new Exception('El pedido no está en estado pendiente');
-            }
-
-            // Obtener los detalles del pedido
-            $detalles = $pedido->detalles;
-
-            // Verificar si el pedido tiene variantes antes de confirmar reservas
-            $tieneVariantes = $detalles->contains(function ($detalle) {
-                return $detalle->variante_id !== null;
-            });
-
-            // Si tiene variantes, confirmar todas las reservas del pedido una sola vez
-            if ($tieneVariantes) {
-                $this->reservaStockService->confirmarReservasPedido($pedidoId, Auth::id());
-            }
-
-            // Descontar stock definitivamente
-            foreach ($detalles as $detalle) {
-                if ($detalle->variante_id) {
-                    // Para variantes, las reservas ya se confirmaron arriba
-                    // No hacer nada más aquí
-                } else {
-                    // Para productos sin variantes, liberar stock reservado y registrar salida
-                        $producto = Producto::find($detalle->producto_id);
-                    if ($producto) {
-                        // Liberar stock reservado primero
-                        if ($producto->stock_reservado > 0) {
-                            $producto->liberarStockReservado(
-                                $detalle->cantidad,
-                                "Confirmación de pedido #{$pedidoId}",
-                                Auth::id(),
-                                (int) $pedidoId
-                            );
-                        }
-                        // Registrar salida
-                        $producto->registrarSalida(
-                            $detalle->cantidad,
-                            "Venta Confirmada - Pedido #{$pedidoId}",
-                            Auth::id(),
-                            (int) $pedidoId
-                        );
-                    }
-                }
-            }
-
-            // Actualizar estado del pedido a confirmado
-            $pedido->update(['estado_id' => 2]); // 2 = confirmado
-
-            // Actualizar estado del pago
-            $pago = $pedido->pago;
-            if ($pago) {
-                $pago->update(['estado' => 'confirmado']);
-            }
-
-            // Enviar notificaciones
-            $this->enviarCorreoConfirmacionSiEsNecesario($pedido, $pago->metodo_id);
-
-            $this->logOperation('pedido_confirmado_exitosamente', [
-                'pedido_id' => $pedidoId,
-                'user_id' => Auth::id(),
-            ]);
-
-            return [
-                'success' => true,
-                'message' => 'Pedido confirmado exitosamente. El stock ha sido descontado definitivamente.',
-            ];
-
-        }, 'confirmación de pedido');
-    }
 }

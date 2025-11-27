@@ -64,11 +64,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'index'])->name('checkout.submit');
     Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
-    Route::get('/checkout/confirm/{pedido}', [CheckoutController::class, 'showConfirm'])->name('checkout.confirm');
     Route::get('/checkout/success/{pedido}', [CheckoutController::class, 'success'])->name('checkout.success');
     Route::get('/checkout/cancel/{pedido}', [CheckoutController::class, 'cancel'])->name('checkout.cancel');
     Route::post('/checkout/verificar-stock', [CheckoutController::class, 'verificarStock'])->name('checkout.verificar-stock');
-    Route::post('/checkout/confirmar/{pedido}', [CheckoutController::class, 'confirmarPedido'])->name('checkout.confirmar');
 });
 
 // Rutas del carrito
@@ -82,7 +80,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/carrito/json', [App\Http\Controllers\Cliente\CarritoController::class, 'getCartJson'])->name('carrito.json');
     Route::get('/carrito/verificar-stock', [App\Http\Controllers\Cliente\CarritoController::class, 'verificarStock'])->name('carrito.verificar-stock');
     Route::post('/carrito/sincronizar', [App\Http\Controllers\Cliente\CarritoController::class, 'sync'])->name('carrito.sincronizar');
-    Route::get('/carrito/mini', [App\Http\Controllers\Cliente\CarritoController::class, 'mini'])->name('carrito.mini');
     Route::get('/carrito/vacio', [App\Http\Controllers\Cliente\CarritoController::class, 'isEmpty'])->name('carrito.vacio');
 });
 

@@ -13,7 +13,7 @@ class AdminNotificationService
     /**
      * Enviar notificación a todos los administradores sobre un nuevo pedido
      */
-    public function notificarPedidoNuevo(Pedido $pedido, string $metodoPago): bool
+    public function notificarPedidoNuevo(Pedido $pedido, string $metodoPago, ?string $paymentIntentId = null): bool
     {
         try {
             // Cargar la relación del usuario si no está cargada
@@ -45,7 +45,7 @@ class AdminNotificationService
             // Enviar notificación a cada administrador
             $enviados = 0;
             foreach ($admins as $admin) {
-                if ($this->enviarNotificacionAdmin($admin, $pedido, $metodoPago, $adminUrl)) {
+                if ($this->enviarNotificacionAdmin($admin, $pedido, $metodoPago, $adminUrl, $paymentIntentId)) {
                     $enviados++;
                 }
             }
@@ -89,7 +89,7 @@ class AdminNotificationService
     /**
      * Enviar notificación individual a un administrador
      */
-    private function enviarNotificacionAdmin(Usuario $admin, Pedido $pedido, string $metodoPago, string $adminUrl): bool
+    private function enviarNotificacionAdmin(Usuario $admin, Pedido $pedido, string $metodoPago, string $adminUrl, ?string $paymentIntentId = null): bool
     {
         try {
             // Verificar que el admin tenga email válido
@@ -103,7 +103,7 @@ class AdminNotificationService
 
             // Enviar correo de notificación
             Mail::to($admin->correo_electronico)
-                ->send(new NotificacionPedidoNuevo($pedido, $pedido->usuario, $metodoPago, $adminUrl));
+                ->send(new NotificacionPedidoNuevo($pedido, $pedido->usuario, $metodoPago, $adminUrl, $paymentIntentId));
 
             Log::info('Notificación de pedido nuevo enviada a admin', [
                 'admin_id' => $admin->usuario_id,

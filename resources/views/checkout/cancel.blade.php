@@ -23,6 +23,17 @@
                 El proceso de checkout ha sido cancelado. Tu pedido no se ha procesado.
             </p>
 
+            <div class="rounded-md bg-blue-50 p-4 mb-8">
+                <div class="flex">
+                    <svg class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 18a6 6 0 100-12 6 6 0 000 12z" />
+                    </svg>
+                    <p class="ml-3 text-sm text-blue-700">
+                        Tu pedido fue cancelado y el stock correspondiente fue liberado. Puedes intentar nuevamente el pago con Stripe desde el checkout.
+                    </p>
+                </div>
+            </div>
+
             <!-- Información del pedido -->
             @if(isset($pedido))
             <div class="bg-gray-50 rounded-lg p-6 mb-8 text-left">

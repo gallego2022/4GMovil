@@ -91,7 +91,7 @@ echo.
 echo ✅ Despliegue completado!
 echo.
 echo 🌐 Aplicación disponible en: http://localhost:8000
-echo 🗄️  phpMyAdmin disponible en: http://localhost:8080
+echo 🗄️  phpMyAdmin disponible en: http://localhost:8083
 echo 📊 Redis Commander disponible en: http://localhost:8081
 echo 📈 Microservicio de Reportes: http://localhost:8082
 echo.

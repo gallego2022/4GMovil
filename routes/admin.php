@@ -74,9 +74,8 @@ Route::middleware([
     });
 
     Route::resource('usuarios', UsuarioController::class);
-    Route::get('/usuarios/{usuario}/asignar-rol', [UsuarioController::class, 'asignarRol'])->name('usuarios.asignarRol');
-    Route::post('/usuarios/{usuario}/asignar-rol', [UsuarioController::class, 'updateRol'])->name('usuarios.updateRol');
-    Route::patch('/usuarios/{usuario}/toggle', [UsuarioController::class, 'toggleEstado'])->name('usuarios.toggle');
+    Route::post('/usuarios/{usuario}/asignar-rol', [UsuarioController::class, 'asignarRol'])->name('usuarios.asignarRol');
+    Route::patch('/usuarios/{usuario}/toggle', [UsuarioController::class, 'cambiarEstado'])->name('usuarios.toggle');
     // Categorias
     Route::resource('categorias', CategoriaController::class);
     // Marcas

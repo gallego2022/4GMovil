@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use App\Helpers\PhotoHelper;
 use App\Models\OtpCode;
@@ -106,6 +107,12 @@ class AuthService
             Auth::login($usuario);
             $usuario->sendEmailVerificationNotification();
             Log::info('Código OTP de verificación enviado a: ' . $usuario->correo_electronico);
+
+            try {
+                Mail::to($usuario->correo_electronico)->send(new BienvenidaUsuario($usuario, 'tradicional'));
+            } catch (\Exception $e) {
+                Log::warning('No se pudo enviar correo de bienvenida: ' . $e->getMessage());
+            }
 
             return [
                 'success' => true,
@@ -462,3 +469,4 @@ class AuthService
         }
     }
 }
+use App\Mail\BienvenidaUsuario;

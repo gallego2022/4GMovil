@@ -37,9 +37,9 @@ class PedidoNotificationService
             Mail::to($pedido->usuario->correo_electronico)
                 ->send(new ConfirmacionPedido($pedido->usuario, $pedido, $pedidoUrl));
             
-            // Enviar notificación a administradores
-            $this->notificarAdministradores($pedido);
-            
+            // No notificar administradores aquí
+            // La notificación de "Nuevo Pedido Pendiente" se envía al confirmar pago (Stripe)
+
             Log::info('Correo de confirmación enviado exitosamente', [
                 'pedido_id' => $pedido->pedido_id,
                 'usuario_id' => $pedido->usuario_id,

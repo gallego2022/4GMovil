@@ -1368,7 +1368,7 @@
 
                 // Mostrar notificación de éxito
                 if (typeof window.showNotification === 'function') {
-                    window.showNotification('¡Producto agregado! El producto se agregó al carrito exitosamente', 'success', 3);
+                    window.showNotification('¡Producto agregado! El producto se agregó al carrito exitosamente', 'success', 5);
                 }
             }
 

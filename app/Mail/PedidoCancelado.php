@@ -24,12 +24,13 @@ class PedidoCancelado extends Mailable
         $this->usuario = $usuario;
         $this->pedido = $pedido;
         $this->motivo = $motivo;
-        $this->pedidoUrl = route('pedidos.show', $pedido->pedido_id, true);
     }
 
     public function build()
     {
-        return $this->subject('🚫 Pedido Cancelado - 4GMovil')
+        $this->pedidoUrl = route('pedidos.show', $this->pedido->pedido_id, true);
+
+        return $this->subject('Pedido Cancelado - 4GMovil')
                     ->view('correo.pedido-cancelado')
                     ->with([
                         'usuario' => $this->usuario,

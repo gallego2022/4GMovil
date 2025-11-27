@@ -300,16 +300,18 @@ document.addEventListener('DOMContentLoaded', function() {
                         optionsHTML += `<option value="${opt}">${opt}</option>`;
                     });
                     
+                    const selectId = 'preview_select';
                     previewHTML = `
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">${labelText}</label>
-                        <select class="block w-full px-4 py-3 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm transition-colors duration-200">
+                        <label for="${selectId}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">${labelText}</label>
+                        <select id="${selectId}" class="block w-full px-4 py-3 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm transition-colors duration-200">
                             ${optionsHTML}
                         </select>
                     `;
                 } else {
+                    const selectId = 'preview_select';
                     previewHTML = `
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">${labelText}</label>
-                        <select class="block w-full px-4 py-3 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm transition-colors duration-200">
+                        <label for="${selectId}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">${labelText}</label>
+                        <select id="${selectId}" class="block w-full px-4 py-3 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-brand-500 focus:ring-brand-500 dark:bg-gray-700 dark:text-gray-100 sm:text-sm transition-colors duration-200">
                             <option value="">Selecciona una opción</option>
                             <option value="opcion1">Opción 1</option>
                             <option value="opcion2">Opción 2</option>
@@ -319,12 +321,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
                 
             case 'checkbox':
-                previewHTML = `
-                    <div class="flex items-center">
-                        <input type="checkbox" class="h-5 w-5 text-brand-600 focus:ring-brand-500 border-gray-300 rounded transition-colors duration-200">
-                        <label class="ml-3 block text-sm text-gray-900 dark:text-gray-100">${labelText}</label>
-                    </div>
-                `;
+                if (opciones) {
+                    const opcionesArray = opciones.split(',').map(opt => opt.trim()).filter(Boolean);
+                    let checksHTML = '';
+                    opcionesArray.forEach((opt, index) => {
+                        const id = `preview_checkbox_${index}`;
+                        checksHTML += `
+                            <div class="flex items-center">
+                                <input type="checkbox" id="${id}" name="preview_checkbox[]" value="${opt}" class="h-5 w-5 text-brand-600 focus:ring-brand-500 border-gray-300 rounded transition-colors duration-200">
+                                <label for="${id}" class="ml-3 block text-sm text-gray-900 dark:text-gray-100">${opt}</label>
+                            </div>
+                        `;
+                    });
+                    previewHTML = `
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">${labelText}</label>
+                        <div class="space-y-2">
+                            ${checksHTML}
+                        </div>
+                    `;
+                } else {
+                    previewHTML = `
+                        <div class="flex items-center">
+                            <input type="checkbox" class="h-5 w-5 text-brand-600 focus:ring-brand-500 border-gray-300 rounded transition-colors duration-200">
+                            <label class="ml-3 block text-sm text-gray-900 dark:text-gray-100">${labelText}</label>
+                        </div>
+                    `;
+                }
                 break;
                 
             case 'radio':
@@ -332,10 +354,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     const opcionesArray = opciones.split(',').map(opt => opt.trim());
                     let radioHTML = '';
                     opcionesArray.forEach((opt, index) => {
+                        const id = `preview_radio_${index}`;
                         radioHTML += `
                             <div class="flex items-center">
-                                <input type="radio" name="preview_radio" value="${opt}" class="h-5 w-5 text-brand-600 focus:ring-brand-500 border-gray-300 transition-colors duration-200">
-                                <label class="ml-3 block text-sm text-gray-900 dark:text-gray-100">${opt}</label>
+                                <input type="radio" id="${id}" name="preview_radio" value="${opt}" class="h-5 w-5 text-brand-600 focus:ring-brand-500 border-gray-300 transition-colors duration-200">
+                                <label for="${id}" class="ml-3 block text-sm text-gray-900 dark:text-gray-100">${opt}</label>
                             </div>
                         `;
                     });
@@ -347,16 +370,18 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     `;
                 } else {
+                    const id1 = 'preview_radio_1';
+                    const id2 = 'preview_radio_2';
                     previewHTML = `
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">${labelText}</label>
                         <div class="space-y-2">
                             <div class="flex items-center">
-                                <input type="radio" name="preview_radio" value="opcion1" class="h-5 w-5 text-brand-600 focus:ring-brand-500 border-gray-300 transition-colors duration-200">
-                                <label class="ml-3 block text-sm text-gray-900 dark:text-gray-100">Opción 1</label>
+                                <input type="radio" id="${id1}" name="preview_radio" value="opcion1" class="h-5 w-5 text-brand-600 focus:ring-brand-500 border-gray-300 transition-colors duration-200">
+                                <label for="${id1}" class="ml-3 block text-sm text-gray-900 dark:text-gray-100">Opción 1</label>
                             </div>
                             <div class="flex items-center">
-                                <input type="radio" name="preview_radio" value="opcion2" class="h-5 w-5 text-brand-600 focus:ring-brand-500 border-gray-300 transition-colors duration-200">
-                                <label class="ml-3 block text-sm text-gray-900 dark:text-gray-100">Opción 2</label>
+                                <input type="radio" id="${id2}" name="preview_radio" value="opcion2" class="h-5 w-5 text-brand-600 focus:ring-brand-500 border-gray-300 transition-colors duration-200">
+                                <label for="${id2}" class="ml-3 block text-sm text-gray-900 dark:text-gray-100">Opción 2</label>
                             </div>
                         </div>
                     `;

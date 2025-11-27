@@ -18,13 +18,24 @@ class StockBajo extends Mailable
     public $porcentajeActual;
     public $stockMinimo;
     public $productoUrl;
+    public $variantesProblematicas;
 
-    public function __construct(Producto $producto, $porcentajeActual, $stockMinimo = 10)
+    public function __construct(Producto $producto, $porcentajeActual, $stockMinimo = null)
     {
         $this->producto = $producto;
         $this->porcentajeActual = $porcentajeActual;
-        $this->stockMinimo = $stockMinimo;
+        if ($stockMinimo === null) {
+            $umbralBajo = $producto->getAttribute('umbral_stock_bajo');
+            if ($umbralBajo === null || $umbralBajo <= 0) {
+                $umbralBajo = ($producto->stock_inicial ?? 0) > 0 ? (int) ceil(($producto->stock_inicial * 60) / 100) : 0;
+            }
+            $this->stockMinimo = $umbralBajo;
+        } else {
+            $this->stockMinimo = $stockMinimo;
+        }
         $this->productoUrl = route('productos.show', $producto->producto_id, true);
+        $alertService = app(\App\Services\Inventory\StockAlertService::class);
+        $this->variantesProblematicas = $alertService->getVariantesProblematicas($producto->producto_id);
         
     }
 
@@ -37,6 +48,7 @@ class StockBajo extends Mailable
                         'porcentajeActual' => $this->porcentajeActual,
                         'stockMinimo' => $this->stockMinimo,
                         'productoUrl' => $this->productoUrl,
+                        'variantesProblematicas' => $this->variantesProblematicas,
                     ]);
     }
 }

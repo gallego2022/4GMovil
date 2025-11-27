@@ -15,6 +15,7 @@ use Stripe\Exception\ApiErrorException;
 use Illuminate\Support\Facades\Mail;
 use Stripe\PaymentIntent;
 use App\Services\Notification\PedidoNotificationService;
+use App\Services\Notification\AdminNotificationService;
 use Stripe\Stripe;
 use Stripe\Webhook;
 
@@ -302,9 +303,6 @@ class StripeService
             // Generar webhook local
             $this->generateLocalWebhook($pedido, $paymentIntent);
 
-            // Enviar correo de confirmación del pedido
-            $this->enviarCorreoConfirmacion($pedido);
-
             // Enviar correo específico de pago exitoso con Stripe
             $this->enviarCorreoPagoExitoso($pedido, $paymentIntent);
 
@@ -315,6 +313,8 @@ class StripeService
                 'estado_pedido' => 'pendiente (admin debe confirmar)',
             ]);
         });
+
+        (new AdminNotificationService)->notificarPedidoNuevo($pedido, 'Stripe', $pago->referencia_externa);
 
         // NO manejar stock automáticamente - el pedido permanece pendiente
         // El stock se mantiene reservado hasta que el admin confirme el pedido
@@ -624,7 +624,7 @@ class StripeService
 
             // Enviar correo específico de pago exitoso con Stripe
             Mail::to($pedido->usuario->correo_electronico)
-                ->send(new StripePagoExitoso($pedido->usuario, $pedido, $paymentIntent));
+                ->send(new StripePagoExitoso($pedido->usuario, $pedido, $paymentIntent->id));
 
             Log::info('Correo de pago exitoso con Stripe enviado', [
                 'pedido_id' => $pedido->pedido_id,
